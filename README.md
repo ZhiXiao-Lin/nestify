@@ -2,7 +2,7 @@
 
 致力于打造Nodejs平台最好用的内容管理框架
 
-## Technology Stack
+## 技术选型
 
 - Nestjs
 - Nextjs
@@ -10,6 +10,6 @@
 - TypeORM
 - Ant Design Pro
 
-## License
+## 协议
 
   Nestify is [MIT licensed](LICENSE).
