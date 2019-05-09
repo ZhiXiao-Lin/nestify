@@ -137,8 +137,8 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/node,windows,visualstudiocode
 
-/dist
-/app/admin/dist
+# /dist
+# /app/admin/dist
 
 # auto build config
 /config/app/admin/config.js
