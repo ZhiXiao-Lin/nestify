@@ -1,6 +1,6 @@
 # Nestify
 
-致力于打造Nodejs平台最好的开箱即用型内容管理框架
+致力于打造Nodejs平台最好用的内容管理框架
 
 ## Technology Stack
 
