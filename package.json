@@ -1,0 +1,12 @@
+{
+	"name": "nestify",
+	"version": "1.0.0",
+	"main": "index.js",
+	"repository": "git@github.com:ZhiXiao-Lin/nestify.git",
+	"author": "roylin <1002591652@qq.com>",
+	"license": "MIT",
+	"scripts": {},
+	"devDependencies": {
+		"cross-env": "^5.2.0"
+	}
+}
