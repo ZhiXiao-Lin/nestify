@@ -4,11 +4,11 @@
 
 ## Technology Stack
 
-Nestjs
-Nextjs
-Fastify
-TypeORM
-Ant Design Pro
+- Nestjs
+- Nextjs
+- Fastify
+- TypeORM
+- Ant Design Pro
 
 ## License
 
