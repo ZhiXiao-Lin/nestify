@@ -14,7 +14,7 @@ export class UserService {
 	) {}
 
 	async getOneById(id: string) {
-		return await this.userRepository.findOne({ where: { id }, relations: [ 'contents' ] });
+		return await this.userRepository.findOne({ where: { id } });
 	}
 
 	async login(mobile, password) {

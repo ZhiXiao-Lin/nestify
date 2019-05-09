@@ -1,7 +1,7 @@
 import { Get, Param, UseInterceptors, ClassSerializerInterceptor, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Api } from '../../common/aspects/decorator';
+import { Api, CurrentUser } from '../../common/aspects/decorator';
 import { UserService } from '../../common/services/user.service';
 
 @Api('user')
@@ -15,5 +15,11 @@ export class UserController {
 	@UseInterceptors(ClassSerializerInterceptor)
 	async fetch(@Param() params) {
 		return await this.userService.getOneById(params.id);
+	}
+
+	@Get('current')
+	@UseInterceptors(ClassSerializerInterceptor)
+	async current(@CurrentUser() user) {
+		return await this.userService.getOneById(user.id);
 	}
 }

@@ -14,6 +14,7 @@ export default class extends Component {
 				<GlobalContext.Consumer>
 					{(context) => {
 						const { data: { siteInfo } } = context;
+						console.log(context);
 
 						return (
 							<div className="title">

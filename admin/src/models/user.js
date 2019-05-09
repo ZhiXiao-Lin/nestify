@@ -53,7 +53,7 @@ export default {
 			}
 		},
 		*fetchCurrent(_, { call, put }) {
-			const res = yield call(apiGet, '/user');
+			const res = yield call(apiGet, '/user/current');
 
 			yield put({
 				type: 'set',

@@ -1,12 +1,15 @@
 import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column } from 'typeorm';
 import { RowStatus } from '../aspects/enum';
+import { Exclude } from 'class-transformer';
 
 export abstract class Base {
 	@PrimaryGeneratedColumn('uuid') id: string;
 
+	@Exclude()
 	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
 	ex_info: any;
 
+	@Exclude()
 	@Column({
 		type: 'enum',
 		default: RowStatus.NORMAL,
@@ -15,11 +18,13 @@ export abstract class Base {
 	})
 	row_status: RowStatus;
 
+	@Exclude()
 	@CreateDateColumn({
 		comment: '创建时间'
 	})
 	create_at: number;
 
+	@Exclude()
 	@UpdateDateColumn({
 		comment: '更新时间'
 	})

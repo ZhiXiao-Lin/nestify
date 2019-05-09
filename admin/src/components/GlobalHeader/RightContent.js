@@ -153,20 +153,18 @@ export default class GlobalHeaderRight extends PureComponent {
             showViewMore
           />
         </NoticeIcon> */}
-				{!!currentUser.mobile ? (
-					<HeaderDropdown overlay={menu}>
+
+				<HeaderDropdown overlay={menu}>
+					{!!currentUser.mobile ? (
 						<span className={`${styles.action} ${styles.account}`}>
 							<Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-							<span className={styles.name}>
-								{`【机构：${!!currentUser.mechanism
-									? currentUser.mechanism.name
-									: '无'}】 ${currentUser.realName || currentUser.mobile}`}
-							</span>
+							<span className={styles.name}>尊敬的{currentUser.realName || currentUser.mobile}您好！</span>
 						</span>
-					</HeaderDropdown>
-				) : (
-					<Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-				)}
+					) : (
+						<Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+					)}
+				</HeaderDropdown>
+
 				{/* <SelectLang className={styles.action} /> */}
 			</div>
 		);

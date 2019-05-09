@@ -26,10 +26,10 @@ function AuthComponent({ currentUser, children, location, routerData, status }) 
 		return authorities;
 	};
 
-	if (_.isEmpty(currentUser)) {
-		message.warn('身份验证失败');
-		router.replace('/user/login');
-	}
+	// if (_.isEmpty(currentUser)) {
+	// 	message.warn('身份验证失败');
+	// 	router.replace('/user/login');
+	// }
 
 	return (
 		<Authorized
