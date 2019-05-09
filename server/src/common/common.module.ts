@@ -7,9 +7,11 @@ import { UserService } from './services/user.service';
 import { JwtStrategy } from './strategys/jwt.strategy';
 import { User } from './entities/user.entity';
 import { Content } from './entities/content.entity';
-import { Menu } from './entities/menu.entity';
+import { Category } from './entities/category.entity';
 import { Setting } from './entities/setting.entity';
 import { SettingService } from './services/setting.service';
+import { CommonService } from './services/common.service';
+import { CategoryService } from './services/category.service';
 
 @Global()
 @Module({
@@ -17,9 +19,9 @@ import { SettingService } from './services/setting.service';
 		PassportModule.register({ defaultStrategy: 'jwt' }),
 		JwtModule.register(config.jwt),
 		TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
-		TypeOrmModule.forFeature([ Setting, Menu, User, Content ])
+		TypeOrmModule.forFeature([ Setting, Category, User, Content ])
 	],
-	providers: [ JwtStrategy, SettingService, UserService ],
-	exports: [ SettingService, UserService ]
+	providers: [ JwtStrategy, CommonService, SettingService, CategoryService, UserService ],
+	exports: [ CommonService, SettingService, CategoryService, UserService ]
 })
 export class CommonModule {}
