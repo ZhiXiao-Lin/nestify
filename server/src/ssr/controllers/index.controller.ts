@@ -12,6 +12,13 @@ export class IndexController {
 		return res.render('/', { siteInfo });
 	}
 
+	@Get('test')
+	async test(@Res() res) {
+		console.log('test');
+
+		return 'test';
+	}
+
 	@Get('error')
 	async error() {
 		throw new Error('服务器错误');

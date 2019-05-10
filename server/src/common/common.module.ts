@@ -1,4 +1,4 @@
-import { Module, Global } from '@nestjs/common';
+import { Module, Global, CacheModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -16,6 +16,9 @@ import { CategoryService } from './services/category.service';
 @Global()
 @Module({
 	imports: [
+		// CacheModule.register({
+		// 	...config.cache
+		// }),
 		PassportModule.register({ defaultStrategy: 'jwt' }),
 		JwtModule.register(config.jwt),
 		TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),

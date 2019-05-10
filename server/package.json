@@ -25,6 +25,7 @@
 		"@nestjs/typeorm": "^6.1.0",
 		"antd": "^3.17.0",
 		"bcryptjs": "^2.4.3",
+		"cache-manager": "^2.9.0",
 		"class-transformer": "^0.2.2",
 		"class-validator": "^0.9.1",
 		"fastify-file-upload": "^1.0.0",

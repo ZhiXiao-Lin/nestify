@@ -20,6 +20,11 @@ let config = {
 		}
 	},
 
+	cache: {
+		ttl: 10,
+		max: 1000
+	},
+
 	orm: {
 		type: 'postgres',
 		host: '127.0.0.1',
