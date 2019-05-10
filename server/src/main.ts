@@ -1,5 +1,8 @@
+import * as fs from 'fs';
+import * as util from 'util';
 import * as Fastify from 'fastify';
 import * as Nextjs from 'next';
+import * as ServeStatic from 'serve-static';
 import * as FileUpload from 'fastify-file-upload';
 import { config } from './config';
 import { resolve } from 'path';
@@ -11,8 +14,10 @@ import { AppModule } from './app.module';
 import { Seed } from './seed';
 import { HttpExceptionFilter } from './common/aspects/http-exception.filter';
 
-const MODULE_NAME = 'Main';
 declare const module: any;
+
+const MODULE_NAME = 'Main';
+const readFileAsync = util.promisify(fs.readFile);
 
 async function bootstrap() {
 	// Nextjs
@@ -21,10 +26,12 @@ async function bootstrap() {
 
 	// Fastify
 	const fastify = Fastify();
+
 	fastify.register(FileUpload, {
 		createParentPath: true,
 		limits: { fileSize: 50 * 1024 * 1024 }
 	});
+
 	fastify.addHook('onRequest', (req, reply, next) => {
 		reply['render'] = async (path, data = {}) => {
 			req.query.data = data;
@@ -32,7 +39,15 @@ async function bootstrap() {
 		};
 		next();
 	});
+
+	fastify.use('/static', ServeStatic(resolve('static')));
+	fastify.use('/admin', ServeStatic(resolve('../admin/dist')));
+
 	fastify.get('/_next/*', async (req, reply) => await nextjs.handleRequest(req.req, reply.res));
+	fastify.get('/admin/*', async (req, reply) => {
+		const content = await readFileAsync(resolve('../admin/dist/index.html'));
+		reply.code(200).type('text/html').send(content);
+	});
 
 	// Nestjs
 	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(fastify));
@@ -63,8 +78,6 @@ async function bootstrap() {
 		.build();
 	const document = SwaggerModule.createDocument(app, options);
 	SwaggerModule.setup('docs', app, document);
-
-	app.useStaticAssets({ root: resolve(config.static.root), prefix: config.static.prefix });
 
 	app.useGlobalFilters(new HttpExceptionFilter());
 	app.enableCors();

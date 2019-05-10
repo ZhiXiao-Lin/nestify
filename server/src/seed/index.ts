@@ -95,8 +95,15 @@ export class Seed {
 
 		await this.categoryRepository.save([
 			menuIndex,
-
 			menuOverview,
+			menuScene,
+			menuGuide,
+			menuNews,
+			menuOfficial,
+			menuAbout
+		]);
+
+		await this.categoryRepository.save([
 			menuOverviewIntroduction,
 			menuOverviewGeography,
 			menuOverviewHistory,
@@ -105,14 +112,12 @@ export class Seed {
 			menuOverviewHandicraft,
 			menuOverviewTourist,
 
-			menuScene,
 			menuScene0,
 			menuScene1,
 			menuScene2,
 			menuScene3,
 			menuScene4,
 
-			menuGuide,
 			menuGuide0,
 			menuGuide1,
 			menuGuide2,
@@ -120,14 +125,10 @@ export class Seed {
 			menuGuide4,
 			menuGuide5,
 
-			menuNews,
 			menuNews0,
 			menuNews1,
 			menuNews2,
 
-			menuOfficial,
-
-			menuAbout,
 			menuAbout0,
 			menuAbout1,
 			menuAbout2
