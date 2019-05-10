@@ -27,7 +27,7 @@ export class ExceptionsFilter implements ExceptionFilter {
 
 				youch
 					.addLink(({ message }) => {
-						const url = `ttps://cn.bing.com/search?q=${encodeURIComponent(`[adonis.js] ${message}`)}`;
+						const url = `https://cn.bing.com/search?q=${encodeURIComponent(`[adonis.js] ${message}`)}`;
 						return `<a href="${url}" target="_blank" title="Search on bing">Search Bing</a>`;
 					})
 					.toHTML()

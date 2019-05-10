@@ -30,6 +30,7 @@
 		"fastify-file-upload": "^1.0.0",
 		"fastify-helmet": "^3.0.0",
 		"fastify-nextjs": "^4.1.0",
+		"fastify-rate-limit": "^2.1.1",
 		"fastify-swagger": "^2.3.2",
 		"lodash": "^4.17.11",
 		"moment": "^2.24.0",

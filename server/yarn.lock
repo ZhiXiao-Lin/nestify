@@ -3609,7 +3609,7 @@ fast-json-stable-stringify@2.x, fast-json-stable-stringify@^2.0.0:
   resolved "https://registry.npm.taobao.org/fast-json-stable-stringify/download/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
   integrity sha1-1RQsDK7msRifh9OnYREGT4bIu/I=
 
-fast-json-stringify@^1.11.2:
+fast-json-stringify@^1.11.2, fast-json-stringify@^1.9.2:
   version "1.15.2"
   resolved "https://registry.npm.taobao.org/fast-json-stringify/download/fast-json-stringify-1.15.2.tgz#dc477f91790ba9377a30bf538a1525994f567473"
   integrity sha1-3Ed/kXkLqTd6ML9TihUlmU9WdHM=
@@ -3684,12 +3684,22 @@ fastify-nextjs@^4.1.0:
   dependencies:
     fastify-plugin "^1.2.1"
 
-fastify-plugin@^1.0.0, fastify-plugin@^1.2.1, fastify-plugin@^1.5.0:
+fastify-plugin@^1.0.0, fastify-plugin@^1.2.1, fastify-plugin@^1.3.0, fastify-plugin@^1.5.0:
   version "1.5.0"
   resolved "https://registry.npm.taobao.org/fastify-plugin/download/fastify-plugin-1.5.0.tgz#4bea12c54112f4749c17f3a1f17356cbdfa661af"
   integrity sha1-S+oSxUES9HScF/Oh8XNWy9+mYa8=
   dependencies:
     semver "^5.5.0"
+
+fastify-rate-limit@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.npm.taobao.org/fastify-rate-limit/download/fastify-rate-limit-2.1.1.tgz#8177442155145460545769080556403089589280"
+  integrity sha1-gXdEIVUUVGBUV2kIBVZAMIlYkoA=
+  dependencies:
+    fast-json-stringify "^1.9.2"
+    fastify-plugin "^1.3.0"
+    ms "^2.1.1"
+    tiny-lru "^6.0.1"
 
 fastify-static@^2.3.4:
   version "2.4.0"

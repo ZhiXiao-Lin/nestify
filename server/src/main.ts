@@ -5,9 +5,10 @@ import * as Nextjs from 'next';
 import * as ServeStatic from 'serve-static';
 import * as FileUpload from 'fastify-file-upload';
 import * as Helmet from 'fastify-helmet';
+import * as RateLimit from 'fastify-rate-limit';
 import { config } from './config';
 import { resolve } from 'path';
-import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -30,6 +31,10 @@ async function bootstrap() {
 	const fastify = Fastify();
 
 	fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
+	fastify.register(RateLimit, {
+		timeWindow: 1,
+		max: 5
+	});
 
 	fastify.register(FileUpload, {
 		createParentPath: true,
