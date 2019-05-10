@@ -4,15 +4,16 @@ import * as Fastify from 'fastify';
 import * as Nextjs from 'next';
 import * as ServeStatic from 'serve-static';
 import * as FileUpload from 'fastify-file-upload';
+import * as Helmet from 'fastify-helmet';
 import { config } from './config';
 import { resolve } from 'path';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { Seed } from './seed';
-import { HttpExceptionFilter } from './common/aspects/http-exception.filter';
+import { ExceptionsFilter } from './common/aspects/exceptions.filter';
 
 declare const module: any;
 
@@ -20,12 +21,15 @@ const MODULE_NAME = 'Main';
 const readFileAsync = util.promisify(fs.readFile);
 
 async function bootstrap() {
+	const dev = process.env.NODE_ENV !== 'production';
 	// Nextjs
-	const nextjs = Nextjs({ dev: process.env.NODE_ENV !== 'production' });
+	const nextjs = Nextjs({ dev });
 	await nextjs.prepare();
 
 	// Fastify
 	const fastify = Fastify();
+
+	fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
 
 	fastify.register(FileUpload, {
 		createParentPath: true,
@@ -79,8 +83,9 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, options);
 	SwaggerModule.setup('docs', app, document);
 
-	app.useGlobalFilters(new HttpExceptionFilter());
 	app.enableCors();
+
+	app.useGlobalFilters(new ExceptionsFilter());
 
 	await app.listen(config.port, config.hostName, () => {
 		Logger.log(config, MODULE_NAME);
