@@ -1,9 +1,38 @@
 import * as _ from 'lodash';
-import * as baseConfig from './base.config';
-import * as productionConfig from './production.config';
-import * as localConfig from './local.config';
+import { resolve } from 'path';
+import * as productionConfig from './production';
+import * as localConfig from './local';
 
-let config = baseConfig.default;
+let config = {
+	port: '3000',
+	hostName: '0.0.0.0',
+
+	static: {
+		root: 'static',
+		prefix: '/static/',
+		uploadPath: '/uploads'
+	},
+
+	jwt: {
+		secretOrPrivateKey: 'secretKey',
+		signOptions: {
+			expiresIn: 360000
+		}
+	},
+
+	orm: {
+		type: 'postgres',
+		host: '127.0.0.1',
+		port: 5432,
+		database: 'nestify',
+		username: 'nestify',
+		password: '123456',
+		dropSchema: false,
+		synchronize: false,
+		logging: true,
+		entities: [ resolve('../**/*.entity.ts') ]
+	}
+};
 
 if (process.env.NODE_ENV === 'production') {
 	config = _.merge(config, productionConfig.default);

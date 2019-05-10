@@ -1,8 +1,14 @@
-const BASE_URL = 'http://127.0.0.1:3000';
+import * as _ from 'lodash';
+import productionConfig from './production';
 
-export default {
-	PAGE_SIZE: 50,
-	API_URL: BASE_URL + '/api',
-	UPLOAD_PATH: BASE_URL + '/upload/',
-	staticImgUrl: '../assets/img/'
+let config = {
+	API_URL: 'http://127.0.0.1:3000/api',
+	UPLOAD_PATH: 'http://127.0.0.1:3000/static/uploads',
+	PAGE_SIZE: 50
 };
+
+if (process.env.NODE_ENV === 'production') {
+	config = _.merge(config, productionConfig);
+}
+
+export default config;
