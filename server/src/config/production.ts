@@ -12,6 +12,6 @@ export default {
 		dropSchema: false,
 		synchronize: false,
 		logging: false,
-		entities: [ resolve('../**/*.entity.js') ]
+		entities: [ resolve('./**/*.entity.js') ]
 	}
 };

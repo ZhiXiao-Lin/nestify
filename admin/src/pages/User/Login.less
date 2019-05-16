@@ -1,32 +1,35 @@
 @import '~antd/lib/style/themes/default.less';
 
 .main {
-  width: 388px;
-  margin: 0 auto;
-  @media screen and (max-width: @screen-sm) {
-    width: 95%;
-  }
+	width: 368px;
+	margin: 0 auto;
+	@media screen and (max-width: @screen-sm) {
+		width: 95%;
+	}
 
-  .icon {
-    margin-left: 16px;
-    color: rgba(0, 0, 0, 0.2);
-    font-size: 24px;
-    vertical-align: middle;
-    cursor: pointer;
-    transition: color 0.3s;
+	.icon {
+		font-size: 24px;
+		color: rgba(0, 0, 0, 0.2);
+		margin-left: 16px;
+		vertical-align: middle;
+		cursor: pointer;
+		transition: color 0.3s;
 
-    &:hover {
-      color: @primary-color;
-    }
-  }
+		&:hover {
+			color: @primary-color;
+		}
+	}
 
-  .other {
-    margin-top: 24px;
-    line-height: 22px;
-    text-align: left;
+	.other {
+		text-align: left;
+		margin-top: 24px;
+		line-height: 22px;
 
-    .register {
-      float: right;
-    }
-  }
+		.register {
+			float: left;
+		}
+		.forgot {
+			float: right;
+		}
+	}
 }

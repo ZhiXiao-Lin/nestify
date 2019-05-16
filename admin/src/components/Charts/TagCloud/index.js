@@ -51,16 +51,20 @@ class TagCloud extends Component {
 
   initTagCloud = () => {
     function getTextAttrs(cfg) {
-      return Object.assign({}, cfg.style, {
-        fillOpacity: cfg.opacity,
-        fontSize: cfg.origin._origin.size,
-        rotate: cfg.origin._origin.rotate,
-        text: cfg.origin._origin.text,
-        textAlign: 'center',
-        fontFamily: cfg.origin._origin.font,
-        fill: cfg.color,
-        textBaseline: 'Alphabetic',
-      });
+      return Object.assign(
+        {},
+        {
+          fillOpacity: cfg.opacity,
+          fontSize: cfg.origin._origin.size,
+          rotate: cfg.origin._origin.rotate,
+          text: cfg.origin._origin.text,
+          textAlign: 'center',
+          fontFamily: cfg.origin._origin.font,
+          fill: cfg.color,
+          textBaseline: 'Alphabetic',
+        },
+        cfg.style
+      );
     }
 
     // 给point注册一个词云的shape

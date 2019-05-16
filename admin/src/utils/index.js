@@ -5,7 +5,7 @@ import { message } from 'antd';
 import config from '@/config';
 
 const instance = axios.create({
-	baseURL: config.API_URL,
+	baseURL: config.API_ROOT,
 	timeout: 15000,
 	headers: {}
 });
@@ -15,7 +15,7 @@ instance.interceptors.request.use(
 	function(config) {
 		// Do something before request is sent
 		config.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
-		console.log(config);
+		console.log('onRequest --->', config);
 		return config;
 	},
 	function(error) {
@@ -27,7 +27,7 @@ instance.interceptors.request.use(
 // Add a response interceptor
 instance.interceptors.response.use(
 	function(response) {
-		return response;
+		return response.data;
 	},
 	function(error) {
 		// Do something with response error
@@ -79,7 +79,6 @@ export function apiUploadOne(file, options = {}) {
 	const param = new FormData();
 	param.append('file', file, file.name);
 
-	// options.headers = { 'Content-Type': 'multipart/form-data' };
 	return instance.post('/upload', param, options);
 }
 

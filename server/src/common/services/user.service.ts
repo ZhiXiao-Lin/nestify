@@ -3,8 +3,8 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -13,12 +13,12 @@ export class UserService {
 		@InjectRepository(User) private readonly userRepository: Repository<User>
 	) {}
 
-	async getOneById(id: string) {
-		return await this.userRepository.findOne({ where: { id } });
+	async findOneById(id: string) {
+		return await this.userRepository.findOne({ id });
 	}
 
-	async login(mobile, password) {
-		const user = await this.userRepository.findOne({ mobile });
+	async login(account, password) {
+		const user = await this.userRepository.findOne({ account });
 
 		if (!user) throw new UnauthorizedException('用户不存在!');
 

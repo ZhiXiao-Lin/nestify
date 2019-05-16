@@ -1,0 +1,109 @@
+@import '~antd/lib/style/themes/default.less';
+@import '~ant-design-pro/dist/ant-design-pro.css';
+
+@nav-header-height: 64px;
+
+.siderMenu {
+	position: fixed;
+	overflow: auto;
+	height: 100vh;
+	left: 0;
+}
+
+.collapsed {
+	display: none;
+}
+
+.logo {
+	height: @nav-header-height;
+	position: relative;
+	line-height: @nav-header-height;
+	padding-left: (@menu-collapsed-width - 32px) / 2;
+	transition: all 0.3s;
+	background: #002140;
+	overflow: hidden;
+	img {
+		display: inline-block;
+		vertical-align: middle;
+		height: 32px;
+	}
+	h1 {
+		color: white;
+		display: inline-block;
+		vertical-align: middle;
+		font-size: 15px;
+		margin: 0 0 0 12px;
+		font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+		font-weight: 600;
+	}
+}
+
+.header {
+	padding: 0;
+	background: #fff;
+	box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+	position: relative;
+}
+
+.breadcrumb {
+	.breadcrumbIcon {
+		margin-right: 5px;
+	}
+	margin: 70px 0 0 0;
+	padding: 0 10px;
+	background: #fff;
+	height: 50px;
+	width: 100%;
+	line-height: 50px;
+	border-bottom: solid #66666626 1px;
+}
+
+.user {
+	cursor: pointer;
+	.userName {
+		padding-left: 10px;
+	}
+}
+
+.mainLayout {
+	margin-left: 200px;
+}
+
+@keyframes collapsed {
+	0% {
+		padding-left: 180px;
+	}
+	10% {
+		padding-left: 160px;
+	}
+	20% {
+		padding-left: 140px;
+	}
+	40% {
+		padding-left: 120px;
+	}
+	60% {
+		padding-left: 100px;
+	}
+	80% {
+		padding-left: 80px;
+	}
+}
+
+.layoutCollapsed {
+	margin-left: 80px;
+	animation: collapsed 0.2s linear;
+}
+
+.content {
+	min-height: 80vh;
+	margin: 20px;
+	overflow: initial;
+	background: #fff;
+	padding: 24px;
+}
+
+.footer {
+	padding: 0;
+	text-align: center;
+}
