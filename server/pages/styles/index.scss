@@ -1,0 +1,17 @@
+html,
+body {
+    width: 100%;
+	min-width: 1200px;
+	background: transparent;
+	position: relative;
+}
+
+.hdz-home-body, .hdz-header-body, .hdz-footer-body {
+	position: relative;
+	z-index: 2;
+	width: 1200px;
+	min-width: 1200px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+

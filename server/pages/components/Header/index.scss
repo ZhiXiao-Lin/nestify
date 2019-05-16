@@ -1,0 +1,90 @@
+@import "../../styles/define";
+
+.hdz-header-body {
+    height: 40px;
+
+    .head-top {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        font-size: $HEADER_TOP_SIZE;
+        color: $COMMON_GREY_6;
+
+        >span {
+            position: relative;
+
+            .FDTG {
+                margin-right: 10px;
+                cursor: pointer;
+
+                &.fdtg-wechat {
+                    font-size: 26px;
+                    color: $WECHAT_COLOR;
+                }
+
+                &.fdtg-weibo {
+                    font-size: 26px;
+                    color: $WEIBO_COLOR;
+                }
+            }
+
+            &.divider {
+                display: inline-flex;
+                height: 16px;
+                width: 1px;
+                background: $COMMON_GREY_6;
+                margin: 0px 10px;
+            }
+
+            &.order-ticket {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 24px;
+                width: 85px;
+                background-color: $HEADER_ORDER_BACKGROUND;
+                color: $COMMON_WHITE;
+            }
+
+            &.head-wechat,
+            &.head-weibo {
+                display: inline-flex;
+
+                .head-qrcode {
+                    display: none;
+                    flex-direction: column;
+                    position: absolute;
+                    top: 26px;
+                    right: 10px;
+                    padding: 5px;
+                    background-color: $COMMON_WHITE;
+                    img {
+                        width: 150px;
+                        height: 150px;
+                    }
+                    p {
+                        text-align: center;
+                        padding: 5px 0;
+                    }
+                }
+
+                &:hover {
+                    .head-qrcode {
+                        display: flex;
+                    }
+
+                    i {
+                        background-color: $COMMON_WHITE;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+}

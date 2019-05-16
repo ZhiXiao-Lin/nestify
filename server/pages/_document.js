@@ -13,6 +13,7 @@ export default class extends Document {
 				<Head>
 					<link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
 					<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+					<link rel="stylesheet" href="http://at.alicdn.com/t/font_1195797_5qe2hwcsbjx.css"/>
 				</Head>
 				<body>
 					<Main />
