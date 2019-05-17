@@ -110,14 +110,8 @@ export default class StudioLayout extends PureComponent {
 	render() {
 		const { children, collapsed, currentUser, authorities, noticesList, loading, menuLayout } = this.props;
 		const { routes } = this.props.route;
-		// console.log('studio layout routes: ', routes);
 
-		const user = currentUser || {};
 		const role = currentUser.role || {};
-		const current = {
-			real_name: user.real_name,
-			avatar: getAvatarURL(user.avatar)
-		};
 
 		return (
 			<DocumentTitle title={config.TITLE}>
@@ -161,7 +155,7 @@ export default class StudioLayout extends PureComponent {
 								}
 								menuLayout={menuLayout}
 								notices={noticesList}
-								currentUser={current}
+								currentUser={currentUser}
 								onCollapse={this.handleMenuCollapse}
 								collapsed={collapsed}
 								onMenuClick={this.handleHeaderMenuClick}

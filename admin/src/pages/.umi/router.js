@@ -119,37 +119,34 @@ models: () => [
         "_title_default": "方大特钢"
       },
       {
-        "name": "内容管理",
-        "icon": "read",
-        "path": "/studio/contents/:channel",
+        "name": "景区动态",
+        "icon": "file-text",
+        "path": "/studio/news/:channel",
         "component": _dvaDynamic({
   
-  component: () => import(/* webpackChunkName: "p__contents__contents" */'../contents/contents'),
+  component: () => import(/* webpackChunkName: "p__news" */'../news'),
   
 }),
         "Routes": [require('../Authorized').default],
         "authority": "AUTH-CONTENT",
         "routes": [
           {
-            "name": "资讯管理",
-            "icon": "profile",
-            "path": "/studio/contents/news",
+            "name": "官方公告",
+            "path": "/studio/news/notice",
             "exact": true,
             "_title": "方大特钢",
             "_title_default": "方大特钢"
           },
           {
-            "name": "轮播管理",
-            "icon": "area-chart",
-            "path": "/studio/contents/slider",
+            "name": "精彩活动",
+            "path": "/studio/news/activity",
             "exact": true,
             "_title": "方大特钢",
             "_title_default": "方大特钢"
           },
           {
-            "name": "关于我们",
-            "icon": "team",
-            "path": "/studio/contents/about",
+            "name": "新闻动态",
+            "path": "/studio/news/trends",
             "exact": true,
             "_title": "方大特钢",
             "_title_default": "方大特钢"

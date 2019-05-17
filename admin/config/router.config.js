@@ -41,25 +41,24 @@ export default [
 				component: './home/Index'
 			},
 			{
-				name: '内容管理',
-				icon: 'read',
-				path: '/studio/contents/:channel',
-				component: './contents/contents',
+				name: '景区动态',
+				icon: 'file-text',
+				path: '/studio/news/:channel',
+				component: './news',
 				Routes: [ 'src/pages/Authorized' ],
 				authority: AUTHORITY.CONTENT,
 				routes: [
-					{ name: '资讯管理', icon: 'profile', path: '/studio/contents/news' },
-					{ name: '轮播管理', icon: 'area-chart', path: '/studio/contents/slider' },
-					{ name: '关于我们', icon: 'team', path: '/studio/contents/about' }
+					{ name: '官方公告', path: '/studio/news/notice' },
+					{ name: '精彩活动', path: '/studio/news/activity' },
+					{ name: '新闻动态', path: '/studio/news/trends' }
 				]
 			},
 			{
 				name_noshow: '内容详情',
 				path: '/studio/contentdetails/:channel',
 				component: './contents/content.details'
-				// Routes: [ 'src/pages/Authorized' ],
-				// authority: 0,
 			},
+
 			{
 				name_noshow: '个人设置',
 				path: '/studio/user/settings',
