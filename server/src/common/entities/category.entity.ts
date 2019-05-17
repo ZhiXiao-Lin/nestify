@@ -1,7 +1,8 @@
 import { Base } from './base';
-import { Entity, Column, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Entity, Column, Tree, TreeChildren, TreeParent, OneToMany } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { ExcelHandleType } from '../lib/excel';
+import { Content } from './content.entity';
 
 @Entity()
 @Tree('materialized-path')
@@ -14,6 +15,9 @@ export class Category extends Base {
 
 	@Column({ comment: '排序', default: 0 })
 	sort: number;
+
+	@OneToMany((type) => Content, (content) => content.category)
+	contents: Content[];
 
 	@TreeChildren() children: Category[];
 

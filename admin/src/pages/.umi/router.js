@@ -132,21 +132,21 @@ models: () => [
         "routes": [
           {
             "name": "官方公告",
-            "path": "/studio/news/notice",
+            "path": "/studio/news/官方公告",
             "exact": true,
             "_title": "方大特钢",
             "_title_default": "方大特钢"
           },
           {
             "name": "精彩活动",
-            "path": "/studio/news/activity",
+            "path": "/studio/news/精彩活动",
             "exact": true,
             "_title": "方大特钢",
             "_title_default": "方大特钢"
           },
           {
             "name": "新闻动态",
-            "path": "/studio/news/trends",
+            "path": "/studio/news/新闻动态",
             "exact": true,
             "_title": "方大特钢",
             "_title_default": "方大特钢"
