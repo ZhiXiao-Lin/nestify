@@ -1,3 +1,5 @@
 export default {
-	API_ROOT: ''
+	API_ROOT: '',
+
+	PAGE_SIZE: 10
 };

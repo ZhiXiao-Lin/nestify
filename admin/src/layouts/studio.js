@@ -171,8 +171,6 @@ export default class StudioLayout extends PureComponent {
 								links={[]}
 								copyright={
 									<Fragment>
-										Build
-										<br />
 										Copyright <Icon type="copyright" /> {new Date().getFullYear()}{' '}
 										{config.COPYRIGHT}
 									</Fragment>

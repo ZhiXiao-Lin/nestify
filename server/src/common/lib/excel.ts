@@ -6,10 +6,21 @@ export enum ExcelHandleType {
 }
 
 export class ExcelImporter {
-	static async importExcel(filePath, sheetsMap) {
+	static async loadFromFile(filePath, sheetsMap) {
 		const workbook = new Excel.Workbook();
 		await workbook.xlsx.readFile(filePath);
 
+		return await ExcelImporter.load(workbook, sheetsMap);
+	}
+
+	static async loadFromBuffer(buffer, sheetsMap) {
+		const workbook = new Excel.Workbook();
+		await workbook.xlsx.load(buffer);
+
+		return await ExcelImporter.load(workbook, sheetsMap);
+	}
+
+	static async load(workbook, sheetsMap) {
 		const info = {};
 
 		workbook.eachSheet((worksheet) => {

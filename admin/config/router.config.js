@@ -48,9 +48,9 @@ export default [
 				Routes: [ 'src/pages/Authorized' ],
 				authority: AUTHORITY.CONTENT,
 				routes: [
-					{ name: '官方公告', path: '/studio/news/notice' },
-					{ name: '精彩活动', path: '/studio/news/activity' },
-					{ name: '新闻动态', path: '/studio/news/trends' }
+					{ name: '官方公告', path: '/studio/news/官方公告' },
+					{ name: '精彩活动', path: '/studio/news/精彩活动' },
+					{ name: '新闻动态', path: '/studio/news/新闻动态' }
 				]
 			},
 			{

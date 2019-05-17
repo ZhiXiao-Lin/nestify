@@ -6,7 +6,7 @@ import config from '@/config';
 
 const instance = axios.create({
 	baseURL: config.API_ROOT,
-	timeout: 15000,
+	timeout: 150000,
 	headers: {}
 });
 
@@ -41,6 +41,14 @@ instance.interceptors.response.use(
 				console.log(msg);
 				console.log(error.response.status);
 				console.log(error.response.headers);
+
+				if (error.response.status === 401) {
+					message.error('身份验证失效，请重新登录!', 2);
+
+					router.replace('/user/login');
+					return false;
+				}
+
 				if (_.isString(msg)) {
 					message.error(msg, 2);
 				} else {
@@ -49,13 +57,7 @@ instance.interceptors.response.use(
 
 						message.error(constraints[Object.keys(constraints).pop()], 2);
 					} else {
-						if (error.response.status === 401) {
-							message.error('验证失效，请重新登录!', 2);
-
-							router.replace('/user/login');
-						} else {
-							message.error('未知错误!', 2);
-						}
+						message.error('未知错误!', 2);
 					}
 				}
 			}
@@ -75,11 +77,23 @@ instance.interceptors.response.use(
 	}
 );
 
-export function apiUploadOne(file, options = {}) {
+export const UploadActionType = {
+	IMPORT: 'IMPORT',
+	UPLOAD: 'UPLOAD'
+};
+
+export function apiUploadOne(file, params = {}, options = {}) {
+	if (file.size > 2 * 1024 * 1024) {
+		message.error('请上传小于2M的文件');
+		return false;
+	}
+
 	const param = new FormData();
 	param.append('file', file, file.name);
 
-	return instance.post('/upload', param, options);
+	Object.keys(params).forEach((item) => param.append(item, params[item]));
+
+	return instance.post('/storage', param, options);
 }
 
 export function apiGet(url, options) {
