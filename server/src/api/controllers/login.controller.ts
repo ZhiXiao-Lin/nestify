@@ -12,6 +12,6 @@ export class LoginController {
 	@Post()
 	@UsePipes(new ValidationPipe())
 	async login(@Body() dto: LoginDto) {
-		return await this.userService.login(dto.mobile, dto.password);
+		return await this.userService.login(dto.account, dto.password);
 	}
 }

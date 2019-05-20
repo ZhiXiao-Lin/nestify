@@ -23,6 +23,7 @@ const readFileAsync = util.promisify(fs.readFile);
 
 async function bootstrap() {
 	const dev = process.env.NODE_ENV !== 'production';
+
 	// Nextjs
 	const nextjs = Nextjs({ dev });
 	await nextjs.prepare();

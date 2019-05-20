@@ -8,7 +8,7 @@
 - Nextjs
 - Fastify
 - TypeORM
-- Ant Design Pro
+- Ant Design
 
 ## 协议
 

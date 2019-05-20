@@ -1,17 +1,16 @@
 import React, { PureComponent } from 'react';
-import { FormattedMessage, formatMessage } from 'umi/locale';
-import { Spin, Tag, Menu, Icon, Avatar, Tooltip, message } from 'antd';
+import { Spin, Tag, Menu, Icon, Avatar, Tooltip } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import NoticeIcon from '../NoticeIcon';
 import HeaderSearch from '../HeaderSearch';
 import HeaderDropdown from '../HeaderDropdown';
-import SelectLang from '../SelectLang';
 import styles from './index.less';
 
 export default class GlobalHeaderRight extends PureComponent {
 	getNoticeData() {
 		const { notices = [] } = this.props;
+
 		if (notices.length === 0) {
 			return {};
 		}
@@ -38,11 +37,14 @@ export default class GlobalHeaderRight extends PureComponent {
 			}
 			return newNotice;
 		});
+
 		return groupBy(newNotices, 'type');
 	}
 
 	getUnreadData = (noticeData) => {
-		const unreadMsg = {};
+		const unreadMsg = {
+			count: 0
+		};
 		Object.entries(noticeData).forEach(([ key, value ]) => {
 			if (!unreadMsg[key]) {
 				unreadMsg[key] = 0;
@@ -50,6 +52,8 @@ export default class GlobalHeaderRight extends PureComponent {
 			if (Array.isArray(value)) {
 				unreadMsg[key] = value.filter((item) => !item.read).length;
 			}
+
+			unreadMsg.count += unreadMsg[key];
 		});
 		return unreadMsg;
 	};
@@ -63,109 +67,136 @@ export default class GlobalHeaderRight extends PureComponent {
 		});
 	};
 
-	render() {
-		const { currentUser, fetchingNotices, onNoticeVisibleChange, onMenuClick, onNoticeClear, theme } = this.props;
+	fetchMoreNotices = (tabProps) => {
+		const { list, name } = tabProps;
+		const { dispatch, notices = [] } = this.props;
+		const lastItemId = notices[notices.length - 1].id;
+		dispatch({
+			type: 'global/fetchMoreNotices',
+			payload: {
+				lastItemId,
+				type: name,
+				offset: list.length
+			}
+		});
+	};
 
+	render() {
+		const {
+			currentUser,
+			fetchingMoreNotices,
+			fetchingNotices,
+			loadedAllNotices,
+			onNoticeVisibleChange,
+			onMenuClick,
+			onNoticeClear,
+			skeletonCount,
+			theme
+		} = this.props;
 		const menu = (
 			<Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-				{/* <Menu.Item key="userinfo">
+				{/* <Menu.Item key="userCenter">
+					<Icon type="user" />
+					个人中心
+				</Menu.Item> */}
+				<Menu.Item key="userinfo">
 					<Icon type="setting" />
-					<FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
+					账户设置
 				</Menu.Item>
-				<Menu.Divider /> */}
+				<Menu.Divider />
 				<Menu.Item key="logout">
 					<Icon type="logout" />
-					<FormattedMessage id="menu.account.logout" defaultMessage="logout" />
+					退出
 				</Menu.Item>
 			</Menu>
 		);
+		const loadMoreProps = {
+			skeletonCount,
+			loadedAll: loadedAllNotices,
+			loading: fetchingMoreNotices
+		};
 		const noticeData = this.getNoticeData();
 		const unreadMsg = this.getUnreadData(noticeData);
 		let className = styles.right;
 		if (theme === 'dark') {
 			className = `${styles.right}  ${styles.dark}`;
 		}
+
 		return (
 			<div className={className}>
 				{/* <HeaderSearch
 					className={`${styles.action} ${styles.search}`}
-					placeholder={formatMessage({ id: 'component.globalHeader.search' })}
-					dataSource={[
-						formatMessage({ id: 'component.globalHeader.search.example1' }),
-						formatMessage({ id: 'component.globalHeader.search.example2' }),
-						formatMessage({ id: 'component.globalHeader.search.example3' })
-					]}
+					placeholder={'站内搜索'}
+					dataSource={[ '提示1', '提示2', '提示3' ]}
 					onSearch={(value) => {
 						console.log('input', value); // eslint-disable-line
 					}}
 					onPressEnter={(value) => {
 						console.log('enter', value); // eslint-disable-line
 					}}
-				/> */}
-				{/* <Tooltip title={formatMessage({ id: 'component.globalHeader.help' })}>
-					<a target="_blank" href="#" rel="noopener noreferrer" className={styles.action}>
+				/>
+				<Tooltip title={'帮助'}>
+					<a target="_blank" href="javascript:;" rel="noopener noreferrer" className={styles.action}>
 						<Icon type="question-circle-o" />
 					</a>
-				</Tooltip> */}
-				{/* <NoticeIcon
-          className={styles.action}
-          count={currentUser.unreadCount}
-          onItemClick={(item, tabProps) => {
-            console.log(item, tabProps); // eslint-disable-line
-            this.changeReadState(item, tabProps);
-          }}
-          loading={fetchingNotices}
-          locale={{
-            emptyText: formatMessage({ id: 'component.noticeIcon.empty' }),
-            clear: formatMessage({ id: 'component.noticeIcon.clear' }),
-            viewMore: formatMessage({ id: 'component.noticeIcon.view-more' }),
-            notification: formatMessage({ id: 'component.globalHeader.notification' }),
-            message: formatMessage({ id: 'component.globalHeader.message' }),
-            event: formatMessage({ id: 'component.globalHeader.event' }),
-          }}
-          onClear={onNoticeClear}
-          onPopupVisibleChange={onNoticeVisibleChange}
-          onViewMore={() => message.info('Click on view more')}
-          clearClose
-        >
-          <NoticeIcon.Tab
-            count={unreadMsg.notification}
-            list={noticeData.notification}
-            title="notification"
-            emptyText={formatMessage({ id: 'component.globalHeader.notification.empty' })}
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
-            showViewMore
-          />
-          <NoticeIcon.Tab
-            count={unreadMsg.message}
-            list={noticeData.message}
-            title="message"
-            emptyText={formatMessage({ id: 'component.globalHeader.message.empty' })}
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/sAuJeJzSKbUmHfBQRzmZ.svg"
-            showViewMore
-          />
-          <NoticeIcon.Tab
-            count={unreadMsg.event}
-            list={noticeData.event}
-            title="event"
-            emptyText={formatMessage({ id: 'component.globalHeader.event.empty' })}
-            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
-            showViewMore
-          />
-        </NoticeIcon> */}
-
-				<HeaderDropdown overlay={menu}>
-					{!!currentUser.mobile ? (
+				</Tooltip>
+				<NoticeIcon
+					className={styles.action}
+					count={unreadMsg.count}
+					onItemClick={(item, tabProps) => {
+						console.log(item, tabProps); // eslint-disable-line
+						this.changeReadState(item, tabProps);
+					}}
+					locale={{
+						emptyText: '暂无',
+						clear: '清空',
+						loadedAll: '加载完毕',
+						loadMore: '加载更多'
+					}}
+					onClear={onNoticeClear}
+					onLoadMore={this.fetchMoreNotices}
+					onPopupVisibleChange={onNoticeVisibleChange}
+					loading={fetchingNotices}
+					clearClose
+				>
+					<NoticeIcon.Tab
+						count={unreadMsg.notification}
+						list={noticeData.notification}
+						title={'通知'}
+						name="notification"
+						emptyText={'暂无通知'}
+						emptyImage="https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
+						{...loadMoreProps}
+					/>
+					<NoticeIcon.Tab
+						count={unreadMsg.message}
+						list={noticeData.message}
+						title={'消息'}
+						name="message"
+						emptyText={'暂无消息'}
+						emptyImage="https://gw.alipayobjects.com/zos/rmsportal/sAuJeJzSKbUmHfBQRzmZ.svg"
+						{...loadMoreProps}
+					/>
+					<NoticeIcon.Tab
+						count={unreadMsg.event}
+						list={noticeData.event}
+						title={'待办'}
+						name="event"
+						emptyText={'暂无待办'}
+						emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
+						{...loadMoreProps}
+					/>
+				</NoticeIcon>*/}
+				{true ? (
+					<HeaderDropdown overlay={menu}>
 						<span className={`${styles.action} ${styles.account}`}>
-							<Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-							<span className={styles.name}>尊敬的{currentUser.realName || currentUser.mobile}您好！</span>
+							{/* <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" /> */}
+							<span className={styles.name}>{currentUser.account} ，您好！</span>
 						</span>
-					) : (
-						<Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-					)}
-				</HeaderDropdown>
-
-				{/* <SelectLang className={styles.action} /> */}
+					</HeaderDropdown>
+				) : (
+					<Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+				)}
 			</div>
 		);
 	}

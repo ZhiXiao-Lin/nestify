@@ -1,4 +1,5 @@
 export default {
-	API_URL: '/api',
-	UPLOAD_PATH: '/static/uploads'
+	API_ROOT: '',
+
+	PAGE_SIZE: 10
 };

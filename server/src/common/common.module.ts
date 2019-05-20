@@ -9,9 +9,11 @@ import { User } from './entities/user.entity';
 import { Content } from './entities/content.entity';
 import { Category } from './entities/category.entity';
 import { Setting } from './entities/setting.entity';
-import { SettingService } from './services/setting.service';
 import { CommonService } from './services/common.service';
+import { SettingService } from './services/setting.service';
+import { ImportService } from './services/import.service';
 import { CategoryService } from './services/category.service';
+import { ContentService } from './services/content.service';
 
 @Global()
 @Module({
@@ -24,7 +26,15 @@ import { CategoryService } from './services/category.service';
 		TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
 		TypeOrmModule.forFeature([ Setting, Category, User, Content ])
 	],
-	providers: [ JwtStrategy, CommonService, SettingService, CategoryService, UserService ],
-	exports: [ CommonService, SettingService, CategoryService, UserService ]
+	providers: [
+		JwtStrategy,
+		ImportService,
+		CommonService,
+		CategoryService,
+		ContentService,
+		UserService,
+		SettingService
+	],
+	exports: [ ImportService, CommonService, CategoryService, ContentService, UserService, SettingService ]
 })
 export class CommonModule {}

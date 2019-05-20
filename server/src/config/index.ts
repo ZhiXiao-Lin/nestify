@@ -35,7 +35,7 @@ let config = {
 		dropSchema: false,
 		synchronize: false,
 		logging: true,
-		entities: [ resolve('../**/*.entity.ts') ]
+		entities: [ resolve('./**/*.entity.ts') ]
 	}
 };
 

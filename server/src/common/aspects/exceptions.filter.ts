@@ -14,7 +14,6 @@ export class ExceptionsFilter implements ExceptionFilter {
 			const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
 
 			Logger.error(`Catch http exception at ${request.raw.method} ${request.raw.url} ${status}`);
-			Logger.error(exception);
 
 			response.code(status).header('Content-Type', 'application/json; charset=utf-8').send({
 				...exception,
@@ -37,5 +36,6 @@ export class ExceptionsFilter implements ExceptionFilter {
 					});
 			}
 		}
+		Logger.error(exception);
 	}
 }

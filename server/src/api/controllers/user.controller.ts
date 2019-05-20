@@ -14,12 +14,12 @@ export class UserController {
 	@Get(':id')
 	@UseInterceptors(ClassSerializerInterceptor)
 	async fetch(@Param() params) {
-		return await this.userService.getOneById(params.id);
+		return await this.userService.findOneById(params.id);
 	}
 
 	@Get('current')
 	@UseInterceptors(ClassSerializerInterceptor)
 	async current(@CurrentUser() user) {
-		return await this.userService.getOneById(user.id);
+		return await this.userService.findOneById(user.id);
 	}
 }

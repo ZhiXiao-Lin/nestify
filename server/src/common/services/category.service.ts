@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TreeRepository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { BaseService } from './base.service';
 import { Category } from '../entities/category.entity';
-import { RowStatus } from '../aspects/enum';
 
 @Injectable()
-export class CategoryService {
-	constructor(@InjectRepository(Category) private readonly categoryRepository: TreeRepository<Category>) {}
+export class CategoryService extends BaseService<Category> {
+	constructor(@InjectRepository(Category) private readonly categoryRepository: Repository<Category>) {
+		super(categoryRepository);
+	}
 
-	async getMenus() {
-		return await this.categoryRepository.findTrees();
+	async findOneByName(name: string) {
+		return await this.categoryRepository.findOne({ name });
 	}
 }

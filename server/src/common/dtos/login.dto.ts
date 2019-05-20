@@ -3,13 +3,13 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 export class LoginDto {
 	@ApiModelProperty()
-	@IsMobilePhone('zh-CN', {
-		message: '手机号无效'
-	})
+	// @IsMobilePhone('zh-CN', {
+	// 	message: '手机号无效'
+	// })
 	@IsNotEmpty({
-		message: '手机号不能为空'
+		message: '帐号不能为空'
 	})
-	readonly mobile: string;
+	readonly account: string;
 
 	@ApiModelProperty()
 	@MinLength(8, {

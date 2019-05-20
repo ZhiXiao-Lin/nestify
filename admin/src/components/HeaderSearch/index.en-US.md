@@ -1,6 +1,8 @@
 ---
-title: HeaderSearch
-subtitle:
+title:
+  en-US: HeaderSearch
+  zh-CN: HeaderSearch
+subtitle: Top search box
 cols: 1
 order: 8
 ---
@@ -13,10 +15,9 @@ Usually placed as an entry to the global search, placed on the right side of the
 ----|------|-----|------
 placeholder | placeholder text | string | -
 dataSource | current list of prompts | string[] | -
-onSearch | Called when searching items. | function(value) | -
-onChange | Called when select an option or input value change, or value of input is changed | function(value) | -
-onSelect | Called when a option is selected. param is option's value and option instance. | function(value) | -
+onSearch | Callback when selecting an item or pressing Enter | function(value) | -
+onChange | Enter a callback for the search text | function(value) | -
 onPressEnter | Callback when pressing Enter | function(value) | -
 onVisibleChange | Show or hide the callback of the text box | function(value) |-
 defaultOpen | The input box is displayed for the first time. | boolean | false
-open | The input box is displayed | boolean |false
+open | The input box is displayed | booelan |false

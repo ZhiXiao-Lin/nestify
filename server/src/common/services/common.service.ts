@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Category } from '../entities/category.entity';
+import { TreeRepository } from 'typeorm';
 import { SettingService } from './setting.service';
-import { CategoryService } from './category.service';
 
 @Injectable()
 export class CommonService {
-	constructor(private readonly settingService: SettingService, private readonly categoryService: CategoryService) {}
+	constructor(
+		private readonly settingService: SettingService,
+		@InjectRepository(Category) private readonly categoryRepository: TreeRepository<Category>
+	) {}
 
 	async getSiteInfo() {
-		const menus = await this.categoryService.getMenus();
+		const menus = await this.categoryRepository.findTrees();
 		const setting = await this.settingService.getSettingByToken();
-
 		return {
 			menus,
-			setting: setting.ex_info
+			...setting.ex_info
 		};
 	}
 }

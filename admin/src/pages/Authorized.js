@@ -1,47 +1,36 @@
-import _ from 'lodash';
-import React from 'react';
+import React, { Fragment } from 'react';
 import Redirect from 'umi/redirect';
-import pathToRegexp from 'path-to-regexp';
-import { connect } from 'dva';
-import Authorized from '@/utils/Authorized';
+import _ from 'lodash';
 import { message } from 'antd';
-import router from 'umi/router';
+import { connect } from 'dva';
 
-function AuthComponent({ currentUser, children, location, routerData, status }) {
-	const isLogin = !!localStorage.getItem('token');
+@connect(({ user }) => ({
+	currentUser: user.currentUser
+}))
+class Authorized extends React.Component {
+	componentDidMount() {
+		const { currentUser } = this.props;
 
-	const getRouteAuthority = (path, routeData) => {
-		let authorities;
-		routeData.forEach((route) => {
-			// match prefix
-			if (pathToRegexp(`${route.path}(.*)`).test(path)) {
-				authorities = route.authority || authorities;
+		if (!currentUser) {
+			this.props.dispatch({
+				type: 'user/fetchCurrentUser'
+			});
+		}
+	}
 
-				// get children authority recursively
-				if (route.routes) {
-					authorities = getRouteAuthority(path, route.routes) || authorities;
-				}
-			}
-		});
-		return authorities;
-	};
+	render() {
+		const { children, authority, noMatch, currentUser } = this.props;
 
-	// if (_.isEmpty(currentUser)) {
-	// 	message.warn('身份验证失败');
-	// 	router.replace('/user/login');
-	// }
-
-	return (
-		<Authorized
-			authority={getRouteAuthority(location.pathname, routerData)}
-			noMatch={isLogin ? <Redirect to="/exception/403" /> : <Redirect to="/user/login" />}
-		>
-			{children}
-		</Authorized>
-	);
+		if (!currentUser) {
+			return noMatch;
+		} else {
+			return <Fragment>{children}</Fragment>;
+		}
+	}
 }
-export default connect(({ menu: menuModel, user, login: loginModel }) => ({
-	routerData: menuModel.routerData,
-	currentUser: user.currentUser,
-	status: loginModel.status
-}))(AuthComponent);
+
+export default ({ children }) => (
+	<Authorized authority={children.props.route.authority} noMatch={<Redirect to={'/user/login'} />}>
+		{children}
+	</Authorized>
+);

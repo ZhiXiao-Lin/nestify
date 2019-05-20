@@ -8,7 +8,7 @@ export interface INoticeIconProps {
   loading?: boolean;
   onClear?: (tabName: string) => void;
   onItemClick?: (item: INoticeIconData, tabProps: INoticeIconProps) => void;
-  onViewMore?: (tabProps: INoticeIconProps) => void;
+  onLoadMore?: (tabProps: INoticeIconProps) => void;
   onTabChange?: (tabTile: string) => void;
   style?: React.CSSProperties;
   onPopupVisibleChange?: (visible: boolean) => void;
@@ -16,8 +16,8 @@ export interface INoticeIconProps {
   locale?: {
     emptyText: string;
     clear: string;
-    viewMore: string;
-    [key: string]: string;
+    loadedAll: string;
+    loadMore: string;
   };
   clearClose?: boolean;
 }
