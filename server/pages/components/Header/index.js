@@ -1,10 +1,13 @@
 import React from 'react';
+import GlobalContext from '../../contexts/GlobalContext';
 
 import config from '../../_config';
 
 import './index.scss';
 
-export default () => {
+const toRenderHeader = () => ({ siteInfo }) => {
+    const { setting } = siteInfo;
+
     return (
         <div className="hdz-header-body">
             <p className="head-top">
@@ -19,21 +22,32 @@ export default () => {
                 <span className="head-wechat">
                     <i className="FDTG fdtg-wechat"></i>
                     <span className="head-qrcode">
-                        <img src='http://dummyimage.com/400x400/4d494d/686a82.gif&text=QRCode' alt='QRCode' />
-                        <p>微信二维码</p>
+                        <img src={setting.wechat} alt='QRCode' />
+                        <span>微信二维码</span>
                     </span>
                 </span>
                 <span className="head-weibo">
                     <i className="FDTG fdtg-weibo"></i>
                     <span className="head-qrcode">
-                        <img src='http://dummyimage.com/400x400/4d494d/686a82.gif&text=QRCode' alt='QRCode' />
-                        <p>微博二维码</p>
+                        <img src={setting.weibo} alt='QRCode' />
+                        <span>微博二维码</span>
                     </span>
                 </span>
-                <span className="order-ticket">在线预定</span>
+                <a href={setting.online} className="order-ticket">在线预定</a>
             </p>
-            div
+            <div className="head-title">
+                <img src={`${config.STATIC_IMAGE_ROOT}/static/banner_title.png`} alt='banner' />
+                <img src={`${config.STATIC_IMAGE_ROOT}/static/banner_slogan.png`} alt='banner' />
+            </div>
         </div>
     )
     
+}
+
+export default () => {
+    return (
+        <GlobalContext.Consumer>
+            {toRenderHeader()}
+        </GlobalContext.Consumer>
+    )
 }

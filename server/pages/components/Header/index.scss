@@ -1,10 +1,12 @@
 @import "../../styles/define";
 
 .hdz-header-body {
-    height: 40px;
+    height: 480px;
+    user-select: none;
+    -webkit-user-drag: none;
 
     .head-top {
-        height: 100%;
+        height: 40px;
         width: 100%;
         display: flex;
         justify-content: flex-end;
@@ -38,16 +40,6 @@
                 margin: 0px 10px;
             }
 
-            &.order-ticket {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 24px;
-                width: 85px;
-                background-color: $HEADER_ORDER_BACKGROUND;
-                color: $COMMON_WHITE;
-            }
-
             &.head-wechat,
             &.head-weibo {
                 display: inline-flex;
@@ -55,17 +47,19 @@
                 .head-qrcode {
                     display: none;
                     flex-direction: column;
+                    align-items: center;
                     position: absolute;
                     top: 26px;
                     right: 10px;
                     padding: 5px;
                     background-color: $COMMON_WHITE;
+
                     img {
                         width: 150px;
                         height: 150px;
                     }
-                    p {
-                        text-align: center;
+
+                    span {
                         padding: 5px 0;
                     }
                 }
@@ -81,10 +75,35 @@
                 }
             }
         }
+
+        .order-ticket {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 24px;
+            width: 85px;
+            background-color: $HEADER_ORDER_BACKGROUND;
+            color: $COMMON_WHITE;
+        }
     }
 
+    .head-title {
+        width: 100%;
+        height: 440px;
+        position: relative;
 
+        img {
+            position: absolute;
 
+            &:first-child {
+                top: 100px;
+                left: 60px;
+            }
 
-
+            &:last-child {
+                bottom: 90px;
+                right: 0px;
+            }
+        }
+    }
 }
