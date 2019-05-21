@@ -46,12 +46,12 @@ export default class extends Component {
 							<div className="phone-call">
 								<div className="24hours-calling">
 									<p>48小时服务电话</p>
-									<p>{setting.hotline}</p>
+									<p>{setting.serviceHotline}</p>
 								</div>
 								<div className="ohter-calling">
-									<p>景区办公电话：{setting.officialLine}</p>
-									<p>商务合作热线：{setting.serviceLine}</p>
-									<p>票务预订热线：{setting.saleLine}</p>
+									<p>景区办公电话：{setting.officeTel}</p>
+									<p>商务合作热线：{setting.cooperationHotline}</p>
+									<p>票务预订热线：{setting.bookingHotline}</p>
 								</div>
 							</div>
 						</div>

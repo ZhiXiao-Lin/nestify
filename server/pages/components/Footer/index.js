@@ -21,10 +21,10 @@ const toRenderFooter = () => ({ siteInfo }) => {
                                 <i className="FDTG fdtg-service fs-40"></i>
                             </div>
                             <div className="right fs-14">
-                                <div className="concat-1">景区服务热线：<span className="fs-30">{setting.serviceLine}</span></div>
+                                <div className="concat-1">景区服务热线：<span className="fs-30">{setting.serviceHotline}</span></div>
                                 <div className="concat-2">〔景区地址〕{setting.address}</div>
                                 <div className="concat-3">〔邮政编码〕{setting.postcode}</div>
-                                <div className="concat-4">〔售票热线〕{setting.saleLine}</div>
+                                <div className="concat-4">〔售票热线〕{setting.bookingHotline}</div>
                                 <div className="concat-5">〔传真号码〕{setting.fax}</div>
                             </div>
                         </div>
