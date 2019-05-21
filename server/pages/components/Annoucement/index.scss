@@ -1,0 +1,57 @@
+@import '../../styles/define.scss';
+
+.hdz-annoucement {
+    width: 100%;
+    height: 45px;
+    line-height: 45px;
+    background-color: #FFF;
+    background-image: linear-gradient(to bottom, #C6E0EF, #FFF);
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .annoucement-contianer {
+        height: 30px;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        overflow: hidden;
+        position: relative;
+
+        .annoucement-icon {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 0 0;
+            margin: 0 15px 0 10px;
+
+            i {
+                color: #e76e0d;
+            }
+        }
+
+        .annoucement-content {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            width: calc(100% - 50px);
+            height: 100%;
+            flex: 1 1;
+
+            p {
+                height: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+
+                a {
+                    color: #e76e0d;
+                }
+            }
+
+        }
+    }
+}

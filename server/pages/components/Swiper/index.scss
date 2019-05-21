@@ -1,0 +1,45 @@
+.images-swiper-container {
+    position: relative;
+    // overflow: hidden;
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+
+    .swiperContainer1 {
+        height: 100%;
+
+        .images-swiper-list {
+            a {
+                display: inline-flex;
+                height: 100%;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+    }
+
+    #previous,
+    #next {
+        position: absolute;
+        height: 100%;
+        top: 0;
+        cursor: pointer;
+        outline: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        color: #FFF;
+    }
+
+    #previous {
+        left: -50px
+    }
+
+    #next {
+        right: -50px
+    }
+}
