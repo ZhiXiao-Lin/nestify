@@ -24,7 +24,7 @@ export default class extends Component {
 		}
 	}
 	renderHandler = () => ({ siteInfo }) => {
-		const { setting } = siteInfo;
+		const { setting, openInfo } = siteInfo;
 		const { current } = this.state;
 		
 		return (
@@ -40,7 +40,7 @@ export default class extends Component {
 									<p>开放时间：</p>
 									<p>方大特钢生态森林全面对外开放</p>
 								</div>
-								<div>{setting.openInfo.map((info, i) => <p>{info}</p> )}</div>
+								<div>{openInfo.map((info, i) => <p>{info.content}</p> )}</div>
 								<a className="guide-more" href="javascript:;"></a>
 							</div>
 							<div className="phone-call">
@@ -70,19 +70,19 @@ export default class extends Component {
 									</div>
 									<div className="news-list">
 										<p>
-											<p>方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</p>
+											<p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
 											<span>2019-03-26</span>
 										</p>
 										<p>
-											<p>方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</p>
+											<p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
 											<span>2019-03-26</span>
 										</p>
 										<p>
-											<p>方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</p>
+											<p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
 											<span>2019-03-26</span>
 										</p>
 										<p>
-											<p>方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</p>
+											<p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
 											<span>2019-03-26</span>
 										</p>
 									</div>

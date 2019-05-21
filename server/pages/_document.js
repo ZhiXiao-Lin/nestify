@@ -12,12 +12,13 @@ export default class extends Document {
 	}
 
 	render() {
-		const { data: { siteInfo: { setting } } } = this.props;
+		const { data: { siteInfo: { setting, seo } } } = this.props;
+		console.log('【】', this.props.data.siteInfo)
 		return (
 			<html>
 				<Head>
-					{Object.keys(setting.seo).map((key, i) => (
-						<meta key={i} name={key} content={setting.seo[key]} />
+					{Object.keys(seo).map((key, i) => (
+						<meta key={i} name={key} content={seo[key]} />
 					))}
 					<meta charset="UTF-8" />
 					<meta name="author" content="bruce-zxy" />
@@ -29,7 +30,6 @@ export default class extends Document {
 					<link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
 					<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
 					<link rel="stylesheet" href={`http:${config.ICON_FONT_URL}`} />
-					<title>{setting.title}</title>
 				</Head>
 				<body>
 					<Main />

@@ -39,6 +39,11 @@ export class Setting extends Base {
 			map: 'links',
 			handleType: ExcelHandleType.ARRAY,
 			cellsMap: { 标题: 'title', 地址: 'url' }
+		},
+		游玩时间: {
+			map: 'openInfo',
+			handleType: ExcelHandleType.ARRAY,
+			cellsMap: { 游玩时间: 'content' }
 		}
 	};
 

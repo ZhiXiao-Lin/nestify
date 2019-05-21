@@ -6,7 +6,7 @@ import config from '../../_config';
 import './index.scss';
 
 const toRenderFooter = () => ({ siteInfo }) => {
-    const { setting } = siteInfo;
+    const { setting, links } = siteInfo;
     
     return (
         <>
@@ -60,7 +60,7 @@ const toRenderFooter = () => ({ siteInfo }) => {
                     </div>
                     <div className="content-4 d-f">
                         <p className="f-FZLTHJW fs-24">友情链接</p>
-                        {setting.links.map((item, i) => (
+                        {links.map((item, i) => (
                             <p><a href={item.url}>{item.title}</a></p>
                         ))}
                     </div>
