@@ -63,3 +63,6 @@ typings/
 # production
 /dist
 /.vscode
+
+### umi ###
+admin/src/pages/.umi

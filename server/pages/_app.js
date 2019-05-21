@@ -15,7 +15,6 @@ export default class MyApp extends App {
 
   render () {
     const { Component, pageProps, data: { siteInfo: { setting } } } = this.props
-    console.log('[???]', this.props.data)
     return (
       <Container>
         <Head>
