@@ -61,7 +61,7 @@ const toRenderFooter = () => ({ siteInfo }) => {
                     <div className="content-4 d-f">
                         <p className="f-FZLTHJW fs-24">友情链接</p>
                         {links.map((item, i) => (
-                            <p><a href={item.url}>{item.title}</a></p>
+                            <p key={i}><a href={item.url}>{item.title}</a></p>
                         ))}
                     </div>
                 </div>

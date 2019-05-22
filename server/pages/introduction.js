@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'next/router';
 
-import BaseLayout from './layouts/BaseLayout';
+import CommonLayout from './layouts/CommonLayout';
 import GlobalContext from './contexts/GlobalContext';
 
 import './styles/index.scss';
@@ -13,17 +13,17 @@ export default class extends Component {
 
         return (
             <div>
-
+                
             </div>
         );
     }
     render() {
         return (
-            <BaseLayout>
+            <CommonLayout>
                 <GlobalContext.Consumer>
                     {this.renderHandler()}
                 </GlobalContext.Consumer>
-            </BaseLayout>
+            </CommonLayout>
         );
     }
 }

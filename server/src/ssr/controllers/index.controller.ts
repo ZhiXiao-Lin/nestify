@@ -12,11 +12,11 @@ export class IndexController {
 		return res.render('/', { siteInfo });
 	}
 
-	@Get('test')
+	@Get('introduction')
 	async test(@Req() req, @Res() res, @Param() params, @Query() query) {
-		console.log('test');
+		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/', { test: 'test' });
+		return res.render('/introduction', { siteInfo });
 	}
 
 	@Get('error')

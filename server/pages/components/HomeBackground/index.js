@@ -27,7 +27,7 @@ export default ({ home }) => {
     } else {
         return (
             <div className="hdz-home-background">
-                <SimpleSwiper list={banner_list} />
+                <SimpleSwiper list={[banner_list.shift()]} />
             </div>
         )
     }
