@@ -40,36 +40,36 @@
             }
         }
     }
+}
 
-    .phone-call {
-        background-color: #FFF;
-        background-image: url('/static/24hours_hotline.png');
-        background-repeat: no-repeat;
-        background-position: 5px 15px;
+.phone-call {
+    background-color: #FFF;
+    background-image: url('/static/24hours_hotline.png');
+    background-repeat: no-repeat;
+    background-position: 5px 15px;
 
-        >div {
-            padding: 10px 0 10px 55px;
+    >div {
+        padding: 10px 0 10px 55px;
 
-            &:first-child {
-                border-bottom: 1px solid #CCC;
-                margin-bottom: 10px;
+        &:first-child {
+            border-bottom: 1px solid #CCC;
+            margin-bottom: 10px;
 
-                p {
-                    line-height: 1.35;
+            p {
+                line-height: 1.35;
 
-                    &:last-child {
-                        font-size: 26px;
-                        color: #0a9fe1;
-                        font-weight: bold;
-                    }
+                &:last-child {
+                    font-size: 26px;
+                    color: #0a9fe1;
+                    font-weight: bold;
                 }
             }
+        }
 
-            &:last-child {
-                p {
-                    font-size: 14px;
-                    line-height: 2;
-                }
+        &:last-child {
+            p {
+                font-size: 14px;
+                line-height: 2;
             }
         }
     }

@@ -13,10 +13,17 @@ export class IndexController {
 	}
 
 	@Get('introduction')
-	async test(@Req() req, @Res() res, @Param() params, @Query() query) {
+	async introduction(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
 		return res.render('/introduction', { siteInfo });
+	}
+
+	@Get('characteristic')
+	async characteristic(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/characteristic', { siteInfo });
 	}
 
 	@Get('error')
