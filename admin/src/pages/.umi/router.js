@@ -162,7 +162,7 @@ models: () => [
       },
       {
         "name_noshow": "详情",
-        "path": "/studio/newsdetail/:id",
+        "path": "/studio/newsdetail/:channel/:id",
         "component": _dvaDynamic({
   
   component: () => import(/* webpackChunkName: "p__news__Detail" */'../news/Detail'),

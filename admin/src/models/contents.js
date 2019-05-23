@@ -1,5 +1,7 @@
-import { apiGet, apiDelete } from '@/utils';
+import _ from 'lodash';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
 import config from '@/config';
+import { message } from 'antd';
 
 const API_URL = config.API_ROOT + '/content';
 
@@ -52,6 +54,17 @@ export default {
 					selectedNode: res
 				}
 			});
+		},
+		*save({ payload }, { call, put, select }) {
+			const { selectedNode } = yield select((state) => state.contents);
+
+			if (_.isEmpty(selectedNode)) {
+				yield call(apiPost, API_URL, payload);
+			} else {
+				yield call(apiPut, API_URL, _.merge(selectedNode, payload));
+			}
+
+			message.success('保存成功');
 		},
 		*remove({ payload }, { call, select }) {
 			const selectedRows = yield select((state) => state.contents.selectedRows);

@@ -87,7 +87,9 @@ export default class extends React.Component {
 	};
 
 	toDetail = (id) => (e) => {
-		router.push(`${DETAIL_URL}/${id}`);
+		const { match: { params } } = this.props;
+
+		router.push(`${DETAIL_URL}/${params.channel}/${id}`);
 	};
 
 	onTableChange = (pagination, filters, sorter, extra) => {
