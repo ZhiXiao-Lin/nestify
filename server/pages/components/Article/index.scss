@@ -1,4 +1,5 @@
 @import "../../styles/define.scss";
+
 .article-content {
     padding: 20px 50px;
 
@@ -26,5 +27,25 @@
                 }
             }
         }
+    }
+}
+
+.article-divider-horizental {
+    width: 100%;
+    height: 1px;
+    background: #b2cfdf;
+    margin: 35px 0;
+}
+
+.article-flipping-page {
+    width: 100%;
+    a {
+        display: flex;
+        width: 100%;
+        height: 20px;
+        line-height: 20px;
+        font-size: 14px;
+        color: $COMMON_BLUE;
+        margin: 5px 0;
     }
 }

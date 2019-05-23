@@ -55,6 +55,14 @@ export class IndexController {
 		return res.render('/scenery', { siteInfo });
 	}
 	
+	
+	@Get('announcement')
+	async announcement(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/announcement', { siteInfo });
+	}
+
 	@Get('error')
 	async error() {
 		throw new Error('服务器错误');

@@ -1,4 +1,5 @@
 @import "../../styles/define.scss";
+
 .scenery-view {
     width: 100%;
     height: auto;
@@ -36,9 +37,32 @@
                         font-size: 22px;
                         font-weight: bold;
                         color: $COMMON_BLUE;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
                     }
 
                     &:nth-child(2) {
+                        height: 22px;
+                        line-height: 1.6;
+                        font-size: 14px;
+                        color: #999;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        margin-top: 15px;
+                        &:empty {
+                            height: 0;
+                            margin: 0;
+                            padding: 0;
+                        }
+                    }
+
+                    &:nth-child(3) {
                         height: 70px;
                         line-height: 1.6;
                         font-size: 14px;
@@ -49,9 +73,15 @@
                         -webkit-line-clamp: 3;
                         -webkit-box-orient: vertical;
                         margin: 15px 0 20px;
+
+                        &.txt-hide-2 {
+                            height: 40px;
+                            -webkit-line-clamp: 2;
+                            margin: 10px 0 20px;
+                        }
                     }
 
-                    &:nth-child(3) {
+                    &:nth-child(4) {
                         a {
                             width: 130px;
                             height: 30px;
