@@ -9,7 +9,7 @@ import Annoucement from './components/Annoucement';
 import TourGuide from './components/TourGuide';
 import BreadCrumbs from './components/BreadCrumbs';
 import NaviPanel from './components/NaviPanel';
-import VideoList from './components/VideoList';
+import Article from './components/Article';
 
 import config from './_config';
 
@@ -31,10 +31,21 @@ export default class extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>工艺介绍</span>
+                            <span>工艺特色</span>
                         </div>
                         <div className="main-content">
-                            <VideoList />
+                            <Article 
+                                className="video-content"
+                                title="方大特钢工业旅游——钢铁是怎样炼成的"
+                                author="admin"
+                                origin="未知"
+                                publish="2019-05-22"
+                                view="225"
+                            >
+                                <video controls>
+                                    <source src="/static/video/AngryBird.mp4" />
+                                </video>
+                            </Article>
                         </div>
                     </div>
                 </div>

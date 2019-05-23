@@ -9,7 +9,7 @@ import Annoucement from './components/Annoucement';
 import TourGuide from './components/TourGuide';
 import BreadCrumbs from './components/BreadCrumbs';
 import NaviPanel from './components/NaviPanel';
-import VideoList from './components/VideoList';
+import SceneryList from './components/SceneryList';
 
 import config from './_config';
 
@@ -31,10 +31,12 @@ export default class extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>工艺介绍</span>
+                            <span>特色工艺品</span>
                         </div>
                         <div className="main-content">
-                            <VideoList />
+
+                            <SceneryList />
+
                         </div>
                     </div>
                 </div>

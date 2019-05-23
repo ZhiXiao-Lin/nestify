@@ -26,6 +26,35 @@ export class IndexController {
 		return res.render('/characteristic', { siteInfo });
 	}
 
+	@Get('video/:id')
+	async video(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/video', { siteInfo });
+	}
+
+	@Get('crafts')
+	async crafts(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/crafts', { siteInfo });
+	}
+
+
+	@Get('instructions/:id')
+	async instructions(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/instructions', { siteInfo });
+	}
+
+	@Get('scenery')
+	async scenery(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/scenery', { siteInfo });
+	}
+	
 	@Get('error')
 	async error() {
 		throw new Error('服务器错误');

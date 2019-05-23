@@ -9,7 +9,7 @@ import Annoucement from './components/Annoucement';
 import TourGuide from './components/TourGuide';
 import BreadCrumbs from './components/BreadCrumbs';
 import NaviPanel from './components/NaviPanel';
-import VideoList from './components/VideoList';
+import Article from './components/Article';
 
 import config from './_config';
 
@@ -31,10 +31,26 @@ export default class extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>工艺介绍</span>
+                            <span>特色工艺品</span>
                         </div>
                         <div className="main-content">
-                            <VideoList />
+
+                            <Article
+                                className="image-content"
+                                title="休闲沙滩车"
+                                author="admin"
+                                origin="未知"
+                                publish="2019-05-22"
+                                view="225"
+                            >
+                                
+                                <img src='http://dummyimage.com/800x600/dadada/ffffff.gif&text=PIC' alt='PIC' />
+                                <p>工艺品名称：休闲沙滩车</p>
+                                <p>作者：刘逢开</p>
+                                <p>单位：炼钢厂</p>
+
+                            </Article>
+
                         </div>
                     </div>
                 </div>

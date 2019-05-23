@@ -1,0 +1,30 @@
+@import "../../styles/define.scss";
+.article-content {
+    padding: 20px 50px;
+
+    .article-title {
+        border-bottom: 1px solid #e0ecf2;
+
+        p {
+            text-align: center;
+            line-height: 1.5;
+
+            &:first-child {
+                font-family: '宋体';
+                font-size: 30px;
+                color: $COMMON_BLUE;
+                font-weight: bold;
+            }
+
+            &:last-child {
+                font-size: 12px;
+                color: #999;
+                margin: 20px 0;
+
+                span {
+                    margin: 0 15px
+                }
+            }
+        }
+    }
+}
