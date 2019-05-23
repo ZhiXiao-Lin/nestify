@@ -1,12 +1,13 @@
 import { apiGet, apiDelete } from '@/utils';
 import config from '@/config';
 
-const API_CONTENT_URL = config.API_ROOT + '/content';
+const API_URL = config.API_ROOT + '/content';
 
 export default {
 	namespace: 'contents',
 
 	state: {
+		selectedNode: null,
 		selectedRows: [],
 		selectedRowKeys: [],
 		data: {
@@ -23,7 +24,7 @@ export default {
 			payload.page = !!payload.page ? payload.page - 1 : 0;
 			payload.pageSize = config.PAGE_SIZE;
 
-			const res = yield call(apiGet, API_CONTENT_URL + '/list', { params: payload });
+			const res = yield call(apiGet, API_URL + '/list', { params: payload });
 
 			if (!!res) {
 				yield put({
@@ -42,10 +43,20 @@ export default {
 				});
 			}
 		},
+		*detail({ payload }, { call, put }) {
+			const res = yield call(apiGet, API_URL + '/' + payload.id);
+
+			yield put({
+				type: 'set',
+				payload: {
+					selectedNode: res
+				}
+			});
+		},
 		*remove({ payload }, { call, select }) {
 			const selectedRows = yield select((state) => state.contents.selectedRows);
 
-			yield call(apiDelete, API_CONTENT_URL, {
+			yield call(apiDelete, API_URL, {
 				params: {
 					selectedRows: selectedRows.map((item) => item.id).join(',')
 				}

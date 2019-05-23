@@ -25,6 +25,9 @@ export class Content extends Base {
 	@Column({ comment: '正文', default: '' })
 	text: string;
 
+	@Column({ type: 'bigint', comment: '浏览量', default: 0 })
+	views: number;
+
 	@CreateDateColumn({
 		comment: '发布时间'
 	})
