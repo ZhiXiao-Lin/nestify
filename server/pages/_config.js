@@ -1,41 +1,41 @@
 const config = {
 	STATIC_IMAGE_ROOT: '',
-	ICON_FONT_URL: '//at.alicdn.com/t/font_1195797_1u82m74yj3a.css',
-	HOME_URL: '/',
-	// part 1
-	INTRODUCTION_RUL: '/introduction',
-	GEOFROFILE_RUL: '/geo_profile',
-	CULTURE_RUL: '/culture',
-	CHARACTERISTIC_URL: '/characteristic',
-	DEVELOPMENT_URL: '/development',
-	SPECIALTY_URL: '/specialty',
-	CRAFTS_URL: '/crafts',
-	INSTRUCTIONS_URL: '/instructions',
-	// part 2
-	SCENERY_URL: '/scenery',
-	YUN_URL: '/',
-	GUIDE_URL: '/guide',
-	PHOTO_URL: '/photo',
-	VIDEO: '/video',
-	// part 3
-	DELICIOUS_URL: '/delicious',
-	HOTEL_URL: '/hotel',
-	SHOPPING_URL: '/shopping',
-	ENTERTAINMENT_URL: '/entertainment',
-	TRIPS_URL: '/trips',
-	TRAVELS_URL: '/travels',
-	// part 4
-	ANNOUNCEMENT_URL: '/announcement',
-	ACTIVITIES_URL: '/activities',
-	NEWS_URL: '/news',
-	// part 5
-	CONCACT_URL: '/concact',
-	MESSAGE_URL: '/message',
-	SUGGESTIONS_URL: '/suggestions'
+	ICON_FONT_URL: '//at.alicdn.com/t/font_1195797_rhtnwwjhwar.css',
+	URL: {
+		['主页']: '/',
+		// part 1
+		['景区介绍']: '/introduction',
+		['地理概况']: '/geo_profile',
+		['人文历史']: '/culture',
+		['工艺特色']: '/characteristic',
+		['发展规划']: '/development',
+		['当地特产']: '/specialty',
+		['工艺特色']: '/crafts',
+		['特色工艺品']: '/instructions',
+		// part 2
+		['景点一览']: '/scenery',
+		['720全景']: '/',
+		['电子导览']: '/guide',
+		['摄影佳作']: '/photo',
+		['视频赏析']: '/video',
+		// part 3
+		['特色餐饮']: '/delicious',
+		['周边住宿']: '/hotel',
+		['旅游购物']: '/shopping',
+		['周边娱乐']: '/entertainment',
+		['游程推荐']: '/trips',
+		['美文游记']: '/travels',
+		// part 4
+		['官方公告']: '/announcement',
+		['精彩活动']: '/activities',
+		['新闻动态']: '/news',
+		// part 5
+		['联系方式']: '/concact',
+		['留言咨询']: '/message',
+		['投诉建议']: '/suggestions'
+	}
 
-
-
-}
+};
 
 
 export default config;

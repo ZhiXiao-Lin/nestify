@@ -55,12 +55,26 @@ export class IndexController {
 		return res.render('/scenery', { siteInfo });
 	}
 	
-	
+
 	@Get('announcement')
 	async announcement(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
 		return res.render('/announcement', { siteInfo });
+	}
+
+	@Get('concact')
+	async concact(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/concact', { siteInfo });
+	}
+
+	@Get('message')
+	async message(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/message', { siteInfo });
 	}
 
 	@Get('error')

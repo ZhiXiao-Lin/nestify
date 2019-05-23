@@ -28,6 +28,16 @@
             }
         }
     }
+
+    .article-html {
+        width: 100%;
+        height: auto;
+    }
+
+    img {
+        width: 100%;
+        margin: 0 auto;
+    }
 }
 
 .article-divider-horizental {
@@ -39,6 +49,7 @@
 
 .article-flipping-page {
     width: 100%;
+
     a {
         display: flex;
         width: 100%;

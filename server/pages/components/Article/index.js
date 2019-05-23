@@ -16,7 +16,7 @@ import './index.scss';
     nextPage-["bbbb", "javascript:;"]
 */
 
-const Article = ({ className, title, author, origin, publish, view, children, prevPage, nextPage }) => {
+const Article = ({ className, title, author, origin, publish, view, children, prevPage, nextPage, html }) => {
     const flipFlag = prevPage || nextPage;
     const toRenderArticle = () => ({ siteInfo }) => {
         const { setting } = siteInfo;
@@ -34,14 +34,15 @@ const Article = ({ className, title, author, origin, publish, view, children, pr
                             </p>
                         </div>
                     )}
+                    {html && <div className="article-html" dangerouslySetInnerHTML={{ __html: html }}></div>}
                     {children}
                 </div>
                 {flipFlag && (
                     <>
                         <div className="article-divider-horizental"></div>
                         <div className="article-flipping-page">
-                            {prevPage && <a href="javascript:;" className="prev-article">上一章：aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</a>}
-                            {nextPage && <a href="javascript:;" className="next-article">下一章：bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</a>}
+                            {prevPage && <a href={prevPage[1]} className="prev-article">上一章：{prevPage[0]}</a>}
+                            {nextPage && <a href={nextPage[1]} className="next-article">下一章：{nextPage[0]}</a>}
                         </div>
                     </>
                 )}
