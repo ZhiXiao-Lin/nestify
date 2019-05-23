@@ -31,7 +31,7 @@ export class Content extends Base {
 	@CreateDateColumn({
 		comment: '发布时间'
 	})
-	publish_at: number;
+	publish_at: string;
 
 	@ManyToOne((type) => Category, (category) => category.contents)
 	category: Category;
