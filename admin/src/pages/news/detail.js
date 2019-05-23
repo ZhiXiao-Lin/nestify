@@ -2,25 +2,16 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Form, Input, DatePicker, Button, Divider } from 'antd';
+import { Tabs, Form, Input, InputNumber, Row, Col, Icon, DatePicker, Button, Divider, Skeleton } from 'antd';
 import { upload2Backend, apiDelete } from '@/utils/apirequest';
 
-import ImageCropper from '@/components/ImageCropper';
 import ImageGallery, { transformFileObj } from '@/components/ImageGallery';
-import DynamicKV from '@/components/DynamicKV';
-import ComboSpec from '@/components/ComboSpec';
+
+import ImageCropper from '@/components/ImageCropper';
 import FileStore from '@/components/FileStore';
-import TagGroups from '@/components/TagGroups';
-import MapStack from '@/components/MapStack';
-import ColorPicker from '@/components/ColorPicker';
 
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
-
-import { contentCategories, contentMenu } from './contents.basic';
-import config from '../../utils/config';
-
-const gApiUploadBackend = config.API_URL.UPLOAD.BACKEND_STORAGE;
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -31,16 +22,37 @@ const tailFormItemLayout = {
 	wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } }
 };
 
+const MODEL_NAME = 'contents';
+
 @Form.create()
-@connect(({ contents, maindata }) => ({
-	selectedNode: contents.selectedNode,
-	contents: contents.records,
-	tagsRoot: _.find(maindata.records, { name: '内容标签' }),
-	theContent: _.find(contents.records, { id: contents.recordId }) || {}
+@connect(({ contents }) => ({
+	selectedNode: contents.selectedNode
 }))
-export default class ContentDetailsForm extends React.Component {
+export default class extends React.Component {
 	state = {
 		tabKey: 'basic'
+	};
+
+	componentDidMount() {
+		this.loadData();
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { match: { params } } = nextProps;
+		if (this.props.match.params.id !== params.id) {
+			this.loadData(params.id);
+		}
+	}
+
+	loadData = (id) => {
+		const { dispatch, match: { params } } = this.props;
+
+		dispatch({
+			type: `${MODEL_NAME}/detail`,
+			payload: {
+				id: id || params.id
+			}
+		});
 	};
 
 	onTabChange = (tabKey) => {
@@ -225,85 +237,103 @@ export default class ContentDetailsForm extends React.Component {
 		this.props.form.resetFields();
 	};
 
-	renderBasicForm = (selectedNode, theContent, getFieldDecorator) => (
-		<Form onSubmit={this.submitHandler} className="panel-form">
-			<Form.Item {...formItemLayout} label="路径" style={{ display: 'none' }}>
-				{getFieldDecorator('tree_path', {
-					initialValue:
-						theContent['tree_path'] ||
-						selectedNode['tree_path'] ||
-						contentMenu[this.props.match.params.channel].rootPath,
-					rules: [ { required: true, message: '不能为空' } ]
-				})(<Input {...formItemStyle} disabled={true} type="text" />)}
-			</Form.Item>
-			{!theContent['id'] && (
-				<Form.Item {...formItemLayout} label="名称">
-					{getFieldDecorator('name', {
-						initialValue: theContent['name'],
+	renderBasicForm = () => {
+		const { selectedNode, form: { getFieldDecorator } } = this.props;
+		return (
+			<Form onSubmit={this.submitHandler} className="panel-form">
+				<Form.Item {...formItemLayout} label="标题">
+					{getFieldDecorator('title', {
+						initialValue: !selectedNode ? null : selectedNode['title'],
 						rules: [
 							{
 								required: true,
-								message: '分类名称不能为空'
+								message: '标题不能为空'
 							}
 						]
-					})(<Input {...formItemStyle} type="text" placeholder="请设置分类名称" />)}
+					})(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
 				</Form.Item>
-			)}
-			<Form.Item {...formItemLayout} label="作者">
-				{getFieldDecorator('author', {
-					initialValue: theContent['author'],
-					rules: [
-						{
-							required: true,
-							message: '作者不能为空'
-						}
-					]
-				})(<Input {...formItemStyle} type="text" placeholder="请设置作者" />)}
-			</Form.Item>
-			<Form.Item {...formItemLayout} label="标题">
-				{getFieldDecorator('title', {
-					initialValue: theContent['title'],
-					rules: [
-						{
-							required: true,
-							message: '标题不能为空'
-						}
-					]
-				})(<Input {...formItemStyle} type="text" placeholder="请设置标题" />)}
-			</Form.Item>
-			<Form.Item {...formItemLayout} label="副标题">
-				{getFieldDecorator('subtitle', {
-					initialValue: theContent['subtitle'],
-					rules: [
-						{
-							required: false
-						}
-					]
-				})(<Input {...formItemStyle} type="text" placeholder="请设置副标题" />)}
-			</Form.Item>
-			<Form.Item {...formItemLayout} label="发布时间">
-				{getFieldDecorator('release_datetime', {
-					initialValue: !!theContent['release_datetime'] ? moment(theContent['release_datetime']) : '',
-					rules: [ { required: false } ]
-				})(
-					// <Input {...formItemStyle} type="text" placeholder="请设置发布时间" />
-					<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" placeholder="选择发布日期时间" />
-				)}
-			</Form.Item>
-			<Form.Item {...tailFormItemLayout}>
-				<Button onClick={this.resetHandler}>重置</Button>
-				<Button type="primary" htmlType="submit">
-					{!theContent['id'] ? '新增' : '更新'}
-				</Button>
-			</Form.Item>
-		</Form>
-	);
-	renderRichText = (html, contenId) => {
+				<Form.Item {...formItemLayout} label="作者">
+					{getFieldDecorator('author', {
+						initialValue: !selectedNode ? null : selectedNode['author']
+					})(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
+				</Form.Item>
+				<Form.Item {...formItemLayout} label="排序">
+					{getFieldDecorator('sort', {
+						initialValue: !selectedNode ? 0 : selectedNode['sort']
+					})(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
+				</Form.Item>
+				<Form.Item {...formItemLayout} label="发布时间">
+					{getFieldDecorator('publish_at', {
+						initialValue: !selectedNode['publish_at'] ? null : moment(selectedNode['publish_at']),
+						rules: [
+							{
+								required: true,
+								message: '发布时间不能为空'
+							}
+						]
+					})(
+						<DatePicker
+							showTime
+							format="YYYY-MM-DD HH:mm:ss"
+							locale={{
+								lang: {
+									placeholder: 'Select date',
+									rangePlaceholder: [ '开始时间', '结束时间' ],
+									today: '今天',
+									now: '现在',
+									backToToday: 'Back to today',
+									ok: 'Ok',
+									clear: 'Clear',
+									month: 'Month',
+									year: 'Year',
+									timeSelect: '选择时间',
+									dateSelect: '选择日期',
+									monthSelect: 'Choose a month',
+									yearSelect: 'Choose a year',
+									decadeSelect: 'Choose a decade',
+									yearFormat: 'YYYY',
+									dateFormat: 'M/D/YYYY',
+									dayFormat: 'D',
+									dateTimeFormat: 'M/D/YYYY HH:mm:ss',
+									monthFormat: 'MMMM',
+									monthBeforeYear: true,
+									previousMonth: 'Previous month (PageUp)',
+									nextMonth: 'Next month (PageDown)',
+									previousYear: 'Last year (Control + left)',
+									nextYear: 'Next year (Control + right)',
+									previousDecade: 'Last decade',
+									nextDecade: 'Next decade',
+									previousCentury: 'Last century',
+									nextCentury: 'Next century'
+								}
+							}}
+							placeholder="请选择发布日期时间"
+						/>
+					)}
+				</Form.Item>
+
+				<Form.Item {...tailFormItemLayout}>
+					<Row>
+						<Col span={3}>
+							<Button onClick={this.resetHandler}>重置</Button>
+						</Col>
+						<Col>
+							<Button type="primary" htmlType="submit">
+								{!selectedNode['id'] ? '新增' : '保存'}
+							</Button>
+						</Col>
+					</Row>
+				</Form.Item>
+			</Form>
+		);
+	};
+
+	renderRichText = (content) => {
 		const editorProps = {
 			placeholder: '请输入内容',
 			contentFormat: 'html',
-			contentId: contenId,
-			value: BraftEditor.createEditorState(html),
+			contentId: content.id,
+			value: BraftEditor.createEditorState(content.text),
 			onSave: this.toSaveRichText,
 			media: {
 				uploadFn: this.onEditorMediaUpload
@@ -311,7 +341,7 @@ export default class ContentDetailsForm extends React.Component {
 		};
 		return (
 			<Fragment>
-				<Button type="primary" size="small" onClick={this.toSaveRichText}>
+				<Button type="primary" onClick={this.toSaveRichText}>
 					保存
 				</Button>
 				<BraftEditor ref={this.toSetEditorInstance} {...editorProps} />
@@ -373,109 +403,30 @@ export default class ContentDetailsForm extends React.Component {
 		this.toUpdateExist({ ex_info });
 	};
 	render() {
-		const { selectedNode, theContent, form: { getFieldDecorator }, tagsRoot } = this.props;
+		const { selectedNode } = this.props;
 
-		const tagstring = theContent.tags;
-		const sputags = !tagsRoot ? [] : tagsRoot.children || [];
-		const html = !theContent.ex_info
-			? null
-			: !theContent.ex_info.richtext ? null : theContent.ex_info.richtext.html;
-		const gallery = !theContent.ex_info ? null : theContent.ex_info.gallery;
-		const dkv = !theContent.ex_info ? null : theContent.ex_info.DynamicKV;
-		const fileStore = !theContent.ex_info ? null : theContent.ex_info.fileStore;
+		if (!selectedNode) return <Skeleton active loading />;
+
 		return (
 			<Fragment>
-				<Button onClick={() => router.go(-1)}>返回</Button>
+				<Button onClick={() => router.go(-1)}>
+					<Icon type="arrow-left" />返回
+				</Button>
 				<Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
 					<Tabs.TabPane tab="基本信息" key="basic">
-						{this.renderBasicForm(selectedNode || {}, theContent, getFieldDecorator)}
+						{this.renderBasicForm()}
 					</Tabs.TabPane>
-					{!theContent.id ? null : (
+					{!selectedNode.id ? null : (
 						<Tabs.TabPane tab="缩略图" key="thumbnail">
 							<ImageCropper
-								imageUrl={!theContent.thumbnail ? '' : theContent.thumbnail.url}
+								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnail}
 								onUpload={this.onThumbnailUpload}
 							/>
 						</Tabs.TabPane>
 					)}
-					{!theContent.id ? null : (
-						<Tabs.TabPane tab="图片集" key="gallery">
-							<ImageGallery
-								mode="edit"
-								limit={3}
-								initialValue={gallery}
-								onUpload={this.onCommonUpload}
-								onDelete={this.toDeleteFile}
-								onSave={this.toSaveGallery}
-								ref={this.toGetGalleryInstance}
-							/>
-						</Tabs.TabPane>
-					)}
-					{!theContent.id ? null : (
-						<Tabs.TabPane tab="富文本" key="richtext">
-							{this.renderRichText(html, theContent.id)}
-						</Tabs.TabPane>
-					)}
-					{!theContent.id ? null : (
-						<Tabs.TabPane tab="附件仓库" key="attachment">
-							<FileStore
-								ref={(el) => (this.fileStore = el)}
-								initialValue={fileStore}
-								onUpload={this.onCommonUpload}
-								onDelete={this.toDeleteFile}
-								onSave={this.toSaveFileStore}
-							/>
-						</Tabs.TabPane>
-					)}
-					{!theContent.id ? null : (
-						<Tabs.TabPane tab="内容标签" key="tags">
-							<TagGroups
-								ref={(el) => (this.tagGroups = el)}
-								onSave={this.toSaveTags}
-								tagGroups={sputags.map((t) => ({ name: t.name, tags: t.ex_info.tags }))}
-								tagString={tagstring}
-							/>
-						</Tabs.TabPane>
-					)}
-					{!theContent.id ? null : (
-						<Tabs.TabPane tab="扩展属性" key="extra">
-							<DynamicKV initialValue={dkv} ref={this.toGetDKVInstance} onSave={this.toSaveDynamicKV} />
-						</Tabs.TabPane>
-					)}
-					{!theContent.id ? null : (
-						<Tabs.TabPane tab="地图集" key="map">
-							<Tabs type="card" tabPosition="right">
-								<Tabs.TabPane tab="图层图例" key="layers">
-									<ColorPicker />
-									<Divider />
-									<ComboSpec
-										groupInfoColProps={[
-											{ key: 'name', title: '图例名称' },
-											{ key: 'order', title: '图例排序' },
-											{ key: 'iconsrc', title: '图例图标' },
-											{ key: 'iconcolor', title: '图例颜色' }
-										]}
-										subInfoColProps={[ { key: 'name', title: '图标名称' } ]}
-										specInfo={this.toConvertGroupsitemsToSubinfo(theContent.ex_info)}
-										onSave={this.toSaveLegends}
-									/>
-									<ComboSpec
-										groupInfoColProps={[
-											{ key: 'name', title: '底图名称' },
-											{ key: 'imgsrc', title: '底图链接' }
-										]}
-										subInfoColProps={null}
-										specInfo={this.toConvertImagesToGroupinfo(theContent.ex_info)}
-										onSave={this.toSaveImages}
-									/>
-								</Tabs.TabPane>
-								<Tabs.TabPane tab="图例定位" key="locate">
-									<MapStack exinfo={theContent.ex_info} submitHandler={this.onMapStackSubmit} />
-								</Tabs.TabPane>
-								<Tabs.TabPane tab="图例预览" key="preview">
-									<MapStack exinfo={theContent.ex_info} />
-								</Tabs.TabPane>
-							</Tabs>
+					{!selectedNode.id ? null : (
+						<Tabs.TabPane tab="正文" key="richtext">
+							{this.renderRichText(selectedNode)}
 						</Tabs.TabPane>
 					)}
 				</Tabs>

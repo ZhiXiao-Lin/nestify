@@ -54,9 +54,9 @@ export default [
 				]
 			},
 			{
-				name_noshow: '内容详情',
-				path: '/studio/contentdetails/:channel',
-				component: './contents/content.details'
+				name_noshow: '详情',
+				path: '/studio/newsdetail/:id',
+				component: './news/Detail'
 			},
 
 			{

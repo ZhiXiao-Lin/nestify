@@ -19,6 +19,11 @@ export class ContentService extends BaseService<Content> {
 			});
 		}
 
+		if (!payload.sortInfo) {
+			qb.orderBy('t.sort', 'DESC');
+			qb.addOrderBy('t.publish_at', 'DESC');
+		}
+
 		qb.skip(payload.page * payload.pageSize);
 		qb.take(payload.pageSize);
 

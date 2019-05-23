@@ -161,11 +161,11 @@ models: () => [
         "_title_default": "方大特钢"
       },
       {
-        "name_noshow": "内容详情",
-        "path": "/studio/contentdetails/:channel",
+        "name_noshow": "详情",
+        "path": "/studio/newsdetail/:id",
         "component": _dvaDynamic({
   
-  component: () => import(/* webpackChunkName: "p__contents__content.details" */'../contents/content.details'),
+  component: () => import(/* webpackChunkName: "p__news__Detail" */'../news/Detail'),
   
 }),
         "exact": true,
