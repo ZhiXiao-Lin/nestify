@@ -47,25 +47,18 @@ export default class extends React.Component {
 	loadData = (id) => {
 		const { dispatch, match: { params } } = this.props;
 
-		dispatch({
-			type: `${MODEL_NAME}/detail`,
-			payload: {
-				id: id || params.id
-			}
-		});
+		if (!!params.id) {
+			dispatch({
+				type: `${MODEL_NAME}/detail`,
+				payload: {
+					id: id || params.id
+				}
+			});
+		}
 	};
 
 	onTabChange = (tabKey) => {
 		this.setState({ tabKey });
-	};
-	toSetEditorInstance = (ins) => {
-		this.editor = ins;
-	};
-	toGetGalleryInstance = (ins) => {
-		this.gallery = ins;
-	};
-	toGetDKVInstance = (ins) => {
-		this.DynamicKV = ins;
 	};
 
 	toUpload = async (file) => {
@@ -158,49 +151,7 @@ export default class extends React.Component {
 			ex_info: { fileStore: this.fileStore.state.fileList.map((f) => FileStore.transformFileObj(f)) }
 		});
 	};
-	toSaveRichText = () => {
-		const { editor } = this;
-		if (!editor) return;
 
-		this.toUpdateExist({
-			ex_info: { richtext: { html: editor.getValue().toHTML() } }
-		});
-	};
-	submitHandler = (e) => {
-		e.preventDefault();
-
-		const { theContent } = this.props;
-
-		this.props.form.validateFields((err, values) => {
-			if (!!err || Object.keys(values).length === 0) {
-				return;
-			}
-			values['tags'] = values['tags'] ? JSON.stringify(values['tags']) : null;
-			if (!theContent['id']) {
-				// console.log({ values });
-				this.toCreateNew([
-					{
-						tree_path: `${values['tree_path']}.${values['name']}`,
-						category: contentCategories
-							.filter(
-								(category) =>
-									contentMenu[this.props.match.params.channel].categories.indexOf(category.value) >= 0
-							)
-							.pop().value,
-						tags: values['tags'],
-						author: values['author'] || null,
-						title: values['title'] || null,
-						subtitle: values['subtitle'] || null,
-						release_datetime: !values['release_datetime']
-							? null
-							: values['release_datetime'].format('YYYY-MM-DD HH:mm:ss')
-					}
-				]);
-			} else {
-				this.toUpdateExist(values);
-			}
-		});
-	};
 	onMapStackSubmit = (exinfo) => {
 		if (_.isEmpty(exinfo)) return;
 		this.toUpdateExist({
@@ -233,8 +184,38 @@ export default class extends React.Component {
 			}
 		});
 	};
+
+	toSaveRichText = () => {
+		this.props.dispatch({
+			type: `${MODEL_NAME}/save`,
+			payload: {
+				text: this.editorRef.getValue().toHTML()
+			}
+		});
+	};
+
 	resetHandler = () => {
 		this.props.form.resetFields();
+	};
+
+	submitHandler = (e) => {
+		e.preventDefault();
+
+		const { dispatch, match: { params } } = this.props;
+
+		this.props.form.validateFields((err, values) => {
+			if (!!err || Object.keys(values).length === 0) {
+				return;
+			}
+
+			values['publish_at'] = moment(values['publish_at']).format('YYYY-MM-DD HH:mm:ss');
+			values['category'] = params.channel;
+
+			dispatch({
+				type: `${MODEL_NAME}/save`,
+				payload: values
+			});
+		});
 	};
 
 	renderBasicForm = () => {
@@ -344,7 +325,7 @@ export default class extends React.Component {
 				<Button type="primary" onClick={this.toSaveRichText}>
 					保存
 				</Button>
-				<BraftEditor ref={this.toSetEditorInstance} {...editorProps} />
+				<BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
 			</Fragment>
 		);
 	};

@@ -1,8 +1,21 @@
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
-import { UseGuards, Get, Query, Delete, Param, BadRequestException } from '@nestjs/common';
+import {
+	UseGuards,
+	Get,
+	Query,
+	Delete,
+	Param,
+	BadRequestException,
+	Post,
+	Put,
+	Body,
+	UsePipes,
+	ValidationPipe
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Api } from '../../common/aspects/decorator';
 import { ContentService } from '../../common/services/content.service';
+import { UpdateContentDto } from '../../common/dtos/content.dto';
 
 @Api('content')
 @ApiUseTags('content')
@@ -21,6 +34,15 @@ export class ContentController {
 	@Get('list')
 	async list(@Query() payload) {
 		return await this.contentService.query(payload);
+	}
+
+	@Post()
+	async create(@Body() dto) {}
+
+	@Put()
+	@UsePipes(new ValidationPipe())
+	async update(@Body() dto: UpdateContentDto) {
+		return await this.contentService.update(dto);
 	}
 
 	@Delete()
