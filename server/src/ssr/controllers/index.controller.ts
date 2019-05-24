@@ -12,11 +12,76 @@ export class IndexController {
 		return res.render('/', { siteInfo });
 	}
 
-	@Get('test')
-	async test(@Req() req, @Res() res, @Param() params, @Query() query) {
-		console.log('test');
+	@Get('introduction')
+	async introduction(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/', { test: 'test' });
+		return res.render('/introduction', { siteInfo });
+	}
+
+	@Get('characteristic')
+	async characteristic(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/characteristic', { siteInfo });
+	}
+
+	@Get('video/:id')
+	async video(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/video', { siteInfo });
+	}
+
+	@Get('crafts')
+	async crafts(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/crafts', { siteInfo });
+	}
+
+
+	@Get('instructions/:id')
+	async instructions(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/instructions', { siteInfo });
+	}
+
+	@Get('scenery')
+	async scenery(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/scenery', { siteInfo });
+	}
+	
+
+	@Get('announcement')
+	async announcement(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/announcement', { siteInfo });
+	}
+
+	@Get('concact')
+	async concact(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/concact', { siteInfo });
+	}
+
+	@Get('message')
+	async message(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/message', { siteInfo });
+	} 
+
+	@Get('suggestions')
+	async suggestions(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/suggestions', { siteInfo });
 	}
 
 	@Get('error')

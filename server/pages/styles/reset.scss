@@ -370,8 +370,10 @@ table {
 .hdz-home-body {
     background-color: transparent;
     padding: 2px;
+    min-height: 1000px;
     // box-shadow: 0 0 2px $COMMON_BLUE;
 }
+
 .hdz-blank-div {
     height: 25px;
     width: 100%;

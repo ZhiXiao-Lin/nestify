@@ -21,10 +21,10 @@ const toRenderFooter = () => ({ siteInfo }) => {
                                 <i className="FDTG fdtg-service fs-40"></i>
                             </div>
                             <div className="right fs-14">
-                                <div className="concat-1">景区服务热线：<span className="fs-30">{setting.serviceLine}</span></div>
+                                <div className="concat-1">景区服务热线：<span className="fs-30">{setting.serviceHotline}</span></div>
                                 <div className="concat-2">〔景区地址〕{setting.address}</div>
                                 <div className="concat-3">〔邮政编码〕{setting.postcode}</div>
-                                <div className="concat-4">〔售票热线〕{setting.saleLine}</div>
+                                <div className="concat-4">〔售票热线〕{setting.bookingHotline}</div>
                                 <div className="concat-5">〔传真号码〕{setting.fax}</div>
                             </div>
                         </div>
@@ -50,18 +50,18 @@ const toRenderFooter = () => ({ siteInfo }) => {
                     </div>
                     <div className="content-3 d-f">
                         <p className="f-FZLTHJW fs-24">网站导航</p>
-                        <p><a href={`${config.HOME_URL}`}>网站首页</a></p>
-                        <p><a href={`${config.HOME_URL}`}>景区概况</a></p>
-                        <p><a href={`${config.HOME_URL}`}>景区风光</a></p>
-                        <p><a href={`${config.HOME_URL}`}>旅游攻略</a></p>
-                        <p><a href={`${config.HOME_URL}`}>景区动态</a></p>
-                        <p><a href={`${config.HOME_URL}`}>集团官网</a></p>
-                        <p><a href={`${config.HOME_URL}`}>联系我们</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>网站首页</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>景区概况</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>景区风光</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>旅游攻略</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>景区动态</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>集团官网</a></p>
+                        <p><a href={`${config.URL.HOME_URL}`}>联系我们</a></p>
                     </div>
                     <div className="content-4 d-f">
                         <p className="f-FZLTHJW fs-24">友情链接</p>
                         {links.map((item, i) => (
-                            <p><a href={item.url}>{item.title}</a></p>
+                            <p key={i}><a href={item.url}>{item.title}</a></p>
                         ))}
                     </div>
                 </div>

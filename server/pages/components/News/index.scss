@@ -1,0 +1,101 @@
+.main-news {
+    width: 350px;
+    height: 100%;
+    margin-right: 25px;
+
+    .news-tab {
+        position: relative;
+        display: flex;
+        border-bottom: 1px solid #CCC;
+        padding-right: 30px;
+        margin: 0 10px;
+
+        a {
+            height: 30px;
+            line-height: 1.75;
+            display: flex;
+            padding: 0 20px;
+            color: #333;
+            transform: translateY(1px);
+            border: 1px solid transparent;
+            border-top: 3px solid transparent;
+            border-bottom-color: transparent;
+            font-size: 14px;
+
+            &.active {
+                border-color: #CCC;
+                border-top-color: #107cbc;
+                border-bottom-color: #FFF;
+            }
+
+            &:last-child {
+                position: absolute;
+                right: 0;
+                top: 4px;
+                font-size: 12px;
+                color: #999;
+                padding: 0 5px 0 0;
+            }
+        }
+
+    }
+
+    .news-hot {
+        padding: 20px 10px 25px;
+
+        p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            line-height: 1.5;
+
+            &:first-child {
+                color: #44980f;
+                font-size: 16px;
+                height: 25px;
+                margin-bottom: 6px;
+            }
+
+            &:last-child {
+                color: #000;
+                font-size: 12px;
+                height: 18px;
+            }
+        }
+    }
+
+    .news-list {
+        >p {
+            height: 20px;
+            font-size: 14px;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHAQMAAAD+nMWQAAAABlBMVEUAAABVVVUT3Vn+AAAAAXRSTlMAQObYZgAAABRJREFUCNdjEGDQYAhh2AXEGgwCAAzMAdMzwuI2AAAAAElFTkSuQmCC');
+            background-position: 8px 8px;
+            background-repeat: no-repeat;
+            padding-left: 20px;
+            display: flex;
+            margin-bottom: 10px;
+            overflow: hidden;
+
+            >p {
+                height: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                line-height: 1.5;
+                flex: 3 1;
+            }
+
+            >span {
+                display: flex;
+                width: 75px;
+                justify-content: flex-end;
+                align-items: center;
+                flex: 1 1;
+            }
+        }
+    }
+}

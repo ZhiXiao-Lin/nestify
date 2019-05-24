@@ -1,0 +1,100 @@
+@import "../../styles/define.scss";
+
+.scenery-view {
+    width: 100%;
+    height: auto;
+
+    .scenery-item-container {
+        width: 100%;
+        height: 221px;
+        padding: 30px 0;
+        overflow: hidden;
+        box-sizing: border-box;
+        border-bottom: 1px dashed #b2cfdf;
+
+        .scenery-item {
+            width: 100%;
+            height: 100%;
+            display: flex;
+
+            .scenery-image {
+                padding-right: 20px;
+
+                img {
+                    width: 250px;
+                    height: 155px;
+                    box-shadow: 5px 5px 0px #e0ecf2;
+                }
+            }
+
+            .scenery-intro {
+                overflow: hidden;
+
+                p {
+                    &:nth-child(1) {
+                        height: 22px;
+                        line-height: 22px;
+                        font-size: 22px;
+                        font-weight: bold;
+                        color: $COMMON_BLUE;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                    }
+
+                    &:nth-child(2) {
+                        height: 22px;
+                        line-height: 1.6;
+                        font-size: 14px;
+                        color: #999;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        margin-top: 15px;
+                        &:empty {
+                            height: 0;
+                            margin: 0;
+                            padding: 0;
+                        }
+                    }
+
+                    &:nth-child(3) {
+                        height: 70px;
+                        line-height: 1.6;
+                        font-size: 14px;
+                        color: #333;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 3;
+                        -webkit-box-orient: vertical;
+                        margin: 15px 0 20px;
+
+                        &.txt-hide-2 {
+                            height: 40px;
+                            -webkit-line-clamp: 2;
+                            margin: 10px 0 20px;
+                        }
+                    }
+
+                    &:nth-child(4) {
+                        a {
+                            width: 130px;
+                            height: 30px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: #107cbc;
+                            border: 1px solid #b2cfdf;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}

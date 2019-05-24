@@ -17,7 +17,7 @@ const toRenderHeader = () => ({ siteInfo }) => {
                 <span>
                     <i className="FDTG fdtg-phone"></i> 
                 </span>
-                <span> 0718-7262455 </span>
+                <span> {setting.bookingHotline} </span>
                 <span className="divider"></span>
                 <span className="head-wechat">
                     <i className="FDTG fdtg-wechat"></i>
@@ -33,7 +33,7 @@ const toRenderHeader = () => ({ siteInfo }) => {
                         <span>微博二维码</span>
                     </span>
                 </span>
-                <a href={setting.online} className="order-ticket">在线预定</a>
+                <a href={setting.onlineSaleUrl} className="order-ticket">在线预定</a>
             </p>
             <div className="head-title">
                 <img src={`${config.STATIC_IMAGE_ROOT}/static/banner_title.png`} alt='banner' />
