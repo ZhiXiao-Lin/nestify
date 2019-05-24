@@ -89,8 +89,14 @@ export default class extends React.Component {
 			return new Error('upload faile');
 		return response;
 	};
-	onThumbnailUpload = async (blob) => {
-		const response = await this.toUpload(blob);
+	onThumbnailUpload = async (file) => {
+		console.log(blob);
+
+		if (file.size > 2 * 1024 * 1024) {
+			message.error('请上传小于2MB的文件');
+			return false;
+		}
+		const response = await this.toUpload(file);
 		if (response instanceof Error) {
 			console.error('Thumbnail upload error: ', response);
 		} else {
