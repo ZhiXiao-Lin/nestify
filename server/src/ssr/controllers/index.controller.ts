@@ -9,80 +9,114 @@ export class IndexController {
 	async index(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/', { siteInfo });
+		return res.render('/', { 
+			siteInfo 
+		});
 	}
 
-	@Get('introduction')
-	async introduction(@Req() req, @Res() res, @Param() params, @Query() query) {
+	@Get('content/:category')
+	async content(@Req() req, @Res() res, @Param() params, @Query() query) {
+		// /content/introduction
+		// /content/geo_profile
+		// /content/culture
+		// /content/development
+		// /content/instructions
+
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/introduction', { siteInfo });
+		return res.render('/intro', { 
+			siteInfo 
+		});
 	}
 
-	@Get('characteristic')
-	async characteristic(@Req() req, @Res() res, @Param() params, @Query() query) {
+	@Get('list/:category')
+	async list(@Req() req, @Res() res, @Param() params, @Query() query) {
+		// /list/scenery
+		// /list/activities
+		// /list/news
+
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/characteristic', { siteInfo });
+		return res.render('/intro', { 
+			siteInfo 
+		});
 	}
 
-	@Get('video/:id')
+	@Get('image/:category')
+	async image(@Req() req, @Res() res, @Param() params, @Query() query) {
+		// /image/specialty
+		// /image/crafts
+		// /image/guide
+		// /image/photo
+		// /image/delicious
+		// /image/hotel
+		// /image/shopping
+		// /image/entertainment
+		// /image/trips
+		// /image/travels
+
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/intro', { 
+			siteInfo 
+		});
+	}
+
+	@Get('video/:category')
 	async video(@Req() req, @Res() res, @Param() params, @Query() query) {
+		// /video/characteristic
+		// /video/show
+
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/video', { siteInfo });
-	}
-
-	@Get('crafts')
-	async crafts(@Req() req, @Res() res, @Param() params, @Query() query) {
-		const siteInfo = await this.commonService.getSiteInfo();
-
-		return res.render('/crafts', { siteInfo });
+		return res.render('/intro', { 
+			siteInfo 
+		});
 	}
 
 
-	@Get('instructions/:id')
-	async instructions(@Req() req, @Res() res, @Param() params, @Query() query) {
-		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/instructions', { siteInfo });
-	}
-
-	@Get('scenery')
-	async scenery(@Req() req, @Res() res, @Param() params, @Query() query) {
-		const siteInfo = await this.commonService.getSiteInfo();
-
-		return res.render('/scenery', { siteInfo });
-	}
-	
 
 	@Get('announcement')
 	async announcement(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/announcement', { siteInfo });
+		return res.render('/announcement', { 
+			siteInfo 
+		});
 	}
 
 	@Get('concact')
 	async concact(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/concact', { siteInfo });
+		return res.render('/concact', { 
+			siteInfo 
+		});
 	}
 
 	@Get('message')
 	async message(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/message', { siteInfo });
-	} 
+		return res.render('/message', { 
+			siteInfo 
+		});
+	}
 
 	@Get('suggestions')
 	async suggestions(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/suggestions', { siteInfo });
+		return res.render('/suggestions', { 
+			siteInfo 
+		});
 	}
+
+
+
+
+
 
 	@Get('error')
 	async error() {

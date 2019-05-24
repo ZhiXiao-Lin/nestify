@@ -14,7 +14,7 @@ const toRenderFooter = () => ({ siteInfo }) => {
                 <div className="footer-content d-f">
                     <div className="content-1">
                         <div className="footer-logo">
-                            <img alt="" src={`${config.STATIC_IMAGE_ROOT}/static/banner_title.png`} />
+                            <img alt="" src={`${config.STATIC_IMAGE_ROOT}/banner_title.png`} />
                         </div>
                         <div className="concat-list d-f">
                             <div className="left">
@@ -50,19 +50,19 @@ const toRenderFooter = () => ({ siteInfo }) => {
                     </div>
                     <div className="content-3 d-f">
                         <p className="f-FZLTHJW fs-24">网站导航</p>
-                        <p><a href={`${config.URL.HOME_URL}`}>网站首页</a></p>
-                        <p><a href={`${config.URL.HOME_URL}`}>景区概况</a></p>
-                        <p><a href={`${config.URL.HOME_URL}`}>景区风光</a></p>
-                        <p><a href={`${config.URL.HOME_URL}`}>旅游攻略</a></p>
-                        <p><a href={`${config.URL.HOME_URL}`}>景区动态</a></p>
-                        <p><a href={`${config.URL.HOME_URL}`}>集团官网</a></p>
-                        <p><a href={`${config.URL.HOME_URL}`}>联系我们</a></p>
+                        <p><a href="/">网站首页</a></p>
+                        <p><a href="/introduction">景区介绍</a></p>
+                        <p><a href="/scenery">景点一览</a></p>
+                        <p><a href="/delicious">特色餐饮</a></p>
+                        <p><a href="/announcement">官方公告</a></p>
+                        <p><a href="/">在线预订</a></p>
+                        <p><a href="/message">留言咨询</a></p>
                     </div>
                     <div className="content-4 d-f">
                         <p className="f-FZLTHJW fs-24">友情链接</p>
                         {links.map((item, i) => (
                             <p key={i}><a href={item.url}>{item.title}</a></p>
-                        ))}
+                        )).slice(0, 7)}
                     </div>
                 </div>
             </div>

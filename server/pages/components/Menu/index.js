@@ -7,13 +7,14 @@ import './index.scss';
 
 const toRenderMenu = () => ({ siteInfo }) => {
     const { menus } = siteInfo;
-
+    console.log(siteInfo);
+    
     return (
         <div className="hdz-menu">
             {menus.sort((a, b) => a.sort - b.sort).map(menu => (
                 <div className="menu-item" key={menu.id}>
                     <a href={menu.url ? menu.url : "javascript:;"}>
-                        <i className="FDTG fdtg-home-l"></i>
+                        <i className={`FDTG ${menu.icon}`}></i>
                         <span className="menu-title">{menu.name}</span>
                     </a>
                     <div className="submenu">

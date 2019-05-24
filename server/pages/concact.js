@@ -44,7 +44,7 @@ export default class extends Component {
                                     <p><i className="FDTG fdtg-zuobiao"></i>地址：南昌市红谷滩新区凤凰中大道890号</p>
                                 </div>
                                 <a href="https://ditu.amap.com/search?query=%E5%8D%97%E6%98%8C%E5%B8%82%E7%BA%A2%E8%B0%B7%E6%BB%A9%E6%96%B0%E5%8C%BA%E5%87%A4%E5%87%B0%E4%B8%AD%E5%A4%A7%E9%81%93890%E5%8F%B7&city=360100&geoobj=115.784004%7C28.534979%7C116.110161%7C28.823832&zoom=12" target="_blank">
-                                    <img src={`${config.STATIC_IMAGE_ROOT}/static/map.png`} alt='placeholder+image' />
+                                    <img src={`${config.STATIC_IMAGE_ROOT}/map.png`} alt='placeholder+image' />
                                 </a>
                                 <div className="concact-address">
                                     <div className="address-1">
