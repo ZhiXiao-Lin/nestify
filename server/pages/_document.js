@@ -13,7 +13,6 @@ export default class extends Document {
 
 	render() {
 		const { data: { siteInfo: { setting, seo } } } = this.props;
-		console.log('【】', this.props.data.siteInfo)
 		return (
 			<html>
 				<Head>

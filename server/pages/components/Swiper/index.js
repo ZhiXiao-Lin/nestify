@@ -61,8 +61,8 @@ export default class ImagesSwiper extends Component {
 							))}
                         </div>
                     </div>
-                    <div class="btns" id="next"><i class="FDTG fdtg-right-o fs-40"></i></div>
-                    <div class="btns" id="previous"><i class="FDTG fdtg-left-o fs-40"></i></div>
+                    <div className="btns" id="next"><i className="FDTG fdtg-right-o fs-40"></i></div>
+                    <div className="btns" id="previous"><i className="FDTG fdtg-left-o fs-40"></i></div>
 				</div>
 			</>
 		)

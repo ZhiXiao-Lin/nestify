@@ -9,7 +9,6 @@
 		"dev": "run-p dev:**",
 		"dev:server": "cd ./server && yarn dev",
 		"dev:app": "cd ./admin && yarn dev",
-
 		"build": "run-p build:**",
 		"build:server": "cd ./server && yarn build",
 		"build:app": "cd ./admin && yarn build"
