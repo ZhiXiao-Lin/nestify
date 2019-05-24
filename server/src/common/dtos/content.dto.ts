@@ -1,5 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+
 export class UpdateContentDto {
 	@ApiModelProperty()
 	@IsNotEmpty({
@@ -7,33 +8,47 @@ export class UpdateContentDto {
 	})
 	readonly title: string;
 
-	@ApiModelProperty()
-	@IsNotEmpty({
-		message: '作者不能为空'
-	})
-	readonly author: string;
+	@ApiModelProperty() readonly author: string;
 
-	@ApiModelProperty()
-	@IsNotEmpty({
-		message: '排序不能为空'
-	})
-	sort: number;
+	@ApiModelProperty() readonly sort: number;
 
-	@ApiModelProperty() thumbnail: string;
+	@ApiModelProperty() readonly thumbnail: string;
 
-	@ApiModelProperty() summary: string;
+	@ApiModelProperty() readonly summary: string;
 
-	@ApiModelProperty() text: string;
+	@ApiModelProperty() readonly text: string;
 
-	@ApiModelProperty()
-	@IsNotEmpty({
-		message: '排序不能为空'
-	})
-	views: number;
+	@ApiModelProperty() readonly views: number;
 
 	@ApiModelProperty()
 	@IsNotEmpty({
 		message: '发布时间不能为空'
 	})
-	publish_at: string;
+	readonly publish_at: string;
+}
+
+export class CreateContentDto {
+	@ApiModelProperty()
+	@IsNotEmpty({
+		message: '标题不能为空'
+	})
+	readonly title: string;
+
+	@ApiModelProperty() readonly author: string;
+
+	@ApiModelProperty() readonly sort: number;
+
+	@ApiModelProperty() readonly thumbnail: string;
+
+	@ApiModelProperty() readonly summary: string;
+
+	@ApiModelProperty() readonly text: string;
+
+	@ApiModelProperty() readonly views: number;
+
+	@ApiModelProperty()
+	@IsNotEmpty({
+		message: '发布时间不能为空'
+	})
+	readonly publish_at: string;
 }

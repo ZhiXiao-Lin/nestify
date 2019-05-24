@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Form, Input, InputNumber, Row, Col, Icon, DatePicker, Button, Skeleton } from 'antd';
+import { Tabs, Form, Input, InputNumber, Row, Col, Icon, DatePicker, Button, Skeleton, message } from 'antd';
 
 import config from '@/config';
 import { apiUploadOne } from '@/utils';
@@ -47,12 +47,21 @@ export default class extends React.Component {
 		const { dispatch, match: { params } } = this.props;
 
 		if (!!params.id) {
-			dispatch({
-				type: `${MODEL_NAME}/detail`,
-				payload: {
-					id: id || params.id
-				}
-			});
+			if ('CREATE' !== params.id) {
+				dispatch({
+					type: `${MODEL_NAME}/detail`,
+					payload: {
+						id: id || params.id
+					}
+				});
+			} else {
+				dispatch({
+					type: `${MODEL_NAME}/set`,
+					payload: {
+						selectedNode: {}
+					}
+				});
+			}
 		}
 	};
 
@@ -109,6 +118,36 @@ export default class extends React.Component {
 				payload: values
 			});
 		});
+	};
+
+	toSaveRichText = () => {
+		this.props.dispatch({
+			type: `${MODEL_NAME}/save`,
+			payload: {
+				text: this.editorRef.getValue().toHTML()
+			}
+		});
+	};
+
+	renderRichText = (content) => {
+		const editorProps = {
+			placeholder: '请输入内容',
+			contentFormat: 'html',
+			contentId: content.id,
+			value: BraftEditor.createEditorState(content.text),
+			onSave: this.toSaveRichText,
+			media: {
+				uploadFn: this.onEditorMediaUpload
+			}
+		};
+		return (
+			<Fragment>
+				<Button type="primary" onClick={this.toSaveRichText}>
+					保存
+				</Button>
+				<BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
+			</Fragment>
+		);
 	};
 
 	renderBasicForm = () => {
@@ -199,36 +238,6 @@ export default class extends React.Component {
 					</Row>
 				</Form.Item>
 			</Form>
-		);
-	};
-
-	toSaveRichText = () => {
-		this.props.dispatch({
-			type: `${MODEL_NAME}/save`,
-			payload: {
-				text: this.editorRef.getValue().toHTML()
-			}
-		});
-	};
-
-	renderRichText = (content) => {
-		const editorProps = {
-			placeholder: '请输入内容',
-			contentFormat: 'html',
-			contentId: content.id,
-			value: BraftEditor.createEditorState(content.text),
-			onSave: this.toSaveRichText,
-			media: {
-				uploadFn: this.onEditorMediaUpload
-			}
-		};
-		return (
-			<Fragment>
-				<Button type="primary" onClick={this.toSaveRichText}>
-					保存
-				</Button>
-				<BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
-			</Fragment>
 		);
 	};
 

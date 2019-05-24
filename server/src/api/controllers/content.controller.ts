@@ -16,7 +16,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Api } from '../../common/aspects/decorator';
 import { ContentService } from '../../common/services/content.service';
-import { UpdateContentDto } from '../../common/dtos/content.dto';
+import { UpdateContentDto, CreateContentDto } from '../../common/dtos/content.dto';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 
 @Api('content')
@@ -40,12 +40,15 @@ export class ContentController {
 	}
 
 	@Post()
-	async create(@Body() dto) {}
+	@UsePipes(new ValidationPipe())
+	async create(@Body() dto: CreateContentDto) {
+		return await this.contentService.save(dto);
+	}
 
 	@Put()
 	@UsePipes(new ValidationPipe())
 	async update(@Body() dto: UpdateContentDto) {
-		return await this.contentService.update(dto);
+		return await this.contentService.save(dto);
 	}
 
 	@Delete()

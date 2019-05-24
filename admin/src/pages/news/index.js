@@ -76,22 +76,28 @@ export default class extends React.Component {
 		this.loadData(data.page);
 	};
 
-	toRemove = () => {
-		const { dispatch } = this.props;
-		dispatch({
-			type: `${MODEL_NAME}/remove`
-		});
+	toImport = () => {
 		this.refresh();
 	};
 
-	toImport = () => {
-		this.refresh();
+	toCreate = () => {
+		const { match: { params } } = this.props;
+
+		router.push(`${DETAIL_URL}/${params.channel}/CREATE`);
 	};
 
 	toDetail = (id) => (e) => {
 		const { match: { params } } = this.props;
 
 		router.push(`${DETAIL_URL}/${params.channel}/${id}`);
+	};
+
+	toRemove = () => {
+		const { dispatch } = this.props;
+		dispatch({
+			type: `${MODEL_NAME}/remove`
+		});
+		this.refresh();
 	};
 
 	onTableChange = (pagination, filters, sorter, extra) => {
@@ -283,7 +289,7 @@ export default class extends React.Component {
 									</Tooltip>
 								)}
 								<Tooltip placement="bottom" title="新增">
-									<Button>
+									<Button onClick={this.toCreate}>
 										<Icon type="file-add" />
 									</Button>
 								</Tooltip>
