@@ -82,7 +82,7 @@ export const UploadActionType = {
 	UPLOAD: 'UPLOAD'
 };
 
-export function apiUploadOne(file, params = {}, options = {}) {
+export function apiUploadOne(file, params = { action: UploadActionType.UPLOAD }, options = {}) {
 	if (file.size > 2 * 1024 * 1024) {
 		message.error('请上传小于2M的文件');
 		return false;
