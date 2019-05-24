@@ -35,7 +35,7 @@ export class ContentService extends BaseService<Content> {
 		return qb.getManyAndCount();
 	}
 
-	async update(payload: any) {
+	async save(payload: any) {
 		const content = Content.create(payload) as Content;
 
 		if (!_.isEmpty(content.category) && _.isString(content.category)) {

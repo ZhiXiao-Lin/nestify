@@ -59,7 +59,14 @@ export default {
 			const { selectedNode } = yield select((state) => state.contents);
 
 			if (_.isEmpty(selectedNode)) {
-				yield call(apiPost, API_URL, payload);
+				const res = yield call(apiPost, API_URL, payload);
+
+				yield put({
+					type: 'set',
+					payload: {
+						selectedNode: res
+					}
+				});
 			} else {
 				yield call(apiPut, API_URL, _.merge(selectedNode, payload));
 			}
