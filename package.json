@@ -11,7 +11,8 @@
 		"dev:app": "cd ./admin && yarn dev",
 		"build": "run-p build:**",
 		"build:server": "cd ./server && yarn build",
-		"build:app": "cd ./admin && yarn build"
+		"build:app": "cd ./admin && yarn build",
+		"db:init": "cd ./server && yarn db:init"
 	},
 	"devDependencies": {
 		"cross-env": "^5.2.0",

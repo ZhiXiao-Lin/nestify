@@ -10,17 +10,20 @@ import {
 	Put,
 	Body,
 	UsePipes,
-	ValidationPipe
+	ValidationPipe,
+	UseInterceptors
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Api } from '../../common/aspects/decorator';
 import { ContentService } from '../../common/services/content.service';
 import { UpdateContentDto } from '../../common/dtos/content.dto';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 
 @Api('content')
 @ApiUseTags('content')
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
+@UseInterceptors(ClassSerializerInterceptor)
 export class ContentController {
 	constructor(private readonly contentService: ContentService) {}
 

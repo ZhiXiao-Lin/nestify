@@ -18,6 +18,7 @@ import {
 	Icon,
 	Select,
 	Divider,
+	Collapse,
 	message
 } from 'antd';
 
@@ -28,6 +29,7 @@ import styles from './index.css';
 const { Content } = Layout;
 const ButtonGroup = Button.Group;
 const Option = Select.Option;
+const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
 const children = [];
@@ -129,7 +131,7 @@ export default class extends React.Component {
 			},
 			{
 				title: '缩略图',
-				dataIndex: 'thumbnail',
+				dataIndex: 'thumbnailPath',
 				render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
 			},
 			{
@@ -190,19 +192,18 @@ export default class extends React.Component {
 		return (
 			<Layout>
 				<Content className={styles.normal}>
-					<Form
-						style={{
-							padding: 5,
-							marginBottom: 20
-						}}
-					>
-						<Row type="flex" justify="start">
-							<Col span={6}>
-								<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
+					<Collapse defaultActiveKey={[ '1' ]}>
+						<Panel header="查询条件" key="1">
+							<Form
+								style={{
+									padding: 5,
+									marginBottom: 20
+								}}
+							>
+								{/* <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
 									{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
-								</Form.Item>
-							</Col>
-							<Col span={8}>
+								</Form.Item> */}
+
 								<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
 									{getFieldDecorator('publish_at')(
 										<RangePicker
@@ -243,19 +244,20 @@ export default class extends React.Component {
 										/>
 									)}
 								</Form.Item>
-							</Col>
-						</Row>
-						<Row type="flex" justify="start">
-							<Col span={4}>
-								<Button type="primary" htmlType="submit">
-									<Icon type="search" />搜索
-								</Button>
-								<Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
-									<Icon type="undo" />重置
-								</Button>
-							</Col>
-						</Row>
-					</Form>
+
+								<Row>
+									<Col span={12} offset={3}>
+										<Button type="primary" htmlType="submit">
+											<Icon type="search" />搜索
+										</Button>
+										<Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
+											<Icon type="undo" />重置
+										</Button>
+									</Col>
+								</Row>
+							</Form>
+						</Panel>
+					</Collapse>
 					<Divider orientation="left" />
 					<Row className="filter-row" gutter={6}>
 						<Col className="gutter-row" span={10}>

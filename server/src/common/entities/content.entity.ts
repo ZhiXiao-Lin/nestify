@@ -1,6 +1,7 @@
 import { Entity, Column, ManyToOne, CreateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
+import { config } from '../../config';
 import { Category } from './category.entity';
 import { ExcelHandleType } from '../lib/excel';
 import { textInterception } from '../lib/helper';
@@ -56,6 +57,11 @@ export class Content extends Base {
 
 	static create(target: object): Content | Content[] {
 		return plainToClass(Content, target);
+	}
+
+	@Expose()
+	get thumbnailPath(): string {
+		return `${config.serverUrl}/${config.static.root}${this.thumbnail}`;
 	}
 
 	@BeforeInsert()

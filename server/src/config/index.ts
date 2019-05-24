@@ -6,6 +6,7 @@ import * as localConfig from './local';
 let config = {
 	port: '3000',
 	hostName: '0.0.0.0',
+	serverUrl: 'http://127.0.0.1:3000',
 
 	static: {
 		root: 'static',

@@ -2,13 +2,12 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Form, Input, InputNumber, Row, Col, Icon, DatePicker, Button, Divider, Skeleton } from 'antd';
-import { upload2Backend, apiDelete } from '@/utils/apirequest';
+import { Tabs, Form, Input, InputNumber, Row, Col, Icon, DatePicker, Button, Skeleton } from 'antd';
 
-import ImageGallery, { transformFileObj } from '@/components/ImageGallery';
+import config from '@/config';
+import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
-import FileStore from '@/components/FileStore';
 
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
@@ -61,137 +60,31 @@ export default class extends React.Component {
 		this.setState({ tabKey });
 	};
 
-	toUpload = async (file) => {
-		if (!file || !file.name) return new Error('Invalid parameter!');
+	onThumbnailUpload = async (file) => {
+		const res = await apiUploadOne(file);
 
-		const { theContent } = this.props;
-		if (!theContent.id) return new Error('Invalid content id');
-
-		try {
-			const result = await upload2Backend(
-				file,
-				'contents',
-				'contents',
-				`${theContent.id}_${moment().format('YYYYMMDDHHmmss')}_${file.name}`,
-				{ action: 'RENAME' }
-			);
-			if (!result || !result.action || result.action !== 'RENAME' || !result.preUrl || !result.result) {
-				return new Error('Unexpected result!');
-			} else return result;
-		} catch (err) {
-			return err;
-		}
-	};
-	onCommonUpload = async (file) => {
-		const response = await this.toUpload(file);
-		// console.log({'onGallary response': response});
-		if (!response || response.action !== 'RENAME' || !response.preUrl || !response.result)
-			return new Error('upload faile');
-		return response;
-	};
-	onThumbnailUpload = async (blob) => {
-		const response = await this.toUpload(blob);
-		if (response instanceof Error) {
-			console.error('Thumbnail upload error: ', response);
-		} else {
-			// console.log(response);
-			this.toUpdateExist({
-				thumbnail: {
-					url: response.preUrl + response.result.slice(1),
-					target: response.result
+		if (!!res && !!res.path) {
+			this.props.dispatch({
+				type: `${MODEL_NAME}/save`,
+				payload: {
+					thumbnail: res.path
 				}
 			});
+
+			message.success('上传成功');
 		}
 	};
+
 	onEditorMediaUpload = async (context) => {
 		if (!context || !context.file) return;
 
-		const result = await this.toUpload(context.file);
-		if (result instanceof Error) {
-			console.error('BraftEditor upload error: ', err);
-			context.error({ error: err });
+		const res = await apiUploadOne(context.file);
+		if (!res) {
+			context.error({ error: '上传失败' });
 		} else {
 			context.progress(101);
-			context.success({ url: result.preUrl + result.result.slice(1) });
+			context.success({ url: `${config.STATIC_ROOT}${res.path}` });
 		}
-	};
-	toDeleteFile = async (file) => {
-		const response = await apiDelete(gApiUploadBackend, {
-			filename: file.key
-		});
-		// console.log({'toDeleteFile response': response});
-		if (!response || response.action !== 'REMOVE' || !response.result) return new Error('delete faile');
-		return response;
-	};
-	toSaveTags = () => {
-		if (!this.tagGroups) return;
-		this.toUpdateExist({ tags: this.tagGroups.generateResult() });
-	};
-	toSaveDynamicKV = () => {
-		// console.log({'DynamicKV state': this.DynamicKV.state});
-		if (!this.DynamicKV) return;
-		const value = this.DynamicKV.state.values.filter((kv) => !!kv.key).reduce((res, cur) => {
-			res[cur.key] = cur.value;
-			return res;
-		}, {});
-		// console.log(value);
-		this.toUpdateExist({ ex_info: { DynamicKV: value } });
-	};
-	toSaveGallery = () => {
-		// console.log({'gallery state': this.gallery.state});
-		if (!this.gallery) return;
-		this.toUpdateExist({
-			ex_info: { gallery: this.gallery.state.imageFiles.map((f) => transformFileObj(f)) }
-		});
-	};
-	toSaveFileStore = () => {
-		// console.log({ 'filestore state': this.fileStore.state });
-		if (!this.fileStore) return;
-		this.toUpdateExist({
-			ex_info: { fileStore: this.fileStore.state.fileList.map((f) => FileStore.transformFileObj(f)) }
-		});
-	};
-
-	onMapStackSubmit = (exinfo) => {
-		if (_.isEmpty(exinfo)) return;
-		this.toUpdateExist({
-			ex_info: exinfo
-		});
-	};
-	toCreateNew = (payload) => {
-		// console.log({toCreateNew: payload});
-		this.props.dispatch({
-			type: 'contents/create',
-			payload
-		});
-	};
-	toUpdateExist = (newvalue) => {
-		const { theContent } = this.props;
-		if (!theContent.id) return;
-
-		if (!!newvalue.ex_info) {
-			newvalue.ex_info = {
-				...theContent.ex_info,
-				...newvalue.ex_info
-			};
-		}
-
-		this.props.dispatch({
-			type: 'contents/update',
-			payload: {
-				criteria: { obj: { id: theContent['id'] } },
-				newvalue
-			}
-		});
-	};
-
-	toSaveRichText = () => {
-		this.props.dispatch({
-			type: `${MODEL_NAME}/save`,
-			payload: {
-				text: this.editorRef.getValue().toHTML()
-			}
-		});
 	};
 
 	resetHandler = () => {
@@ -309,6 +202,15 @@ export default class extends React.Component {
 		);
 	};
 
+	toSaveRichText = () => {
+		this.props.dispatch({
+			type: `${MODEL_NAME}/save`,
+			payload: {
+				text: this.editorRef.getValue().toHTML()
+			}
+		});
+	};
+
 	renderRichText = (content) => {
 		const editorProps = {
 			placeholder: '请输入内容',
@@ -329,60 +231,7 @@ export default class extends React.Component {
 			</Fragment>
 		);
 	};
-	toConvertSubinfoToGroupsitems = ({ groupInfo, subInfo }) => {
-		if (_.isEmpty(groupInfo) || _.isEmpty(subInfo)) {
-			return {};
-		} else {
-			return {
-				groupsinfo: groupInfo,
-				groupsitems: subInfo
-			};
-		}
-	};
-	toConvertGroupsitemsToSubinfo = (exinfo) => {
-		if (!exinfo) {
-			return null;
-		} else {
-			return {
-				groupInfo: exinfo.groupsinfo,
-				subInfo: exinfo.groupsitems
-			};
-		}
-	};
-	toConvertImagesToGroupinfo = (exinfo) => {
-		if (_.isEmpty(exinfo) || _.isEmpty(exinfo.images)) {
-			return null;
-		} else {
-			return {
-				groupInfo: exinfo.images
-			};
-		}
-	};
-	toConvertGroupinfoToImages = (groupInfo) => {
-		if (_.isEmpty(groupInfo)) {
-			return [];
-		} else {
-			return {
-				images: groupInfo
-			};
-		}
-	};
-	toSaveLegends = (specInfo) => {
-		const ex_info = this.props.theContent.ex_info || {};
-		const savedExinfo = this.toConvertSubinfoToGroupsitems(specInfo);
-		Object.assign(ex_info, savedExinfo);
-		this.toUpdateExist({ ex_info });
-	};
-	toSaveImages = ({ groupInfo }) => {
-		const ex_info = this.props.theContent.ex_info || {};
-		const imagesObj = this.toConvertGroupinfoToImages(groupInfo);
-		const layersBounds = {};
-		groupInfo.forEach((img) => {
-			layersBounds[img.name] = {};
-		});
-		Object.assign(ex_info, imagesObj, { layersBounds });
-		this.toUpdateExist({ ex_info });
-	};
+
 	render() {
 		const { selectedNode } = this.props;
 
@@ -400,7 +249,7 @@ export default class extends React.Component {
 					{!selectedNode.id ? null : (
 						<Tabs.TabPane tab="缩略图" key="thumbnail">
 							<ImageCropper
-								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnail}
+								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
 								onUpload={this.onThumbnailUpload}
 							/>
 						</Tabs.TabPane>

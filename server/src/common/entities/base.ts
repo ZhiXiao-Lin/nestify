@@ -18,13 +18,11 @@ export abstract class Base {
 	})
 	row_status: RowStatus;
 
-	@Exclude()
 	@CreateDateColumn({
 		comment: '创建时间'
 	})
 	create_at: number;
 
-	@Exclude()
 	@UpdateDateColumn({
 		comment: '更新时间'
 	})
