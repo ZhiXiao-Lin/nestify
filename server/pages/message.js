@@ -37,7 +37,7 @@ export default class extends Component {
 
                             <div className="message-view">
                                 <div className="send-message">
-                                    <a href={config.URL['投诉建议']}>我要留言</a>
+                                    <a href="/suggestions">我要留言</a>
                                 </div>
                                 <div className="message-list">
                                     <div className="message-item-container">

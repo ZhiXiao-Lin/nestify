@@ -10,8 +10,6 @@ export default class Slider extends Component {
 			clearInterval(this.timer);
 		}
 		this.timer = setInterval((slider) => {
-			console.log(slider);
-			
 			slider.next();
 		}, interval || 6000, this.slider);
 	}

@@ -36,8 +36,8 @@ const toRenderHeader = () => ({ siteInfo }) => {
                 <a href={setting.onlineSaleUrl} className="order-ticket">在线预定</a>
             </p>
             <div className="head-title">
-                <img src={`${config.STATIC_IMAGE_ROOT}/static/banner_title.png`} alt='banner' />
-                <img src={`${config.STATIC_IMAGE_ROOT}/static/banner_slogan.png`} alt='banner' />
+                <img src={`${config.STATIC_IMAGE_ROOT}/banner_title.png`} alt='banner' />
+                <img src={`${config.STATIC_IMAGE_ROOT}/banner_slogan.png`} alt='banner' />
             </div>
         </div>
     )

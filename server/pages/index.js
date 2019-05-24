@@ -28,7 +28,7 @@ export default class extends Component {
 						<TourGuide />
 						<div className="main-info">
 							<div className="main-top">
-								<Slider width="300px" interval={2000} list={[{ title:"萍安钢铁预备役加强军事训练与管理", img: "/static/banner_01.jpg" }, { title:"萍安钢铁预备役加强军事训练与管理", img: "/static/banner_02.jpg" }]} />
+								<Slider width="300px" interval={2000} list={[{ title:"萍安钢铁预备役加强军事训练与管理", img: "/static/root/banner_01.jpg" }, { title:"萍安钢铁预备役加强军事训练与管理", img: "/static/root/banner_02.jpg" }]} />
 								<News />
 								<Video />
 							</div>
@@ -38,16 +38,16 @@ export default class extends Component {
 									<a href="javascript:;">更多</a>
 								</div>
 								<div className="senic-show">
-									<a href="javascript:;" style={{ backgroundImage: `url(/static/banner_01.jpg)` }}>
+									<a href="javascript:;" style={{ backgroundImage: `url(/static/root/banner_01.jpg)` }}>
 										<p>文化景观墙</p>
 									</a>
-									<a href="javascript:;" style={{ backgroundImage: `url(/static/banner_02.jpg)` }}>
+									<a href="javascript:;" style={{ backgroundImage: `url(/static/root/banner_02.jpg)` }}>
 										<p>工匠园</p>
 									</a>
-									<a href="javascript:;" style={{ backgroundImage: `url(/static/banner_03.jpg)` }}>
+									<a href="javascript:;" style={{ backgroundImage: `url(/static/root/banner_03.jpg)` }}>
 										<p>樱花林广场</p>
 									</a>
-									<a href="javascript:;" style={{ backgroundImage: `url(/static/banner_04.jpg)` }}>
+									<a href="javascript:;" style={{ backgroundImage: `url(/static/root/banner_04.jpg)` }}>
 										<p>焦化厂湿地景观</p>
 									</a>
 								</div>
@@ -63,7 +63,7 @@ export default class extends Component {
 
 				<div className="hdz-middle-content">
 					<div className="middle-banner"></div>
-					<Swiper swiperList={[{ img: '/static/temp_img.jpg' }, { img: '/static/temp_img.jpg' }, { img: '/static/temp_img.jpg' }, { img: '/static/temp_img.jpg' }]} />
+					<Swiper swiperList={[{ img: '/static/root/temp_img.jpg' }, { img: '/static/root/temp_img.jpg' }, { img: '/static/root/temp_img.jpg' }, { img: '/static/root/temp_img.jpg' }]} />
 				</div>
 
 				<div className="hdz-bottom-content">
