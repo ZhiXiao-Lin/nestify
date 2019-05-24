@@ -75,6 +75,13 @@ export class IndexController {
 		const siteInfo = await this.commonService.getSiteInfo();
 
 		return res.render('/message', { siteInfo });
+	} 
+
+	@Get('suggestions')
+	async suggestions(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const siteInfo = await this.commonService.getSiteInfo();
+
+		return res.render('/suggestions', { siteInfo });
 	}
 
 	@Get('error')
