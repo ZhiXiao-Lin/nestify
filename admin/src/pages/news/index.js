@@ -32,11 +32,6 @@ const Option = Select.Option;
 const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
-const children = [];
-for (let i = 10; i < 36; i++) {
-	children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
-
 const MODEL_NAME = 'contents';
 const DETAIL_URL = '/studio/newsdetail';
 
@@ -48,7 +43,60 @@ const DETAIL_URL = '/studio/newsdetail';
 }))
 @Form.create()
 export default class extends React.Component {
+	state = {
+		columns: [
+			{
+				title: '详情',
+				dataIndex: 'id',
+				render: (val) => <a onClick={this.toDetail(val)}>详情</a>
+			},
+			{
+				title: '缩略图',
+				dataIndex: 'thumbnailPath',
+				render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
+			},
+			{
+				title: '标题',
+				dataIndex: 'title'
+			},
+			{
+				title: '作者',
+				dataIndex: 'author'
+			},
+			{
+				title: '排序',
+				dataIndex: 'sort',
+				sorter: true
+			},
+			{
+				title: '浏览量',
+				dataIndex: 'views',
+				sorter: true
+			},
+			{
+				title: '发布时间',
+				dataIndex: 'publish_at',
+				sorter: true,
+				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+			},
+			{
+				title: '修改时间',
+				dataIndex: 'update_at',
+				sorter: true,
+				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+			}
+		],
+		fields: []
+	};
+
 	componentDidMount() {
+		const { columns } = this.state;
+
+		this.setState((state) => ({
+			...state,
+			fields: columns.map((item) => item.dataIndex)
+		}));
+
 		this.refresh();
 	}
 
@@ -104,9 +152,19 @@ export default class extends React.Component {
 		console.log(pagination, filters, sorter, extra);
 	};
 
+	onFieldsChange = (fields) => {
+		this.setState((state) => ({
+			...state,
+			fields
+		}));
+	};
+
 	render() {
+		const { columns, fields } = this.state;
 		const { dispatch, data, selectedRows, selectedRowKeys, loading } = this.props;
 		const { getFieldDecorator } = this.props.form;
+
+		const tableColumns = columns.filter((item) => fields.find((field) => field === item.dataIndex));
 
 		const list = data.list || [];
 
@@ -128,49 +186,6 @@ export default class extends React.Component {
 				return false;
 			}
 		};
-
-		const columns = [
-			{
-				title: '详情',
-				dataIndex: 'id',
-				render: (val) => <a onClick={this.toDetail(val)}>详情</a>
-			},
-			{
-				title: '缩略图',
-				dataIndex: 'thumbnailPath',
-				render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
-			},
-			{
-				title: '标题',
-				dataIndex: 'title'
-			},
-			{
-				title: '作者',
-				dataIndex: 'author'
-			},
-			{
-				title: '排序',
-				dataIndex: 'sort',
-				sorter: true
-			},
-			{
-				title: '浏览量',
-				dataIndex: 'views',
-				sorter: true
-			},
-			{
-				title: '发布时间',
-				dataIndex: 'publish_at',
-				sorter: true,
-				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-			},
-			{
-				title: '修改时间',
-				dataIndex: 'update_at',
-				sorter: true,
-				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-			}
-		];
 
 		const pagination = {
 			defaultCurrent: 1,
@@ -206,9 +221,9 @@ export default class extends React.Component {
 									marginBottom: 20
 								}}
 							>
-								{/* <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
+								<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
 									{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
-								</Form.Item> */}
+								</Form.Item>
 
 								<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
 									{getFieldDecorator('publish_at')(
@@ -318,9 +333,10 @@ export default class extends React.Component {
 								style={{ width: '100%' }}
 								allowClear={true}
 								placeholder="请选择要查看的字段"
-								defaultValue={[ 'a10', 'c12' ]}
+								value={fields}
+								onChange={this.onFieldsChange}
 							>
-								{children}
+								{columns.map((item) => <Option key={item.dataIndex}>{item.title}</Option>)}
 							</Select>
 						</Col>
 
@@ -331,7 +347,7 @@ export default class extends React.Component {
 							<Table
 								rowKey="id"
 								loading={loading}
-								columns={columns}
+								columns={tableColumns}
 								onChange={this.onTableChange}
 								rowSelection={rowSelection}
 								pagination={pagination}
