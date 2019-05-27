@@ -147,3 +147,5 @@ $RECYCLE.BIN/
 .vscode
 
 documentation/
+
+server/static/uploads

@@ -70,17 +70,20 @@ export default class extends React.Component {
 	};
 
 	onThumbnailUpload = async (file) => {
+		const { dispatch } = this.props;
+
 		const res = await apiUploadOne(file);
 
 		if (!!res && !!res.path) {
-			this.props.dispatch({
+			
+			dispatch({
 				type: `${MODEL_NAME}/save`,
 				payload: {
 					thumbnail: res.path
 				}
 			});
 
-			message.success('上传成功');
+			this.loadData();
 		}
 	};
 
