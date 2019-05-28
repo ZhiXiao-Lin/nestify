@@ -7,7 +7,6 @@ import './index.scss';
 
 const toRenderMenu = () => ({ siteInfo }) => {
     const { menus } = siteInfo;
-    console.log(siteInfo);
     
     return (
         <div className="hdz-menu">
