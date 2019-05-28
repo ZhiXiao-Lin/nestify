@@ -46,19 +46,19 @@ export default class extends Component {
 
                                 <div className="announcement-list">
                                     <p>
-                                        <p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
+                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
                                         <span>2019-03-26</span>
                                     </p>
                                     <p>
-                                        <p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
+                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
                                         <span>2019-03-26</span>
                                     </p>
                                     <p>
-                                        <p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
+                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
                                         <span>2019-03-26</span>
                                     </p>
                                     <p>
-                                        <p><a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a></p>
+                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
                                         <span>2019-03-26</span>
                                     </p>
                                 </div>
