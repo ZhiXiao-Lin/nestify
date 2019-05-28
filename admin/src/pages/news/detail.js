@@ -75,7 +75,7 @@ export default class extends React.Component {
 		const res = await apiUploadOne(file);
 
 		if (!!res && !!res.path) {
-			
+
 			dispatch({
 				type: `${MODEL_NAME}/save`,
 				payload: {
@@ -83,7 +83,6 @@ export default class extends React.Component {
 				}
 			});
 
-			this.loadData();
 		}
 	};
 
@@ -194,7 +193,7 @@ export default class extends React.Component {
 							locale={{
 								lang: {
 									placeholder: 'Select date',
-									rangePlaceholder: [ '开始时间', '结束时间' ],
+									rangePlaceholder: ['开始时间', '结束时间'],
 									today: '今天',
 									now: '现在',
 									backToToday: 'Back to today',

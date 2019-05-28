@@ -21,7 +21,7 @@ function UserLayout(props) {
 								<span className={styles.title}> {config.TITLE} </span>
 							</Link>
 						</div>
-						<div className={styles.desc}> 后台管理系统 </div>
+						<div className={styles.desc}>后台管理系统-旅游项目通</div>
 					</div>
 					{props.children}
 				</div>
