@@ -16,7 +16,6 @@ const { Content } = Layout;
 export default class extends Component {
 	
 	render() {
-		console.log(this.props.router);
 		return (
 			<GlobalContext.Provider value={{ ...this.state, ...this.props, ...this.props.router.query.data }}>
 				<HomeBackground />

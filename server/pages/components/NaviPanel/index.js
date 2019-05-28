@@ -1,28 +1,42 @@
 import React, { useState } from 'react';
 import GlobalContext from '../../contexts/GlobalContext';
 
-import config from '../../_config';
-
 import './index.scss';
 
 const NaviPanel = () => {
-    const toRenderNaviPanel = () => ({ siteInfo }) => {
-        const { setting } = siteInfo;
+    const toGetMenuIndex = (menus, asPath) => {
+        let path = asPath.split('/').pop();
+        let index = 0;
+        let order = 0;
+        menus.forEach((menu, i) => {
+            if (menu.children && menu.children.length > 0) {
+                menu.children.forEach((item, j) => {
+                    if (path === item.url.split('/').pop()) {
+                        index = i;
+                        order = j;
+                    }
+                })
+            }
+        });
+        return {
+            menu_show: menus[index],
+            order
+        };
+    }
+    const toRenderNaviPanel = () => ({ siteInfo, router }) => {
+        const { menus } = siteInfo;
+        const { asPath } = router;
+        const { menu_show, order } = toGetMenuIndex(menus, asPath);
         return (
             <div className="navi-panel">
                 <p className="navi-title">
-                    <span>景区概况</span>
+                    <span>{menu_show.name}</span>
                 </p>
                 <div className="navi-list-container">
                     <div className="navi-list">
-                        <a href="javascript:;" className="navi-item active">景区介绍</a>
-                        <a href="javascript:;" className="navi-item">地理概况</a>
-                        <a href="javascript:;" className="navi-item">工艺特色</a>
-                        <a href="javascript:;" className="navi-item">人文历史</a>
-                        <a href="javascript:;" className="navi-item">发展规划</a>
-                        <a href="javascript:;" className="navi-item">当地特产</a>
-                        <a href="javascript:;" className="navi-item">特色工艺品</a>
-                        <a href="javascript:;" className="navi-item">游览须知</a>
+                        {menu_show.children.map((item, i) => (
+                            <a key={i} href={item.url} className={`navi-item ${i === order ? 'active' : ''}`}>{item.name}</a>
+                        ))}
                     </div>
                 </div>
             </div>

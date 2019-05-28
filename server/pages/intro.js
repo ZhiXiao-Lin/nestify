@@ -34,7 +34,7 @@ export default class extends Component {
     toRenderContent = () => {
         return (
             <Article html={(`
-                <img src='/static/introduction.jpg' alt='placeholder+image' />
+                <img src='/static/root/introduction.jpg' alt='placeholder+image' />
                 <p style="text-indent: 2em;">江西方大钢铁集团有限公司（简称“方大钢铁集团”）是辽宁方大集团实业有限公司（简称“方大集团”）的全资子公司，是一家以钢铁为主业，并成功向汽车弹簧、矿业、国内外贸易、房地产、建筑安装、工程技术等行业多元发展的大型钢铁联合企业，是方大集团战略规划中确定的主营业务板块之一。方大钢铁集团以生产建筑、工业用钢为主，拥有完整的生产线，年产钢能力1600万吨，现有在岗人员2万余人。</p>
                 <p style="text-indent: 2em;">方大钢铁集团总部位于江西省南昌市，旗下控股方大特钢科技股份有限公司（上市公司，以下简称“方大特钢”）、江西萍钢实业股份有限公司（以下简称“萍钢公司”）。位列2018年中国企业500强第289位、中国制造业企业500强第127位，并获评中国钢铁企业最高A+(竞争力极强)企业和“钢铁行业改革开放40周年功勋企业”。</p>
                 <p style="text-indent: 2em;">方大特钢产品包括汽车零部件用钢和建筑用材，萍钢公司产品涵盖螺纹钢筋、高速线材、小型材、中厚板多个系列，所属企业有萍乡萍钢安源钢铁有限公司、九江萍钢钢铁有限公司等。</p>
@@ -90,8 +90,6 @@ export default class extends Component {
 
     renderHandler = () => ({ siteInfo, type }) => {
         const { setting } = siteInfo;
-        console.log(type);
-        
 
         return (
             <div className="hdz-home-body">
