@@ -12,6 +12,7 @@ export default {
 		selectedNode: null,
 		selectedRows: [],
 		selectedRowKeys: [],
+		queryParams: {},
 		data: {
 			page: 0,
 			pageSize: config.PAGE_SIZE,
@@ -22,11 +23,21 @@ export default {
 	},
 
 	effects: {
-		*fetch({ payload }, { call, put }) {
+		*fetch({ payload }, { call, put, select }) {
 			payload.page = !!payload.page ? payload.page - 1 : 0;
 			payload.pageSize = config.PAGE_SIZE;
 
-			const res = yield call(apiGet, API_URL + '/list', { params: payload });
+			const { queryParams } = yield select((state) => state.contents);
+
+			const params = _.merge(queryParams, payload);
+
+			yield put({
+				type: 'set'
+			});
+
+			console.log(params);
+
+			const res = yield call(apiGet, API_URL + '/list', { params });
 
 			if (!!res) {
 				yield put({
@@ -34,8 +45,9 @@ export default {
 					payload: {
 						selectedRows: [],
 						selectedRowKeys: [],
+						queryParams: params,
 						data: {
-							page: payload.page + 1,
+							page: params.page + 1,
 							pageSize: config.PAGE_SIZE,
 							list: res[0],
 							total: res[1],
@@ -58,20 +70,23 @@ export default {
 		*save({ payload }, { call, put, select }) {
 			const { selectedNode } = yield select((state) => state.contents);
 
-			if (_.isEmpty(selectedNode)) {
-				const res = yield call(apiPost, API_URL, payload);
+			let res = null;
 
+			if (_.isEmpty(selectedNode)) {
+				res = yield call(apiPost, API_URL, payload);
+			} else {
+				res = yield call(apiPut, API_URL, _.merge(selectedNode, payload));
+			}
+
+			if (!!res) {
 				yield put({
 					type: 'set',
 					payload: {
 						selectedNode: res
 					}
 				});
-			} else {
-				yield call(apiPut, API_URL, _.merge(selectedNode, payload));
+				message.success('修改成功');
 			}
-
-			message.success('保存成功');
 		},
 		*remove({ payload }, { call, select }) {
 			const selectedRows = yield select((state) => state.contents.selectedRows);

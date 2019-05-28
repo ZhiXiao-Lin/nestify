@@ -24,7 +24,19 @@ export class ContentService extends BaseService<Content> {
 			});
 		}
 
-		if (!payload.sortInfo) {
+		if (!!payload.keyword) {
+			qb.andWhere(`t.title LIKE '%${payload.keyword}%'`);
+		}
+
+		if (!!payload.publish_at) {
+			payload.publish_at = payload.publish_at.split(',');
+			qb.andWhere(`t.publish_at BETWEEN '${payload.publish_at.shift()}' AND '${payload.publish_at.pop()}'`);
+		}
+
+		if (!!payload.sortInfo) {
+
+		} else {
+			// 默认排序规则
 			qb.orderBy('t.sort', 'DESC');
 			qb.addOrderBy('t.publish_at', 'DESC');
 		}
@@ -32,10 +44,16 @@ export class ContentService extends BaseService<Content> {
 		qb.skip(payload.page * payload.pageSize);
 		qb.take(payload.pageSize);
 
+		console.log(payload);
+		console.log(qb.getSql());
+
 		return qb.getManyAndCount();
 	}
 
 	async save(payload: any) {
+
+		console.log(payload)
+
 		const content = Content.create(payload) as Content;
 
 		if (!_.isEmpty(content.category) && _.isString(content.category)) {

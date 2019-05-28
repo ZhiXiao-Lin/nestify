@@ -70,17 +70,19 @@ export default class extends React.Component {
 	};
 
 	onThumbnailUpload = async (file) => {
+		const { dispatch } = this.props;
+
 		const res = await apiUploadOne(file);
 
 		if (!!res && !!res.path) {
-			this.props.dispatch({
+
+			dispatch({
 				type: `${MODEL_NAME}/save`,
 				payload: {
 					thumbnail: res.path
 				}
 			});
 
-			message.success('上传成功');
 		}
 	};
 
@@ -191,7 +193,7 @@ export default class extends React.Component {
 							locale={{
 								lang: {
 									placeholder: 'Select date',
-									rangePlaceholder: [ '开始时间', '结束时间' ],
+									rangePlaceholder: ['开始时间', '结束时间'],
 									today: '今天',
 									now: '现在',
 									backToToday: 'Back to today',

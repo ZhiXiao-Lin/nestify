@@ -1,4 +1,6 @@
-import { Entity, Column, ManyToOne, CreateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { Entity, Column, ManyToOne, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
 import { config } from '../../config';
@@ -29,7 +31,8 @@ export class Content extends Base {
 	@Column({ type: 'bigint', comment: '浏览量', default: 0 })
 	views: number;
 
-	@CreateDateColumn({
+	@Column({
+		type: 'timestamp',
 		comment: '发布时间'
 	})
 	publish_at: string;
@@ -66,6 +69,9 @@ export class Content extends Base {
 
 	@BeforeInsert()
 	async beforeInsert() {
+		if (_.isEmpty(this.publish_at)) {
+			this.publish_at = moment().format('YYYY-MM-DD HH:mm:ss');
+		}
 		this.summary = textInterception(this.text, 120);
 	}
 
