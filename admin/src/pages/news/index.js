@@ -103,25 +103,24 @@ export default class extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		const { match: { params } } = nextProps;
 		if (this.props.match.params.channel !== params.channel) {
-			this.loadData(0, params.channel);
+			this.loadData({ page: 0, category: params.channel });
 		}
 	}
 
-	loadData = (page, category = null) => {
+	loadData = (payload) => {
 		const { dispatch, match: { params } } = this.props;
+
+		payload.category = !!payload.category ? payload.category : params.channel;
 
 		dispatch({
 			type: `${MODEL_NAME}/fetch`,
-			payload: {
-				page,
-				category: category || params.channel
-			}
+			payload
 		});
 	};
 
 	refresh = () => {
 		const { data } = this.props;
-		this.loadData(data.page);
+		this.loadData({ page: data.page });
 	};
 
 	toImport = () => {
@@ -159,6 +158,32 @@ export default class extends React.Component {
 		}));
 	};
 
+	onSubmit = (e) => {
+		e.preventDefault();
+
+		this.props.form.validateFields((err, values) => {
+
+			if (!!err) return false;
+
+			if (!!values.publish_at) {
+				values.publish_at = values.publish_at.map(item => moment(item).format('YYYY-MM-DD HH:mm:ss')).join(',')
+			}
+
+			this.loadData({ page: 0, ...values })
+		});
+	}
+
+	onReset = () => {
+		this.props.form.resetFields();
+
+		this.props.dispatch({
+			type: `${MODEL_NAME}/set`,
+			payload: {
+				queryParams: {}
+			}
+		});
+	};
+
 	render() {
 		const { columns, fields } = this.state;
 		const { dispatch, data, selectedRows, selectedRowKeys, loading } = this.props;
@@ -194,7 +219,7 @@ export default class extends React.Component {
 			total: data.total,
 			hideOnSinglePage: true,
 			showTotal: (total) => `共${total}条记录 `,
-			onChange: (page) => this.loadData(page)
+			onChange: (page) => this.loadData({ page })
 		};
 
 		const rowSelection = {
@@ -213,9 +238,10 @@ export default class extends React.Component {
 		return (
 			<Layout>
 				<Content className={styles.normal}>
-					<Collapse defaultActiveKey={[ '1' ]}>
+					<Collapse defaultActiveKey={['1']}>
 						<Panel header="查询条件" key="1">
 							<Form
+								onSubmit={this.onSubmit}
 								style={{
 									padding: 5,
 									marginBottom: 20
@@ -233,7 +259,7 @@ export default class extends React.Component {
 											locale={{
 												lang: {
 													placeholder: 'Select date',
-													rangePlaceholder: [ '开始时间', '结束时间' ],
+													rangePlaceholder: ['开始时间', '结束时间'],
 													today: 'Today',
 													now: 'Now',
 													backToToday: 'Back to today',
@@ -271,7 +297,7 @@ export default class extends React.Component {
 										<Button type="primary" htmlType="submit">
 											<Icon type="search" />搜索
 										</Button>
-										<Button style={{ marginLeft: 8 }} onClick={this.handleReset}>
+										<Button style={{ marginLeft: 8 }} onClick={this.onReset}>
 											<Icon type="undo" />重置
 										</Button>
 									</Col>
@@ -297,12 +323,12 @@ export default class extends React.Component {
 										</Tooltip>
 									</Popconfirm>
 								) : (
-									<Tooltip placement="bottom" title="删除">
-										<Button disabled={true}>
-											<Icon type="delete" />
-										</Button>
-									</Tooltip>
-								)}
+										<Tooltip placement="bottom" title="删除">
+											<Button disabled={true}>
+												<Icon type="delete" />
+											</Button>
+										</Tooltip>
+									)}
 								<Tooltip placement="bottom" title="新增">
 									<Button onClick={this.toCreate}>
 										<Icon type="file-add" />
