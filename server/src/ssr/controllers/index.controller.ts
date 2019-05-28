@@ -58,11 +58,11 @@ export class IndexController {
 		// /image/trips
 		// /image/travels
 
-		const { id } = params;
+		const { id } = query;
 		const siteInfo = await this.commonService.getSiteInfo();
 
 		return res.render('/intro', {
-			type: id ? 'imageList' : 'image',
+			type: id ? 'imageDetail' : 'image',
 			siteInfo 
 		});
 	}
@@ -72,11 +72,11 @@ export class IndexController {
 		// /video/characteristic
 		// /video/show
 
-		const { id } = params;
+		const { id } = query;
 		const siteInfo = await this.commonService.getSiteInfo();
 
 		return res.render('/intro', {
-			type: id ? 'videoList' : 'video',
+			type: id ? 'videoDetail' : 'video',
 			siteInfo 
 		});
 	}

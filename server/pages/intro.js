@@ -106,7 +106,7 @@ export default class extends Component {
                         <div className="main-title">
                             <span>景区介绍</span>
                         </div>
-                        <div className="main-content">
+                        <div className={`main-content ${type}-content`}>
 
                             {this.renderBy[type]()}
 

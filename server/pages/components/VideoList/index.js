@@ -12,25 +12,25 @@ const VideoList = () => {
             <div className="video-list">
                 <div className="video-item-container">
                     <div className="video-item">
-                        <a href="javascript:;" className="external-link"></a>
+                        <a href="/video/show?id=1" className="external-link"></a>
                         <p>钢铁是怎样练成的</p>
                     </div>
                 </div>
                 <div className="video-item-container">
                     <div className="video-item">
-                        <a href="javascript:;" className="external-link"></a>
+                        <a href="/video/show?id=2" className="external-link"></a>
                         <p>钢铁是怎样练成的</p>
                     </div>
                 </div>
                 <div className="video-item-container">
                     <div className="video-item">
-                        <a href="javascript:;" className="external-link"></a>
+                        <a href="/video/show?id=3" className="external-link"></a>
                         <p>钢铁是怎样练成的</p>
                     </div>
                 </div>
                 <div className="video-item-container">
                     <div className="video-item">
-                        <a href="javascript:;" className="external-link"></a>
+                        <a href="/video/show?id=4" className="external-link"></a>
                         <p>钢铁是怎样练成的</p>
                     </div>
                 </div>
