@@ -5,7 +5,7 @@ import './index.scss';
 
 const NaviPanel = () => {
     const toGetMenuIndex = (menus, asPath) => {
-        let path = asPath.split('/').pop();
+        let path = asPath.split('?').shift().split('/').pop();
         let index = 0;
         let order = 0;
         menus.forEach((menu, i) => {
