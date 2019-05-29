@@ -144,7 +144,7 @@ export function dataURLtoBlob(dataurl) {
 	while (n--) {
 		u8arr[n] = bstr.charCodeAt(n);
 	}
-	return new Blob([ u8arr ], {
+	return new Blob([u8arr], {
 		type: mime
 	});
 }
@@ -165,7 +165,7 @@ export function getTimeDistance(type) {
 		now.setHours(0);
 		now.setMinutes(0);
 		now.setSeconds(0);
-		return [ moment(now), moment(now.getTime() + (oneDay - 1000)) ];
+		return [moment(now), moment(now.getTime() + (oneDay - 1000))];
 	}
 
 	if (type === 'week') {
@@ -182,7 +182,7 @@ export function getTimeDistance(type) {
 
 		const beginTime = now.getTime() - day * oneDay;
 
-		return [ moment(beginTime), moment(beginTime + (7 * oneDay - 1000)) ];
+		return [moment(beginTime), moment(beginTime + (7 * oneDay - 1000))];
 	}
 
 	if (type === 'month') {
@@ -199,7 +199,7 @@ export function getTimeDistance(type) {
 	}
 
 	const year = now.getFullYear();
-	return [ moment(`${year}-01-01 00:00:00`), moment(`${year}-12-31 23:59:59`) ];
+	return [moment(`${year}-01-01 00:00:00`), moment(`${year}-12-31 23:59:59`)];
 }
 
 export function getPlainNode(nodeList, parentPath = '') {
@@ -328,4 +328,13 @@ export function formatWan(val) {
 // 给官方演示站点用，用于关闭真实开发环境不需要使用的特性
 export function isAntdPro() {
 	return window.location.hostname === 'preview.pro.ant.design';
+}
+
+
+export function downloadBuffer(buffer, fileName) {
+	const download = document.createElement('a');
+	download.href = window.URL.createObjectURL(new Blob([buffer], { type: 'application/vnd.ms-excel' }))
+	download.download = fileName;
+	download.click();
+	window.URL.revokeObjectURL(download.href);
 }

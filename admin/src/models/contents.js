@@ -1,7 +1,9 @@
 import _ from 'lodash';
-import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
-import config from '@/config';
+import moment from 'moment';
 import { message } from 'antd';
+import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
+import { downloadBuffer } from '@/utils/utils';
+import config from '@/config';
 
 const API_URL = config.API_ROOT + '/content';
 
@@ -34,8 +36,6 @@ export default {
 			yield put({
 				type: 'set'
 			});
-
-			console.log(params);
 
 			const res = yield call(apiGet, API_URL + '/list', { params });
 
@@ -96,6 +96,25 @@ export default {
 					selectedRows: selectedRows.map((item) => item.id).join(',')
 				}
 			});
+		},
+		*export({ payload }, { call, select }) {
+			message.loading('正在执行导出', 0);
+
+			const queryParams = yield select((state) => state.contents.queryParams);
+
+			const fileBuffer = yield call(apiGet, API_URL + '/export', {
+				responseType: 'arraybuffer',
+				params: {
+					isExport: true,
+					...payload,
+					...queryParams
+				}
+			});
+
+			downloadBuffer(fileBuffer, queryParams.category + '-' + moment().format('YYYY-MM-DD-HH-mm-ss'));
+
+			message.destroy();
+			message.success('导出成功');
 		}
 	},
 

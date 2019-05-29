@@ -9,6 +9,8 @@ export class ExceptionsFilter implements ExceptionFilter {
 		const response = ctx.getResponse();
 		const request = ctx.getRequest();
 
+		Logger.error(exception);
+
 		if (exception instanceof HttpException) {
 			const status = exception.getStatus();
 			const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -36,6 +38,6 @@ export class ExceptionsFilter implements ExceptionFilter {
 					});
 			}
 		}
-		Logger.error(exception);
+
 	}
 }
