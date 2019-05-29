@@ -92,9 +92,10 @@ class Suggestion extends Component {
                                         {getFieldDecorator('content', {
                                             rules: [{ required: true, message: '请输入咨询内容' }],
                                         })(
-                                            <Input
+                                            <Input.TextArea
                                                 prefix={<i style={{ color: "red" }}>*</i>}
                                                 placeholder="咨询内容"
+                                                autosize={{ minRows: 4, maxRows: 6 }}
                                             />
                                         )}
                                     </Form.Item>
