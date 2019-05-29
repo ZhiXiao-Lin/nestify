@@ -179,7 +179,15 @@ export default class extends React.Component {
 	};
 
 	onTableChange = (pagination, filters, sorter, extra) => {
-		console.log(sorter);
+		let sort = null;
+		let order = null;
+
+		if (!_.isEmpty(sorter)) {
+			sort = sorter.columnKey;
+			order = sorter.order === 'ascend' ? 'ASC' : 'DESC';
+		}
+
+		this.loadData({ page: pagination.current, sort, order });
 	};
 
 	onFieldsChange = (fields) => {
@@ -253,8 +261,7 @@ export default class extends React.Component {
 			pageSize: data.pageSize,
 			total: data.total,
 			hideOnSinglePage: true,
-			showTotal: (total) => `共${total}条记录 `,
-			onChange: (page) => this.loadData({ page })
+			showTotal: (total) => `共${total}条记录 `
 		};
 
 		const rowSelection = {
