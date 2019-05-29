@@ -12,7 +12,7 @@ const Video = () => {
             <div className="main-video">
                 <p>视频赏析</p>
                 <video controls autoPlay muted>
-                    <source src="/static/video/AngryBird.mp4" />
+                    <source src="/static/root/video/AngryBird.mp4" />
                 </video>
                 <a href="javascript:;"></a>
             </div>

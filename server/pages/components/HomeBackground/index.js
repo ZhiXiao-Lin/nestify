@@ -24,8 +24,7 @@ const banner_bottom = {
     url: '/banner_bottom.jpg'
 }
 
-const SimpleSwiper = ({ list }) => console.log(list, "【SimpleSwiper】") | (
-    
+const SimpleSwiper = ({ list }) => (
     <Carousel autoplay={list.length !== 1} effect="fade" easing="ease-in-out" dots={false}>
         {list.map((img, i) => (
             <div key={i}>
