@@ -34,11 +34,13 @@ export class ContentService extends BaseService<Content> {
 			qb.andWhere(`t.publish_at BETWEEN '${payload.publish_at.shift()}' AND '${payload.publish_at.pop()}'`);
 		}
 
-		if (!!payload.sortInfo) {
+		if (!!payload.sort && !!payload.order) {
+			console.log(payload);
+			qb.addOrderBy(`t.${payload.sort}`, payload.order);
 
 		} else {
 			// 默认排序规则
-			qb.orderBy('t.sort', 'DESC');
+			qb.addOrderBy('t.sort', 'DESC');
 			qb.addOrderBy('t.publish_at', 'DESC');
 		}
 
@@ -62,9 +64,6 @@ export class ContentService extends BaseService<Content> {
 	}
 
 	async save(payload: any) {
-
-		console.log(payload)
-
 		const content = Content.create(payload) as Content;
 
 		if (!_.isEmpty(content.category) && _.isString(content.category)) {
