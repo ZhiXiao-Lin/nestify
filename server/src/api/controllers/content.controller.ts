@@ -25,7 +25,7 @@ import { ClassSerializerInterceptor } from '@nestjs/common';
 @UseGuards(AuthGuard())
 @UseInterceptors(ClassSerializerInterceptor)
 export class ContentController {
-	constructor(private readonly contentService: ContentService) {}
+	constructor(private readonly contentService: ContentService) { }
 
 	@Get(':id')
 	async findOne(@Param('id') id) {
@@ -36,6 +36,11 @@ export class ContentController {
 
 	@Get('list')
 	async list(@Query() payload) {
+		return await this.contentService.query(payload);
+	}
+
+	@Get('export')
+	async export(@Query() payload) {
 		return await this.contentService.query(payload);
 	}
 

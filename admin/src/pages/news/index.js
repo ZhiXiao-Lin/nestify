@@ -37,6 +37,7 @@ const DETAIL_URL = '/studio/newsdetail';
 
 @connect(({ contents, loading }) => ({
 	data: contents.data,
+	queryParams: contents.queryParams,
 	selectedRows: contents.selectedRows,
 	selectedRowKeys: contents.selectedRowKeys,
 	loading: loading.models.contents
@@ -57,7 +58,26 @@ export default class extends React.Component {
 			},
 			{
 				title: '标题',
-				dataIndex: 'title'
+				dataIndex: 'title',
+				render: (val) => {
+
+					const { queryParams: { keyword } } = this.props;
+
+					const reg = new RegExp(keyword, 'gi');
+
+
+					return !!keyword ? val.toString().split(reg).map(
+						(text, i) =>
+							i > 0
+								? [
+									<span key={i} col={i} style={{ color: 'red' }}>
+										<b>{val.toString().match(reg)[0]}</b>
+									</span>,
+									text
+								]
+								: text
+					) : val;
+				}
 			},
 			{
 				title: '作者',
@@ -91,7 +111,6 @@ export default class extends React.Component {
 
 	componentDidMount() {
 		const { columns } = this.state;
-
 		this.setState((state) => ({
 			...state,
 			fields: columns.map((item) => item.dataIndex)
@@ -147,8 +166,20 @@ export default class extends React.Component {
 		this.refresh();
 	};
 
+	toExport = () => {
+		const { fields } = this.state;
+		const { dispatch } = this.props;
+
+		dispatch({
+			type: `${MODEL_NAME}/export`,
+			payload: {
+				fields: fields.join(',')
+			}
+		});
+	};
+
 	onTableChange = (pagination, filters, sorter, extra) => {
-		console.log(pagination, filters, sorter, extra);
+		console.log(sorter);
 	};
 
 	onFieldsChange = (fields) => {
@@ -176,10 +207,14 @@ export default class extends React.Component {
 	onReset = () => {
 		this.props.form.resetFields();
 
+		const { match: { params } } = this.props;
+
 		this.props.dispatch({
 			type: `${MODEL_NAME}/set`,
 			payload: {
-				queryParams: {}
+				queryParams: {
+					category: params.channel
+				}
 			}
 		});
 	};
@@ -347,7 +382,7 @@ export default class extends React.Component {
 									</Tooltip>
 								</Upload>
 								<Tooltip placement="bottom" title="导出">
-									<Button>
+									<Button onClick={this.toExport}>
 										<Icon type="export" />
 									</Button>
 								</Tooltip>

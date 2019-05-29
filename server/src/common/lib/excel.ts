@@ -5,19 +5,19 @@ export enum ExcelHandleType {
 	ARRAY
 }
 
-export class ExcelImporter {
+export class ExcelHelper {
 	static async loadFromFile(filePath, sheetsMap) {
 		const workbook = new Excel.Workbook();
 		await workbook.xlsx.readFile(filePath);
 
-		return await ExcelImporter.load(workbook, sheetsMap);
+		return await ExcelHelper.load(workbook, sheetsMap);
 	}
 
 	static async loadFromBuffer(buffer, sheetsMap) {
 		const workbook = new Excel.Workbook();
 		await workbook.xlsx.load(buffer);
 
-		return await ExcelImporter.load(workbook, sheetsMap);
+		return await ExcelHelper.load(workbook, sheetsMap);
 	}
 
 	static async load(workbook, sheetsMap) {
@@ -77,5 +77,38 @@ export class ExcelImporter {
 		});
 
 		return info;
+	}
+
+	static async export(dataSource, sheetsMap, fields) {
+		const workbook = new Excel.Workbook();
+		const sheet = workbook.addWorksheet(sheetsMap.map);
+		const rowsMap = sheetsMap.rowsMap;
+
+		const columns = fields.map(item => {
+			rowsMap[item].key = rowsMap[item].key ? rowsMap[item].key : item;
+			return rowsMap[item];
+		});
+
+		const rows = dataSource.map(item => {
+			const row = {};
+
+			Object.keys(rowsMap).forEach(key => {
+
+				if (fields.includes(key)) {
+
+					const handler = rowsMap[key].handler || (val => val);
+					const headerKey = rowsMap[key].key || key;
+
+					row[headerKey] = handler(item[headerKey]);
+				}
+			});
+
+			return row;
+		});
+
+		sheet.columns = columns;
+		sheet.addRows(rows);
+
+		return await workbook.xlsx.writeBuffer();
 	}
 }

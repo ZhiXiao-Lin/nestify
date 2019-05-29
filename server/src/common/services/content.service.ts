@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseService } from './base.service';
 import { Content } from '../entities/content.entity';
 import { CategoryService } from './category.service';
+import { ExcelHelper } from '../lib/excel';
 
 @Injectable()
 export class ContentService extends BaseService<Content> {
@@ -41,13 +42,23 @@ export class ContentService extends BaseService<Content> {
 			qb.addOrderBy('t.publish_at', 'DESC');
 		}
 
-		qb.skip(payload.page * payload.pageSize);
-		qb.take(payload.pageSize);
+		if (!!payload.isExport) {
+			if (!payload.category) throw new BadRequestException('分类参数错误');
+
+			const dataSource = await qb.getMany();
+
+			// 执行导出逻辑
+			return await ExcelHelper.export(dataSource, Content.sheetsMap[payload.category], payload.fields.split(','));
+
+		} else {
+			qb.skip(payload.page * payload.pageSize);
+			qb.take(payload.pageSize);
+		}
 
 		console.log(payload);
 		console.log(qb.getSql());
 
-		return qb.getManyAndCount();
+		return await qb.getManyAndCount();
 	}
 
 	async save(payload: any) {

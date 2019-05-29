@@ -3,25 +3,25 @@ import { Injectable, Logger } from '@nestjs/common';
 import { User } from '../common/entities/user.entity';
 import { Category } from '../common/entities/category.entity';
 import { Setting } from '../common/entities/setting.entity';
-import { ExcelImporter } from '../common/lib/excel';
+import { ExcelHelper } from '../common/lib/excel';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 
 @Injectable()
 export class Seed {
-	constructor(@InjectConnection() private readonly connection: Connection) {}
+	constructor(@InjectConnection() private readonly connection: Connection) { }
 
 	async start() {
 		Logger.log('seed start');
 
 		await this.connection.getRepository(Setting).save({
 			token: 'default',
-			ex_info: await ExcelImporter.loadFromFile(resolve('./seeds/settings.xlsx'), Setting.sheetsMap)
+			ex_info: await ExcelHelper.loadFromFile(resolve('./seeds/settings.xlsx'), Setting.sheetsMap)
 		});
 
 		await this.connection.getRepository(User).save(User.create({ account: 'SysAdmin', password: '12345678' }));
 
-		const categorysResult = await ExcelImporter.loadFromFile(resolve('./seeds/categorys.xlsx'), Category.sheetsMap);
+		const categorysResult = await ExcelHelper.loadFromFile(resolve('./seeds/categorys.xlsx'), Category.sheetsMap);
 		const categorys = categorysResult['categorys'];
 		const categoryArr = [];
 

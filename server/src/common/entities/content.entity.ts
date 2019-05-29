@@ -44,17 +44,137 @@ export class Content extends Base {
 		官方公告: {
 			map: '官方公告',
 			handleType: ExcelHandleType.ARRAY,
-			cellsMap: { 标题: 'title', 作者: 'author', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' }
+			cellsMap: { 标题: 'title', 作者: 'author', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' },
+			rowsMap: {
+				id: {
+					header: '编号',
+				},
+				title: {
+					header: '标题',
+				},
+				author: {
+					header: '作者',
+				},
+				sort: {
+					header: '排序',
+				},
+				thumbnailPath: {
+					header: '缩略图',
+					key: 'thumbnail',
+					handler: (val) => Content.getFullThumbnailPath(val)
+				},
+				summary: {
+					header: '摘要',
+				},
+				text: {
+					header: '正文',
+				},
+				views: {
+					header: '浏览量',
+				},
+				publish_at: {
+					header: '发布时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				update_at: {
+					header: '修改时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				category: {
+					header: '分类',
+					handler: (val) => val ? val.name : ''
+				},
+			}
 		},
 		精彩活动: {
 			map: '精彩活动',
 			handleType: ExcelHandleType.ARRAY,
-			cellsMap: { 标题: 'title', 作者: 'author', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' }
+			cellsMap: { 标题: 'title', 作者: 'author', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' },
+			rowsMap: {
+				id: {
+					header: '编号',
+				},
+				title: {
+					header: '标题',
+				},
+				author: {
+					header: '作者',
+				},
+				sort: {
+					header: '排序',
+				},
+				thumbnailPath: {
+					header: '缩略图',
+					key: 'thumbnail',
+					handler: (val) => Content.getFullThumbnailPath(val)
+				},
+				summary: {
+					header: '摘要',
+				},
+				text: {
+					header: '正文',
+				},
+				views: {
+					header: '浏览量',
+				},
+				publish_at: {
+					header: '发布时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				update_at: {
+					header: '修改时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				category: {
+					header: '分类',
+					handler: (val) => val ? val.name : ''
+				},
+			}
 		},
 		新闻动态: {
 			map: '新闻动态',
 			handleType: ExcelHandleType.ARRAY,
-			cellsMap: { 标题: 'title', 作者: 'author', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' }
+			cellsMap: { 标题: 'title', 作者: 'author', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' },
+			rowsMap: {
+				id: {
+					header: '编号',
+				},
+				title: {
+					header: '标题',
+				},
+				author: {
+					header: '作者',
+				},
+				sort: {
+					header: '排序',
+				},
+				thumbnailPath: {
+					header: '缩略图',
+					key: 'thumbnail',
+					handler: (val) => Content.getFullThumbnailPath(val)
+				},
+				summary: {
+					header: '摘要',
+				},
+				text: {
+					header: '正文',
+				},
+				views: {
+					header: '浏览量',
+				},
+				publish_at: {
+					header: '发布时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				update_at: {
+					header: '修改时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				category: {
+					header: '分类',
+					handler: (val) => val ? val.name : ''
+				},
+			}
 		}
 	};
 
@@ -62,9 +182,13 @@ export class Content extends Base {
 		return plainToClass(Content, target);
 	}
 
+	static getFullThumbnailPath(path) {
+		return `${config.serverUrl}/${config.static.root}${path}`;
+	}
+
 	@Expose()
 	get thumbnailPath(): string {
-		return `${config.serverUrl}/${config.static.root}${this.thumbnail}`;
+		return Content.getFullThumbnailPath(this.thumbnail);
 	}
 
 	@BeforeInsert()

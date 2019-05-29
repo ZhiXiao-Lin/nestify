@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExcelImporter } from '../lib/excel';
+import { ExcelHelper } from '../lib/excel';
 import { Content } from '../entities/content.entity';
 import { CategoryService } from './category.service';
 import { InjectRepository, InjectConnection } from '@nestjs/typeorm';
@@ -22,7 +22,7 @@ export class ImportService {
 	}
 
 	async importNews(file) {
-		const res = await ExcelImporter.loadFromBuffer(file.data, Content.sheetsMap);
+		const res = await ExcelHelper.loadFromBuffer(file.data, Content.sheetsMap);
 
 		Object.keys(res).forEach(async (key) => {
 			const category = await this.categoryService.findOneByName(key);
