@@ -258,7 +258,7 @@ export default class extends React.Component {
 						{this.renderBasicForm()}
 					</Tabs.TabPane>
 					{!selectedNode.id ? null : (
-						<Tabs.TabPane tab="缩略图" key="thumbnail">
+						<Tabs.TabPane tab="图片" key="thumbnail">
 							<ImageCropper
 								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
 								onUpload={this.onThumbnailUpload}

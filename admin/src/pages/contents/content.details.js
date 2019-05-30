@@ -233,7 +233,7 @@ export default class ContentDetailsForm extends React.Component {
 						theContent['tree_path'] ||
 						selectedNode['tree_path'] ||
 						contentMenu[this.props.match.params.channel].rootPath,
-					rules: [ { required: true, message: '不能为空' } ]
+					rules: [{ required: true, message: '不能为空' }]
 				})(<Input {...formItemStyle} disabled={true} type="text" />)}
 			</Form.Item>
 			{!theContent['id'] && (
@@ -284,7 +284,7 @@ export default class ContentDetailsForm extends React.Component {
 			<Form.Item {...formItemLayout} label="发布时间">
 				{getFieldDecorator('release_datetime', {
 					initialValue: !!theContent['release_datetime'] ? moment(theContent['release_datetime']) : '',
-					rules: [ { required: false } ]
+					rules: [{ required: false }]
 				})(
 					// <Input {...formItemStyle} type="text" placeholder="请设置发布时间" />
 					<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" placeholder="选择发布日期时间" />
@@ -391,7 +391,7 @@ export default class ContentDetailsForm extends React.Component {
 						{this.renderBasicForm(selectedNode || {}, theContent, getFieldDecorator)}
 					</Tabs.TabPane>
 					{!theContent.id ? null : (
-						<Tabs.TabPane tab="缩略图" key="thumbnail">
+						<Tabs.TabPane tab="图片" key="thumbnail">
 							<ImageCropper
 								imageUrl={!theContent.thumbnail ? '' : theContent.thumbnail.url}
 								onUpload={this.onThumbnailUpload}
@@ -455,7 +455,7 @@ export default class ContentDetailsForm extends React.Component {
 											{ key: 'iconsrc', title: '图例图标' },
 											{ key: 'iconcolor', title: '图例颜色' }
 										]}
-										subInfoColProps={[ { key: 'name', title: '图标名称' } ]}
+										subInfoColProps={[{ key: 'name', title: '图标名称' }]}
 										specInfo={this.toConvertGroupsitemsToSubinfo(theContent.ex_info)}
 										onSave={this.toSaveLegends}
 									/>

@@ -52,7 +52,7 @@ export default class extends React.Component {
 				render: (val) => <a onClick={this.toDetail(val)}>详情</a>
 			},
 			{
-				title: '缩略图',
+				title: '图片',
 				dataIndex: 'thumbnailPath',
 				render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
 			},
