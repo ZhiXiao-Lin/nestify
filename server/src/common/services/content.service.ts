@@ -35,9 +35,7 @@ export class ContentService extends BaseService<Content> {
 		}
 
 		if (!!payload.sort && !!payload.order) {
-			console.log(payload);
 			qb.addOrderBy(`t.${payload.sort}`, payload.order);
-
 		} else {
 			// 默认排序规则
 			qb.addOrderBy('t.sort', 'DESC');
