@@ -8,6 +8,8 @@ import config from '@/config';
 import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
+import ImageGallery from '@/components/ImageGallery';
+import VideoEditor from '@/components/VideoEditor';
 
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
@@ -271,8 +273,29 @@ export default class extends React.Component {
 						</Tabs.TabPane>
 					)}
 					{!selectedNode.id ? null : (
+						<Tabs.TabPane tab="视频编辑器" key="video">
+							<VideoEditor
+								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
+								onUpload={this.onThumbnailUpload}
+							/>
+						</Tabs.TabPane>
+					)}
+					{!selectedNode.id ? null : (
 						<Tabs.TabPane tab="正文" key="richtext">
 							{this.renderRichText(selectedNode)}
+						</Tabs.TabPane>
+					)}
+					{!selectedNode.id ? null : (
+						<Tabs.TabPane tab="图片集" key="images">
+							<ImageGallery
+								mode="edit"
+								limit={3}
+							// initialValue={gallery}
+							// onUpload={this.onCommonUpload}
+							// onDelete={this.toDeleteFile}
+							// onSave={this.toSaveGallery}
+							// ref={this.toGetGalleryInstance}
+							/>
 						</Tabs.TabPane>
 					)}
 				</Tabs>

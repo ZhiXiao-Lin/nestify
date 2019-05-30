@@ -2,6 +2,7 @@ import { Module, Global, CacheModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ScheduleModule } from 'nest-schedule';
 import { config } from '../config';
 import { UserService } from './services/user.service';
 import { JwtStrategy } from './strategys/jwt.strategy';
@@ -14,6 +15,7 @@ import { SettingService } from './services/setting.service';
 import { ImportService } from './services/import.service';
 import { CategoryService } from './services/category.service';
 import { ContentService } from './services/content.service';
+import { IndexTask } from './tasks/index.task';
 
 @Global()
 @Module({
@@ -21,10 +23,11 @@ import { ContentService } from './services/content.service';
 		// CacheModule.register({
 		// 	...config.cache
 		// }),
+		ScheduleModule.register(),
 		PassportModule.register({ defaultStrategy: 'jwt' }),
 		JwtModule.register(config.jwt),
 		TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
-		TypeOrmModule.forFeature([ Setting, Category, User, Content ])
+		TypeOrmModule.forFeature([Setting, Category, User, Content])
 	],
 	providers: [
 		JwtStrategy,
@@ -33,8 +36,9 @@ import { ContentService } from './services/content.service';
 		CategoryService,
 		ContentService,
 		UserService,
-		SettingService
+		SettingService,
+		IndexTask
 	],
-	exports: [ ImportService, CommonService, CategoryService, ContentService, UserService, SettingService ]
+	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService]
 })
-export class CommonModule {}
+export class CommonModule { }
