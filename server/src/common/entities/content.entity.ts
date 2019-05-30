@@ -9,7 +9,7 @@ import { ExcelHandleType } from '../lib/excel';
 import { textInterception } from '../lib/helper';
 
 const handleType = ExcelHandleType.ARRAY;
-const cellsMap = { 标题: 'title', 作者: 'author', 来源: 'source', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail', 视频: 'video' };
+const cellsMap = { 标题: 'title', 作者: 'author', 来源: 'source', 地址: 'address', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail', 视频: 'video' };
 const rowsMap = {
 	id: {
 		header: '编号',
@@ -22,6 +22,9 @@ const rowsMap = {
 	},
 	source: {
 		header: '来源',
+	},
+	address: {
+		header: '地址',
 	},
 	sort: {
 		header: '排序',
@@ -69,6 +72,9 @@ export class Content extends Base {
 
 	@Column({ comment: '来源', default: '本站' })
 	source: string;
+
+	@Column({ comment: '地址', default: '' })
+	address: string;
 
 	@Column({ comment: '排序', default: 0 })
 	sort: number;

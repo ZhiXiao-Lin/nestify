@@ -135,11 +135,11 @@ export default class ImageCropper extends React.Component {
 
 	render() {
 		const { imageFile, scale, width, height, borderRadius } = this.state;
-		const { imageUrl } = this.props;
+		const { url } = this.props;
 
 		return (
 			<Fragment>
-				<Upload action={null} showUploadList={false} beforeUpload={this.beforeUpload}>
+				<Upload action={null} accept="image/*" showUploadList={false} beforeUpload={this.beforeUpload}>
 					<div
 						style={{
 							textAlign: 'center',
@@ -150,16 +150,15 @@ export default class ImageCropper extends React.Component {
 							cursor: 'pointer'
 						}}
 					>
-						{!imageUrl ? (
+						{!url ? (
 							<Fragment>
 								<p className="ant-upload-drag-icon" style={{ width, paddingTop: height * 0.3 }}>
 									<Icon type="upload" />
 								</p>
 								<p className="ant-upload-text">点击上传图片</p>
-								<p className="ant-upload-hint">图片大小不超过2M</p>
 							</Fragment>
 						) : (
-								<img style={{ maxWidth: width }} src={imageUrl} />
+								<img style={{ maxWidth: width }} src={url} />
 							)}
 					</div>
 				</Upload>

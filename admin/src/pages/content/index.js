@@ -57,6 +57,11 @@ export default class extends React.Component {
 				render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
 			},
 			{
+				title: '视频',
+				dataIndex: 'videoPath',
+				render: (val) => val
+			},
+			{
 				title: '标题',
 				dataIndex: 'title',
 				render: (val) => {
@@ -84,8 +89,21 @@ export default class extends React.Component {
 				dataIndex: 'author'
 			},
 			{
+				title: '分类',
+				dataIndex: 'category',
+				render: val => val.name
+			},
+			{
 				title: '来源',
 				dataIndex: 'source'
+			},
+			{
+				title: '摘要',
+				dataIndex: 'summary'
+			},
+			{
+				title: '地址',
+				dataIndex: 'address'
 			},
 			{
 				title: '排序',
@@ -108,18 +126,23 @@ export default class extends React.Component {
 				dataIndex: 'update_at',
 				sorter: true,
 				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-			}
+			},
+			{
+				title: '创建时间',
+				dataIndex: 'create_at',
+				sorter: true,
+				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+			},
+			{
+				title: '正文',
+				dataIndex: 'text',
+				render: val => '略'
+			},
 		],
-		fields: []
+		fields: ['id', 'thumbnailPath', 'title', 'author', 'source', 'sort', 'views', 'publish_at', 'update_at']
 	};
 
 	componentDidMount() {
-		const { columns } = this.state;
-		this.setState((state) => ({
-			...state,
-			fields: columns.map((item) => item.dataIndex)
-		}));
-
 		this.onReset();
 		this.refresh();
 	}
@@ -238,7 +261,8 @@ export default class extends React.Component {
 		const { dispatch, data, selectedRows, selectedRowKeys, loading } = this.props;
 		const { getFieldDecorator } = this.props.form;
 
-		const tableColumns = columns.filter((item) => fields.find((field) => field === item.dataIndex));
+		const tableColumns = columns.filter((item) => fields.includes(item.dataIndex));
+
 
 		const list = data.list || [];
 

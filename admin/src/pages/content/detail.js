@@ -4,11 +4,11 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Tabs, Form, Input, InputNumber, Row, Col, Icon, DatePicker, Button, Skeleton, message } from 'antd';
 
+
 import config from '@/config';
 import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
-import ImageGallery from '@/components/ImageGallery';
 import VideoEditor from '@/components/VideoEditor';
 
 import BraftEditor from 'braft-editor';
@@ -82,6 +82,23 @@ export default class extends React.Component {
 				type: `${MODEL_NAME}/save`,
 				payload: {
 					thumbnail: res.path
+				}
+			});
+
+		}
+	};
+
+	onVideoUpload = async (file) => {
+		const { dispatch } = this.props;
+
+		const res = await apiUploadOne(file);
+
+		if (!!res && !!res.path) {
+
+			dispatch({
+				type: `${MODEL_NAME}/save`,
+				payload: {
+					video: res.path
 				}
 			});
 
@@ -179,6 +196,11 @@ export default class extends React.Component {
 						initialValue: !selectedNode ? null : selectedNode['source']
 					})(<Input {...formItemStyle} type="text" placeholder="请填写来源" />)}
 				</Form.Item>
+				<Form.Item {...formItemLayout} label="地址">
+					{getFieldDecorator('address', {
+						initialValue: !selectedNode ? null : selectedNode['address']
+					})(<Input {...formItemStyle} type="text" placeholder="请填写地址" />)}
+				</Form.Item>
 				<Form.Item {...formItemLayout} label="排序">
 					{getFieldDecorator('sort', {
 						initialValue: !selectedNode ? 0 : selectedNode['sort']
@@ -267,35 +289,23 @@ export default class extends React.Component {
 					{!selectedNode.id ? null : (
 						<Tabs.TabPane tab="缩略图" key="thumbnail">
 							<ImageCropper
-								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
+								url={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
 								onUpload={this.onThumbnailUpload}
 							/>
 						</Tabs.TabPane>
 					)}
 					{!selectedNode.id ? null : (
-						<Tabs.TabPane tab="视频编辑器" key="video">
+						<Tabs.TabPane tab="视频" key="video">
 							<VideoEditor
-								imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
-								onUpload={this.onThumbnailUpload}
+								url={!selectedNode.video ? '' : selectedNode.videoPath}
+								onUpload={this.onVideoUpload}
+								width={500}
 							/>
 						</Tabs.TabPane>
 					)}
 					{!selectedNode.id ? null : (
 						<Tabs.TabPane tab="正文" key="richtext">
 							{this.renderRichText(selectedNode)}
-						</Tabs.TabPane>
-					)}
-					{!selectedNode.id ? null : (
-						<Tabs.TabPane tab="图片集" key="images">
-							<ImageGallery
-								mode="edit"
-								limit={3}
-							// initialValue={gallery}
-							// onUpload={this.onCommonUpload}
-							// onDelete={this.toDeleteFile}
-							// onSave={this.toSaveGallery}
-							// ref={this.toGetGalleryInstance}
-							/>
 						</Tabs.TabPane>
 					)}
 				</Tabs>
