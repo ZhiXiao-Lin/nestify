@@ -94,6 +94,7 @@ async function bootstrap() {
 
 	app.useGlobalFilters(new ExceptionsFilter());
 
+
 	await app.listen(config.port, config.hostName, () => {
 		Logger.log(config, MODULE_NAME);
 	});

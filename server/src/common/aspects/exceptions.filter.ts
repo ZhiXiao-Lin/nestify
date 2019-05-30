@@ -4,7 +4,7 @@ import { Catch, ArgumentsHost, HttpException, ExceptionFilter, Logger } from '@n
 
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {
-	catch(exception: unknown, host: ArgumentsHost) {
+	async catch(exception: unknown, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse();
 		const request = ctx.getRequest();
@@ -26,16 +26,16 @@ export class ExceptionsFilter implements ExceptionFilter {
 			if (process.env.NODE_ENV !== 'production') {
 				const youch = new Youch(exception, request.raw);
 
-				youch
+				const html = await youch
 					.addLink(({ message }) => {
 						const url = `https://cn.bing.com/search?q=${encodeURIComponent(`[adonis.js] ${message}`)}`;
 						return `<a href="${url}" target="_blank" title="Search on bing">Search Bing</a>`;
 					})
-					.toHTML()
-					.then((html) => {
-						response.type('text/html');
-						response.code(500).send(html);
-					});
+					.toHTML();
+
+				response.type('text/html');
+				response.code(500).send(html);
+
 			}
 		}
 
