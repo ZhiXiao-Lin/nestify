@@ -33,7 +33,7 @@ const gColumnDictCategory = gColumnFilterCategories.reduce((sum, curr) => {
 	return sum;
 }, {});
 
-const gReservedColumnsKeyName = [ 'id', 'title', 'tree_path', 'author', 'thumbnail' ];
+const gReservedColumnsKeyName = ['id', 'title', 'tree_path', 'author', 'thumbnail'];
 
 @TablePlus
 @connect(({ contents, loading }) => ({
@@ -78,7 +78,7 @@ export default class ContentsPages extends React.Component {
 				onFilter: (value, record) => record['category'] === value
 			},
 			thumbnail: {
-				title: '缩略图',
+				title: '图片',
 				render: (text, row, index) =>
 					!row['thumbnail'] ? null : (
 						<img alt={row['thumbnail'].url} style={{ width: '60px' }} src={row['thumbnail'].url} />
@@ -243,7 +243,7 @@ export default class ContentsPages extends React.Component {
 			type: 'dbops/fetch',
 			payload: { row_id: this.props.selectedRowKeys[0] }
 		});
-		this.props.toSetViewModelsValue([ 'DRAWER-AUDIT-LOG' ], { width: 640 });
+		this.props.toSetViewModelsValue(['DRAWER-AUDIT-LOG'], { width: 640 });
 	};
 
 	// --- render helpers
@@ -404,7 +404,7 @@ export default class ContentsPages extends React.Component {
 									清空过滤: this.props.toClearAllFilters,
 									索引过滤: () => {
 										this.props.toSetViewModelsValue(
-											[ 'DRAWER-INDEX-FILTER' ],
+											['DRAWER-INDEX-FILTER'],
 											!this.props.viewModelsValue['DRAWER-INDEX-FILTER']
 										);
 										this.props.dispatch({
@@ -413,7 +413,7 @@ export default class ContentsPages extends React.Component {
 										});
 									},
 									修改: () => {
-										this.props.toSetViewModelsValue([ 'DRAWER-UPDATE' ], { width: 640 });
+										this.props.toSetViewModelsValue(['DRAWER-UPDATE'], { width: 640 });
 									}
 								}}
 							/>
