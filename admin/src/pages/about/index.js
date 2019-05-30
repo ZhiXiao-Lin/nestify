@@ -33,7 +33,7 @@ const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
 const MODEL_NAME = 'contents';
-const DETAIL_URL = '/studio/newsdetail';
+const DETAIL_URL = '/studio/contentdetail';
 
 @connect(({ contents, loading }) => ({
 	data: contents.data,

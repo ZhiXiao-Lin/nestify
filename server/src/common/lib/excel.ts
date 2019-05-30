@@ -73,7 +73,7 @@ export class ExcelHelper {
 					break;
 			}
 
-			info[sheetMap.map] = item;
+			info[sheetMap.map || worksheet.name] = item;
 		});
 
 		return info;
