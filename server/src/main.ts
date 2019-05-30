@@ -32,6 +32,7 @@ async function bootstrap() {
 	const fastify = Fastify();
 
 	fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
+
 	fastify.register(RateLimit, {
 		timeWindow: 1,
 		max: 5

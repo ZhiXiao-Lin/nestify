@@ -9,7 +9,7 @@ import { ExcelHandleType } from '../lib/excel';
 import { textInterception } from '../lib/helper';
 
 const handleType = ExcelHandleType.ARRAY;
-const cellsMap = { 标题: 'title', 作者: 'author', 来源: 'source', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail' };
+const cellsMap = { 标题: 'title', 作者: 'author', 来源: 'source', 排序: 'sort', 发布时间: 'publish_at', 正文: 'text', 缩略图: 'thumbnail', 视频: 'video' };
 const rowsMap = {
 	id: {
 		header: '编号',
@@ -29,7 +29,12 @@ const rowsMap = {
 	thumbnailPath: {
 		header: '缩略图',
 		key: 'thumbnail',
-		handler: (val) => Content.getFullThumbnailPath(val)
+		handler: (val) => Content.getFullPath(val)
+	},
+	videoPath: {
+		header: '视频',
+		key: 'video',
+		handler: (val) => Content.getFullPath(val)
 	},
 	summary: {
 		header: '摘要',
@@ -70,6 +75,9 @@ export class Content extends Base {
 
 	@Column({ comment: '缩略图', default: '' })
 	thumbnail: string;
+
+	@Column({ comment: '视频', default: '' })
+	video: string;
 
 	@Column({ comment: '摘要', default: '' })
 	summary: string;
@@ -210,13 +218,18 @@ export class Content extends Base {
 		return plainToClass(Content, target);
 	}
 
-	static getFullThumbnailPath(path) {
+	static getFullPath(path) {
 		return `${config.serverUrl}/${config.static.root}${path}`;
 	}
 
 	@Expose()
 	get thumbnailPath(): string {
-		return Content.getFullThumbnailPath(this.thumbnail);
+		return Content.getFullPath(this.thumbnail);
+	}
+
+	@Expose()
+	get videoPath(): string {
+		return Content.getFullPath(this.video);
 	}
 
 	@BeforeInsert()

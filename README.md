@@ -8,6 +8,7 @@
 - Nextjs
 - Fastify
 - TypeORM
+- PostgreSQL
 - Ant Design
 
 ## 协议

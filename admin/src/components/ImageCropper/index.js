@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Modal, Upload, Button, Icon } from 'antd';
+import { Modal, Upload, Icon } from 'antd';
 import AvatarEditor from 'react-avatar-editor';
 
 const gEditorStyle = { display: 'block', margin: '10px auto' };
@@ -13,7 +13,7 @@ export function dataURLtoBlob(dataurl) {
 	while (n--) {
 		u8arr[n] = bstr.charCodeAt(n);
 	}
-	return new Blob([ u8arr ], {
+	return new Blob([u8arr], {
 		type: mime
 	});
 }
@@ -38,7 +38,7 @@ export default class ImageCropper extends React.Component {
 		}));
 
 		const self = this;
-		const scrollFunc = function(e) {
+		const scrollFunc = function (e) {
 			// var direct = 0;
 			e = e || window.event;
 			if (e.wheelDelta) {
@@ -159,8 +159,8 @@ export default class ImageCropper extends React.Component {
 								<p className="ant-upload-hint">图片大小不超过2M</p>
 							</Fragment>
 						) : (
-							<img style={{ maxWidth: width }} src={imageUrl} />
-						)}
+								<img style={{ maxWidth: width }} src={imageUrl} />
+							)}
 					</div>
 				</Upload>
 
@@ -169,14 +169,14 @@ export default class ImageCropper extends React.Component {
 					title="图片裁剪"
 					okText="确认"
 					cancelText="取消"
-					width={620}
-					height={620}
+					width={width + 100}
+					height={height}
 					onOk={this.toUpload}
 					onCancel={this.toCloseModal}
 				>
 					<AvatarEditor
 						border={2}
-						color={[ 72, 118, 255, 1 ]}
+						color={[72, 118, 255, 1]}
 						style={gEditorStyle}
 						ref={this.setEditorRef}
 						image={imageFile}
