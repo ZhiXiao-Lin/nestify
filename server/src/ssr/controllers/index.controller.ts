@@ -1,17 +1,29 @@
+import { RedisService } from 'nestjs-redis';
+import { Redis } from 'ioredis';
 import { Controller, Req, Res, Param, Query, Get, Post, Session } from '@nestjs/common';
 import { CommonService } from '../../common/services/common.service';
 import { ContentService } from '../../common/services/content.service';
 
 @Controller()
 export class IndexController {
-	constructor(private readonly commonService: CommonService, private readonly contentService: ContentService) { }
+
+	redisClient: Redis;
+
+	constructor(
+		private readonly commonService: CommonService,
+		private readonly contentService: ContentService,
+		private readonly redisService: RedisService
+	) {
+		this.redisClient = this.redisService.getClient();
+	}
 
 	@Get()
-	async index(@Req() req, @Res() res, @Param() params, @Query() query, @Session() session) {
+	async index(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		console.log("-------", session)
-		console.log("-------", session.sessionId)
+		await this.redisClient.set('test', 'test');
+
+		console.log(await this.redisClient.get('test'));
 
 		return res.render('/', {
 			siteInfo
