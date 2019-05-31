@@ -1,19 +1,20 @@
-import { Controller, Req, Res, Param, Query, Get, Post, UseInterceptors } from '@nestjs/common';
+import { Controller, Req, Res, Param, Query, Get, Post, Session } from '@nestjs/common';
 import { CommonService } from '../../common/services/common.service';
 import { ContentService } from '../../common/services/content.service';
-import { ClassSerializerInterceptor } from '@nestjs/common';
 
 @Controller()
-@UseInterceptors(ClassSerializerInterceptor)
 export class IndexController {
-	constructor(private readonly commonService: CommonService, private readonly contentService: ContentService) {}
+	constructor(private readonly commonService: CommonService, private readonly contentService: ContentService) { }
 
 	@Get()
-	async index(@Req() req, @Res() res, @Param() params, @Query() query) {
+	async index(@Req() req, @Res() res, @Param() params, @Query() query, @Session() session) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/', { 
-			siteInfo 
+		console.log("-------", session)
+		console.log("-------", session.sessionId)
+
+		return res.render('/', {
+			siteInfo
 		});
 	}
 
@@ -25,16 +26,18 @@ export class IndexController {
 		// /content/development
 		// /content/instructions
 
+
 		const result = await this.contentService.query({ category: '景区介绍', page: 0, pageSize: 10 });
 
 		console.log('【！！！】', result);
 
+
 		const { category } = query;
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/intro', { 
+		return res.render('/intro', {
 			type: 'content',
-			siteInfo 
+			siteInfo
 		});
 	}
 
@@ -70,7 +73,7 @@ export class IndexController {
 
 		return res.render('/intro', {
 			type: id ? 'imageDetail' : 'image',
-			siteInfo 
+			siteInfo
 		});
 	}
 
@@ -84,7 +87,7 @@ export class IndexController {
 
 		return res.render('/intro', {
 			type: id ? 'videoDetail' : 'video',
-			siteInfo 
+			siteInfo
 		});
 	}
 
@@ -95,8 +98,8 @@ export class IndexController {
 	async announcement(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/announcement', { 
-			siteInfo 
+		return res.render('/announcement', {
+			siteInfo
 		});
 	}
 
@@ -104,8 +107,8 @@ export class IndexController {
 	async concact(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/concact', { 
-			siteInfo 
+		return res.render('/concact', {
+			siteInfo
 		});
 	}
 
@@ -113,8 +116,8 @@ export class IndexController {
 	async message(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/message', { 
-			siteInfo 
+		return res.render('/message', {
+			siteInfo
 		});
 	}
 
@@ -122,8 +125,8 @@ export class IndexController {
 	async suggestions(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		return res.render('/suggestions', { 
-			siteInfo 
+		return res.render('/suggestions', {
+			siteInfo
 		});
 	}
 

@@ -6,6 +6,9 @@ import * as ServeStatic from 'serve-static';
 import * as FileUpload from 'fastify-file-upload';
 import * as Helmet from 'fastify-helmet';
 import * as RateLimit from 'fastify-rate-limit';
+import * as Cookie from 'fastify-cookie';
+import * as Session from 'fastify-session';
+import * as ConnectRedis from 'connect-redis';
 import { config } from './config';
 import { resolve } from 'path';
 import { NestFactory } from '@nestjs/core';
@@ -43,6 +46,14 @@ async function bootstrap() {
 		limits: { fileSize: 50 * 1024 * 1024 }
 	});
 
+	fastify.register(Cookie);
+
+	const RedisStore = ConnectRedis(Session);
+	fastify.register(Session, {
+		store: new RedisStore(config.redis),
+		...config.session
+	});
+
 	fastify.addHook('onRequest', (req, reply, next) => {
 		reply['render'] = async (path, data = {}) => {
 			req.query.data = data;
@@ -58,6 +69,20 @@ async function bootstrap() {
 	fastify.get('/admin/*', async (req, reply) => {
 		const content = await readFileAsync(resolve('../admin/dist/index.html'));
 		reply.code(200).type('text/html').send(content);
+	});
+	fastify.get('/ccc', (req, reply) => {
+		req.session.test = 'ccc'
+		reply
+			.setCookie('foo', 'foo', {
+				domain: 'example.com',
+				path: '/'
+			})
+			.send({ sessionId: req.session.sessionId })
+	});
+	fastify.get('/sss', (req, reply) => {
+
+		reply
+			.send({ test: req.session.test, sessionId: req.session.sessionId })
 	});
 
 	// Nestjs

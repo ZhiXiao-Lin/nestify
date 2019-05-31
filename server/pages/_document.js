@@ -12,7 +12,12 @@ export default class extends Document {
 	}
 
 	render() {
-		const { data: { siteInfo: { setting, seo } } } = this.props;
+		const { data } = this.props;
+
+		const siteInfo = data ? data.siteInfo : {};
+		const setting = siteInfo.setting || {};
+		const seo = siteInfo.seo || {};
+
 		return (
 			<html>
 				<Head>
