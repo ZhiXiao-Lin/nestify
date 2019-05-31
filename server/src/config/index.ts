@@ -48,7 +48,7 @@ let config = {
 		password: '123456',
 		dropSchema: false,
 		synchronize: false,
-		logging: false,
+		logging: true,
 		entities: [resolve('./**/*.entity.ts')]
 	}
 };

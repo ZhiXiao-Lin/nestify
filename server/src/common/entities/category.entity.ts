@@ -19,6 +19,9 @@ export class Category extends Base {
 	@Column({ comment: '排序', default: 0 })
 	sort: number;
 
+	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
+	ex_info: any;
+
 	@OneToMany((type) => Content, (content) => content.category)
 	contents: Content[];
 

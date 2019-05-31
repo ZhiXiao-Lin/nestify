@@ -15,6 +15,9 @@ export class User extends Base {
 	@Column({ comment: '密码' })
 	password: string;
 
+	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
+	ex_info: any;
+
 	static create(target: Object) {
 		return plainToClass(User, target);
 	}
