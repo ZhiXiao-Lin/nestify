@@ -105,9 +105,11 @@ export class ExcelHelper {
 		const rowsMap = sheetsMap.rowsMap;
 
 		const columns = fields.map(item => {
-			rowsMap[item].key = rowsMap[item].key ? rowsMap[item].key : item;
-			return rowsMap[item];
-		});
+			if (!!rowsMap[item]) {
+				rowsMap[item].key = rowsMap[item].key ? rowsMap[item].key : item;
+				return rowsMap[item];
+			}
+		}).filter(item => !!item);
 
 		const rows = dataSource.map(item => {
 			const row = {};
@@ -115,11 +117,17 @@ export class ExcelHelper {
 			Object.keys(rowsMap).forEach(key => {
 
 				if (fields.includes(key)) {
-
 					const handler = rowsMap[key].handler || (val => val);
 					const headerKey = rowsMap[key].key || key;
 
-					row[headerKey] = handler(item[headerKey]);
+					const obj = key.split('.');
+
+					if (_.isArray(obj) && obj.length >= 2) {
+						row[key] = handler(item[obj[0]]);
+					} else {
+						row[headerKey] = handler(item[headerKey]);
+					}
+					console.log(row)
 				}
 			});
 

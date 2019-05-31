@@ -21,7 +21,10 @@ export default {
 			total: 0,
 			totalPage: 0,
 			list: []
-		}
+		},
+		showQueryCondition: false,
+		columns: [],
+		fields: []
 	},
 
 	effects: {
@@ -85,7 +88,7 @@ export default {
 						selectedNode: res
 					}
 				});
-				message.success('修改成功');
+				message.success('保存成功');
 			}
 		},
 		*remove({ payload }, { call, select }) {
@@ -96,6 +99,8 @@ export default {
 					selectedRows: selectedRows.map((item) => item.id).join(',')
 				}
 			});
+
+			payload.callback && payload.callback();
 		},
 		*export({ payload }, { call, select }) {
 			message.loading('正在执行导出', 0);

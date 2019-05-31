@@ -24,8 +24,6 @@ export class ImportService {
 	async importNews(file) {
 		const res = await ExcelHelper.loadFromBuffer(file.data, Content.sheetsMap);
 
-		console.log(res);
-
 		Object.keys(res).forEach(async (key) => {
 			const category = await this.categoryService.findOneByName(key);
 

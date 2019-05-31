@@ -1,4 +1,5 @@
 import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column } from 'typeorm';
+import { config } from '../../config';
 import { RowStatus } from '../aspects/enum';
 import { Exclude } from 'class-transformer';
 
@@ -23,4 +24,15 @@ export abstract class Base {
 		comment: '更新时间'
 	})
 	update_at: number;
+
+	static getFullPath(path: string) {
+		const staticRoot = `${config.serverUrl}/${config.static.root}`;
+
+		if (!!path) {
+			return path.startsWith('/') ? `${staticRoot}${path}` : path;
+		}
+
+		return '';
+	}
+
 }
