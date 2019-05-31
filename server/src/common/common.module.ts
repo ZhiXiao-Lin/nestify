@@ -2,6 +2,7 @@ import { Module, Global, CacheModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { RedisModule } from 'nestjs-redis'
 import { ScheduleModule } from 'nest-schedule';
 import { config } from '../config';
 import { UserService } from './services/user.service';
@@ -22,6 +23,7 @@ import { ContentService } from './services/content.service';
 		// CacheModule.register({
 		// 	...config.cache
 		// }),
+		RedisModule.register(config.redis),
 		ScheduleModule.register(),
 		PassportModule.register({ defaultStrategy: 'jwt' }),
 		JwtModule.register(config.jwt),
