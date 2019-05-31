@@ -6,10 +6,6 @@ export abstract class Base {
 	@PrimaryGeneratedColumn('uuid') id: string;
 
 	@Exclude()
-	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
-	ex_info: any;
-
-	@Exclude()
 	@Column({
 		type: 'enum',
 		default: RowStatus.NORMAL,

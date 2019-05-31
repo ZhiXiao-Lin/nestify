@@ -70,20 +70,6 @@ async function bootstrap() {
 		const content = await readFileAsync(resolve('../admin/dist/index.html'));
 		reply.code(200).type('text/html').send(content);
 	});
-	fastify.get('/ccc', (req, reply) => {
-		req.session.test = 'ccc'
-		reply
-			.setCookie('foo', 'foo', {
-				domain: 'example.com',
-				path: '/'
-			})
-			.send({ sessionId: req.session.sessionId })
-	});
-	fastify.get('/sss', (req, reply) => {
-
-		reply
-			.send({ test: req.session.test, sessionId: req.session.sessionId })
-	});
 
 	// Nestjs
 	const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(fastify));
