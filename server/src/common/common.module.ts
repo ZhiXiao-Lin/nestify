@@ -15,7 +15,6 @@ import { SettingService } from './services/setting.service';
 import { ImportService } from './services/import.service';
 import { CategoryService } from './services/category.service';
 import { ContentService } from './services/content.service';
-import { IndexTask } from './tasks/index.task';
 
 @Global()
 @Module({
@@ -37,7 +36,6 @@ import { IndexTask } from './tasks/index.task';
 		ContentService,
 		UserService,
 		SettingService,
-		IndexTask
 	],
 	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService]
 })
