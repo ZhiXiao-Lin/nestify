@@ -1,10 +1,8 @@
-import { Controller, Req, Res, Param, Query, Get, Post, UseInterceptors } from '@nestjs/common';
+import { Controller, Req, Res, Param, Query, Get, Post } from '@nestjs/common';
 import { CommonService } from '../../common/services/common.service';
 import { ContentService } from '../../common/services/content.service';
-import { ClassSerializerInterceptor } from '@nestjs/common';
 
 @Controller()
-@UseInterceptors(ClassSerializerInterceptor)
 export class IndexController {
 	constructor(private readonly commonService: CommonService, private readonly contentService: ContentService) {}
 
