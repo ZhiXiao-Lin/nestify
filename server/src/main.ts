@@ -31,15 +31,24 @@ async function bootstrap() {
 	const nextjs = Nextjs({ dev });
 	await nextjs.prepare();
 
+	console.log(resolve("../certificate/certificate.pem"))
+
 	// Fastify
-	const fastify = Fastify();
-
-	fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
-
-	fastify.register(RateLimit, {
-		timeWindow: 1,
-		max: 5
+	const fastify = Fastify({
+		http2: true,
+		https: {
+			allowHTTP1: true, // fallback support for HTTP1, not needed
+			cert: await readFileAsync(resolve("./certificate/certificate.pem")),
+			key: await readFileAsync(resolve("./certificate/privatekey.pem"))
+		},
 	});
+
+	// fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
+
+	// fastify.register(RateLimit, {
+	// 	timeWindow: 1,
+	// 	max: 5
+	// });
 
 	fastify.register(FileUpload, {
 		createParentPath: true,
@@ -62,8 +71,14 @@ async function bootstrap() {
 		next();
 	});
 
-	fastify.use('/static', ServeStatic(resolve('static')));
-	fastify.use('/admin', ServeStatic(resolve('../admin/dist')));
+	// fastify.use('/static', ServeStatic(resolve('static')));
+	// fastify.use('/admin', ServeStatic(resolve('../admin/dist')));
+
+	fastify.get('/http2', async (req, reply) => {
+
+		const content = await readFileAsync(resolve("./certificate/certificate.pem"));
+		reply.code(200).type('text/html').send(content);
+	});
 
 	fastify.get('/_next/*', async (req, reply) => await nextjs.handleRequest(req.req, reply.res));
 	fastify.get('/admin/*', async (req, reply) => {
