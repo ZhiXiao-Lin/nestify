@@ -6,6 +6,7 @@ import { BaseService } from './base.service';
 import { Content } from '../entities/content.entity';
 import { CategoryService } from './category.service';
 import { ExcelHelper } from '../lib/excel';
+import { TransformClassToPlain } from 'class-transformer';
 
 @Injectable()
 export class ContentService extends BaseService<Content> {
@@ -16,6 +17,7 @@ export class ContentService extends BaseService<Content> {
 		super(contentRepository);
 	}
 
+	@TransformClassToPlain()
 	async query(payload: any) {
 		const qb = this.contentRepository.createQueryBuilder('t');
 

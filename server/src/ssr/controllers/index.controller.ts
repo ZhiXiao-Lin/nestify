@@ -1,9 +1,12 @@
-import { Controller, Req, Res, Param, Query, Get, Post } from '@nestjs/common';
+import { Controller, Req, Res, Param, Query, Get, Post, UseInterceptors } from '@nestjs/common';
 import { CommonService } from '../../common/services/common.service';
+import { ContentService } from '../../common/services/content.service';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 
 @Controller()
+@UseInterceptors(ClassSerializerInterceptor)
 export class IndexController {
-	constructor(private readonly commonService: CommonService) {}
+	constructor(private readonly commonService: CommonService, private readonly contentService: ContentService) {}
 
 	@Get()
 	async index(@Req() req, @Res() res, @Param() params, @Query() query) {
@@ -21,6 +24,10 @@ export class IndexController {
 		// /content/culture
 		// /content/development
 		// /content/instructions
+
+		const result = await this.contentService.query({ category: '景区介绍', page: 0, pageSize: 10 });
+
+		console.log('【！！！】', result);
 
 		const { category } = query;
 		const siteInfo = await this.commonService.getSiteInfo();
