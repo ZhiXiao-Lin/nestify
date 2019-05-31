@@ -66,3 +66,5 @@ typings/
 
 ### umi ###
 admin/src/pages/.umi
+server/static/uploads/
+!server/static/uploads/.gitkeep
