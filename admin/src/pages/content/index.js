@@ -36,19 +36,11 @@ const MODEL_NAME = 'contents';
 const DETAIL_URL = '/studio/contentdetail';
 
 @connect(({ contents, loading }) => ({
-	data: contents.data,
-	queryParams: contents.queryParams,
-	selectedRows: contents.selectedRows,
-	selectedRowKeys: contents.selectedRowKeys,
+	...contents,
 	loading: loading.models.contents
 }))
 @Form.create()
 export default class extends React.Component {
-	state = {
-		showQueryCondition: false,
-		columns: [],
-		fields: []
-	};
 
 	componentDidMount() {
 		const { match: { params } } = this.props;
@@ -82,7 +74,7 @@ export default class extends React.Component {
 					},
 					{
 						title: '公司名称',
-						dataIndex: 'ex_info.title',
+						dataIndex: 'ex_info.company',
 					},
 					{
 						title: '电话',
@@ -105,7 +97,7 @@ export default class extends React.Component {
 						dataIndex: 'ex_info.postcode',
 					},
 				];
-				fields = ['id', 'ex_info.title', 'ex_info.phone', 'ex_info.fax', 'ex_info.sale', 'ex_info.address', 'ex_info.postcode'];
+				fields = ['id', 'ex_info.company', 'ex_info.phone', 'ex_info.fax', 'ex_info.sale', 'ex_info.address', 'ex_info.postcode'];
 				break;
 			case '留言咨询':
 				columns = [
@@ -122,8 +114,20 @@ export default class extends React.Component {
 						title: '回复',
 						dataIndex: 'ex_info.reply',
 					},
+					{
+						title: '回复时间',
+						dataIndex: 'update_at',
+						sorter: true,
+						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+					},
+					{
+						title: '留言时间',
+						dataIndex: 'create_at',
+						sorter: true,
+						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+					},
 				];
-				fields = ['id', 'ex_info.question', 'ex_info.reply'];
+				fields = ['id', 'ex_info.question', 'ex_info.reply', 'update_at', 'create_at'];
 				break;
 			case '投诉建议':
 				columns = [
@@ -148,8 +152,14 @@ export default class extends React.Component {
 						title: '电话',
 						dataIndex: 'ex_info.phone',
 					},
+					{
+						title: '提交时间',
+						dataIndex: 'create_at',
+						sorter: true,
+						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+					},
 				];
-				fields = ['id', 'ex_info.nickname', 'ex_info.title', 'ex_info.content', 'ex_info.phone'];
+				fields = ['id', 'ex_info.nickname', 'ex_info.title', 'ex_info.content', 'ex_info.phone', 'create_at'];
 				break;
 			default:
 				columns = [
@@ -252,12 +262,16 @@ export default class extends React.Component {
 				break;
 		}
 
-		this.setState(state => ({
-			...state,
-			columns,
-			fields,
-			showQueryCondition
-		}))
+
+
+		this.props.dispatch({
+			type: `${MODEL_NAME}/set`,
+			payload: {
+				columns,
+				fields,
+				showQueryCondition
+			}
+		})
 	}
 
 	loadData = (payload) => {
@@ -276,10 +290,6 @@ export default class extends React.Component {
 		this.loadData({ page: data.page });
 	};
 
-	toImport = () => {
-		this.refresh();
-	};
-
 	toCreate = () => {
 		const { match: { params } } = this.props;
 
@@ -295,9 +305,11 @@ export default class extends React.Component {
 	toRemove = () => {
 		const { dispatch } = this.props;
 		dispatch({
-			type: `${MODEL_NAME}/remove`
+			type: `${MODEL_NAME}/remove`,
+			payload: {
+				callback: () => this.refresh()
+			}
 		});
-		this.refresh();
 	};
 
 	toExport = () => {
@@ -362,8 +374,7 @@ export default class extends React.Component {
 	};
 
 	render() {
-		const { columns, fields, showQueryCondition } = this.state;
-		const { dispatch, data, selectedRows, selectedRowKeys, loading } = this.props;
+		const { dispatch, data, selectedRows, selectedRowKeys, columns, fields, showQueryCondition, loading } = this.props;
 		const { getFieldDecorator } = this.props.form;
 
 		const tableColumns = columns.filter((item) => fields.includes(item.dataIndex));

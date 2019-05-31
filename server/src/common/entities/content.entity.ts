@@ -3,7 +3,6 @@ import * as moment from 'moment';
 import { Entity, Column, ManyToOne, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
-import { config } from '../../config';
 import { Category } from './category.entity';
 import { ExcelHandleType } from '../lib/excel';
 import { textInterception } from '../lib/helper';
@@ -225,12 +224,38 @@ export class Content extends Base {
 		联系方式: {
 			handleType,
 			cellsMap: {
-				公司名称: 'ex_info.title',
+				公司名称: 'ex_info.company',
 				电话: 'ex_info.phone',
 				传真: 'ex_info.fax',
 				销售: 'ex_info.sale',
 				地址: 'ex_info.address',
 				邮编: 'ex_info.postcode'
+			},
+			rowsMap: {
+				'ex_info.company': {
+					header: '公司名称',
+					handler: (val) => val.company
+				},
+				'ex_info.phone': {
+					header: '电话',
+					handler: (val) => val.phone
+				},
+				'ex_info.fax': {
+					header: '传真',
+					handler: (val) => val.fax
+				},
+				'ex_info.sale': {
+					header: '销售',
+					handler: (val) => val.sale
+				},
+				'ex_info.address': {
+					header: '地址',
+					handler: (val) => val.address
+				},
+				'ex_info.postcode': {
+					header: '邮编',
+					handler: (val) => val.postcode
+				},
 			}
 		},
 		留言咨询: {
@@ -238,6 +263,24 @@ export class Content extends Base {
 			cellsMap: {
 				问题: 'ex_info.question',
 				回复: 'ex_info.reply',
+			},
+			rowsMap: {
+				'ex_info.question': {
+					header: '问题',
+					handler: (val) => val.question
+				},
+				'ex_info.reply': {
+					header: '回复',
+					handler: (val) => val.reply
+				},
+				update_at: {
+					header: '回复时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
+				create_at: {
+					header: '留言时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
 			}
 		},
 		投诉建议: {
@@ -247,16 +290,34 @@ export class Content extends Base {
 				标题: 'ex_info.title',
 				内容: 'ex_info.content',
 				电话: 'ex_info.phone',
+			},
+			rowsMap: {
+				'ex_info.nickname': {
+					header: '昵称',
+					handler: (val) => val.nickname
+				},
+				'ex_info.title': {
+					header: '标题',
+					handler: (val) => val.title
+				},
+				'ex_info.content': {
+					header: '内容',
+					handler: (val) => val.content
+				},
+				'ex_info.phone': {
+					header: '电话',
+					handler: (val) => val.phone
+				},
+				create_at: {
+					header: '提交时间',
+					handler: (val) => val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ''
+				},
 			}
 		}
 	};
 
 	static create(target: object): Content | Content[] {
 		return plainToClass(Content, target);
-	}
-
-	static getFullPath(path) {
-		return `${config.serverUrl}/${config.static.root}${path}`;
 	}
 
 	@Expose()

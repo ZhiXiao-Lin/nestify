@@ -45,14 +45,12 @@ export class ContentController {
 	}
 
 	@Post()
-	@UsePipes(new ValidationPipe())
-	async create(@Body() dto: CreateContentDto) {
+	async create(@Body() dto: any) {
 		return await this.contentService.save(dto);
 	}
 
 	@Put()
-	@UsePipes(new ValidationPipe())
-	async update(@Body() dto: UpdateContentDto) {
+	async update(@Body() dto: any) {
 		return await this.contentService.save(dto);
 	}
 
