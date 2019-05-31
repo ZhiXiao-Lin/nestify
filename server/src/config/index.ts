@@ -26,6 +26,19 @@ let config = {
 		max: 1000
 	},
 
+	redis: {
+		host: '127.0.0.1',
+		port: 6379
+	},
+
+	session: {
+		secret: 'some-secret-password-at-least-32-characters-long',
+		cookie: {
+			maxAge: 1000 * 60 * 60 * 3,
+			secure: false
+		}
+	},
+
 	orm: {
 		type: 'postgres',
 		host: '127.0.0.1',
@@ -36,7 +49,7 @@ let config = {
 		dropSchema: false,
 		synchronize: false,
 		logging: true,
-		entities: [ resolve('./**/*.entity.ts') ]
+		entities: [resolve('./**/*.entity.ts')]
 	}
 };
 

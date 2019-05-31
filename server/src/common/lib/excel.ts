@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as Excel from 'exceljs';
 
 export enum ExcelHandleType {
@@ -25,7 +26,11 @@ export class ExcelHelper {
 
 		workbook.eachSheet((worksheet) => {
 			const sheetMap = sheetsMap[worksheet.name];
-			if (!sheetMap) throw new Error(`${worksheet.name} 工作表映射加载失败！`);
+			if (!sheetMap) {
+				console.error(`${worksheet.name} 工作表映射加载失败！`)
+				return;
+			}
+
 			let item = null;
 
 			switch (sheetMap.handleType) {
@@ -64,16 +69,31 @@ export class ExcelHelper {
 
 						const cellObj = {};
 						row.eachCell((cell, cellNumber) => {
-							cellObj[titleArr[cellNumber]] = cell.value;
+
+							const obj = titleArr[cellNumber].split('.');
+
+							if (_.isArray(obj) && obj.length >= 2) {
+								if (!cellObj[obj[0]]) {
+									cellObj[obj[0]] = {};
+								}
+
+								cellObj[obj[0]][obj[1]] = cell.value;
+
+							} else {
+								cellObj[titleArr[cellNumber]] = cell.value;
+							}
+
 						});
 
 						item.push(cellObj);
+
 					});
 				default:
 					break;
 			}
 
 			info[sheetMap.map || worksheet.name] = item;
+
 		});
 
 		return info;

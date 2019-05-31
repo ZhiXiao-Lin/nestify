@@ -114,7 +114,7 @@ export default [
 				name: '联系我们',
 				icon: 'contacts',
 				path: '/studio/about/:channel',
-				component: './about',
+				component: './content',
 				Routes: ['src/pages/Authorized'],
 				authority: AUTHORITY.CONTENT,
 				routes: [

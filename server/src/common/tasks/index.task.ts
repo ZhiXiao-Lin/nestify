@@ -1,5 +1,8 @@
+import * as pidusage from 'pidusage';
+import * as util from 'util';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
+
 
 @Injectable()
 export class IndexTask extends NestSchedule {
@@ -18,17 +21,24 @@ export class IndexTask extends NestSchedule {
 
     @Cron('2 * * * * *')
     async cronJob() {
-        Logger.log('执行定时任务');
+        Logger.log('定时任务');
+
+        const status = await pidusage(process.pid);
+        Logger.log(status);
     }
 
     @Timeout(5000)
     onceJob() {
-        Logger.log('执行延时任务');
+        Logger.log('延时任务');
     }
 
-    @Interval(2000)
-    intervalJob() {
-        Logger.log('执行间隔任务' + this.i + '次');
+    @Interval(5000)
+    async intervalJob() {
+        Logger.log('间隔任务' + this.i + '次');
+
+        const status = await pidusage(process.pid);
+        Logger.log(status);
+
         return this.i++ > 4;
     }
 }

@@ -6,6 +6,9 @@ import * as ServeStatic from 'serve-static';
 import * as FileUpload from 'fastify-file-upload';
 import * as Helmet from 'fastify-helmet';
 import * as RateLimit from 'fastify-rate-limit';
+import * as Cookie from 'fastify-cookie';
+import * as Session from 'fastify-session';
+import * as ConnectRedis from 'connect-redis';
 import { config } from './config';
 import { resolve } from 'path';
 import { NestFactory } from '@nestjs/core';
@@ -41,6 +44,14 @@ async function bootstrap() {
 	fastify.register(FileUpload, {
 		createParentPath: true,
 		limits: { fileSize: 50 * 1024 * 1024 }
+	});
+
+	fastify.register(Cookie);
+
+	const RedisStore = ConnectRedis(Session);
+	fastify.register(Session, {
+		store: new RedisStore(config.redis),
+		...config.session
 	});
 
 	fastify.addHook('onRequest', (req, reply, next) => {

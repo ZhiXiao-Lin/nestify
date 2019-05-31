@@ -8,6 +8,9 @@ export class Setting extends Base {
 	@Column({ comment: '标志', unique: true })
 	token: string;
 
+	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
+	ex_info: any;
+
 	static readonly sheetsMap: object = {
 		系统设置: {
 			map: 'setting',

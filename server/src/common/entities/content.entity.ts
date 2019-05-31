@@ -64,7 +64,7 @@ const rowsMap = {
 
 @Entity()
 export class Content extends Base {
-	@Column({ comment: '标题' })
+	@Column({ comment: '标题', default: '' })
 	title: string;
 
 	@Column({ comment: '作者', default: '' })
@@ -94,8 +94,12 @@ export class Content extends Base {
 	@Column({ type: 'bigint', comment: '浏览量', default: 0 })
 	views: number;
 
+	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
+	ex_info: any;
+
 	@Column({
 		type: 'timestamp',
+		default: null,
 		comment: '发布时间'
 	})
 	publish_at: string;
@@ -218,6 +222,33 @@ export class Content extends Base {
 			cellsMap,
 			rowsMap,
 		},
+		联系方式: {
+			handleType,
+			cellsMap: {
+				公司名称: 'ex_info.title',
+				电话: 'ex_info.phone',
+				传真: 'ex_info.fax',
+				销售: 'ex_info.sale',
+				地址: 'ex_info.address',
+				邮编: 'ex_info.postcode'
+			}
+		},
+		留言咨询: {
+			handleType,
+			cellsMap: {
+				问题: 'ex_info.question',
+				回复: 'ex_info.reply',
+			}
+		},
+		投诉建议: {
+			handleType,
+			cellsMap: {
+				昵称: 'ex_info.nickname',
+				标题: 'ex_info.title',
+				内容: 'ex_info.content',
+				电话: 'ex_info.phone',
+			}
+		}
 	};
 
 	static create(target: object): Content | Content[] {

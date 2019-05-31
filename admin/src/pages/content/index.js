@@ -45,104 +45,15 @@ const DETAIL_URL = '/studio/contentdetail';
 @Form.create()
 export default class extends React.Component {
 	state = {
-		columns: [
-			{
-				title: '详情',
-				dataIndex: 'id',
-				render: (val) => <a onClick={this.toDetail(val)}>详情</a>
-			},
-			{
-				title: '图片',
-				dataIndex: 'thumbnailPath',
-				render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
-			},
-			{
-				title: '视频',
-				dataIndex: 'videoPath',
-				render: (val) => val
-			},
-			{
-				title: '标题',
-				dataIndex: 'title',
-				render: (val) => {
-
-					const { queryParams: { keyword } } = this.props;
-
-					const reg = new RegExp(keyword, 'gi');
-
-
-					return !!keyword ? val.toString().split(reg).map(
-						(text, i) =>
-							i > 0
-								? [
-									<span key={i} col={i} style={{ color: 'red' }}>
-										<b>{val.toString().match(reg)[0]}</b>
-									</span>,
-									text
-								]
-								: text
-					) : val;
-				}
-			},
-			{
-				title: '作者',
-				dataIndex: 'author'
-			},
-			{
-				title: '分类',
-				dataIndex: 'category',
-				render: val => val.name
-			},
-			{
-				title: '来源',
-				dataIndex: 'source'
-			},
-			{
-				title: '摘要',
-				dataIndex: 'summary'
-			},
-			{
-				title: '地址',
-				dataIndex: 'address'
-			},
-			{
-				title: '排序',
-				dataIndex: 'sort',
-				sorter: true
-			},
-			{
-				title: '浏览量',
-				dataIndex: 'views',
-				sorter: true
-			},
-			{
-				title: '发布时间',
-				dataIndex: 'publish_at',
-				sorter: true,
-				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-			},
-			{
-				title: '修改时间',
-				dataIndex: 'update_at',
-				sorter: true,
-				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-			},
-			{
-				title: '创建时间',
-				dataIndex: 'create_at',
-				sorter: true,
-				render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-			},
-			{
-				title: '正文',
-				dataIndex: 'text',
-				render: val => '略'
-			},
-		],
-		fields: ['id', 'thumbnailPath', 'title', 'author', 'source', 'sort', 'views', 'publish_at', 'update_at']
+		showQueryCondition: false,
+		columns: [],
+		fields: []
 	};
 
 	componentDidMount() {
+		const { match: { params } } = this.props;
+
+		this.init(params.channel);
 		this.onReset();
 		this.refresh();
 	}
@@ -150,9 +61,203 @@ export default class extends React.Component {
 	componentWillReceiveProps(nextProps) {
 		const { match: { params } } = nextProps;
 		if (this.props.match.params.channel !== params.channel) {
-
+			this.init(params.channel);
 			this.loadData({ page: 0, category: params.channel });
 		}
+	}
+
+	init = (channel) => {
+
+		let columns = [];
+		let fields = [];
+		let showQueryCondition = false;
+
+		switch (channel) {
+			case '联系方式':
+				columns = [
+					{
+						title: '详情',
+						dataIndex: 'id',
+						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
+					},
+					{
+						title: '公司名称',
+						dataIndex: 'ex_info.title',
+					},
+					{
+						title: '电话',
+						dataIndex: 'ex_info.phone',
+					},
+					{
+						title: '传真',
+						dataIndex: 'ex_info.fax',
+					},
+					{
+						title: '销售',
+						dataIndex: 'ex_info.sale',
+					},
+					{
+						title: '地址',
+						dataIndex: 'ex_info.address',
+					},
+					{
+						title: '邮编',
+						dataIndex: 'ex_info.postcode',
+					},
+				];
+				fields = ['id', 'ex_info.title', 'ex_info.phone', 'ex_info.fax', 'ex_info.sale', 'ex_info.address', 'ex_info.postcode'];
+				break;
+			case '留言咨询':
+				columns = [
+					{
+						title: '详情',
+						dataIndex: 'id',
+						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
+					},
+					{
+						title: '问题',
+						dataIndex: 'ex_info.question',
+					},
+					{
+						title: '回复',
+						dataIndex: 'ex_info.reply',
+					},
+				];
+				fields = ['id', 'ex_info.question', 'ex_info.reply'];
+				break;
+			case '投诉建议':
+				columns = [
+					{
+						title: '详情',
+						dataIndex: 'id',
+						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
+					},
+					{
+						title: '昵称',
+						dataIndex: 'ex_info.nickname',
+					},
+					{
+						title: '标题',
+						dataIndex: 'ex_info.title',
+					},
+					{
+						title: '内容',
+						dataIndex: 'ex_info.content',
+					},
+					{
+						title: '电话',
+						dataIndex: 'ex_info.phone',
+					},
+				];
+				fields = ['id', 'ex_info.nickname', 'ex_info.title', 'ex_info.content', 'ex_info.phone'];
+				break;
+			default:
+				columns = [
+					{
+						title: '详情',
+						dataIndex: 'id',
+						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
+					},
+					{
+						title: '图片',
+						dataIndex: 'thumbnailPath',
+						render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
+					},
+					{
+						title: '视频',
+						dataIndex: 'videoPath',
+						render: (val) => val
+					},
+					{
+						title: '标题',
+						dataIndex: 'title',
+						render: (val) => {
+
+							const { queryParams: { keyword } } = this.props;
+
+							const reg = new RegExp(keyword, 'gi');
+
+
+							return !!keyword ? val.toString().split(reg).map(
+								(text, i) =>
+									i > 0
+										? [
+											<span key={i} col={i} style={{ color: 'red' }}>
+												<b>{val.toString().match(reg)[0]}</b>
+											</span>,
+											text
+										]
+										: text
+							) : val;
+						}
+					},
+					{
+						title: '作者',
+						dataIndex: 'author'
+					},
+					{
+						title: '分类',
+						dataIndex: 'category',
+						render: val => val.name
+					},
+					{
+						title: '来源',
+						dataIndex: 'source'
+					},
+					{
+						title: '摘要',
+						dataIndex: 'summary'
+					},
+					{
+						title: '地址',
+						dataIndex: 'address'
+					},
+					{
+						title: '排序',
+						dataIndex: 'sort',
+						sorter: true
+					},
+					{
+						title: '浏览量',
+						dataIndex: 'views',
+						sorter: true
+					},
+					{
+						title: '发布时间',
+						dataIndex: 'publish_at',
+						sorter: true,
+						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+					},
+					{
+						title: '修改时间',
+						dataIndex: 'update_at',
+						sorter: true,
+						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+					},
+					{
+						title: '创建时间',
+						dataIndex: 'create_at',
+						sorter: true,
+						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
+					},
+					{
+						title: '正文',
+						dataIndex: 'text',
+						render: val => '略'
+					},
+				];
+
+				fields = ['id', 'thumbnailPath', 'title', 'author', 'source', 'sort', 'views', 'publish_at', 'update_at'];
+				showQueryCondition = true;
+				break;
+		}
+
+		this.setState(state => ({
+			...state,
+			columns,
+			fields,
+			showQueryCondition
+		}))
 	}
 
 	loadData = (payload) => {
@@ -257,7 +362,7 @@ export default class extends React.Component {
 	};
 
 	render() {
-		const { columns, fields } = this.state;
+		const { columns, fields, showQueryCondition } = this.state;
 		const { dispatch, data, selectedRows, selectedRowKeys, loading } = this.props;
 		const { getFieldDecorator } = this.props.form;
 
@@ -310,73 +415,75 @@ export default class extends React.Component {
 		return (
 			<Layout>
 				<Content className={styles.normal}>
-					<Collapse defaultActiveKey={['1']}>
-						<Panel header="查询条件" key="1">
-							<Form
-								onSubmit={this.onSubmit}
-								style={{
-									padding: 5,
-									marginBottom: 20
-								}}
-							>
-								<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
-									{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
-								</Form.Item>
+					{showQueryCondition ?
+						<Collapse defaultActiveKey={['1']}>
+							<Panel header="查询条件" key="1">
+								<Form
+									onSubmit={this.onSubmit}
+									style={{
+										padding: 5,
+										marginBottom: 20
+									}}
+								>
+									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
+										{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
+									</Form.Item>
 
-								<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
-									{getFieldDecorator('publish_at')(
-										<RangePicker
-											showTime
-											format="YYYY-MM-DD HH:mm:ss"
-											locale={{
-												lang: {
-													placeholder: 'Select date',
-													rangePlaceholder: ['开始时间', '结束时间'],
-													today: 'Today',
-													now: 'Now',
-													backToToday: 'Back to today',
-													ok: 'Ok',
-													clear: 'Clear',
-													month: 'Month',
-													year: 'Year',
-													timeSelect: 'Select time',
-													dateSelect: 'Select date',
-													monthSelect: 'Choose a month',
-													yearSelect: 'Choose a year',
-													decadeSelect: 'Choose a decade',
-													yearFormat: 'YYYY',
-													dateFormat: 'M/D/YYYY',
-													dayFormat: 'D',
-													dateTimeFormat: 'M/D/YYYY HH:mm:ss',
-													monthFormat: 'MMMM',
-													monthBeforeYear: true,
-													previousMonth: 'Previous month (PageUp)',
-													nextMonth: 'Next month (PageDown)',
-													previousYear: 'Last year (Control + left)',
-													nextYear: 'Next year (Control + right)',
-													previousDecade: 'Last decade',
-													nextDecade: 'Next decade',
-													previousCentury: 'Last century',
-													nextCentury: 'Next century'
-												}
-											}}
-										/>
-									)}
-								</Form.Item>
+									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
+										{getFieldDecorator('publish_at')(
+											<RangePicker
+												showTime
+												format="YYYY-MM-DD HH:mm:ss"
+												locale={{
+													lang: {
+														placeholder: 'Select date',
+														rangePlaceholder: ['开始时间', '结束时间'],
+														today: 'Today',
+														now: 'Now',
+														backToToday: 'Back to today',
+														ok: 'Ok',
+														clear: 'Clear',
+														month: 'Month',
+														year: 'Year',
+														timeSelect: 'Select time',
+														dateSelect: 'Select date',
+														monthSelect: 'Choose a month',
+														yearSelect: 'Choose a year',
+														decadeSelect: 'Choose a decade',
+														yearFormat: 'YYYY',
+														dateFormat: 'M/D/YYYY',
+														dayFormat: 'D',
+														dateTimeFormat: 'M/D/YYYY HH:mm:ss',
+														monthFormat: 'MMMM',
+														monthBeforeYear: true,
+														previousMonth: 'Previous month (PageUp)',
+														nextMonth: 'Next month (PageDown)',
+														previousYear: 'Last year (Control + left)',
+														nextYear: 'Next year (Control + right)',
+														previousDecade: 'Last decade',
+														nextDecade: 'Next decade',
+														previousCentury: 'Last century',
+														nextCentury: 'Next century'
+													}
+												}}
+											/>
+										)}
+									</Form.Item>
 
-								<Row>
-									<Col span={12} offset={3}>
-										<Button type="primary" htmlType="submit">
-											<Icon type="search" />搜索
+									<Row>
+										<Col span={12} offset={3}>
+											<Button type="primary" htmlType="submit">
+												<Icon type="search" />搜索
 										</Button>
-										<Button style={{ marginLeft: 8 }} onClick={this.onReset}>
-											<Icon type="undo" />重置
+											<Button style={{ marginLeft: 8 }} onClick={this.onReset}>
+												<Icon type="undo" />重置
 										</Button>
-									</Col>
-								</Row>
-							</Form>
-						</Panel>
-					</Collapse>
+										</Col>
+									</Row>
+								</Form>
+							</Panel>
+						</Collapse> : ''
+					}
 					<Divider orientation="left" />
 					<Row className="filter-row" gutter={6}>
 						<Col className="gutter-row" span={10}>
