@@ -27,6 +27,7 @@ export default {
     },
     *logout(_, { call, put }) {
       localStorage.removeItem('token');
+      sessionStorage.removeItem('currentUser');
 
       yield put({
         type: 'set',
@@ -42,7 +43,11 @@ export default {
 
       if (!currentUser) return false;
 
-      const { referrer } = yield select((state) => state.routing.location.state);
+      const { state } = yield select((state) => state.routing.location);
+
+      const referrer = state ? state.referrer : null;
+
+      sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
 
       yield put({
         type: 'set',
@@ -51,10 +56,12 @@ export default {
         },
       });
 
-      router.replace({
-        pathname: referrer.pathname || '/',
-        query: referrer.query || {},
-      });
+      if (!payload.authorized) {
+        router.replace({
+          pathname: referrer.pathname || '/',
+          query: referrer.query || {},
+        });
+      }
     },
   },
 

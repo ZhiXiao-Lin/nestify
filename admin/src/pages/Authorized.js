@@ -3,23 +3,22 @@ import _ from 'lodash';
 import Redirect from 'umi/redirect';
 import { connect } from 'dva';
 
-@connect(({ user, routing }) => ({
-  currentUser: user.currentUser,
+@connect(({ routing }) => ({
   location: routing.location,
 }))
 class Authorized extends React.Component {
   componentDidMount() {
-    const { currentUser } = this.props;
-
-    if (!currentUser) {
-      this.props.dispatch({
-        type: 'user/fetchCurrentUser',
-      });
-    }
+    this.props.dispatch({
+      type: 'user/fetchCurrentUser',
+    });
   }
 
   render() {
-    const { children, authority, currentUser, location } = this.props;
+    const { children, authority, location } = this.props;
+
+    const userStr = sessionStorage.getItem('currentUser');
+
+    const currentUser = !!userStr ? JSON.parse(userStr) : null;
 
     if (!currentUser) {
       return (
