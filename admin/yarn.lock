@@ -952,6 +952,7 @@
 "@babel/runtime@^7.1.5":
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.3.1.tgz#574b03e8e8a9898eaf4a872a92ea20b7846f6f2a"
+  integrity sha1-V0sD6OipiY6vSocqkuogt4Rvbyo=
   dependencies:
     regenerator-runtime "^0.12.0"
 
@@ -998,6 +999,7 @@
 "@icons/material@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
+  integrity sha1-6QyfcXaLNzbnbX3WeD/Gwq+oi8g=
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -3860,6 +3862,7 @@ data-urls@^1.0.0, data-urls@^1.1.0:
 date-arithmetic@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/date-arithmetic/-/date-arithmetic-3.1.0.tgz#1fcd03dbd504b9dbee2b9078c85a5f1c7d3cc2d3"
+  integrity sha1-H80D29UEudvuK5B4yFpfHH08wtM=
 
 date-fns@^1.27.2:
   version "1.30.1"
@@ -4206,6 +4209,7 @@ dom-closest@^0.2.0:
 dom-helpers@^3.2.1, dom-helpers@^3.3.1, dom-helpers@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-3.4.0.tgz#e9b369700f959f62ecde5a6babde4bccd9169af8"
+  integrity sha1-6bNpcA+Vn2Ls3lprq95LzNkWmvg=
   dependencies:
     "@babel/runtime" "^7.1.2"
 
@@ -6367,6 +6371,7 @@ image-size@~0.5.0:
 immediate@~3.0.5:
   version "3.0.6"
   resolved "http://registry.npm.taobao.org/immediate/download/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
+  integrity sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
 
 immer@1.7.2:
   version "1.7.2"
@@ -7847,6 +7852,7 @@ levn@^0.3.0, levn@~0.3.0:
 lie@3.1.1:
   version "3.1.1"
   resolved "http://registry.npm.taobao.org/lie/download/lie-3.1.1.tgz#9a436b2cc7746ca59de7a41fa469b3efb76bd87e"
+  integrity sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
   dependencies:
     immediate "~3.0.5"
 
@@ -7979,6 +7985,7 @@ loader-utils@^1.0.2, loader-utils@^1.1.0:
 localforage@^1.7.3:
   version "1.7.3"
   resolved "http://registry.npm.taobao.org/localforage/download/localforage-1.7.3.tgz#0082b3ca9734679e1bd534995bdd3b24cf10f204"
+  integrity sha1-AIKzypc0Z54b1TSZW907JM8Q8gQ=
   dependencies:
     lie "3.1.1"
 
@@ -8210,6 +8217,7 @@ map-visit@^1.0.0:
 material-colors@^1.2.1:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.6.tgz#6d1958871126992ceecc72f4bcc4d8f010865f46"
+  integrity sha1-bRlYhxEmmSzuzHL0vMTY8BCGX0Y=
 
 math-random@^1.0.1:
   version "1.0.1"
@@ -10051,6 +10059,7 @@ prompts@^0.1.9:
 prop-types-extra@^1.0.1, prop-types-extra@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/prop-types-extra/-/prop-types-extra-1.1.0.tgz#32609910ea2dcf190366bacd3490d5a6412a605f"
+  integrity sha1-MmCZEOotzxkDZrrNNJDVpkEqYF8=
   dependencies:
     react-is "^16.3.2"
     warning "^3.0.0"
@@ -10735,6 +10744,7 @@ react-avatar-editor@^11.0.4:
 react-big-calendar@^0.20.3:
   version "0.20.3"
   resolved "https://registry.yarnpkg.com/react-big-calendar/-/react-big-calendar-0.20.3.tgz#a895e11fb6b2ac6ad8cec87a261b7e7c24dbaab0"
+  integrity sha1-qJXhH7ayrGrYzsh6Jht+fCTbqrA=
   dependencies:
     "@babel/runtime" "^7.1.5"
     classnames "^2.2.6"
@@ -10752,6 +10762,7 @@ react-big-calendar@^0.20.3:
 react-color@^2.17.0:
   version "2.17.0"
   resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.17.0.tgz#e14b8a11f4e89163f65a34c8b43faf93f7f02aaa"
+  integrity sha1-4UuKEfTokWP2WjTItD+vk/fwKqo=
   dependencies:
     "@icons/material" "^0.2.4"
     lodash ">4.17.4"
@@ -10897,6 +10908,7 @@ react-native-swipeout@^2.2.2:
 react-overlays@^0.8.3:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/react-overlays/-/react-overlays-0.8.3.tgz#fad65eea5b24301cca192a169f5dddb0b20d3ac5"
+  integrity sha1-+tZe6lskMBzKGSoWn13dsLINOsU=
   dependencies:
     classnames "^2.2.5"
     dom-helpers "^3.2.1"
@@ -10992,6 +11004,7 @@ react-test-renderer@^16.0.0-0:
 react-transition-group@^2.2.0:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.5.3.tgz#26de363cab19e5c88ae5dbae105c706cf953bb92"
+  integrity sha1-Jt42PKsZ5ciK5duuEFxwbPlTu5I=
   dependencies:
     dom-helpers "^3.3.1"
     loose-envify "^1.4.0"
@@ -11019,6 +11032,7 @@ react@16.6.3:
 reactcss@^1.2.0:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/reactcss/-/reactcss-1.2.3.tgz#c00013875e557b1cf0dfd9a368a1c3dab3b548dd"
+  integrity sha1-wAATh15Vexzw39mjaKHD2rO1SN0=
   dependencies:
     lodash "^4.0.1"
 
@@ -13315,6 +13329,7 @@ umi@^2.1.2:
 uncontrollable@^6.0.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/uncontrollable/-/uncontrollable-6.1.0.tgz#45dcf54b76bf07e0ddf7c1a669caf935d2e101d5"
+  integrity sha1-Rdz1S3a/B+Dd98Gmacr5NdLhAdU=
   dependencies:
     invariant "^2.2.4"
 

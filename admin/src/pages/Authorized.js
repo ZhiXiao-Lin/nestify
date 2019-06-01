@@ -1,36 +1,41 @@
 import React, { Fragment } from 'react';
-import Redirect from 'umi/redirect';
 import _ from 'lodash';
-import { message } from 'antd';
+import Redirect from 'umi/redirect';
 import { connect } from 'dva';
 
-@connect(({ user }) => ({
-	currentUser: user.currentUser
+@connect(({ user, routing }) => ({
+  currentUser: user.currentUser,
+  location: routing.location,
 }))
 class Authorized extends React.Component {
-	componentDidMount() {
-		const { currentUser } = this.props;
+  componentDidMount() {
+    const { currentUser } = this.props;
 
-		if (!currentUser) {
-			this.props.dispatch({
-				type: 'user/fetchCurrentUser'
-			});
-		}
-	}
+    if (!currentUser) {
+      this.props.dispatch({
+        type: 'user/fetchCurrentUser',
+      });
+    }
+  }
 
-	render() {
-		const { children, authority, noMatch, currentUser } = this.props;
+  render() {
+    const { children, authority, currentUser, location } = this.props;
 
-		if (!currentUser) {
-			return noMatch;
-		} else {
-			return <Fragment>{children}</Fragment>;
-		}
-	}
+    if (!currentUser) {
+      return (
+        <Redirect
+          to={{
+            pathname: '/user/login',
+            state: { referrer: location },
+          }}
+        />
+      );
+    }
+
+    return <Fragment>{children}</Fragment>;
+  }
 }
 
 export default ({ children }) => (
-	<Authorized authority={children.props.route.authority} noMatch={<Redirect to={'/user/login'} />}>
-		{children}
-	</Authorized>
+  <Authorized authority={children.props.route.authority}>{children}</Authorized>
 );
