@@ -1,10 +1,12 @@
 import { RedisService } from 'nestjs-redis';
 import { Redis } from 'ioredis';
-import { Controller, Req, Res, Param, Query, Get, Post, Session } from '@nestjs/common';
+import * as svgCaptcha from 'svg-captcha';
+import { Controller, Req, Res, Param, Query, Get, Post, Body, Session } from '@nestjs/common';
 import { CommonService } from '../../common/services/common.service';
 import { ContentService } from '../../common/services/content.service';
 
 @Controller()
+
 export class IndexController {
 
 	redisClient: Redis;
@@ -142,7 +144,21 @@ export class IndexController {
 		});
 	}
 
+	@Get('getSVGCode')
+	async getSVGCode(@Req() req, @Res() res, @Body() body, @Param() params, @Query() query) {
+		const svg_obj = await this.commonService.getSVGCode();
+		return res.send(svg_obj);
+	}
 
+	@Post('checkSVGCode')
+	async checkSVGCode(@Req() req, @Res() res, @Body() body, @Param() params, @Query() query) {
+		const { svg_hash, svg_text } = body;
+		const result = await this.commonService.checkSVGCode(svg_hash, svg_text);
+		
+		return res.send({
+			result
+		});
+	}
 
 
 
