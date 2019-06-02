@@ -1,28 +1,13 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import router from 'umi/router';
-import {
-  Tabs,
-  Form,
-  Input,
-  InputNumber,
-  Row,
-  Col,
-  Icon,
-  DatePicker,
-  Button,
-  Skeleton,
-  message,
-} from 'antd';
+import { Tabs, Form, Input, Row, Col, Popconfirm, Button, Icon, Skeleton, message } from 'antd';
 
 import config from '@/config';
 import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
-
-import BraftEditor from 'braft-editor';
-import 'braft-editor/dist/index.css';
+import EditableTable from '@/components/EditableTable';
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -33,7 +18,7 @@ const tailFormItemLayout = {
   wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } },
 };
 
-const MODEL_NAME = 'contents';
+const MODEL_NAME = 'setting';
 
 @Form.create()
 @connect(({ setting }) => ({
@@ -52,10 +37,8 @@ export default class extends React.Component {
     const { dispatch } = this.props;
 
     dispatch({
-      type: `${MODEL_NAME}/set`,
-      payload: {
-        selectedNode: {},
-      },
+      type: `${MODEL_NAME}/detail`,
+      payload: {},
     });
   };
 
@@ -63,7 +46,7 @@ export default class extends React.Component {
     this.setState({ tabKey });
   };
 
-  onThumbnailUpload = async (file) => {
+  onWechatUpload = async (file) => {
     const { dispatch } = this.props;
 
     const res = await apiUploadOne(file);
@@ -72,21 +55,32 @@ export default class extends React.Component {
       dispatch({
         type: `${MODEL_NAME}/save`,
         payload: {
-          thumbnail: res.path,
+          ex_info: {
+            setting: {
+              wechat: res.path,
+            },
+          },
         },
       });
     }
   };
 
-  onEditorMediaUpload = async (context) => {
-    if (!context || !context.file) return;
+  onWeiboUpload = async (file) => {
+    const { dispatch } = this.props;
 
-    const res = await apiUploadOne(context.file);
-    if (!res) {
-      context.error({ error: '上传失败' });
-    } else {
-      context.progress(101);
-      context.success({ url: `${config.STATIC_ROOT}${res.path}` });
+    const res = await apiUploadOne(file);
+
+    if (!!res && !!res.path) {
+      dispatch({
+        type: `${MODEL_NAME}/save`,
+        payload: {
+          ex_info: {
+            setting: {
+              weibo: res.path,
+            },
+          },
+        },
+      });
     }
   };
 
@@ -117,36 +111,6 @@ export default class extends React.Component {
     });
   };
 
-  toSaveRichText = () => {
-    this.props.dispatch({
-      type: `${MODEL_NAME}/save`,
-      payload: {
-        text: this.editorRef.getValue().toHTML(),
-      },
-    });
-  };
-
-  renderRichText = (content) => {
-    const editorProps = {
-      placeholder: '请输入内容',
-      contentFormat: 'html',
-      contentId: content.id,
-      value: BraftEditor.createEditorState(content.text),
-      onSave: this.toSaveRichText,
-      media: {
-        uploadFn: this.onEditorMediaUpload,
-      },
-    };
-    return (
-      <Fragment>
-        <Button type="primary" onClick={this.toSaveRichText}>
-          保存
-        </Button>
-        <BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
-      </Fragment>
-    );
-  };
-
   renderBasicForm = () => {
     const {
       selectedNode,
@@ -154,74 +118,67 @@ export default class extends React.Component {
     } = this.props;
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
-        <Form.Item {...formItemLayout} label="标题">
-          {getFieldDecorator('title', {
-            initialValue: !selectedNode ? null : selectedNode['title'],
+        <Form.Item {...formItemLayout} label="网站标题">
+          {getFieldDecorator('ex_info.setting.title', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['title'],
             rules: [
               {
                 required: true,
-                message: '标题不能为空',
+                message: '网站标题不能为空',
               },
             ],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
+          })(<Input {...formItemStyle} type="text" placeholder="请填写网站标题" />)}
         </Form.Item>
-        <Form.Item {...formItemLayout} label="作者">
-          {getFieldDecorator('author', {
-            initialValue: !selectedNode ? null : selectedNode['author'],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="排序">
-          {getFieldDecorator('sort', {
-            initialValue: !selectedNode ? 0 : selectedNode['sort'],
-          })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="发布时间">
-          {getFieldDecorator('publish_at', {
-            initialValue: !selectedNode['publish_at'] ? null : moment(selectedNode['publish_at']),
+
+        <Form.Item {...formItemLayout} label="ICP备案号">
+          {getFieldDecorator('ex_info.setting.icp', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['icp'],
             rules: [
               {
                 required: true,
-                message: '发布时间不能为空',
+                message: 'ICP备案号不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写ICP备案号" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="公网安备号">
+          {getFieldDecorator('ex_info.setting.pns', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['pns'],
+            rules: [
+              {
+                required: true,
+                message: '公网安备号不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写公网安备号" />)}
+        </Form.Item>
+
+        <Form.Item {...formItemLayout} label="网站描述">
+          {getFieldDecorator('ex_info.setting.recommendation', {
+            initialValue: !selectedNode
+              ? null
+              : selectedNode['ex_info']['setting']['recommendation'],
+            rules: [
+              {
+                required: true,
+                message: '网站描述不能为空',
               },
             ],
           })(
-            <DatePicker
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              locale={{
-                lang: {
-                  placeholder: 'Select date',
-                  rangePlaceholder: ['开始时间', '结束时间'],
-                  today: '今天',
-                  now: '现在',
-                  backToToday: 'Back to today',
-                  ok: 'Ok',
-                  clear: 'Clear',
-                  month: 'Month',
-                  year: 'Year',
-                  timeSelect: '选择时间',
-                  dateSelect: '选择日期',
-                  monthSelect: 'Choose a month',
-                  yearSelect: 'Choose a year',
-                  decadeSelect: 'Choose a decade',
-                  yearFormat: 'YYYY',
-                  dateFormat: 'M/D/YYYY',
-                  dayFormat: 'D',
-                  dateTimeFormat: 'M/D/YYYY HH:mm:ss',
-                  monthFormat: 'MMMM',
-                  monthBeforeYear: true,
-                  previousMonth: 'Previous month (PageUp)',
-                  nextMonth: 'Next month (PageDown)',
-                  previousYear: 'Last year (Control + left)',
-                  nextYear: 'Next year (Control + right)',
-                  previousDecade: 'Last decade',
-                  nextDecade: 'Next decade',
-                  previousCentury: 'Last century',
-                  nextCentury: 'Next century',
-                },
-              }}
-              placeholder="请选择发布日期时间"
-            />
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写网站描述" />
+          )}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="版权信息">
+          {getFieldDecorator('ex_info.setting.copyright', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['copyright'],
+            rules: [
+              {
+                required: true,
+                message: '版权信息不能为空',
+              },
+            ],
+          })(
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写版权信息" />
           )}
         </Form.Item>
 
@@ -240,32 +197,318 @@ export default class extends React.Component {
       </Form>
     );
   };
+  renderDetailForm = () => {
+    const {
+      selectedNode,
+      form: { getFieldDecorator },
+    } = this.props;
+    return (
+      <Form onSubmit={this.submitHandler} className="panel-form">
+        <Form.Item {...formItemLayout} label="开放时间">
+          {getFieldDecorator('ex_info.setting.openInfo', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['openInfo'],
+            rules: [
+              {
+                required: true,
+                message: '开放时间不能为空',
+              },
+            ],
+          })(
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写开放时间" />
+          )}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="在线预定地址">
+          {getFieldDecorator('ex_info.setting.onlineSaleUrl', {
+            initialValue: !selectedNode
+              ? null
+              : selectedNode['ex_info']['setting']['onlineSaleUrl'],
+            rules: [
+              {
+                required: true,
+                message: '在线预定地址不能为空',
+              },
+            ],
+          })(
+            <Input.TextArea
+              rows={5}
+              {...formItemStyle}
+              type="text"
+              placeholder="请填写在线预定地址"
+            />
+          )}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="服务热线">
+          {getFieldDecorator('ex_info.setting.serviceHotline', {
+            initialValue: !selectedNode
+              ? null
+              : selectedNode['ex_info']['setting']['serviceHotline'],
+            rules: [
+              {
+                required: true,
+                message: '服务热线不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写服务热线" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="售票热线">
+          {getFieldDecorator('ex_info.setting.bookingHotline', {
+            initialValue: !selectedNode
+              ? null
+              : selectedNode['ex_info']['setting']['bookingHotline'],
+            rules: [
+              {
+                required: true,
+                message: '售票热线不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写售票热线" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="商务合作热线">
+          {getFieldDecorator('ex_info.setting.cooperationHotline', {
+            initialValue: !selectedNode
+              ? null
+              : selectedNode['ex_info']['setting']['cooperationHotline'],
+            rules: [
+              {
+                required: true,
+                message: '商务合作热线不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写商务合作热线" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="景区办公热线">
+          {getFieldDecorator('ex_info.setting.officeTel', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['officeTel'],
+            rules: [
+              {
+                required: true,
+                message: '景区办公热线不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写景区办公热线" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="邮政编码">
+          {getFieldDecorator('ex_info.setting.postcode', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['postcode'],
+            rules: [
+              {
+                required: true,
+                message: '邮政编码不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写邮政编码" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="传真号码">
+          {getFieldDecorator('ex_info.setting.fax', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['fax'],
+            rules: [
+              {
+                required: true,
+                message: '传真号码不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写传真号码" />)}
+        </Form.Item>
+
+        <Form.Item {...formItemLayout} label="景区地址">
+          {getFieldDecorator('ex_info.setting.address', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['address'],
+            rules: [
+              {
+                required: true,
+                message: '景区地址不能为空',
+              },
+            ],
+          })(
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写景区地址" />
+          )}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="乘车路线">
+          {getFieldDecorator('ex_info.setting.busLine', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['busLine'],
+            rules: [
+              {
+                required: true,
+                message: '乘车路线不能为空',
+              },
+            ],
+          })(
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写乘车路线" />
+          )}
+        </Form.Item>
+
+        <Form.Item {...tailFormItemLayout}>
+          <Row>
+            <Col span={3}>
+              <Button onClick={this.resetHandler}>重置</Button>
+            </Col>
+            <Col>
+              <Button type="primary" htmlType="submit">
+                {!selectedNode['id'] ? '新增' : '保存'}
+              </Button>
+            </Col>
+          </Row>
+        </Form.Item>
+      </Form>
+    );
+  };
+  renderSEOForm = () => {
+    const {
+      selectedNode,
+      form: { getFieldDecorator },
+    } = this.props;
+    return (
+      <Form onSubmit={this.submitHandler} className="panel-form">
+        <Form.Item {...formItemLayout} label="标题">
+          {getFieldDecorator('ex_info.seo.title', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['seo']['title'],
+            rules: [
+              {
+                required: true,
+                message: '标题不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="关键词">
+          {getFieldDecorator('ex_info.seo.keywords', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['seo']['keywords'],
+            rules: [
+              {
+                required: true,
+                message: '关键词不能为空',
+              },
+            ],
+          })(<Input.TextArea rows={3} {...formItemStyle} type="text" placeholder="请填写关键词" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="描述">
+          {getFieldDecorator('ex_info.seo.description', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['seo']['description'],
+            rules: [
+              {
+                required: true,
+                message: '描述不能为空',
+              },
+            ],
+          })(<Input.TextArea rows={3} {...formItemStyle} type="text" placeholder="请填写描述" />)}
+        </Form.Item>
+
+        <Form.Item {...tailFormItemLayout}>
+          <Row>
+            <Col span={3}>
+              <Button onClick={this.resetHandler}>重置</Button>
+            </Col>
+            <Col>
+              <Button type="primary" htmlType="submit">
+                {!selectedNode['id'] ? '新增' : '保存'}
+              </Button>
+            </Col>
+          </Row>
+        </Form.Item>
+      </Form>
+    );
+  };
+
+  handleAdd = () => {
+    const { selectedNode, dispatch } = this.props;
+
+    selectedNode.ex_info.links.push({
+      title: '标题',
+      url: 'http://',
+      sort: 0,
+    });
+
+    dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        selectedNode,
+      },
+    });
+  };
+
+  handleDelete = (row) => {
+    console.log(row);
+  };
+
+  handleSave = (row) => {
+    console.log(row);
+  };
 
   render() {
     const { selectedNode } = this.props;
 
     if (!selectedNode) return <Skeleton active loading />;
 
+    const wechatImg = config.STATIC_ROOT + selectedNode.ex_info.setting.wechat;
+    const weiboImg = config.STATIC_ROOT + selectedNode.ex_info.setting.weibo;
+
     return (
       <Fragment>
-        <Button onClick={() => router.go(-1)}>
-          <Icon type="arrow-left" />
-          返回
-        </Button>
         <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
-          <Tabs.TabPane tab="站点设置" key="basic">
+          <Tabs.TabPane tab="基础设置" key="basic">
             {this.renderBasicForm()}
           </Tabs.TabPane>
+          <Tabs.TabPane tab="详细设置" key="detail">
+            {this.renderDetailForm()}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="SEO设置" key="seo">
+            {this.renderSEOForm()}
+          </Tabs.TabPane>
 
-          <Tabs.TabPane tab="图标管理" key="thumbnail">
+          <Tabs.TabPane tab="微信设置" key="wecaht">
             <ImageCropper
-              imageUrl={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
-              onUpload={this.onThumbnailUpload}
+              url={!wechatImg ? '' : wechatImg}
+              onUpload={this.onWechatUpload}
+              width={200}
+              height={200}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="微博设置" key="weibo">
+            <ImageCropper
+              url={!weiboImg ? '' : weiboImg}
+              onUpload={this.onWeiboUpload}
+              width={200}
+              height={200}
             />
           </Tabs.TabPane>
 
           <Tabs.TabPane tab="友情链接" key="richtext">
-            {this.renderRichText(selectedNode)}
+            <EditableTable
+              dataSource={selectedNode.ex_info.links}
+              columns={[
+                {
+                  title: '标题',
+                  dataIndex: 'title',
+                  editable: true,
+                },
+                {
+                  title: '地址',
+                  dataIndex: 'url',
+                  editable: true,
+                },
+                {
+                  title: '排序',
+                  dataIndex: 'sort',
+                  editable: true,
+                },
+                {
+                  title: '操作',
+                  dataIndex: 'title',
+                  render: (val, row) => (
+                    <Popconfirm
+                      title="确定要删除吗?"
+                      okText="确定"
+                      cancelText="取消"
+                      onConfirm={() => this.handleDelete(row)}
+                    >
+                      <a href="javascript:;">删除</a>
+                    </Popconfirm>
+                  ),
+                },
+              ]}
+              handleAdd={this.handleAdd}
+              handleSave={this.handleSave}
+            />
           </Tabs.TabPane>
         </Tabs>
       </Fragment>

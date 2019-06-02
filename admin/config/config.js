@@ -5,7 +5,6 @@ export default {
   outputPath: './dist',
   base: '/admin/',
   publicPath: '/admin/',
-  treeShaking: true,
   plugins: [
     [
       'umi-plugin-react',
