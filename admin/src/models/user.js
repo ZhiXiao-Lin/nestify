@@ -24,6 +24,10 @@ export default {
       yield put({
         type: 'fetchCurrentUser',
       });
+
+      router.replace({
+        pathname: '/',
+      });
     },
     *logout(_, { call, put }) {
       localStorage.removeItem('token');
@@ -56,10 +60,10 @@ export default {
         },
       });
 
-      if (!payload.authorized) {
+      if (referrer) {
         router.replace({
-          pathname: referrer.pathname || '/',
-          query: referrer.query || {},
+          pathname: referrer.pathname,
+          query: referrer.query,
         });
       }
     },

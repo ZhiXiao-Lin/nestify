@@ -4,12 +4,19 @@ import { LoginController } from './controllers/login.controller';
 import { UserController } from './controllers/user.controller';
 import { StorageController } from './controllers/storage.controller';
 import { ContentController } from './controllers/content.controller';
+import { SettingController } from './controllers/setting.controller';
 
 @Module({
-	controllers: [ StorageController, LoginController, UserController, ContentController ]
+    controllers: [
+        StorageController,
+        SettingController,
+        LoginController,
+        UserController,
+        ContentController
+    ]
 })
 export class ApiModule implements NestModule {
-	configure(consumer: MiddlewareConsumer): void {
-		consumer.apply(logger).forRoutes('*');
-	}
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(logger).forRoutes('*');
+    }
 }

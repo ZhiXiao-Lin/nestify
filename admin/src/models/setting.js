@@ -1,8 +1,7 @@
 import _ from 'lodash';
-import moment from 'moment';
 import { message } from 'antd';
-import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
-import { downloadBuffer } from '@/utils/utils';
+import { apiGet, apiPost, apiPut } from '@/utils';
+
 import config from '@/config';
 
 const API_URL = config.API_ROOT + '/setting';
@@ -26,7 +25,7 @@ export default {
       });
     },
     *save({ payload }, { call, put, select }) {
-      const { selectedNode } = yield select((state) => state.contents);
+      const { selectedNode } = yield select((state) => state.setting);
 
       let res = null;
 
