@@ -38,6 +38,7 @@
         "fastify-session": "^3.0.0",
         "fastify-static": "^2.4.0",
         "fastify-swagger": "^2.3.2",
+        "influx": "^5.0.0-alpha.4",
         "ioredis": "^4.9.3",
         "lodash": "^4.17.11",
         "moment": "^2.24.0",
