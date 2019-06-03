@@ -1,5 +1,5 @@
 // data-set 可以按需引入，除此之外不要引入别的包
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Chart, Axis, Coord, Geom, Guide, Shape } from 'bizcharts';
 
 const { Html, Arc } = Guide;
@@ -8,7 +8,7 @@ const { Html, Arc } = Guide;
 // CDN START
 function creatData() {
     const data = [];
-    let val = Math.random() * 6;
+    let val = Math.random() * 100;
     val = val.toFixed(1);
     data.push({ value: val * 1 });
     return data;
@@ -51,12 +51,12 @@ Shape.registerShape('point', 'pointer', {
     },
 });
 
-const color = ['#0086FA', '#FFBF00', '#F5222D'];
+const color = ['#5aca23', '#0086FA', '#FFBF00', '#F5222D'];
 const cols = {
     value: {
         min: 0,
-        max: 6,
-        tickInterval: 1,
+        max: 100,
+        tickInterval: 10,
         nice: false,
     },
 };
@@ -80,12 +80,68 @@ export default class extends React.Component {
         }, 1000);
     }
 
-    render() {
-        const { name } = this.props;
+    renderColor = (val) => {
         const { lineWidth } = this.state;
-        const val = this.state.data[0].value;
+        return <Fragment>
+            <Arc
+                zIndex={0}
+                start={[0, 0.965]}
+                end={[100, 0.965]}
+                style={{ // 底灰色
+                    stroke: 'rgba(0, 0, 0, 0.09)',
+                    lineWidth,
+                }}
+            />
+            {val > 0 &&
+                <Arc
+                    zIndex={1}
+                    start={[0, 0.965]}
+                    end={[val < 15 ? val : 15, 0.965]}
+                    style={{
+                        stroke: color[0],
+                        lineWidth,
+                    }}
+                />}
+            {val > 15 &&
+                <Arc
+                    zIndex={1}
+                    start={[15, 0.965]}
+                    end={[val < 50 ? val : 50, 0.965]}
+                    style={{
+                        stroke: color[1],
+                        lineWidth,
+                    }}
+                />}
+            {val > 50 && <Arc
+                zIndex={1}
+                start={[50, 0.965]}
+                end={[val < 85 ? val : 85, 0.965]}
+                style={{
+                    stroke: color[2],
+                    lineWidth,
+                }}
+            />}
+            {val > 85 && <Arc
+                zIndex={1}
+                start={[85, 0.965]}
+                end={[val < 100 ? val : 100, 0.965]}
+                style={{
+                    stroke: color[3],
+                    lineWidth,
+                }}
+            />}
+        </Fragment>
+    }
+
+    render() {
+        const { name, data } = this.props;
+
+        let val = !!data ? data[0].cpu : 1;
+
+        val = val > 99 ? 99 : val;
+
         return (
-            <Chart height={480} data={this.state.data} scale={cols} padding={[0, 0, 200, 0]} forceFit>
+            <Chart height={480} data={[{ value: val }]} scale={cols} padding={[0, 0, 200, 0]} forceFit>
                 <Coord type="polar" startAngle={-9 / 8 * Math.PI} endAngle={1 / 8 * Math.PI} radius={0.75} />
                 <Axis
                     name="value"
@@ -108,67 +164,12 @@ export default class extends React.Component {
                 />
                 <Axis name="1" visible={false} />
                 <Guide>
-                    <Arc
-                        zIndex={0}
-                        start={[0, 0.965]}
-                        end={[6, 0.965]}
-                        style={{ // 底灰色
-                            stroke: 'rgba(0, 0, 0, 0.09)',
-                            lineWidth,
-                        }}
-                    />
-                    {val >= 2 && <Arc
-                        zIndex={1}
-                        start={[0, 0.965]}
-                        end={[val, 0.965]}
-                        style={{ // 底灰色
-                            stroke: color[0],
-                            lineWidth,
-                        }}
-                    />}
-                    {val >= 4 &&
-                        <Arc
-                            zIndex={1}
-                            start={[2, 0.965]}
-                            end={[4, 0.965]}
-                            style={{ // 底灰色
-                                stroke: color[1],
-                                lineWidth,
-                            }}
-                        />}
-                    {val >= 4 && val < 6 &&
-                        <Arc
-                            zIndex={1}
-                            start={[4, 0.965]}
-                            end={[val, 0.965]}
-                            style={{ // 底灰色
-                                stroke: color[2],
-                                lineWidth,
-                            }}
-                        />}
-                    {val >= 2 && val < 4 &&
-                        <Arc
-                            zIndex={1}
-                            start={[2, 0.965]}
-                            end={[val, 0.965]}
-                            style={{ // 底灰色
-                                stroke: color[1],
-                                lineWidth,
-                            }}
-                        />}
-                    {val < 2 &&
-                        <Arc
-                            zIndex={1}
-                            start={[0, 0.965]}
-                            end={[val, 0.965]}
-                            style={{ // 底灰色
-                                stroke: color[0],
-                                lineWidth,
-                            }}
-                        />}
+
+                    {this.renderColor(val)}
+
                     <Html
                         position={['50%', '95%']}
-                        html={() => (`<div style="width: 300px;text-align: center;font-size: 12px!important;"><p style="font-size: 1.75em; color: rgba(0,0,0,0.43);margin: 0;">${name}</p><p style="font-size: 3em;color: rgba(0,0,0,0.85);margin: 0;">${val * 10}%</p></div>`)}
+                        html={() => (`<div style="width: 300px;text-align: center;font-size: 12px!important;"><p style="font-size: 1.75em; color: rgba(0,0,0,0.43);margin: 0;">${name}</p><p style="font-size: 3em;color: rgba(0,0,0,0.85);margin: 0;">${val.toFixed(2)}%</p></div>`)}
                     />
                 </Guide>
                 <Geom

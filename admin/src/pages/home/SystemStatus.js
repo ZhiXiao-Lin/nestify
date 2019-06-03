@@ -15,28 +15,14 @@ const topColResponsiveProps = {
 	style: { marginBottom: 24 }
 };
 
-const SystemStatus = memo(({ loading, visitData }) => (
+const SystemStatus = memo(({ loading, status }) => (
 	<Row gutter={24}>
 		<Col {...topColResponsiveProps}>
-			<Meter name="CPU负载" />
+			<Meter name="CPU负载" data={status} />
 		</Col>
 
 		<Col {...topColResponsiveProps}>
-			<ChartCard
-				bordered={false}
-				loading={loading}
-				title={'内存'}
-				action={
-					<Tooltip title={'服务器内存使用量'}>
-						<Icon type="info-circle-o" />
-					</Tooltip>
-				}
-				total={numeral(8846).format('0,0')}
-				footer={<Field label={'日访问量'} value={numeral(1234).format('0,0')} />}
-				contentHeight={46}
-			>
-				<MiniArea color="#975FE4" data={visitData} />
-			</ChartCard>
+			111
 		</Col>
 	</Row>
 ));

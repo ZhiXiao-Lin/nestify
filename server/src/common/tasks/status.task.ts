@@ -1,11 +1,20 @@
 import * as pidusage from 'pidusage';
-import { Injectable, Logger } from '@nestjs/common';
+import {
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer,
+} from '@nestjs/websockets';
+import { Client } from 'socket.io';
 import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
 import { influx } from '../lib/influx';
 
 
-@Injectable()
-export class MonitorTask extends NestSchedule {
+
+
+@WebSocketGateway(9000, { namespace: 'status' })
+export class StatusTask extends NestSchedule {
+
+    @WebSocketServer() server: any;
 
     // # ┌────────────── second (optional)
     // # │ ┌──────────── minute
@@ -31,6 +40,12 @@ export class MonitorTask extends NestSchedule {
     // }
 
     @Interval(5000)
+    async pushStatus() {
+        const status = await influx.query(`select * from system_status order by time desc limit 10`);
+        this.server.emit('status', status);
+    }
+
+    @Interval(5000)
     async intervalJob() {
         const status = await pidusage(process.pid);
 
@@ -40,10 +55,6 @@ export class MonitorTask extends NestSchedule {
             fields: status,
             timestamp: new Date()
         }]);
-
-        // const res = await influx.query(`select * from system_status order by time desc limit 10`);
-
-        // Logger.log(res);
 
         return false;
     }

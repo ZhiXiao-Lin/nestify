@@ -829,7 +829,7 @@
 "@nestjs/platform-socket.io@^6.2.4":
   version "6.2.4"
   resolved "https://registry.yarnpkg.com/@nestjs/platform-socket.io/-/platform-socket.io-6.2.4.tgz#3deb3c17eb5747dbc8c41635db65bdeb2a0b4743"
-  integrity sha1-Pes8F+tXR9vIxBY122W96yoLR0M=
+  integrity sha512-VBZiX4jSOPq79X7teF8JrNLDvYSygehiuE2Ttk/cJ19JNluA39k1ltFBwMv7l0Drg0QDZkaBYywkqKWALa7PdQ==
   dependencies:
     socket.io "2.2.0"
 
@@ -854,6 +854,13 @@
   integrity sha1-v8l6toAy1N9LueMElfEJV7LWBXU=
   dependencies:
     uuid "3.3.2"
+
+"@nestjs/websockets@^6.2.4":
+  version "6.2.4"
+  resolved "https://registry.yarnpkg.com/@nestjs/websockets/-/websockets-6.2.4.tgz#998f3eaeaf3acf9ab81fd2c32827707c78c885f3"
+  integrity sha512-3cpEZz/uTTHiMXX6d+lXH9Wg7Rtla36Oc3JTmQtuGc1KlAIs3wzJRO/qU/LfLuYrNeqAAFVq8EHW3DkjPFxXjg==
+  dependencies:
+    iterare "1.1.2"
 
 "@nuxtjs/opencollective@0.2.1":
   version "0.2.1"
@@ -987,6 +994,13 @@
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/socket.io@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@types/socket.io/-/socket.io-2.1.2.tgz#7165c2587cc3b86b44aa78e2a0060140551de211"
+  integrity sha512-Ind+4qMNfQ62llyB4IMs1D8znMEBsMKohZBPqfBUIXqLQ9bdtWIbNTBWwtdcBWJKnokMZGcmWOOKslatni5vtA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/superagent@*":
   version "4.1.1"

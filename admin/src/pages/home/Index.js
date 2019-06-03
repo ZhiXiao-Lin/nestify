@@ -15,8 +15,9 @@ const TopSearch = React.lazy(() => import('./TopSearch'));
 const ProportionSales = React.lazy(() => import('./ProportionSales'));
 const OfflineData = React.lazy(() => import('./OfflineData'));
 
-@connect(({ chart, loading }) => ({
+@connect(({ chart, status, loading }) => ({
 	chart,
+	status: status.status,
 	loading: loading.effects['chart/fetch']
 }))
 export default class Index extends Component {
@@ -92,7 +93,7 @@ export default class Index extends Component {
 
 	render() {
 		const { rangePickerValue, salesType, currentTabKey } = this.state;
-		const { chart, loading } = this.props;
+		const { chart, status, loading } = this.props;
 		const {
 			visitData,
 			visitData2,
@@ -130,7 +131,7 @@ export default class Index extends Component {
 		return (
 			<GridContent>
 				<Suspense fallback={<PageLoading />}>
-					<SystemStatus loading={loading} visitData={visitData} />
+					<SystemStatus loading={loading} status={status} />
 				</Suspense>
 				{/* <Suspense fallback={null}>
 					<SalesCard
