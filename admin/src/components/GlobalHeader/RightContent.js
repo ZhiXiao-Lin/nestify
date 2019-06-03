@@ -45,7 +45,7 @@ export default class GlobalHeaderRight extends PureComponent {
 		const unreadMsg = {
 			count: 0
 		};
-		Object.entries(noticeData).forEach(([ key, value ]) => {
+		Object.entries(noticeData).forEach(([key, value]) => {
 			if (!unreadMsg[key]) {
 				unreadMsg[key] = 0;
 			}
@@ -190,13 +190,14 @@ export default class GlobalHeaderRight extends PureComponent {
 				{true ? (
 					<HeaderDropdown overlay={menu}>
 						<span className={`${styles.action} ${styles.account}`}>
-							{/* <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" /> */}
-							<span className={styles.name}>{currentUser.account} ，您好！</span>
+							{!currentUser.avatar ? '' :
+								<Avatar size="small" className={styles.avatar} src={currentUser.avatarPath} alt="avatar" />}
+							<span className={styles.name}>{currentUser.nickname ? currentUser.nickname : currentUser.account} ，您好！</span>
 						</span>
 					</HeaderDropdown>
 				) : (
-					<Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
-				)}
+						<Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
+					)}
 			</div>
 		);
 	}

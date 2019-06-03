@@ -322,12 +322,12 @@ export class Content extends Base {
 
 	@Expose()
 	get thumbnailPath(): string {
-		return Content.getFullPath(this.thumbnail);
+		return Base.getFullPath(this.thumbnail);
 	}
 
 	@Expose()
 	get videoPath(): string {
-		return Content.getFullPath(this.video);
+		return Base.getFullPath(this.video);
 	}
 
 	@BeforeInsert()
