@@ -1,13 +1,12 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu, BackTop, Icon, Spin, Button } from 'antd';
+import { Layout, Menu, BackTop, Icon, Spin } from 'antd';
 import _ from 'lodash';
 import Link from 'umi/link';
 import router from 'umi/router';
 import DocumentTitle from 'react-document-title';
 import config from '@/config';
 
-import { getAvatarURL } from '../utils/utils';
 import GlobalHeader from '@/components/GlobalHeader';
 import GlobalFooter from '@/components/GlobalFooter';
 
@@ -101,7 +100,7 @@ export default class StudioLayout extends PureComponent {
       // 	router.push(gUrlUserCenter);
       // 	return;
       case 'userinfo':
-        router.push(gUrlUserSetting);
+        router.push('/studio/user/setting');
         return;
       case 'logout':
         dispatch({
@@ -154,7 +153,7 @@ export default class StudioLayout extends PureComponent {
           <Layout
             className={`${menuLayout === 'sidemenu' && styles.mainLayout} ${
               collapsed && menuLayout === 'sidemenu' ? styles.layoutCollapsed : ''
-            }`}
+              }`}
           >
             <Header className={styles.header}>
               <GlobalHeader

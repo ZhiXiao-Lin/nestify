@@ -1,10 +1,13 @@
+import _ from 'lodash';
 import { message } from 'antd';
 import router from 'umi/router';
 import config from '@/config';
-import { apiGet, apiPost } from '@/utils';
+import { apiGet, apiPost, apiPut } from '@/utils';
 
 const API_LOGIN_URL = config.API_ROOT + '/login';
+const API_URL = config.API_ROOT + '/user';
 const API_CURRENT_USER_URL = config.API_ROOT + '/user/current';
+const API_CHANGE_PASSWORD_URL = config.API_ROOT + '/user/password';
 
 export default {
   namespace: 'user',
@@ -67,15 +70,40 @@ export default {
         });
       }
     },
+    *changePassword({ payload }, { call, put }) {
+      yield call(apiPut, API_CHANGE_PASSWORD_URL, payload);
+
+      message.success('修改成功，请重新登录');
+      yield put({
+        type: 'logout'
+      });
+    },
+    *save({ payload }, { call, put, select }) {
+      const { currentUser } = yield select((state) => state.user);
+
+      let res = null;
+
+      if (_.isEmpty(currentUser)) {
+        res = yield call(apiPost, API_URL, payload);
+      } else {
+        res = yield call(apiPut, API_URL, _.merge(currentUser, payload));
+      }
+
+      if (!!res) {
+        yield put({
+          type: 'set',
+          payload: {
+            currentUser: res,
+          },
+        });
+        message.success('保存成功');
+      }
+    },
   },
 
   reducers: {
     set(state, { payload }) {
       return { ...state, ...payload };
     },
-  },
-
-  subscriptions: {
-    initial({ dispatch }) {},
-  },
+  }
 };
