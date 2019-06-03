@@ -55,14 +55,14 @@ class EditableCell extends React.Component {
         )}
       </Form.Item>
     ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
-      >
-        {children}
-      </div>
-    );
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
+          {children}
+        </div>
+      );
   };
 
   render() {
@@ -81,8 +81,8 @@ class EditableCell extends React.Component {
         {editable ? (
           <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
         ) : (
-          children
-        )}
+            children
+          )}
       </td>
     );
   }
@@ -125,6 +125,10 @@ export default class EditableTable extends React.Component {
         <Button type="dashed" onClick={this.props.handleAdd} block style={{ marginTop: 10 }}>
           <Icon type="plus" />
           新增
+        </Button>
+        <Button type="primary" onClick={this.props.handleSave} block style={{ marginTop: 5 }}>
+          <Icon type="save" />
+          保存
         </Button>
       </div>
     );

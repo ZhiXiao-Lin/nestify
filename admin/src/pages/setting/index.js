@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import UUIDV4 from 'uuid/v4';
 import moment from 'moment';
 import { connect } from 'dva';
 import { Tabs, Form, Input, Row, Col, Popconfirm, Button, Icon, Skeleton, message } from 'antd';
@@ -204,17 +205,17 @@ export default class extends React.Component {
     } = this.props;
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
-        <Form.Item {...formItemLayout} label="开放时间">
+        <Form.Item {...formItemLayout} label="游玩时间">
           {getFieldDecorator('ex_info.setting.openInfo', {
             initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['openInfo'],
             rules: [
               {
                 required: true,
-                message: '开放时间不能为空',
+                message: '游玩时间不能为空',
               },
             ],
           })(
-            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写开放时间" />
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写游玩时间" />
           )}
         </Form.Item>
         <Form.Item {...formItemLayout} label="在线预定地址">
@@ -413,6 +414,7 @@ export default class extends React.Component {
     const { selectedNode, dispatch } = this.props;
 
     selectedNode.ex_info.links.push({
+      id: UUIDV4(),
       title: '标题',
       url: 'http://',
       sort: 0,
@@ -427,11 +429,24 @@ export default class extends React.Component {
   };
 
   handleDelete = (row) => {
-    console.log(row);
+    const { selectedNode, dispatch } = this.props;
+
+    selectedNode.ex_info.links = selectedNode.ex_info.links.filter(item => item.id !== row.id);
+
+    dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        selectedNode,
+      },
+    });
   };
 
   handleSave = (row) => {
-    console.log(row);
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: `${MODEL_NAME}/save`,
+    });
   };
 
   render() {
@@ -478,6 +493,7 @@ export default class extends React.Component {
               columns={[
                 {
                   title: '标题',
+                  key: 'id',
                   dataIndex: 'title',
                   editable: true,
                 },

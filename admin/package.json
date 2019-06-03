@@ -36,6 +36,7 @@
 		"react-document-title": "^2.0.3",
 		"redux-logger": "^3.0.6",
 		"socket.io-client": "^2.2.0",
+		"uuid": "^3.3.2",
 		"video-react": "^0.13.7",
 		"yup": "^0.26.7"
 	}

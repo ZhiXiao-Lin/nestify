@@ -32,7 +32,8 @@ export class Setting extends Base {
 				预订链接: 'onlineSaleUrl',
 				版权: 'copyright',
 				备案号: 'icp',
-				公网安备: 'pns'
+				公网安备: 'pns',
+				游玩时间: 'openInfo'
 			}
 		},
 		全站SEO: {
@@ -43,12 +44,7 @@ export class Setting extends Base {
 		友情链接: {
 			map: 'links',
 			handleType: ExcelHandleType.ARRAY,
-			cellsMap: { 标题: 'title', 地址: 'url' }
-		},
-		游玩时间: {
-			map: 'openInfo',
-			handleType: ExcelHandleType.ARRAY,
-			cellsMap: { 游玩时间: 'content' }
+			cellsMap: { ID: 'id', 标题: 'title', 地址: 'url', 排序: 'sort' }
 		}
 	};
 
