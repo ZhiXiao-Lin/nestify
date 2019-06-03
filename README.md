@@ -22,6 +22,8 @@
 - Excel 导入、导出
 - Swagger API 文档
 - InfluxDB 时序数据库
+- WebSocket
+- 系统监控
 
 ## 正在开发的功能
 
@@ -31,8 +33,6 @@
 - 短信模块
 - 邮件模块
 - 消息队列
-- WebSocket
-- 系统监控
 - ...
 
 ## 协议
