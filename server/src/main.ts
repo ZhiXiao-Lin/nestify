@@ -12,6 +12,7 @@ import * as Cookie from 'fastify-cookie';
 import * as Session from 'fastify-session';
 import * as ConnectRedis from 'connect-redis';
 import { influx } from './common/lib/influx';
+import { Measurement } from 'influx'
 import { config } from './config';
 import { resolve } from 'path';
 import { NestFactory } from '@nestjs/core';
@@ -87,7 +88,7 @@ async function bootstrap() {
     // InfluxDB
     const dbNames = await influx.getDatabaseNames();
     if (!dbNames.includes(config.influx.database)) {
-        return influx.createDatabase(config.influx.database);
+        await influx.createDatabase(config.influx.database);
     }
 
     // Nestjs
