@@ -8,6 +8,7 @@ import { getTimeDistance } from '@/utils/utils';
 import styles from './Index.less';
 import PageLoading from '@/components/PageLoading';
 
+const SystemStatus = React.lazy(() => import('./SystemStatus'));
 const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
 const SalesCard = React.lazy(() => import('./SalesCard'));
 const TopSearch = React.lazy(() => import('./TopSearch'));
@@ -129,9 +130,9 @@ export default class Index extends Component {
 		return (
 			<GridContent>
 				<Suspense fallback={<PageLoading />}>
-					<IntroduceRow loading={loading} visitData={visitData} />
+					<SystemStatus loading={loading} visitData={visitData} />
 				</Suspense>
-				<Suspense fallback={null}>
+				{/* <Suspense fallback={null}>
 					<SalesCard
 						rangePickerValue={rangePickerValue}
 						salesData={salesData}
@@ -173,7 +174,7 @@ export default class Index extends Component {
 						offlineChartData={offlineChartData}
 						handleTabChange={this.handleTabChange}
 					/>
-				</Suspense>
+				</Suspense> */}
 			</GridContent>
 		);
 	}

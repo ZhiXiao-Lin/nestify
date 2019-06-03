@@ -38,7 +38,7 @@ export default [
 				authority: AUTHORITY.DASHBOARD,
 				icon: 'dashboard',
 				path: '/studio',
-				component: './home/Index'
+				component: './home'
 			},
 			{
 				name: '景区概况',

@@ -1,11 +1,11 @@
 import * as pidusage from 'pidusage';
-import * as util from 'util';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
+import { influx } from '../lib/influx';
 
 
 @Injectable()
-export class IndexTask extends NestSchedule {
+export class MonitorTask extends NestSchedule {
 
     // # ┌────────────── second (optional)
     // # │ ┌──────────── minute
@@ -17,28 +17,34 @@ export class IndexTask extends NestSchedule {
     // # │ │ │ │ │ │
     // # * * * * * *
 
-    private i: number = 1;
+    // @Cron('2 * * * * *')
+    // async cronJob() {
+    //     Logger.log('定时任务');
 
-    @Cron('2 * * * * *')
-    async cronJob() {
-        Logger.log('定时任务');
+    //     const status = await pidusage(process.pid);
+    //     Logger.log(status);
+    // }
 
-        const status = await pidusage(process.pid);
-        Logger.log(status);
-    }
-
-    @Timeout(5000)
-    onceJob() {
-        Logger.log('延时任务');
-    }
+    // @Timeout(5000)
+    // onceJob() {
+    //     Logger.log('延时任务');
+    // }
 
     @Interval(5000)
     async intervalJob() {
-        Logger.log('间隔任务' + this.i + '次');
-
         const status = await pidusage(process.pid);
-        Logger.log(status);
 
-        return this.i++ > 4;
+        await influx.writePoints([{
+            measurement: 'system_status',
+            tags: { status: 'status' },
+            fields: status,
+            timestamp: new Date()
+        }]);
+
+        // const res = await influx.query(`select * from system_status order by time desc limit 10`);
+
+        // Logger.log(res);
+
+        return false;
     }
 }

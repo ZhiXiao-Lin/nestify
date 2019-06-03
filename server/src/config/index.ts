@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { resolve } from 'path';
+import * as Influx from 'influx';
 import * as productionConfig from './production';
 import * as localConfig from './local';
 
@@ -50,6 +51,28 @@ let config = {
         synchronize: false,
         logging: false,
         entities: [resolve('./**/*.entity.ts')]
+    },
+
+    influx: {
+        host: '127.0.0.1',
+        database: 'nestify',
+        schema: [
+            {
+                measurement: 'system_status',
+                fields: {
+                    "cpu": Influx.FieldType.FLOAT,
+                    "memory": Influx.FieldType.INTEGER,
+                    "ppid": Influx.FieldType.INTEGER,
+                    "pid": Influx.FieldType.INTEGER,
+                    "ctime": Influx.FieldType.INTEGER,
+                    "elapsed": Influx.FieldType.INTEGER,
+                    "timestamp": Influx.FieldType.INTEGER
+                },
+                tags: [
+                    'status'
+                ]
+            }
+        ]
     }
 };
 
