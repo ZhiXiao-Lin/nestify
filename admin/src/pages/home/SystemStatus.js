@@ -1,28 +1,25 @@
+import _ from 'lodash';
 import React, { memo } from 'react';
-import { Row, Col, Icon, Tooltip } from 'antd';
-import styles from './Analysis.less';
-import { ChartCard, MiniArea, MiniBar, MiniProgress, Field, Meter } from '@/components/Charts';
-import Trend from '@/components/Trend';
-import numeral from 'numeral';
-import Yuan from '@/utils/Yuan';
+import { Row, Col } from 'antd';
+import { Meter, Area } from '@/components/Charts';
 
 const topColResponsiveProps = {
 	xs: 24,
 	sm: 12,
 	md: 12,
 	lg: 12,
-	xl: 6,
+	xl: 12,
 	style: { marginBottom: 24 }
 };
 
 const SystemStatus = memo(({ loading, status }) => (
 	<Row gutter={24}>
 		<Col {...topColResponsiveProps}>
-			<Meter name="CPU负载" data={status} />
+			<Meter name="CPU负载" data={status[0]} />
 		</Col>
 
 		<Col {...topColResponsiveProps}>
-			111
+			<Area name="内存用量" data={status.reverse()} />
 		</Col>
 	</Row>
 ));

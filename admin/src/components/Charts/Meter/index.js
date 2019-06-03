@@ -1,6 +1,7 @@
 // data-set 可以按需引入，除此之外不要引入别的包
 import React, { Fragment } from 'react';
 import { Chart, Axis, Coord, Geom, Guide, Shape } from 'bizcharts';
+import { Divider } from 'antd';
 
 const { Html, Arc } = Guide;
 
@@ -136,51 +137,54 @@ export default class extends React.Component {
     render() {
         const { name, data } = this.props;
 
-        let val = !!data ? data[0].cpu : 1;
+        let val = !!data ? data.cpu : 0;
 
         val = val > 99 ? 99 : val;
 
         return (
-            <Chart height={480} data={[{ value: val }]} scale={cols} padding={[0, 0, 200, 0]} forceFit>
-                <Coord type="polar" startAngle={-9 / 8 * Math.PI} endAngle={1 / 8 * Math.PI} radius={0.75} />
-                <Axis
-                    name="value"
-                    zIndex={2}
-                    line={null}
-                    label={{
-                        offset: -20,
-                        textStyle: {
-                            fontSize: 18,
-                            fill: '#CBCBCB',
-                            textAlign: 'center',
-                            textBaseline: 'middle',
-                        },
-                    }}
-                    tickLine={{
-                        length: -24,
-                        stroke: '#fff',
-                        strokeOpacity: 1,
-                    }}
-                />
-                <Axis name="1" visible={false} />
-                <Guide>
-
-                    {this.renderColor(val)}
-
-                    <Html
-                        position={['50%', '95%']}
-                        html={() => (`<div style="width: 300px;text-align: center;font-size: 12px!important;"><p style="font-size: 1.75em; color: rgba(0,0,0,0.43);margin: 0;">${name}</p><p style="font-size: 3em;color: rgba(0,0,0,0.85);margin: 0;">${val.toFixed(2)}%</p></div>`)}
+            <Fragment>
+                <Divider orientation="left">{name}</Divider>
+                <Chart height={480} data={[{ value: val }]} scale={cols} padding={[0, 0, 200, 0]} forceFit>
+                    <Coord type="polar" startAngle={-9 / 8 * Math.PI} endAngle={1 / 8 * Math.PI} radius={0.75} />
+                    <Axis
+                        name="value"
+                        zIndex={2}
+                        line={null}
+                        label={{
+                            offset: -20,
+                            textStyle: {
+                                fontSize: 18,
+                                fill: '#CBCBCB',
+                                textAlign: 'center',
+                                textBaseline: 'middle',
+                            },
+                        }}
+                        tickLine={{
+                            length: -24,
+                            stroke: '#fff',
+                            strokeOpacity: 1,
+                        }}
                     />
-                </Guide>
-                <Geom
-                    type="point"
-                    position="value*1"
-                    shape="pointer"
-                    color="#1890FF"
-                    active={false}
-                    style={{ stroke: '#fff', lineWidth: 1 }}
-                />
-            </Chart>
+                    <Axis name="1" visible={false} />
+                    <Guide>
+
+                        {this.renderColor(val)}
+
+                        <Html
+                            position={['50%', '95%']}
+                            html={() => (`<div style="width: 300px;text-align: center;font-size: 12px!important;"><p style="font-size: 3em;color: rgba(0,0,0,0.85);margin: 0;">${val <= 0 ? '加载中...' : val.toFixed(2) + '%'}</p></div>`)}
+                        />
+                    </Guide>
+                    <Geom
+                        type="point"
+                        position="value*1"
+                        shape="pointer"
+                        color="#1890FF"
+                        active={false}
+                        style={{ stroke: '#fff', lineWidth: 1 }}
+                    />
+                </Chart>
+            </Fragment>
         );
     }
 }

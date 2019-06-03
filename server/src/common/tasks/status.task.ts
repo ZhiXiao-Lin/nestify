@@ -39,13 +39,13 @@ export class StatusTask extends NestSchedule {
     //     Logger.log('延时任务');
     // }
 
-    @Interval(5000)
+    @Interval(3000)
     async pushStatus() {
-        const status = await influx.query(`select * from system_status order by time desc limit 10`);
+        const status = await influx.query(`select * from system_status order by time desc limit 30`);
         this.server.emit('status', status);
     }
 
-    @Interval(5000)
+    @Interval(3000)
     async intervalJob() {
         const status = await pidusage(process.pid);
 
