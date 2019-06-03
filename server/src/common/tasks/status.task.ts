@@ -41,7 +41,7 @@ export class StatusTask extends NestSchedule {
 
     @Interval(5000)
     async pushStatus() {
-        const status = await influx.query(`select * from system_status order by time desc limit 50`);
+        const status = await influx.query(`select * from system_status order by time desc limit 10`);
         this.server.emit('status', status);
     }
 
