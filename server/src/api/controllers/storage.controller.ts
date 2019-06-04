@@ -2,19 +2,20 @@ import * as UUID from 'uuid';
 import * as moment from 'moment';
 import { ApiUseTags, ApiConsumes, ApiImplicitFile, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Post, Req, Res, Logger, BadRequestException, InternalServerErrorException, UseGuards } from '@nestjs/common';
+import { Post, Req, Res, BadRequestException, InternalServerErrorException, UseGuards } from '@nestjs/common';
 import { config } from '../../config';
 import { Api } from '../../common/aspects/decorator';
 import { resolve } from 'path';
 import { UploadActionType } from '../../common/aspects/enum';
 import { ImportService } from '../../common/services/import.service';
+import { Logger } from '../../common/lib/logger';
 
 @Api('storage')
 @ApiUseTags('storage')
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
 export class StorageController {
-	constructor(private readonly importService: ImportService) {}
+	constructor(private readonly importService: ImportService) { }
 
 	@Post()
 	@ApiConsumes('multipart/form-data')

@@ -1,6 +1,4 @@
 import * as fs from 'fs';
-import * as http from 'http';
-import * as https from 'https';
 import * as util from 'util';
 import * as Fastify from 'fastify';
 import * as Nextjs from 'next';
@@ -12,20 +10,18 @@ import * as Cookie from 'fastify-cookie';
 import * as Session from 'fastify-session';
 import * as ConnectRedis from 'connect-redis';
 import { influx } from './common/lib/influx';
-import { Measurement } from 'influx'
 import { config } from './config';
 import { resolve } from 'path';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { Seed } from './seed';
+import { Logger } from './common/lib/logger';
 import { ExceptionsFilter } from './common/aspects/exceptions.filter';
 
 declare const module: any;
 
-const MODULE_NAME = 'Main';
 const readFileAsync = util.promisify(fs.readFile);
 
 async function bootstrap() {
@@ -36,14 +32,7 @@ async function bootstrap() {
     await nextjs.prepare();
 
     // Fastify
-    const fastify = Fastify({
-        // http2: true,
-        // https: {
-        //     allowHTTP1: true, // fallback support for HTTP1, not needed
-        //     cert: await readFileAsync(resolve('./certificate/certificate.pem')),
-        //     key: await readFileAsync(resolve('./certificate/privatekey.pem'))
-        // }
-    });
+    const fastify = Fastify();
 
     fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
 
@@ -94,19 +83,22 @@ async function bootstrap() {
     // Nestjs
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
-        new FastifyAdapter(fastify)
+        new FastifyAdapter(fastify),
+        {
+            logger: false
+        }
     );
 
     if (!!process.env.DB_INIT) {
         try {
-            Logger.log('Database initializing ...', MODULE_NAME);
+            Logger.log('Database initializing ...');
 
             const seed = app.get(Seed);
             await seed.start();
 
-            Logger.log('Database initialized', MODULE_NAME);
+            Logger.log('Database initialized');
         } catch (err) {
-            console.error(err);
+            Logger.error(err);
         } finally {
             process.exit(0);
         }
@@ -127,7 +119,8 @@ async function bootstrap() {
     app.useGlobalFilters(new ExceptionsFilter());
 
     await app.listen(config.port, config.hostName, () => {
-        Logger.log(config, MODULE_NAME);
+        Logger.log(`Server run at port ${config.port}`);
+        Logger.log(config);
     });
 
     if (module.hot) {

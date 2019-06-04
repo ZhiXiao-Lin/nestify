@@ -1,6 +1,7 @@
 import * as Youch from 'Youch';
 import * as moment from 'moment';
-import { Catch, ArgumentsHost, HttpException, ExceptionFilter, Logger } from '@nestjs/common';
+import { Catch, ArgumentsHost, HttpException, ExceptionFilter } from '@nestjs/common';
+import { Logger } from '../lib/logger'
 
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {
