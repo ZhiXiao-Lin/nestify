@@ -124,6 +124,14 @@ export default [
 				]
 			},
 			{
+				name: '菜单管理',
+				icon: 'menu',
+				path: '/studio/category',
+				component: './category',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT
+			},
+			{
 				name: '站点设置',
 				icon: 'setting',
 				path: '/studio/setting',
