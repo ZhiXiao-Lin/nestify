@@ -1,11 +1,12 @@
 import { resolve } from 'path';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '../common/entities/user.entity';
 import { Category } from '../common/entities/category.entity';
 import { Setting } from '../common/entities/setting.entity';
 import { ExcelHelper } from '../common/lib/excel';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { Logger } from '../common/lib/logger';
 
 @Injectable()
 export class Seed {

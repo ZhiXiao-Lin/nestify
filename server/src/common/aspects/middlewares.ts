@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger } from '../lib/logger';
 
 export function logger(req, res, next) {
 	const statusCode = res.statusCode;
