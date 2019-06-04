@@ -58,9 +58,6 @@ export class ContentService extends BaseService<Content> {
 			qb.take(payload.pageSize);
 		}
 
-		console.log(payload);
-		console.log(qb.getSql());
-
 		return await qb.getManyAndCount();
 	}
 
