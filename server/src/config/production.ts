@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 
 export default {
-	port: 8007,
+	port: 8008,
 
 	cache: {
 		ttl: 3600,
@@ -12,6 +12,6 @@ export default {
 		dropSchema: false,
 		synchronize: false,
 		logging: false,
-		entities: [ resolve('./**/*.entity.js') ]
+		entities: [resolve('./**/*.entity.js')]
 	}
 };

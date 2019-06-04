@@ -68,3 +68,7 @@ typings/
 admin/src/pages/.umi
 server/static/uploads/
 !server/static/uploads/.gitkeep
+
+admin/dist/
+server/dist/
+server/.next/

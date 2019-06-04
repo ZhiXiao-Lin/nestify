@@ -6,6 +6,8 @@
 	"author": "roylin <1002591652@qq.com>",
 	"license": "MIT",
 	"scripts": {
+		"prod": "cd ./server && yarn prod",
+		"stop": "cd ./server && yarn stop",
 		"dev": "run-p dev:**",
 		"dev:server": "cd ./server && yarn dev",
 		"dev:app": "cd ./admin && yarn dev",
