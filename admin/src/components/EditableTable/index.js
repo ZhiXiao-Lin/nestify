@@ -31,8 +31,10 @@ class EditableCell extends React.Component {
       if (error && error[e.currentTarget.id]) {
         return;
       }
+
       this.toggleEdit();
-      handleSave({ ...record, ...values });
+
+      handleSave(record, values);
     });
   };
 
@@ -108,7 +110,7 @@ export default class EditableTable extends React.Component {
           editable: col.editable,
           dataIndex: col.dataIndex,
           title: col.title,
-          handleSave: this.handleSave,
+          handleSave: this.props.handleSave,
         }),
       };
     });

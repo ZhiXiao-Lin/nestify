@@ -313,8 +313,7 @@ export default class extends React.Component {
 	};
 
 	toExport = () => {
-		const { fields } = this.state;
-		const { dispatch } = this.props;
+		const { dispatch, fields } = this.props;
 
 		dispatch({
 			type: `${MODEL_NAME}/export`,
@@ -337,10 +336,13 @@ export default class extends React.Component {
 	};
 
 	onFieldsChange = (fields) => {
-		this.setState((state) => ({
-			...state,
-			fields
-		}));
+
+		this.props.dispatch({
+			type: `${MODEL_NAME}/set`,
+			payload: {
+				fields
+			}
+		});
 	};
 
 	onSubmit = (e) => {
