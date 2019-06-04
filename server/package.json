@@ -5,14 +5,14 @@
     "author": "",
     "license": "MIT",
     "scripts": {
+        "prod": "cross-env NODE_ENV=production pm2 start dist/main.js --name 'nestify:8008'",
+        "stop": "pm2 delete nestify:8008",
         "db:create": "cd ./database && cross-env PGPASSWORD=123456 psql -U postgres -f create-db.sql && cross-env PGPASSWORD=123456 psql -U nestify -d nestify -f create-exts.sql",
         "db:init": "cross-env DB_SYNC=true DB_INIT=true ts-node -r tsconfig-paths/register src/main.ts",
         "build": "run-s build:**",
         "build:server": "rimraf dist && tsc -p tsconfig.build.json",
         "build:next": "next build",
-        "dev": "nodemon",
-        "prod": "cross-env NODE_ENV=production pm2 start dist/main.js --name 'nestify:8007'",
-        "stop": "pm2 delete nestify:8007"
+        "dev": "nodemon"
     },
     "dependencies": {
         "@nestjs/common": "^6.0.0",

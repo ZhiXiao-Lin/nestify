@@ -16,6 +16,4 @@ if (process.env.NODE_ENV === 'production') {
 	config = merge(config, productionConfig);
 }
 
-console.log(config);
-
 export default config;
