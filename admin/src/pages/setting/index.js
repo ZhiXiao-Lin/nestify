@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import _ from 'lodash';
 import UUIDV4 from 'uuid/v4';
 import moment from 'moment';
 import { connect } from 'dva';
@@ -436,16 +437,28 @@ export default class extends React.Component {
     dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
-        selectedNode,
+        selectedNode
       },
     });
   };
 
-  handleSave = (row) => {
-    const { dispatch } = this.props;
+  handleSave = (row, values) => {
+    const { selectedNode, dispatch } = this.props;
+
+    if (!!row) {
+      selectedNode.ex_info.links = selectedNode.ex_info.links.map(item => {
+        if (item.id === row.id) {
+          return _.merge(item, values);
+        }
+        return item;
+      });
+    }
 
     dispatch({
       type: `${MODEL_NAME}/save`,
+      payload: {
+        selectedNode
+      }
     });
   };
 
