@@ -7,6 +7,7 @@ import { ExcelHelper } from '../common/lib/excel';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { Logger } from '../common/lib/logger';
+import { Organization } from 'src/common/entities/organization.entity';
 
 @Injectable()
 export class Seed {
@@ -33,5 +34,17 @@ export class Seed {
 			categoryArr.push(Category.create(item));
 		});
 		await this.connection.getTreeRepository(Category).save(categoryArr);
+
+		const organizationsResult = await ExcelHelper.loadFromFile(resolve('./seeds/organizations.xlsx'), Organization.sheetsMap);
+		const organizations = organizationsResult['organizations'];
+		const organizationArr = [];
+
+		organizations.forEach((item) => {
+			if (!!item.parent) {
+				item.parent = organizationArr.find((org) => org.id === item.parent);
+			}
+			organizationArr.push(Organization.create(item));
+		});
+		await this.connection.getTreeRepository(Organization).save(organizationArr);
 	}
 }

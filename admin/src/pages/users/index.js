@@ -391,7 +391,7 @@ export default class extends React.Component {
 			showUploadList: false,
 			beforeUpload: async (file) => {
 				message.loading('正在执行导入', 0);
-				await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'contents' });
+				await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'news' });
 
 				setTimeout(() => {
 					message.destroy();

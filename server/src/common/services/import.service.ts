@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ExcelHelper } from '../lib/excel';
 import { Content } from '../entities/content.entity';
+import { Organization } from '../entities/organization.entity';
 import { CategoryService } from './category.service';
-import { InjectRepository, InjectConnection } from '@nestjs/typeorm';
+import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+
 
 @Injectable()
 export class ImportService {
@@ -14,14 +16,16 @@ export class ImportService {
 
 	async handleFile(file, target) {
 		switch (target) {
-			case 'news':
-				return await this.importNews(file);
+			case 'contents':
+				return await this.importContents(file);
+			case 'organizations':
+				return await this.importOrganizations(file);
 			default:
 				break;
 		}
 	}
 
-	async importNews(file) {
+	async importContents(file) {
 		const res = await ExcelHelper.loadFromBuffer(file.data, Content.sheetsMap);
 
 		Object.keys(res).forEach(async (key) => {
@@ -37,6 +41,23 @@ export class ImportService {
 
 			await this.connection.getRepository(Content).save(list);
 		});
+
+		return true;
+	}
+
+	async importOrganizations(file) {
+		const res = await ExcelHelper.loadFromBuffer(file.data, Organization.sheetsMap);
+		const organizations = res['organizations'];
+		const organizationArr = [];
+
+		organizations.forEach((item) => {
+			if (!!item.parent) {
+				item.parent = organizationArr.find((org) => org.id === item.parent);
+			}
+			organizationArr.push(Organization.create(item));
+		});
+
+		await this.connection.getTreeRepository(Organization).save(organizationArr);
 
 		return true;
 	}

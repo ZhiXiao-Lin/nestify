@@ -61,6 +61,18 @@ export class ContentService extends BaseService<Content> {
 		return await qb.getManyAndCount();
 	}
 
+	@TransformClassToPlain()
+	async findOneAndParents(id: string) {
+		const content = await this.contentRepository.findOne({
+			where: { id },
+			relations: ['category']
+		});
+
+		const parents = await this.categoryService.findParentsTree(content.category);
+
+		return { content, parents }
+	}
+
 	async save(payload: any) {
 		const content = Content.create(payload) as Content;
 

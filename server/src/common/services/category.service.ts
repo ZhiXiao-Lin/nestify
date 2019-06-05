@@ -20,6 +20,10 @@ export class CategoryService extends BaseService<Category> {
 		return await this.categoryRepository.findOne({ name });
 	}
 
+	async findParentsTree(category: Category) {
+		return await this.categoryRepository.findAncestorsTree(category);
+	}
+
 	async save(payload: any) {
 		const category = Category.create(payload) as Category;
 
