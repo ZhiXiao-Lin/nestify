@@ -7,7 +7,8 @@ import { ExcelHelper } from '../common/lib/excel';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { Logger } from '../common/lib/logger';
-import { Organization } from 'src/common/entities/organization.entity';
+import { Organization } from '../common/entities/organization.entity';
+import { Role } from '../common/entities/role.entity';
 
 @Injectable()
 export class Seed {
@@ -23,6 +24,13 @@ export class Seed {
 
 		await this.connection.getRepository(User).save(User.create({ account: 'SysAdmin', password: '12345678' }));
 
+		await this.importCategorys();
+		await this.importOrganizations();
+		await this.importRoles();
+
+	}
+
+	async importCategorys() {
 		const categorysResult = await ExcelHelper.loadFromFile(resolve('./seeds/categorys.xlsx'), Category.sheetsMap);
 		const categorys = categorysResult['categorys'];
 		const categoryArr = [];
@@ -34,7 +42,9 @@ export class Seed {
 			categoryArr.push(Category.create(item));
 		});
 		await this.connection.getTreeRepository(Category).save(categoryArr);
+	}
 
+	async importOrganizations() {
 		const organizationsResult = await ExcelHelper.loadFromFile(resolve('./seeds/organizations.xlsx'), Organization.sheetsMap);
 		const organizations = organizationsResult['organizations'];
 		const organizationArr = [];
@@ -46,5 +56,20 @@ export class Seed {
 			organizationArr.push(Organization.create(item));
 		});
 		await this.connection.getTreeRepository(Organization).save(organizationArr);
+	}
+
+	async importRoles() {
+		const rolesResult = await ExcelHelper.loadFromFile(resolve('./seeds/roles.xlsx'), Role.sheetsMap);
+		const roles = rolesResult['roles'];
+		const rolesArr = [];
+
+		for (let item of roles) {
+			if (!!item.organization) {
+				item.organization = await this.connection.getTreeRepository(Organization).findOne({ where: { name: item.organization } });
+			}
+			rolesArr.push(Role.create(item))
+		}
+
+		await this.connection.getRepository(Role).save(rolesArr);
 	}
 }

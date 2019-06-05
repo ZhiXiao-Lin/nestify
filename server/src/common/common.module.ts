@@ -20,6 +20,7 @@ import { CategoryService } from './services/category.service';
 import { ContentService } from './services/content.service';
 import { StatusTask } from './tasks/status.task';
 import { OrganizationService } from './services/organization.service';
+import { RoleService } from './services/role.service';
 
 
 @Global()
@@ -44,8 +45,9 @@ import { OrganizationService } from './services/organization.service';
 		UserService,
 		SettingService,
 		OrganizationService,
+		RoleService,
 		StatusTask
 	],
-	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService, OrganizationService]
+	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService, OrganizationService, RoleService]
 })
 export class CommonModule { }
