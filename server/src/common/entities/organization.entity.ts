@@ -1,4 +1,4 @@
-import { plainToClass } from 'class-transformer';
+import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
 import { Entity, Column, Tree, TreeChildren, TreeParent, OneToMany } from 'typeorm';
 import { Role } from './role.entity';
@@ -27,6 +27,21 @@ export class Organization extends Base {
     @TreeChildren() children: Organization[];
 
     @TreeParent() parent: Organization;
+
+    @Expose()
+    get title(): string {
+        return this.name;
+    }
+
+    @Expose()
+    get key(): string {
+        return this.id;
+    }
+
+    @Expose()
+    get value(): string {
+        return this.id;
+    }
 
     static readonly sheetsMap: object = {
         组织架构: {

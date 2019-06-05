@@ -444,9 +444,9 @@ export default class extends React.Component {
                 checkable
                 draggable
                 onDrop={this.onDrop}
-                onExpand={this.onExpand}
-                expandedKeys={this.state.expandedKeys}
-                autoExpandParent={this.state.autoExpandParent}
+                // onExpand={this.onExpand}
+                // expandedKeys={this.state.expandedKeys}
+                // autoExpandParent={this.state.autoExpandParent}
                 onCheck={this.onCheck}
                 onSelect={this.onSelect}
                 onRightClick={this.onRightClick}

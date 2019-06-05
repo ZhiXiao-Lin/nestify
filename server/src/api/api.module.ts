@@ -7,6 +7,7 @@ import { ContentController } from './controllers/content.controller';
 import { SettingController } from './controllers/setting.controller';
 import { CategoryController } from './controllers/category.controller';
 import { OrganizationController } from './controllers/organization.controller';
+import { RoleController } from './controllers/role.controller';
 
 @Module({
     controllers: [
@@ -16,7 +17,8 @@ import { OrganizationController } from './controllers/organization.controller';
         UserController,
         ContentController,
         CategoryController,
-        OrganizationController
+        OrganizationController,
+        RoleController
     ]
 })
 export class ApiModule implements NestModule {

@@ -146,14 +146,18 @@ export default [
 			{
 				name: '权限管理',
 				icon: 'cluster',
-				path: '/studio/authority/:channel',
-				component: './authority',
+				path: '/studio/auth',
 				Routes: ['src/pages/Authorized'],
 				authority: AUTHORITY.CONTENT,
 				routes: [
-					{ name: '角色', path: '/studio/authority/联系方式' },
-					{ name: '权限', path: '/studio/authority/留言咨询' },
+					{ name: '角色', component: './role', path: '/studio/auth/role' },
+					{ name: '权限', component: './authority', path: '/studio/auth/authority' },
 				]
+			},
+			{
+				name_noshow: '详情',
+				path: '/studio/roledetail/:id',
+				component: './role/detail'
 			},
 			{
 				name: '菜单管理',
