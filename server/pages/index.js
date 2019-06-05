@@ -17,7 +17,10 @@ import './styles/index.scss';
 @withRouter
 export default class extends Component {
 	renderHandler = () => ({ siteInfo }) => {
-		const { setting, openInfo } = siteInfo;
+		const { setting } = siteInfo;
+
+		console.log(setting.openInfo);
+		
 
 		return (
 			<div className="hdz-home-body">

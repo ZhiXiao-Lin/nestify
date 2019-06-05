@@ -22,14 +22,14 @@ const toRenderHeader = () => ({ siteInfo }) => {
                 <span className="head-wechat">
                     <i className="FDTG fdtg-wechat"></i>
                     <span className="head-qrcode">
-                        <img src={setting.wechat} alt='QRCode' />
+                        <img src={setting.wechat} />
                         <span>微信二维码</span>
                     </span>
                 </span>
                 <span className="head-weibo">
                     <i className="FDTG fdtg-weibo"></i>
                     <span className="head-qrcode">
-                        <img src={setting.weibo} alt='QRCode' />
+                        <img src={setting.weibo} />
                         <span>微博二维码</span>
                     </span>
                 </span>
