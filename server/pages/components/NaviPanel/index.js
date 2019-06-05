@@ -23,10 +23,17 @@ const NaviPanel = () => {
             order
         };
     }
-    const toRenderNaviPanel = () => ({ siteInfo, router }) => {
+    const toRenderNaviPanel = () => ({ siteInfo, router, parents }) => {
         const { menus } = siteInfo;
         const { asPath } = router;
-        const { menu_show, order } = toGetMenuIndex(menus, asPath);
+        let menu_category;
+        if (parents) {
+            menu_category = toGetMenuIndex(menus, parents.url);
+        } else {
+            menu_category = toGetMenuIndex(menus, asPath);
+        }
+        const { menu_show, order } = menu_category;
+
         return (
             <div className="navi-panel">
                 <p className="navi-title">

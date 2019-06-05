@@ -21,8 +21,6 @@ export default async function (method, url, body, header) {
             Object.assign(init, { body: JSON.stringify(body) })
         }
     }
-    console.log(init);
-    
 	let response = await fetch(url, init);
 	return response.json();
 }

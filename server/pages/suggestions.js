@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input, Button, Row, Col } from 'antd';
+import { Form, Input, Button, Row, Col, message } from 'antd';
 import { withRouter } from 'next/router';
 
 import CommonLayout from './layouts/CommonLayout';
@@ -12,6 +12,7 @@ import BreadCrumbs from './components/BreadCrumbs';
 import NaviPanel from './components/NaviPanel';
 
 import config from './_config';
+import Fetch from './_fetch';
 
 import './styles/introduction.scss';
 
@@ -28,14 +29,54 @@ const formItemLayout = {
 
 @withRouter
 class Suggestion extends Component {
+    state = {
+        flag: false,
+        svg_code: '',
+        svg_hash: ''
+    }
+    componentDidMount() {
+        this.toGetCode()
+    }
+    toGetCode = async () => {
+        const res = await Fetch('GET', '/getSVGCode');
+        this.setState({ ...res });
+    }
+    toCheckCode = async (e) => {
+        const { form: { setFields } } = this.props;
+        const { svg_hash } = this.state;
+        const { value } = e.target;
+        const res = await Fetch('POST', '/checkSVGCode', {
+            svg_hash,
+            svg_text: e.target.value
+        });
+        setFields({
+            code: {
+                value,
+                errors: res.result ? null : [{
+                    "message": "验证码输入错误！",
+                }]
+            }
+        })
+        this.setState({ flag: res.result })
+    }
     renderHandler = () => ({ siteInfo }) => {
         const { setting } = siteInfo;
         const { getFieldDecorator, validateFields } = this.props.form;
+        const { flag, svg_code } = this.state;
         const handleSubmit = (e) => {
             e.preventDefault();
-            validateFields((err, values) => {
-                if (!err) {
-                    console.log('Received values of form: ', values);
+            validateFields(async (err, values) => {
+                if (!err && flag) {
+                    message.info('正在提交中，请稍候！', 0);
+                    const res = await Fetch('POST', '/saveSuggesstion', values)
+                    message.destroy()
+                    if (res.result) {
+                        message.success('提交成功！请您耐心等待管理员的回复！', 5);
+                    } else {
+                        message.error('很抱歉，提交失败！', 5);
+                    }
+                } else if(!flag) {
+                    message.error('验证码验证失败！');
                 }
             });
         }
@@ -50,7 +91,7 @@ class Suggestion extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>留言咨询</span>
+                            <span>投诉建议</span>
                         </div>
                         <div className="main-content">
 
@@ -62,6 +103,7 @@ class Suggestion extends Component {
                                         })(
                                             <Input
                                                 prefix={<i style={{ color: "red" }}>*</i>}
+                                                type="text"
                                                 placeholder="昵称"
                                             />
                                         )}
@@ -72,7 +114,7 @@ class Suggestion extends Component {
                                         })(
                                             <Input
                                                 prefix={<i style={{ color: "red" }}>*</i>}
-                                                type="password"
+                                                type="text"
                                                 placeholder="标题"
                                             />
                                         )}
@@ -108,11 +150,12 @@ class Suggestion extends Component {
                                                     <Input
                                                         prefix={<i style={{ color: "red" }}>*</i>}
                                                         placeholder="验证码"
+                                                        onChange={this.toCheckCode}
                                                     />
                                                 )}
                                             </Col>
                                             <Col span={12}>
-                                                <a href="javascript:;" className="code"><img src='http://dummyimage.com/200x40/4d494d/686a82.gif&text=8fclp' alt='8fclp' /></a>
+                                                <a href="javascript:;" className="code" onClick={this.toGetCode} dangerouslySetInnerHTML={{ __html: svg_code }}></a>
                                             </Col>
                                         </Row>
                                     </Form.Item>

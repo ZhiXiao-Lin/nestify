@@ -1,53 +1,46 @@
 import React, { useState } from 'react';
+import { Pagination, Divider } from 'antd';
+import * as moment from 'moment';
 import GlobalContext from '../../contexts/GlobalContext';
-
 import config from '../../_config';
 
 import './index.scss';
 
-const Video = ({ date }) => {
-    const toRenderVideo = () => ({ siteInfo }) => {
-        const { setting } = siteInfo;
+const List = ({ list, has_date }) => {
+    const onChange = (page) => {
+        window.location.href = `${window.location.pathname}?page=${page-1}`;
+    }
+    const toRenderList = () => ({ router }) => {
+        let { page } = router.query;
         return (
             <div className="scenery-view">
-                <div className="scenery-item-container">
-                    <div className="scenery-item">
-                        <div className="scenery-image">
-                            <img src='http://dummyimage.com/800x600/dadada/ffffff.gif&text=PIC' alt='PIC' />
-                        </div>
-                        <div className="scenery-intro">
-                            <p>文化景观墙</p>
-                            <p>{date}</p>
-                            <p className={date && 'txt-hide-2'}>长约425米的文化景观墙，形成一部铁色画卷，整体展开为企业理念、发展轨迹、铁色记忆和工艺流程四个篇章。主题铸铜浮雕15幅，写意表达企业发展场景；发展轨迹以历史齿轮连贯历经半个世纪企业的重大历史事件长约425米的文化景观墙，形成一部铁色画卷，整体展开为企业理念、发展轨迹、铁色记忆和工艺流程四个篇章。主题铸铜浮雕15幅，写意表达企业发展场景；发展轨迹以历史齿轮连贯历经半个世纪企业的重大历史事件</p>
-                            <p>
-                                <a href="/content/introduction" className="scenery-detail"> 详情 >> </a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className="scenery-item-container">
-                    <div className="scenery-item">
-                        <div className="scenery-image">
-                            <img src='http://dummyimage.com/800x600/dadada/ffffff.gif&text=PIC' alt='PIC' />
-                        </div>
-                        <div className="scenery-intro">
-                            <p>文化景观墙</p>
-                            <p>{date}</p>
-                            <p className={date && 'txt-hide-2'}>长约425米的文化景观墙，形成一部铁色画卷，整体展开为企业理念、发展轨迹、铁色记忆和工艺流程四个篇章。主题铸铜浮雕15幅，写意表达企业发展场景；发展轨迹以历史齿轮连贯历经半个世纪企业的重大历史事件长约425米的文化景观墙，形成一部铁色画卷，整体展开为企业理念、发展轨迹、铁色记忆和工艺流程四个篇章。主题铸铜浮雕15幅，写意表达企业发展场景；发展轨迹以历史齿轮连贯历经半个世纪企业的重大历史事件</p>
-                            <p>
-                                <a href="/content/introduction" className="scenery-detail"> 详情 >> </a>
-                            </p>
+                {list[0].map(item => (
+                    <div className="scenery-item-container" key={item.id}>
+                        <div className="scenery-item">
+                            <div className="scenery-image">
+                                <img src={item.thumbnailPath} alt='PIC' />
+                            </div>
+                            <div className="scenery-intro">
+                                <p>{item.title}</p>
+                                <p>{has_date ? moment(item.publish_at).format('YYYY-MM-DD HH:mm:SS') : ''}</p>
+                                <p className={has_date && 'txt-hide-2'}>{item.text.replace(/<[^>]+>/g, "")}</p>
+                                <p>
+                                    <a href={`${config.CONTENT_DETAIL_URL}/${item.id}`} className="scenery-detail"> 详情 >> </a>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                ))}
+                <Divider />
+                <Pagination showQuickJumper defaultPageSize={10} current={page ? page*1+1 : 1} total={list[1]} onChange={onChange} />
             </div>
         )
     }
     return (
         <GlobalContext.Consumer>
-            {toRenderVideo()}
+            {toRenderList()}
         </GlobalContext.Consumer>
     )
 }
 
-export default Video;
+export default List;

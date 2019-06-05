@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'next/router';
+import * as moment from 'moment';
 
 import CommonLayout from './layouts/CommonLayout';
 import GlobalContext from './contexts/GlobalContext';
@@ -31,53 +32,72 @@ export default class extends Component {
         }
     }
 
-    toRenderContent = ({ html }) => {
+    toGetMenuIndex = (menus, asPath) => {
+        let path = asPath.split('?').shift().split('/').pop();
+        let index = 0;
+        let order = 0;
+        menus.forEach((menu, i) => {
+            if (menu.children && menu.children.length > 0) {
+                menu.children.forEach((item, j) => {
+                    if (path === item.url.split('/').pop()) {
+                        index = i;
+                        order = j;
+                    }
+                })
+            }
+        });
+        return {
+            menu_show: menus[index],
+            order
+        };
+    }
+
+    toRenderContent = ({ content }) => {
         return (
-            <Article html={html} />
+            <Article html={content.text} />
         )
     }
 
-    toRenderList = () => {
-        return <SceneryList />
+    toRenderList = ({ list }) => {
+        return <SceneryList list={list} />
     }
 
-    toRenderImage = () => {
-        return <ImageList />
+    toRenderImage = ({ list }) => {
+        return <ImageList list={list} />
     }
 
-    toRenderVideo = () => {
-        return <VideoList />
+    toRenderVideo = ({ list }) => {
+        return <VideoList list={list} />
     }
 
-    toRenderImageDetail = () => {
+    toRenderImageDetail = ({ content }) => {
         return (
             <Article
                 className="image-content"
-                title="休闲沙滩车"
-                author="admin"
-                origin="未知"
-                publish="2019-05-22"
-                view="225"
-                html={`
-                    <img src='http://dummyimage.com/800x600/dadada/ffffff.gif&text=PIC' alt='PIC' />
-                    <p>工艺品名称：休闲沙滩车</p>
-                    <p>作者：刘逢开</p>
-                    <p>单位：炼钢厂</p>
-                `}
+                title={content.title}
+                author={content.author}
+                origin={content.source}
+                publish={moment(content.publish_at).format('YYYY-MM-DD HH:mm:SS')}
+                view={content.view}
+                html={content.text}
             />
         )
     }
 
-    toRenderVideoDetail = () => {
+    toRenderVideoDetail = ({ content }) => {
         return (
-            <video controls>
-                <source src="/static/root/video/AngryBird.mp4" />
-            </video>
+            <div>
+                <p>{content.title}</p>
+                <video controls>
+                    <source src={content.videoPath} />
+                </video>
+            </div>
         )
     }
 
     renderHandler = () => (options) => {
-        const { siteInfo: { setting }, type } = options;
+        const { siteInfo: { setting, menus }, type, router, parents } = options;
+        const { menu_show, order } = this.toGetMenuIndex(menus, router.asPath);
 
         return (
             <div className="hdz-home-body">
@@ -90,7 +110,7 @@ export default class extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>景区介绍</span>
+                            <span>{parents ? '正文' : menu_show.children[order].name}</span>
                         </div>
                         <div className={`main-content ${type}-content`}>
 

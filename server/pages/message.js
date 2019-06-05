@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'next/router';
+import { Pagination, Divider } from 'antd';
 
 import CommonLayout from './layouts/CommonLayout';
 import GlobalContext from './contexts/GlobalContext';
 
 import Menu from './components/Menu';
-import Annoucement from './components/Annoucement';
 import TourGuide from './components/TourGuide';
 import BreadCrumbs from './components/BreadCrumbs';
 import NaviPanel from './components/NaviPanel';
@@ -17,8 +17,12 @@ import './styles/introduction.scss';
 
 @withRouter
 export default class extends Component {
-    renderHandler = () => ({ siteInfo }) => {
+    onChange = (page) => {
+        window.location.href = `${window.location.pathname}?page=${page - 1}`;
+    }
+    renderHandler = () => ({ siteInfo, list, router }) => {
         const { setting } = siteInfo;
+        let { query: { page }, asPath } = router;
 
         return (
             <div className="hdz-home-body">
@@ -31,7 +35,7 @@ export default class extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>景区介绍</span>
+                            <span>留言咨询</span>
                         </div>
                         <div className="main-content">
 
@@ -40,48 +44,21 @@ export default class extends Component {
                                     <a href="/suggestions">我要留言</a>
                                 </div>
                                 <div className="message-list">
-                                    <div className="message-item-container">
-                                        <div className="message-item">
-                                            <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效？</p>
-                                            <p>本栏目受理个人和企业在对本局各部门办事过程中有关法规、政策、程序等问题的咨询。一般问题提问部门将在5个工作日给予答复，复杂些的适当延长。本栏目答复是一种指导性意见不具有法定效力。具体问题要通过法定途径门办事过程中有关法规、政策、程序等问题的咨询。</p>
+                                    {list[0].map(item => (
+                                        <div className="message-item-container" key={item.id}>
+                                            <div className="message-item">
+                                                <p>{item.ex_info.question}</p>
+                                                <p>{item.ex_info.reply ? item.ex_info.reply : '【很抱歉，管理员还没有来得及回复哦！】'}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="message-item-container">
-                                        <div className="message-item">
-                                            <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效？</p>
-                                            <p>本栏目受理个人和企业在对本局各部门办事过程中有关法规、政策、程序等问题的咨询。一般问题提问部门将在5个工作日给予答复，复杂些的适当延长。本栏目答复是一种指导性意见不具有法定效力。具体问题要通过法定途径门办事过程中有关法规、政策、程序等问题的咨询。</p>
-                                        </div>
-                                    </div>
-                                    <div className="message-item-container">
-                                        <div className="message-item">
-                                            <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效？</p>
-                                            <p>本栏目受理个人和企业在对本局各部门办事过程中有关法规、政策、程序等问题的咨询。一般问题提问部门将在5个工作日给予答复，复杂些的适当延长。本栏目答复是一种指导性意见不具有法定效力。具体问题要通过法定途径门办事过程中有关法规、政策、程序等问题的咨询。</p>
-                                        </div>
-                                    </div>
-                                    <div className="message-item-container">
-                                        <div className="message-item">
-                                            <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效？</p>
-                                            <p>本栏目受理个人和企业在对本局各部门办事过程中有关法规、政策、程序等问题的咨询。一般问题提问部门将在5个工作日给予答复，复杂些的适当延长。本栏目答复是一种指导性意见不具有法定效力。具体问题要通过法定途径门办事过程中有关法规、政策、程序等问题的咨询。</p>
-                                        </div>
-                                    </div>
-                                    <div className="message-item-container">
-                                        <div className="message-item">
-                                            <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效？</p>
-                                            <p>本栏目受理个人和企业在对本局各部门办事过程中有关法规、政策、程序等问题的咨询。一般问题提问部门将在5个工作日给予答复，复杂些的适当延长。本栏目答复是一种指导性意见不具有法定效力。具体问题要通过法定途径门办事过程中有关法规、政策、程序等问题的咨询。</p>
-                                        </div>
-                                    </div>
-                                    <div className="message-item-container">
-                                        <div className="message-item">
-                                            <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效？</p>
-                                            <p>本栏目受理个人和企业在对本局各部门办事过程中有关法规、政策、程序等问题的咨询。一般问题提问部门将在5个工作日给予答复，复杂些的适当延长。本栏目答复是一种指导性意见不具有法定效力。具体问题要通过法定途径门办事过程中有关法规、政策、程序等问题的咨询。</p>
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
                                 <PaginationList
-                                    total={255}
-                                    pageSize={25}
-                                    defaultCurrent={1}
-                                    onChange={() => console.log('onChange')}
+                                    showQuickJumper
+                                    total={list[1]}
+                                    defaultPageSize={10}
+                                    current={1}
+                                    onChange={this.onChange}
                                 />
                             </div>
 

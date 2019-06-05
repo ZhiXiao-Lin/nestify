@@ -1,39 +1,30 @@
 import React, { useState } from 'react';
 import GlobalContext from '../../contexts/GlobalContext';
+import { Pagination, Divider } from 'antd';
 
 import config from '../../_config';
 
 import './index.scss';
 
-const VideoList = () => {
-    const toRenderVideoList = () => ({ siteInfo }) => {
-        const { setting } = siteInfo;
+const VideoList = ({ list }) => {
+    const onChange = (page) => {
+        window.location.href = `${window.location.pathname}?page=${page - 1}`;
+    }
+    const toRenderVideoList = () => ({ router }) => {
+        let { query: { page }, asPath } = router;
+
         return (
             <div className="video-list">
-                <div className="video-item-container">
-                    <div className="video-item">
-                        <a href="/video/show?id=1" className="external-link"></a>
-                        <p>钢铁是怎样练成的</p>
+                {list[0].map(item => (
+                    <div className="video-item-container" key={item.id}>
+                        <div className="video-item">
+                            <a href={`${asPath.split('?').shift()}?id=${item.id}`} className="external-link"></a>
+                            <p>{item.title}</p>
+                        </div>
                     </div>
-                </div>
-                <div className="video-item-container">
-                    <div className="video-item">
-                        <a href="/video/show?id=2" className="external-link"></a>
-                        <p>钢铁是怎样练成的</p>
-                    </div>
-                </div>
-                <div className="video-item-container">
-                    <div className="video-item">
-                        <a href="/video/show?id=3" className="external-link"></a>
-                        <p>钢铁是怎样练成的</p>
-                    </div>
-                </div>
-                <div className="video-item-container">
-                    <div className="video-item">
-                        <a href="/video/show?id=4" className="external-link"></a>
-                        <p>钢铁是怎样练成的</p>
-                    </div>
-                </div>
+                ))}
+                <Divider />
+                <Pagination showQuickJumper defaultPageSize={12} current={page ? page * 1 + 1 : 1} total={list[1]} onChange={onChange} />
             </div>
         )
     }

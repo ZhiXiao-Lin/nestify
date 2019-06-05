@@ -17,7 +17,7 @@ import './styles/introduction.scss';
 
 @withRouter
 export default class extends Component {
-    renderHandler = () => ({ siteInfo }) => {
+    renderHandler = () => ({ siteInfo, list }) => {
         const { setting } = siteInfo;
 
         return (
@@ -31,46 +31,36 @@ export default class extends Component {
                     </div>
                     <div className="intro-main">
                         <div className="main-title">
-                            <span>景区介绍</span>
+                            <span>联系方式</span>
                         </div>
                         <div className="main-content">
 
                             <div className="concact-view">
                                 <div className="concat-info">
                                     <p>方大特钢工业旅游</p>
-                                    <p><i className="FDTG fdtg-phone"></i>电话：0791-86753021</p>
-                                    <p><i className="FDTG fdtg-dayinchuanzhen"></i>传真：0791-86753021</p>
-                                    <p><i className="FDTG fdtg-icon--"></i>邮编：330038</p>
-                                    <p><i className="FDTG fdtg-zuobiao"></i>地址：南昌市红谷滩新区凤凰中大道890号</p>
+                                    <p><i className="FDTG fdtg-phone"></i>电话：{list[0][0].ex_info && list[0][0].ex_info.phone}</p>
+                                    <p><i className="FDTG fdtg-dayinchuanzhen"></i>传真：{list[0][0].ex_info && list[0][0].ex_info.fax}</p>
+                                    <p><i className="FDTG fdtg-icon--"></i>邮编：{list[0][0].ex_info && list[0][0].ex_info.postcode}</p>
+                                    <p><i className="FDTG fdtg-zuobiao"></i>地址：{list[0][0].ex_info && list[0][0].ex_info.address}</p>
                                 </div>
                                 <a href="https://ditu.amap.com/place/B03170SZN4" target="_blank">
                                     <img src={`${config.STATIC_IMAGE_ROOT}/map.png`} alt='placeholder+image' />
                                 </a>
                                 <div className="concact-address">
-                                    <div className="address-1">
-                                        <p>方大特钢科技股份有限公司</p>
-                                        <p>电话：0791-88392816</p>
-                                        <p>传真：0791-88392848</p>
-                                        <p>销售：0791-88396518</p>
-                                        <p>地址：江西省南昌市青山湖区冶金大道475号</p>
-                                        <p>邮编：330012</p>
-                                    </div>
-                                    <div className="address-2">
-                                        <p>方大特钢科技股份有限公司</p>
-                                        <p>电话：0791-88392816</p>
-                                        <p>传真：0791-88392848</p>
-                                        <p>销售：0791-88396518</p>
-                                        <p>地址：江西省南昌市青山湖区冶金大道475号</p>
-                                        <p>邮编：330012</p>
-                                    </div>
-                                    <div className="address-3">
-                                        <p>方大特钢科技股份有限公司</p>
-                                        <p>电话：0791-88392816</p>
-                                        <p>传真：0791-88392848</p>
-                                        <p>销售：0791-88396518</p>
-                                        <p>地址：江西省南昌市青山湖区冶金大道475号</p>
-                                        <p>邮编：330012</p>
-                                    </div>
+                                    {list[0].map((item, i) => {
+                                        if (item.ex_info) {
+                                            return (
+                                                <div className={`address-${i}`} key={i}>
+                                                    <p>{item.ex_info.company}</p>
+                                                    <p>电话：{item.ex_info.phone}</p>
+                                                    <p>传真：{item.ex_info.fax}</p>
+                                                    <p>销售：{item.ex_info.sale}</p>
+                                                    <p>地址：{item.ex_info.address}</p>
+                                                    <p>邮编：{item.ex_info.postcode}</p>
+                                                </div>
+                                            )
+                                        }
+                                    })}
                                 </div>
                             </div>
 
