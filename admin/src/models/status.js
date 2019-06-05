@@ -12,11 +12,12 @@ export default {
 
 	subscriptions: {
 		onConnection({ dispatch, history }) {
-
+			let client = null;
 			history.listen((location) => {
-				if ('POP' === history.action) {
 
-					const client = io(`${config.SOCKET_ROOT}/status`);
+				if ('/studio' === location.pathname) {
+
+					client = io(`${config.SOCKET_ROOT}/status`);
 
 					client.on('connect', (socket) => {
 						console.log(`================ on ${client.id} connect`, client);
@@ -31,6 +32,8 @@ export default {
 							});
 						});
 					});
+				} else {
+					!!client && client.close();
 				}
 			});
 

@@ -1,4 +1,4 @@
-import * as Youch from 'Youch';
+import * as Youch from 'youch';
 import * as moment from 'moment';
 import { Catch, ArgumentsHost, HttpException, ExceptionFilter } from '@nestjs/common';
 import { Logger } from '../lib/logger'
@@ -10,7 +10,7 @@ export class ExceptionsFilter implements ExceptionFilter {
 		const response = ctx.getResponse();
 		const request = ctx.getRequest();
 
-		console.error('exception', exception);
+		Logger.error('exception', exception);
 
 		if (exception instanceof HttpException) {
 			const status = exception.getStatus();
