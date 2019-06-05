@@ -14,7 +14,7 @@ const { Content } = Layout;
 
 @withRouter
 export default class extends Component {
-	
+
 	render() {
 		return (
 			<GlobalContext.Provider value={{ ...this.state, ...this.props, ...this.props.router.query.data }}>

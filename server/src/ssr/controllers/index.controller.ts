@@ -23,12 +23,59 @@ export class IndexController {
 	async index(@Req() req, @Res() res, @Param() params, @Query() query) {
 		const siteInfo = await this.commonService.getSiteInfo();
 
-		await this.redisClient.set('test', 'test');
+		const activity_list = await this.contentService.query({
+			category: '精彩活动',
+			pageSize: 5
+		});
 
-		console.log(await this.redisClient.get('test'));
+		const news_list = await this.contentService.query({
+			category: '新闻动态',
+			pageSize: 5
+		});
+
+		const notice_list = await this.contentService.query({
+			category: '官方公告',
+			pageSize: 3
+		});
+
+		const scenic_list = await this.contentService.query({
+			category: '景点一览',
+			pageSize: 4
+		});
+
+		const characteristic_list = await this.contentService.query({
+			category: '工艺特色',
+			pageSize: 10
+		});
+
+		const video_list = await this.contentService.query({
+			category: '视频赏析',
+			pageSize: 1
+		});
 
 		return res.render('/', {
-			siteInfo
+			siteInfo,
+			news_list,
+			activity_list,
+			notice_list,
+			scenic_list,
+			characteristic_list,
+			video_list
+		});
+	}
+
+	@Get('content/id/:id')
+	async contentId(@Req() req, @Res() res, @Param() params, @Query() query) {
+		const { id } = params;
+		const siteInfo = await this.commonService.getSiteInfo();
+		const content_body = await this.contentService.findOneById(id);
+
+		console.log(content_body);
+
+		return res.render('/intro', {
+			type: 'content',
+			siteInfo,
+			html: content_body.text
 		});
 	}
 

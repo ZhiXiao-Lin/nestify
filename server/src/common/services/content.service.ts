@@ -22,6 +22,14 @@ export class ContentService extends BaseService<Content> {
 	async query(payload: any) {
 		const qb = this.contentRepository.createQueryBuilder('t');
 
+		if (!payload.page) {
+			payload.page = 0;
+		}
+
+		if (!payload.pageSize) {
+			payload.pageSize = 10;
+		}
+
 		if (!!payload.category) {
 			qb.innerJoinAndSelect('t.category', 'category', 'category.name = :category', {
 				category: payload.category

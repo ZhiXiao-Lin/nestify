@@ -56,7 +56,7 @@ export default class ImagesSwiper extends Component {
                         <div className="swiper-wrapper images-swiper-list">
 							{swiperList.map((item, i) => (
 								<div className="swiper-slide" key={i}>
-									<a href={item.link}><img src={item.img} alt={item.title} />fjaoiewjfoiewapjfoieawj</a>
+									<a href={item.link}><img src={item.img} alt={item.title} /></a>
 								</div>
 							))}
                         </div>
