@@ -1,0 +1,12 @@
+.base {
+    display: flex;
+    padding-top: 12px;
+}
+.left {
+    max-width: 50px;
+    min-width: 50px;
+}
+.right {
+    flex: 1;
+    padding-left: 10px;
+}

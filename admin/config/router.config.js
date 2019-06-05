@@ -124,6 +124,38 @@ export default [
 				]
 			},
 			{
+				name: '组织架构',
+				icon: 'apartment',
+				path: '/studio/organization',
+				component: './organization',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT
+			},
+			{
+				name: '用户管理',
+				icon: 'team',
+				path: '/studio/users/:channel',
+				component: './users',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT,
+				routes: [
+					{ name: '管理员', path: '/studio/users/联系方式' },
+					{ name: '客户', path: '/studio/users/留言咨询' },
+				]
+			},
+			{
+				name: '权限管理',
+				icon: 'cluster',
+				path: '/studio/authority/:channel',
+				component: './authority',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT,
+				routes: [
+					{ name: '角色', path: '/studio/authority/联系方式' },
+					{ name: '权限', path: '/studio/authority/留言咨询' },
+				]
+			},
+			{
 				name: '菜单管理',
 				icon: 'menu',
 				path: '/studio/category',

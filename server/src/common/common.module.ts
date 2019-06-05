@@ -11,12 +11,16 @@ import { User } from './entities/user.entity';
 import { Content } from './entities/content.entity';
 import { Category } from './entities/category.entity';
 import { Setting } from './entities/setting.entity';
+import { Organization } from './entities/organization.entity';
+import { Role } from './entities/role.entity';
 import { CommonService } from './services/common.service';
 import { SettingService } from './services/setting.service';
 import { ImportService } from './services/import.service';
 import { CategoryService } from './services/category.service';
 import { ContentService } from './services/content.service';
 import { StatusTask } from './tasks/status.task';
+import { OrganizationService } from './services/organization.service';
+
 
 @Global()
 @Module({
@@ -29,7 +33,7 @@ import { StatusTask } from './tasks/status.task';
 		PassportModule.register({ defaultStrategy: 'jwt' }),
 		JwtModule.register(config.jwt),
 		TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
-		TypeOrmModule.forFeature([Setting, Category, User, Content])
+		TypeOrmModule.forFeature([Setting, Category, User, Content, Organization, Role])
 	],
 	providers: [
 		JwtStrategy,
@@ -39,8 +43,9 @@ import { StatusTask } from './tasks/status.task';
 		ContentService,
 		UserService,
 		SettingService,
+		OrganizationService,
 		StatusTask
 	],
-	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService]
+	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService, OrganizationService]
 })
 export class CommonModule { }
