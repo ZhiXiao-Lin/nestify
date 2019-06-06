@@ -53,6 +53,6 @@ export class User extends Base {
 	@BeforeInsert()
 	async beforeInsert() {
 		const salt = await bcrypt.genSalt(10);
-		this.password = await bcrypt.hash(this.password, salt);
+		this.password = await bcrypt.hash(this.password || '12345678', salt);
 	}
 }

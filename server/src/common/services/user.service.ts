@@ -95,4 +95,11 @@ export class UserService extends BaseService<User> {
 
 		return await this.userRepository.save(user);
 	}
+
+	async remove(ids: string[]) {
+
+		// 软删除
+
+		return await this.userRepository.delete(ids);
+	}
 }
