@@ -2,17 +2,9 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Form, Input, InputNumber, Row, Col, Icon, TreeSelect, Button, Skeleton, message } from 'antd';
+import { Tabs, Form, Input, InputNumber, Row, Col, Icon, Tree, Button, Skeleton, message, Divider } from 'antd';
 
-
-import config from '@/config';
-import { apiUploadOne } from '@/utils';
-
-import ImageCropper from '@/components/ImageCropper';
-import VideoEditor from '@/components/VideoEditor';
-
-import BraftEditor from 'braft-editor';
-import 'braft-editor/dist/index.css';
+const { TreeNode } = Tree;
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -26,14 +18,15 @@ const tailFormItemLayout = {
 const MODEL_NAME = 'role';
 
 @Form.create()
-@connect(({ organization, role }) => ({
-	organization,
-	selectedNode: role.selectedNode,
-	columns: role.columns
+@connect(({ authority, role }) => ({
+	authority,
+	selectedNode: role.selectedNode
 }))
 export default class extends React.Component {
 	state = {
-		tabKey: 'basic'
+		tabKey: 'basic',
+		expandedKeys: [],
+		autoExpandParent: true,
 	};
 
 	componentDidMount() {
@@ -55,7 +48,13 @@ export default class extends React.Component {
 				dispatch({
 					type: `${MODEL_NAME}/detail`,
 					payload: {
-						id: id || params.id
+						id: id || params.id,
+						callback: (selectedNode) => {
+							this.setState({
+								expandedKeys: selectedNode.authoritys.map(item => item.id),
+								autoExpandParent: false,
+							});
+						}
 					}
 				});
 			} else {
@@ -69,59 +68,13 @@ export default class extends React.Component {
 		}
 
 		dispatch({
-			type: `organization/fetch`,
+			type: 'authority/fetch',
 			payload: {}
 		});
 	};
 
 	onTabChange = (tabKey) => {
 		this.setState({ tabKey });
-	};
-
-	onThumbnailUpload = async (file) => {
-		const { dispatch } = this.props;
-
-		const res = await apiUploadOne(file);
-
-		if (!!res && !!res.path) {
-
-			dispatch({
-				type: `${MODEL_NAME}/save`,
-				payload: {
-					thumbnail: res.path
-				}
-			});
-
-		}
-	};
-
-	onVideoUpload = async (file) => {
-		const { dispatch } = this.props;
-
-		const res = await apiUploadOne(file);
-
-		if (!!res && !!res.path) {
-
-			dispatch({
-				type: `${MODEL_NAME}/save`,
-				payload: {
-					video: res.path
-				}
-			});
-
-		}
-	};
-
-	onEditorMediaUpload = async (context) => {
-		if (!context || !context.file) return;
-
-		const res = await apiUploadOne(context.file);
-		if (!res) {
-			context.error({ error: '上传失败' });
-		} else {
-			context.progress(101);
-			context.success({ url: `${config.STATIC_ROOT}${res.path}` });
-		}
 	};
 
 	resetHandler = () => {
@@ -148,40 +101,38 @@ export default class extends React.Component {
 		});
 	};
 
-	toSaveRichText = () => {
-		this.props.dispatch({
+	onSave = () => {
+		const { dispatch } = this.props;
+
+		dispatch({
 			type: `${MODEL_NAME}/save`,
-			payload: {
-				text: this.editorRef.getValue().toHTML()
-			}
+			payload: {}
 		});
 	};
 
-	renderRichText = (content) => {
-		const editorProps = {
-			placeholder: '请输入内容',
-			contentFormat: 'html',
-			contentId: content.id,
-			value: BraftEditor.createEditorState(content.text),
-			onSave: this.toSaveRichText,
-			media: {
-				uploadFn: this.onEditorMediaUpload
+	onCheck = (selectedRows) => {
+		const { selectedNode } = this.props;
+
+		selectedNode.authoritys = selectedRows.map(item => ({ id: item }))
+
+		this.props.dispatch({
+			type: `${MODEL_NAME}/set`,
+			payload: {
+				selectedNode
 			}
-		};
-		return (
-			<Fragment>
-				<Button type="primary" onClick={this.toSaveRichText}>
-					保存
-				</Button>
-				<BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
-			</Fragment>
-		);
+		});
+	}
+
+	onExpand = expandedKeys => {
+
+		this.setState({
+			expandedKeys,
+			autoExpandParent: false,
+		});
 	};
 
 	renderBasicForm = () => {
-		const { selectedNode, columns, organization, form: { getFieldDecorator } } = this.props;
-
-		const fields = columns.map(item => item.dataIndex);
+		const { selectedNode, form: { getFieldDecorator } } = this.props;
 
 		return (
 			<Form onSubmit={this.submitHandler} className="panel-form">
@@ -198,16 +149,10 @@ export default class extends React.Component {
 					})(<Input {...formItemStyle} type="text" placeholder="请填写名称" />)}
 				</Form.Item>
 
-				<Form.Item {...formItemLayout} label="组织架构">
-					{getFieldDecorator('organization', {
-						initialValue: !selectedNode ? null : selectedNode['organization']['id'],
-						rules: [
-							{
-								required: true,
-								message: '组织架构不能为空'
-							}
-						]
-					})(<TreeSelect {...formItemStyle} treeNodeFilterProp="title" showSearch treeDefaultExpandAll treeData={organization.data} />)}
+				<Form.Item {...formItemLayout} label="标识">
+					{getFieldDecorator('token', {
+						initialValue: !selectedNode ? 0 : selectedNode['token']
+					})(<Input disabled={selectedNode.isSuperAdmin} {...formItemStyle} placeholder="请填写标识" />)}
 				</Form.Item>
 
 				<Form.Item {...formItemLayout} label="描述">
@@ -239,12 +184,24 @@ export default class extends React.Component {
 		);
 	};
 
+	renderTreeNodes = data =>
+		data.sort((a, b) => a.sort - b.sort).map(item => {
+			if (item.children) {
+				return (
+					<TreeNode title={item.name} key={item.id} dataRef={item}>
+						{this.renderTreeNodes(item.children)}
+					</TreeNode>
+				);
+			}
+			return <TreeNode {...item} />;
+		});
+
 	render() {
-		const { selectedNode, columns } = this.props;
+		const { selectedNode, authority } = this.props;
 
 		if (!selectedNode) return <Skeleton active loading />;
 
-		const fields = columns.map(item => item.dataIndex);
+		const checkedKeys = selectedNode.authoritys.map(item => item.id);
 
 		return (
 			<Fragment>
@@ -255,28 +212,20 @@ export default class extends React.Component {
 					<Tabs.TabPane tab="基本信息" key="basic">
 						{this.renderBasicForm()}
 					</Tabs.TabPane>
-					{selectedNode.id && fields.includes('thumbnailPath') ? (
-						<Tabs.TabPane tab="图片" key="thumbnail">
-							<ImageCropper
-								url={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
-								onUpload={this.onThumbnailUpload}
-							/>
-						</Tabs.TabPane>
-					) : null}
-					{selectedNode.id && fields.includes('videoPath') ? (
-						<Tabs.TabPane tab="视频" key="video">
-							<VideoEditor
-								url={!selectedNode.video ? '' : selectedNode.videoPath}
-								onUpload={this.onVideoUpload}
-								width={500}
-							/>
-						</Tabs.TabPane>
-					) : null}
-					{selectedNode.id && fields.includes('text') ? (
-						<Tabs.TabPane tab="正文" key="text">
-							{this.renderRichText(selectedNode)}
-						</Tabs.TabPane>
-					) : null}
+					<Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="权限分配" key="authority">
+						<Button type="primary" onClick={this.onSave}>保存</Button>
+						<Tree
+							blockNode
+							checkable
+							onExpand={this.onExpand}
+							checkedKeys={checkedKeys}
+							expandedKeys={this.state.expandedKeys}
+							autoExpandParent={this.state.autoExpandParent}
+							onCheck={this.onCheck}
+						>
+							{this.renderTreeNodes(authority.data)}
+						</Tree>
+					</Tabs.TabPane>
 				</Tabs>
 			</Fragment>
 		);

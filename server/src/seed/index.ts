@@ -9,6 +9,7 @@ import { Connection } from 'typeorm';
 import { Logger } from '../common/lib/logger';
 import { Organization } from '../common/entities/organization.entity';
 import { Role } from '../common/entities/role.entity';
+import { Authority } from '../common/entities/authority.entity';
 
 @Injectable()
 export class Seed {
@@ -22,12 +23,17 @@ export class Seed {
 			ex_info: await ExcelHelper.loadFromFile(resolve('./seeds/settings.xlsx'), Setting.sheetsMap)
 		});
 
-		await this.connection.getRepository(User).save(User.create({ account: 'SysAdmin', password: '12345678' }));
-
 		await this.importCategorys();
 		await this.importOrganizations();
+		await this.importAuthoritys();
 		await this.importRoles();
 
+		const roleAdmin = await this.connection.getRepository(Role).findOne({ token: 'superAdmin' });
+
+		const superAdmin = User.create({ account: 'SysAdmin', password: '12345678', nickname: '超级管理员', avatar: '/images/superadmin.png' });
+		superAdmin.roles = [roleAdmin];
+
+		await this.connection.getRepository(User).save(superAdmin);
 	}
 
 	async importCategorys() {
@@ -58,15 +64,28 @@ export class Seed {
 		await this.connection.getTreeRepository(Organization).save(organizationArr);
 	}
 
+	async importAuthoritys() {
+		const result = await ExcelHelper.loadFromFile(resolve('./seeds/authoritys.xlsx'), Authority.sheetsMap);
+		const athoritys = result['authoritys'];
+		const arr = [];
+
+		for (let item of athoritys) {
+			if (!!item.parent) {
+				item.parent = arr.find((auth) => auth.id === item.parent);
+			}
+			arr.push(Authority.create(item))
+		}
+
+		await this.connection.getRepository(Authority).save(arr);
+	}
+
 	async importRoles() {
 		const rolesResult = await ExcelHelper.loadFromFile(resolve('./seeds/roles.xlsx'), Role.sheetsMap);
 		const roles = rolesResult['roles'];
 		const rolesArr = [];
 
 		for (let item of roles) {
-			if (!!item.organization) {
-				item.organization = await this.connection.getTreeRepository(Organization).findOne({ where: { name: item.organization } });
-			}
+
 			rolesArr.push(Role.create(item))
 		}
 

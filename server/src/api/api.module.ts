@@ -8,6 +8,7 @@ import { SettingController } from './controllers/setting.controller';
 import { CategoryController } from './controllers/category.controller';
 import { OrganizationController } from './controllers/organization.controller';
 import { RoleController } from './controllers/role.controller';
+import { AuthorityController } from './controllers/authority.controller';
 
 @Module({
     controllers: [
@@ -18,6 +19,7 @@ import { RoleController } from './controllers/role.controller';
         ContentController,
         CategoryController,
         OrganizationController,
+        AuthorityController,
         RoleController
     ]
 })

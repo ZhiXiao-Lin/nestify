@@ -1,7 +1,6 @@
 import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, Tree, TreeChildren, TreeParent, OneToMany } from 'typeorm';
-import { Role } from './role.entity';
+import { Entity, Column, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { ExcelHandleType } from '../lib/excel';
 
 @Entity()
@@ -17,9 +16,6 @@ export class Organization extends Base {
 
     @Column({ comment: '排序', default: 0 })
     sort: number;
-
-    @OneToMany((type) => Role, (role) => role.organization)
-    roles: Role[];
 
     @Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
     ex_info: any;

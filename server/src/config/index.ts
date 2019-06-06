@@ -73,6 +73,10 @@ let config = {
                 ]
             }
         ]
+    },
+
+    websocket: {
+        port: 9000
     }
 };
 

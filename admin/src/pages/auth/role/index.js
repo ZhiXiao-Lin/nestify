@@ -34,8 +34,7 @@ const Panel = Collapse.Panel;
 const MODEL_NAME = 'role';
 const DETAIL_URL = '/studio/roledetail';
 
-@connect(({ organization, role, loading }) => ({
-	organization,
+@connect(({ role, loading }) => ({
 	...role,
 	loading: loading.models.role
 }))
@@ -96,6 +95,10 @@ export default class extends React.Component {
 						}
 					},
 					{
+						title: '标识',
+						dataIndex: 'token'
+					},
+					{
 						title: '描述',
 						dataIndex: 'desc'
 					},
@@ -118,7 +121,7 @@ export default class extends React.Component {
 					},
 				];
 
-				fields = ['id', 'name', 'desc', 'sort', 'update_at', 'create_at'];
+				fields = ['id', 'name', 'token', 'desc', 'sort', 'update_at', 'create_at'];
 				showQueryCondition = true;
 				break;
 		}
@@ -143,11 +146,6 @@ export default class extends React.Component {
 		dispatch({
 			type: `${MODEL_NAME}/fetch`,
 			payload
-		});
-
-		dispatch({
-			type: `organization/fetch`,
-			payload: {}
 		});
 	};
 
@@ -252,7 +250,7 @@ export default class extends React.Component {
 		});
 
 	render() {
-		const { dispatch, data, organization, selectedRows, selectedRowKeys, columns, fields, showQueryCondition, loading } = this.props;
+		const { dispatch, data, selectedRows, selectedRowKeys, columns, fields, showQueryCondition, loading } = this.props;
 		const { getFieldDecorator } = this.props.form;
 
 		const tableColumns = columns.filter((item) => fields.includes(item.dataIndex));
@@ -317,9 +315,9 @@ export default class extends React.Component {
 									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
 										{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
 									</Form.Item>
-									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="组织架构">
+									{/* <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="组织架构">
 										{getFieldDecorator('organization')(<TreeSelect treeNodeFilterProp="title" showSearch treeDefaultExpandAll treeData={organization.data} />)}
-									</Form.Item>
+									</Form.Item> */}
 
 									<Row>
 										<Col span={12} offset={3}>

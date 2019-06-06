@@ -1,27 +1,19 @@
 import _ from 'lodash';
-import moment from 'moment';
 import { message } from 'antd';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
-import { downloadBuffer } from '@/utils/utils';
 import config from '@/config';
 
-const API_URL = config.API_ROOT + '/role';
+const API_URL = config.API_ROOT + '/authority';
 
 export default {
-	namespace: 'role',
+	namespace: 'authority',
 
 	state: {
+		parentId: null,
 		selectedNode: null,
 		selectedRows: [],
-		selectedRowKeys: [],
 		queryParams: {},
-		data: {
-			page: 0,
-			pageSize: config.PAGE_SIZE,
-			total: 0,
-			totalPage: 0,
-			list: []
-		},
+		data: [],
 		showQueryCondition: false,
 		columns: [],
 		fields: []
@@ -32,7 +24,7 @@ export default {
 			payload.page = !!payload.page ? payload.page - 1 : 0;
 			payload.pageSize = config.PAGE_SIZE;
 
-			const { queryParams } = yield select((state) => state.role);
+			const { queryParams } = yield select((state) => state.authority);
 
 			const params = _.merge(queryParams, payload);
 
@@ -47,15 +39,8 @@ export default {
 					type: 'set',
 					payload: {
 						selectedRows: [],
-						selectedRowKeys: [],
 						queryParams: params,
-						data: {
-							page: params.page + 1,
-							pageSize: config.PAGE_SIZE,
-							list: res[0],
-							total: res[1],
-							totalPage: Math.ceil(res[1] / config.PAGE_SIZE)
-						}
+						data: res
 					}
 				});
 			}
@@ -73,7 +58,7 @@ export default {
 			payload.callback && payload.callback(res);
 		},
 		*save({ payload }, { call, put, select }) {
-			const { selectedNode } = yield select((state) => state.role);
+			const { selectedNode } = yield select((state) => state.authority);
 
 			let res = null;
 
@@ -85,43 +70,60 @@ export default {
 
 			if (!!res) {
 				yield put({
-					type: 'detail',
+					type: 'fetch',
 					payload: {
-						id: selectedNode.id
+
 					}
 				});
 				message.success('保存成功');
 			}
 		},
-		*remove({ payload }, { call, select }) {
-			const selectedRows = yield select((state) => state.role.selectedRows);
+		*create({ payload }, { call, put, select }) {
+			const parentId = yield select((state) => state.authority.parentId);
+
+			const res = yield call(apiPost, API_URL, {
+				parentId,
+				...payload
+			});
+
+			if (!!res) {
+				yield put({
+					type: 'fetch',
+					payload: {
+
+					}
+				});
+				message.success('保存成功');
+			}
+		},
+		*remove({ payload }, { call, select, put }) {
+			const selectedRows = yield select((state) => state.authority.selectedRows);
 
 			yield call(apiDelete, API_URL, {
 				params: {
-					selectedRows: selectedRows.map((item) => item.id).join(',')
+					selectedRows: selectedRows.join(',')
 				}
 			});
+
+			yield put({
+				type: 'set',
+				payload: {
+					selectedNode: null
+				}
+			})
 
 			payload.callback && payload.callback();
 		},
-		*export({ payload }, { call, select }) {
-			message.loading('正在执行导出', 0);
+		*parent({ payload }, { call, put }) {
 
-			const queryParams = yield select((state) => state.role.queryParams);
+			yield call(apiPut, API_URL + '/parent', payload);
 
-			const fileBuffer = yield call(apiGet, API_URL + '/export', {
-				responseType: 'arraybuffer',
-				params: {
-					isExport: true,
-					...payload,
-					...queryParams
+			yield put({
+				type: 'fetch',
+				payload: {
+
 				}
 			});
-
-			downloadBuffer(fileBuffer, queryParams.category + '-' + moment().format('YYYY-MM-DD-HH-mm-ss'));
-
-			message.destroy();
-			message.success('导出成功');
 		}
 	},
 
