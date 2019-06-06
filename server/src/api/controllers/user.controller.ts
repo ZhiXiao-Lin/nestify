@@ -1,4 +1,4 @@
-import { Get, Body, Put, Param, UseInterceptors, ClassSerializerInterceptor, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Get, Body, Put, Param, UseInterceptors, ClassSerializerInterceptor, UseGuards, UsePipes, ValidationPipe, Query, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Api, CurrentUser } from '../../common/aspects/decorator';
@@ -18,6 +18,11 @@ export class UserController {
 		return await this.userService.findOneById(params.id);
 	}
 
+	@Get('list')
+	async list(@Query() payload) {
+		return await this.userService.query(payload);
+	}
+
 	@Get('current')
 	@UseInterceptors(ClassSerializerInterceptor)
 	async current(@CurrentUser() user) {
@@ -28,6 +33,11 @@ export class UserController {
 	@UsePipes(new ValidationPipe())
 	async changePassword(@CurrentUser() user, @Body() dto: PasswordDto) {
 		return await this.userService.changePassword(user.id, dto);
+	}
+
+	@Post()
+	async create(@Body() dto: any) {
+		return await this.userService.save(dto);
 	}
 
 	@Put()

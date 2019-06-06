@@ -19,6 +19,51 @@ export class UserService extends BaseService<User> {
 	}
 
 	@TransformClassToPlain()
+	async query(payload: any) {
+		const qb = this.userRepository.createQueryBuilder('t');
+
+		qb.leftJoinAndSelect('t.roles', 'role');
+
+		if (!payload.page) {
+			payload.page = 0;
+		}
+
+		if (!payload.pageSize) {
+			payload.pageSize = 10;
+		}
+
+		if (!!payload.keyword) {
+			qb.andWhere(`t.nickname LIKE '%${payload.keyword}%'`);
+		}
+
+		if (!!payload.create_at) {
+			payload.create_at = payload.create_at.split(',');
+			qb.andWhere(`t.create_at BETWEEN '${payload.create_at.shift()}' AND '${payload.create_at.pop()}'`);
+		}
+
+		if (!!payload.sort && !!payload.order) {
+			qb.addOrderBy(`t.${payload.sort}`, payload.order);
+		} else {
+			qb.addOrderBy('t.create_at', 'DESC');
+		}
+
+		if (!!payload.isExport) {
+			if (!payload.category) throw new BadRequestException('分类参数错误');
+
+			const dataSource = await qb.getMany();
+
+			// 执行导出逻辑
+			// return await ExcelHelper.export(dataSource, Content.sheetsMap[payload.category], payload.fields.split(','));
+
+		} else {
+			qb.skip(payload.page * payload.pageSize);
+			qb.take(payload.pageSize);
+		}
+
+		return await qb.getManyAndCount();
+	}
+
+	@TransformClassToPlain()
 	async findOneById(id) {
 		return await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
 	}

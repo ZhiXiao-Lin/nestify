@@ -155,11 +155,11 @@ export default class extends React.Component {
   loadData = (payload) => {
     const { dispatch, match: { params } } = this.props;
 
-    payload.category = !!payload.category ? payload.category : params.channel;
-
     dispatch({
       type: `${MODEL_NAME}/fetch`,
-      payload
+      payload: {
+        category: !!payload.category ? payload.category : params.channel
+      }
     });
   };
 
