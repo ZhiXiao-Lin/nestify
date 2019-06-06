@@ -5,7 +5,7 @@ import { Row, Col, Icon, Menu, Dropdown } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import { getTimeDistance } from '@/utils/utils';
 
-import styles from './Index.less';
+import styles from './index.less';
 import PageLoading from '@/components/PageLoading';
 
 const SystemStatus = React.lazy(() => import('./SystemStatus'));
