@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcryptjs';
 import { Exclude, Expose, plainToClass } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, BeforeInsert } from 'typeorm';
+import { Entity, Column, BeforeInsert, ManyToMany, JoinTable } from 'typeorm';
 import { Gender } from '../aspects/enum';
+import { Role } from './role.entity';
 
 @Entity()
 export class User extends Base {
@@ -28,6 +29,10 @@ export class User extends Base {
 	@Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
 	ex_info: any;
 
+	@ManyToMany(type => Role, role => role.users)
+	@JoinTable()
+	roles: Role[];
+
 	static create(target: Object) {
 		return plainToClass(User, target);
 	}
@@ -35,6 +40,14 @@ export class User extends Base {
 	@Expose()
 	get avatarPath(): string {
 		return Base.getFullPath(this.avatar);
+	}
+
+	@Expose()
+	get isSuperAdmin(): boolean {
+
+		if (!this.roles || this.roles.length <= 0) return false;
+
+		return !!this.roles.find(role => role.token === 'superAdmin');
 	}
 
 	@BeforeInsert()

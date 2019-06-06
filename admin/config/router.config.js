@@ -123,14 +123,14 @@ export default [
 					{ name: '投诉建议', path: '/studio/about/投诉建议' }
 				]
 			},
-			// {
-			// 	name: '组织架构',
-			// 	icon: 'apartment',
-			// 	path: '/studio/organization',
-			// 	component: './organization',
-			// 	Routes: ['src/pages/Authorized'],
-			// 	authority: AUTHORITY.CONTENT
-			// },
+			{
+				name: '组织架构',
+				icon: 'apartment',
+				path: '/studio/organization',
+				component: './organization',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT
+			},
 			// {
 			// 	name: '用户管理',
 			// 	icon: 'team',
@@ -143,22 +143,22 @@ export default [
 			// 		{ name: '客户', path: '/studio/users/留言咨询' },
 			// 	]
 			// },
-			// {
-			// 	name: '权限管理',
-			// 	icon: 'cluster',
-			// 	path: '/studio/auth',
-			// 	Routes: ['src/pages/Authorized'],
-			// 	authority: AUTHORITY.CONTENT,
-			// 	routes: [
-			// 		{ name: '角色', component: './role', path: '/studio/auth/role' },
-			// 		{ name: '权限', component: './authority', path: '/studio/auth/authority' },
-			// 	]
-			// },
-			// {
-			// 	name_noshow: '详情',
-			// 	path: '/studio/roledetail/:id',
-			// 	component: './role/detail'
-			// },
+			{
+				name: '权限管理',
+				icon: 'cluster',
+				path: '/studio/auth',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT,
+				routes: [
+					{ name: '角色', component: './auth/role', path: '/studio/auth/role' },
+					{ name: '权限', component: './auth/authority', path: '/studio/auth/authority' },
+				]
+			},
+			{
+				name_noshow: '详情',
+				path: '/studio/roledetail/:id',
+				component: './auth/role/detail'
+			},
 			{
 				name: '菜单管理',
 				icon: 'menu',

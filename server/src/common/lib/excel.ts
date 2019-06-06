@@ -127,7 +127,6 @@ export class ExcelHelper {
 					} else {
 						row[headerKey] = handler(item[headerKey]);
 					}
-					console.log(row)
 				}
 			});
 

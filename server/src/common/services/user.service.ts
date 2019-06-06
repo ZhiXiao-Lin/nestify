@@ -20,7 +20,7 @@ export class UserService extends BaseService<User> {
 
 	@TransformClassToPlain()
 	async findOneById(id) {
-		return await this.userRepository.findOne({ id });
+		return await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
 	}
 
 	async login(account, password) {
@@ -34,7 +34,7 @@ export class UserService extends BaseService<User> {
 	}
 
 	async changePassword(id, dto) {
-		const user = await this.userRepository.findOne({ id });
+		const user = await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
 
 		if (!await bcrypt.compare(dto.oldPassword, user.password)) throw new BadRequestException('旧密码错误');
 

@@ -5,31 +5,24 @@ import { Repository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { Role } from '../entities/role.entity';
-import { OrganizationService } from './organization.service';
 
 
 @Injectable()
 export class RoleService extends BaseService<Role> {
 	constructor(
-		private readonly organizationService: OrganizationService,
 		@InjectRepository(Role) private readonly roleRepository: Repository<Role>
 	) {
 		super(roleRepository);
 	}
 
+	@TransformClassToPlain()
 	async findOneAndRelations(id: string) {
-		return await this.roleRepository.findOne({ where: { id }, relations: ['organization'] });
+		return await this.roleRepository.findOne({ where: { id }, relations: ['authoritys'] });
 	}
 
 	@TransformClassToPlain()
 	async query(payload: any) {
 		const qb = this.roleRepository.createQueryBuilder('t');
-
-		if (!!payload.organization) {
-			qb.innerJoinAndSelect('t.organization', 'organization', 'organization.id = :organization', {
-				organization: payload.organization
-			});
-		}
 
 		if (!!payload.keyword) {
 			qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
@@ -51,10 +44,6 @@ export class RoleService extends BaseService<Role> {
 
 	async save(payload: any) {
 		const role = Role.create(payload) as Role;
-
-		if (!_.isEmpty(payload.organization) && _.isString(payload.organization)) {
-			role.organization = await this.organizationService.findOneById(payload.organization);
-		}
 
 		return await this.roleRepository.save(role);
 	}

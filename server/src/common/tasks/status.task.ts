@@ -7,8 +7,9 @@ import {
 import { Client } from 'socket.io';
 import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
 import { influx } from '../lib/influx';
+import { config } from '../../config';
 
-@WebSocketGateway(9000, { namespace: 'status' })
+@WebSocketGateway(config.websocket.port, { namespace: 'status' })
 export class StatusTask extends NestSchedule {
 
     @WebSocketServer() server: any;
