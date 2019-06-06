@@ -1,19 +1,16 @@
 import React, { Component, Suspense } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Icon, Menu, Dropdown } from 'antd';
+import { Icon, Menu, Dropdown } from 'antd';
 
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
+import PageLoading from '@/components/PageLoading';
+
 import { getTimeDistance } from '@/utils/utils';
 
 import styles from './index.less';
-import PageLoading from '@/components/PageLoading';
+
 
 const SystemStatus = React.lazy(() => import('./SystemStatus'));
-const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
-const SalesCard = React.lazy(() => import('./SalesCard'));
-const TopSearch = React.lazy(() => import('./TopSearch'));
-const ProportionSales = React.lazy(() => import('./ProportionSales'));
-const OfflineData = React.lazy(() => import('./OfflineData'));
 
 @connect(({ chart, status, loading }) => ({
 	chart,
