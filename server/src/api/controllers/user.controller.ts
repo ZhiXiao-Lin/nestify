@@ -1,4 +1,4 @@
-import { Get, Body, Put, Param, UseInterceptors, ClassSerializerInterceptor, UseGuards, UsePipes, ValidationPipe, Query, Post } from '@nestjs/common';
+import { Get, Body, Put, Param, UseInterceptors, ClassSerializerInterceptor, UseGuards, UsePipes, ValidationPipe, Query, Post, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Api, CurrentUser } from '../../common/aspects/decorator';
@@ -43,5 +43,10 @@ export class UserController {
 	@Put()
 	async update(@Body() dto: any) {
 		return await this.userService.save(dto);
+	}
+
+	@Delete()
+	async remove(@Query() payload) {
+		return await this.userService.remove(payload.selectedRows.split(','));
 	}
 }

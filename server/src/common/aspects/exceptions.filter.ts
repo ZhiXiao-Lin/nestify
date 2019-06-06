@@ -1,6 +1,6 @@
 import * as Youch from 'youch';
 import * as moment from 'moment';
-import { Catch, ArgumentsHost, HttpException, ExceptionFilter } from '@nestjs/common';
+import { Catch, ArgumentsHost, HttpException, ExceptionFilter, HttpStatus } from '@nestjs/common';
 import { Logger } from '../lib/logger'
 
 @Catch()
@@ -11,11 +11,12 @@ export class ExceptionsFilter implements ExceptionFilter {
 		const request = ctx.getRequest();
 
 		Logger.error('exception', exception);
+		Logger.error(request.headers.xhr);
+
+		const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
 
 		if (exception instanceof HttpException) {
 			const status = exception.getStatus();
-			const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
-
 			Logger.error(`Catch http exception at ${request.raw.method} ${request.raw.url} ${status}`);
 
 			response.code(status).header('Content-Type', 'application/json; charset=utf-8').send({
@@ -24,7 +25,7 @@ export class ExceptionsFilter implements ExceptionFilter {
 				path: request.url
 			});
 		} else {
-			if (process.env.NODE_ENV !== 'production') {
+			if (process.env.NODE_ENV !== 'production' && !request.headers.xhr) {
 				const youch = new Youch(exception, request.raw);
 
 				const html = await youch
@@ -35,8 +36,14 @@ export class ExceptionsFilter implements ExceptionFilter {
 					.toHTML();
 
 				response.type('text/html');
-				response.code(500).send(html);
+				response.code(HttpStatus.INTERNAL_SERVER_ERROR).send(html);
 
+			} else {
+				response.code(HttpStatus.INTERNAL_SERVER_ERROR).header('Content-Type', 'application/json; charset=utf-8').send({
+					...exception,
+					timestamp,
+					path: request.url
+				});
 			}
 		}
 

@@ -94,9 +94,26 @@ export default {
 		*remove({ payload }, { call, select }) {
 			const selectedRows = yield select((state) => state.users.selectedRows);
 
+			const rows = [];
+			const superAdmin = [];
+
+			selectedRows.forEach(row => {
+				if (!row.isSuperAdmin) {
+					rows.push(row);
+				} else {
+					superAdmin.push(row);
+				}
+			});
+
+			if (superAdmin.length > 0) {
+				message.warning('超级管理员不能删除');
+			}
+
+			if (rows.length <= 0) return false;
+
 			yield call(apiDelete, API_URL, {
 				params: {
-					selectedRows: selectedRows.map((item) => item.id).join(',')
+					selectedRows: rows.map((item) => item.id).join(',')
 				}
 			});
 

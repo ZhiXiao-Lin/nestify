@@ -7,12 +7,14 @@ import config from '@/config';
 const instance = axios.create({
   baseURL: config.API_ROOT,
   timeout: 150000,
-  headers: {},
+  headers: {
+    xhr: true
+  },
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(
-  function(config) {
+  function (config) {
     const token = localStorage.getItem('token');
 
     if (!!token) {
@@ -22,7 +24,7 @@ instance.interceptors.request.use(
     console.log('onRequest --->', config);
     return config;
   },
-  function(error) {
+  function (error) {
     // Do something with request error
     return Promise.reject(error);
   }
@@ -30,10 +32,10 @@ instance.interceptors.request.use(
 
 // Add a response interceptor
 instance.interceptors.response.use(
-  function(response) {
+  function (response) {
     return response.data;
   },
-  function(error) {
+  function (error) {
     // Do something with response error
 
     if (error.response) {
@@ -61,7 +63,14 @@ instance.interceptors.response.use(
 
             message.error(constraints[Object.keys(constraints).pop()], 2);
           } else {
-            message.error('未知错误!', 2);
+
+            console.error(error.response.data.message);
+
+            if (_.isString(error.response.data.detail)) {
+              message.error(error.response.data.detail, 2);
+            } else {
+              message.error('未知错误!', 2);
+            }
           }
         }
       }
