@@ -5,10 +5,10 @@ import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
 import { downloadBuffer } from '@/utils/utils';
 import config from '@/config';
 
-const API_URL = config.API_ROOT + '/role';
+const API_URL = config.API_ROOT + '/user';
 
 export default {
-	namespace: 'role',
+	namespace: 'users',
 
 	state: {
 		selectedNode: null,
@@ -32,7 +32,7 @@ export default {
 			payload.page = !!payload.page ? payload.page - 1 : 0;
 			payload.pageSize = config.PAGE_SIZE;
 
-			const { queryParams } = yield select((state) => state.role);
+			const { queryParams } = yield select((state) => state.users);
 
 			const params = _.merge(queryParams, payload);
 
@@ -69,11 +69,9 @@ export default {
 					selectedNode: res
 				}
 			});
-
-			payload.callback && payload.callback(res);
 		},
 		*save({ payload }, { call, put, select }) {
-			const { selectedNode } = yield select((state) => state.role);
+			const { selectedNode } = yield select((state) => state.users);
 
 			let res = null;
 
@@ -94,7 +92,7 @@ export default {
 			}
 		},
 		*remove({ payload }, { call, select }) {
-			const selectedRows = yield select((state) => state.role.selectedRows);
+			const selectedRows = yield select((state) => state.users.selectedRows);
 
 			yield call(apiDelete, API_URL, {
 				params: {
@@ -107,7 +105,7 @@ export default {
 		*export({ payload }, { call, select }) {
 			message.loading('正在执行导出', 0);
 
-			const queryParams = yield select((state) => state.role.queryParams);
+			const queryParams = yield select((state) => state.users.queryParams);
 
 			const fileBuffer = yield call(apiGet, API_URL + '/export', {
 				responseType: 'arraybuffer',

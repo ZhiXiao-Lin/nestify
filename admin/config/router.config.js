@@ -131,18 +131,23 @@ export default [
 				Routes: ['src/pages/Authorized'],
 				authority: AUTHORITY.CONTENT
 			},
-			// {
-			// 	name: '用户管理',
-			// 	icon: 'team',
-			// 	path: '/studio/users/:channel',
-			// 	component: './users',
-			// 	Routes: ['src/pages/Authorized'],
-			// 	authority: AUTHORITY.CONTENT,
-			// 	routes: [
-			// 		{ name: '管理员', path: '/studio/users/联系方式' },
-			// 		{ name: '客户', path: '/studio/users/留言咨询' },
-			// 	]
-			// },
+			{
+				name: '用户管理',
+				icon: 'team',
+				path: '/studio/users/:channel',
+				component: './users',
+				Routes: ['src/pages/Authorized'],
+				authority: AUTHORITY.CONTENT,
+				routes: [
+					{ name: '管理员', path: '/studio/users/admin' },
+					{ name: '客户', path: '/studio/users/customer' },
+				]
+			},
+			{
+				name_noshow: '详情',
+				path: '/studio/usersdetail/:channel/:id',
+				component: './users/detail'
+			},
 			{
 				name: '权限管理',
 				icon: 'cluster',

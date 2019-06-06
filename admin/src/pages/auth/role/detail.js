@@ -151,7 +151,13 @@ export default class extends React.Component {
 
 				<Form.Item {...formItemLayout} label="标识">
 					{getFieldDecorator('token', {
-						initialValue: !selectedNode ? 0 : selectedNode['token']
+						initialValue: !selectedNode ? 0 : selectedNode['token'],
+						rules: [
+							{
+								required: true,
+								message: '标识不能为空'
+							}
+						]
 					})(<Input disabled={selectedNode.isSuperAdmin} {...formItemStyle} placeholder="请填写标识" />)}
 				</Form.Item>
 
@@ -201,7 +207,7 @@ export default class extends React.Component {
 
 		if (!selectedNode) return <Skeleton active loading />;
 
-		const checkedKeys = selectedNode.authoritys.map(item => item.id);
+		const checkedKeys = !!selectedNode.authoritys ? selectedNode.authoritys.map(item => item.id) : [];
 
 		return (
 			<Fragment>
@@ -212,20 +218,22 @@ export default class extends React.Component {
 					<Tabs.TabPane tab="基本信息" key="basic">
 						{this.renderBasicForm()}
 					</Tabs.TabPane>
-					<Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="权限分配" key="authority">
-						<Button type="primary" onClick={this.onSave}>保存</Button>
-						<Tree
-							blockNode
-							checkable
-							onExpand={this.onExpand}
-							checkedKeys={checkedKeys}
-							expandedKeys={this.state.expandedKeys}
-							autoExpandParent={this.state.autoExpandParent}
-							onCheck={this.onCheck}
-						>
-							{this.renderTreeNodes(authority.data)}
-						</Tree>
-					</Tabs.TabPane>
+					{selectedNode.id ?
+						<Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="权限分配" key="authority">
+							<Button type="primary" onClick={this.onSave}>保存</Button>
+							<Tree
+								blockNode
+								checkable
+								onExpand={this.onExpand}
+								checkedKeys={checkedKeys}
+								expandedKeys={this.state.expandedKeys}
+								autoExpandParent={this.state.autoExpandParent}
+								onCheck={this.onCheck}
+							>
+								{this.renderTreeNodes(authority.data)}
+							</Tree>
+						</Tabs.TabPane>
+						: null}
 				</Tabs>
 			</Fragment>
 		);

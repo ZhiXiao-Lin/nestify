@@ -32,12 +32,12 @@ const Option = Select.Option;
 const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
-const MODEL_NAME = 'contents';
-const DETAIL_URL = '/studio/contentdetail';
+const MODEL_NAME = 'users';
+const DETAIL_URL = '/studio/usersdetail';
 
-@connect(({ contents, loading }) => ({
-	...contents,
-	loading: loading.models.contents
+@connect(({ users, loading }) => ({
+	...users,
+	loading: loading.models.users
 }))
 @Form.create()
 export default class extends React.Component {
@@ -65,102 +65,6 @@ export default class extends React.Component {
 		let showQueryCondition = false;
 
 		switch (channel) {
-			case '联系方式':
-				columns = [
-					{
-						title: '详情',
-						dataIndex: 'id',
-						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
-					},
-					{
-						title: '公司名称',
-						dataIndex: 'ex_info.company',
-					},
-					{
-						title: '电话',
-						dataIndex: 'ex_info.phone',
-					},
-					{
-						title: '传真',
-						dataIndex: 'ex_info.fax',
-					},
-					{
-						title: '销售',
-						dataIndex: 'ex_info.sale',
-					},
-					{
-						title: '地址',
-						dataIndex: 'ex_info.address',
-					},
-					{
-						title: '邮编',
-						dataIndex: 'ex_info.postcode',
-					},
-				];
-				fields = ['id', 'ex_info.company', 'ex_info.phone', 'ex_info.fax', 'ex_info.sale', 'ex_info.address', 'ex_info.postcode'];
-				break;
-			case '留言咨询':
-				columns = [
-					{
-						title: '详情',
-						dataIndex: 'id',
-						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
-					},
-					{
-						title: '问题',
-						dataIndex: 'ex_info.question',
-					},
-					{
-						title: '回复',
-						dataIndex: 'ex_info.reply',
-					},
-					{
-						title: '回复时间',
-						dataIndex: 'update_at',
-						sorter: true,
-						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-					},
-					{
-						title: '留言时间',
-						dataIndex: 'create_at',
-						sorter: true,
-						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-					},
-				];
-				fields = ['id', 'ex_info.question', 'ex_info.reply', 'update_at', 'create_at'];
-				break;
-			case '投诉建议':
-				columns = [
-					{
-						title: '详情',
-						dataIndex: 'id',
-						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
-					},
-					{
-						title: '昵称',
-						dataIndex: 'ex_info.nickname',
-					},
-					{
-						title: '标题',
-						dataIndex: 'ex_info.title',
-					},
-					{
-						title: '内容',
-						dataIndex: 'ex_info.content',
-					},
-					{
-						title: '电话',
-						dataIndex: 'ex_info.phone',
-					},
-					{
-						title: '提交时间',
-						dataIndex: 'create_at',
-						sorter: true,
-						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-					},
-				];
-				fields = ['id', 'ex_info.nickname', 'ex_info.title', 'ex_info.content', 'ex_info.phone', 'create_at'];
-				break;
 			default:
 				columns = [
 					{
@@ -169,18 +73,13 @@ export default class extends React.Component {
 						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
 					},
 					{
-						title: '图片',
-						dataIndex: 'thumbnailPath',
-						render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />)
+						title: '头像',
+						dataIndex: 'avatarPath',
+						render: (val) => (!val ? null : <img style={{ width: '30px' }} src={val} />)
 					},
 					{
-						title: '视频',
-						dataIndex: 'videoPath',
-						render: (val) => val
-					},
-					{
-						title: '标题',
-						dataIndex: 'title',
+						title: '昵称',
+						dataIndex: 'nickname',
 						render: (val) => {
 
 							const { queryParams: { keyword } } = this.props;
@@ -202,42 +101,15 @@ export default class extends React.Component {
 						}
 					},
 					{
-						title: '作者',
-						dataIndex: 'author'
+						title: '账号',
+						dataIndex: 'account'
 					},
 					{
-						title: '分类',
-						dataIndex: 'category',
-						render: val => val.name
+						title: '性别',
+						dataIndex: 'gender',
+						render: (val) => !_.isEmpty(val) ? '' : (val <= 0 ? '男' : '女')
 					},
-					{
-						title: '来源',
-						dataIndex: 'source'
-					},
-					{
-						title: '摘要',
-						dataIndex: 'summary'
-					},
-					{
-						title: '地址',
-						dataIndex: 'address'
-					},
-					{
-						title: '排序',
-						dataIndex: 'sort',
-						sorter: true
-					},
-					{
-						title: '浏览量',
-						dataIndex: 'views',
-						sorter: true
-					},
-					{
-						title: '发布时间',
-						dataIndex: 'publish_at',
-						sorter: true,
-						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-					},
+
 					{
 						title: '修改时间',
 						dataIndex: 'update_at',
@@ -245,19 +117,14 @@ export default class extends React.Component {
 						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
 					},
 					{
-						title: '创建时间',
+						title: '注册时间',
 						dataIndex: 'create_at',
 						sorter: true,
 						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
 					},
-					{
-						title: '正文',
-						dataIndex: 'text',
-						render: val => '略'
-					},
 				];
 
-				fields = ['id', 'thumbnailPath', 'title', 'author', 'source', 'sort', 'views', 'publish_at', 'update_at'];
+				fields = ['id', 'avatarPath', 'nickname', 'account', 'gender', 'create_at'];
 				showQueryCondition = true;
 				break;
 		}
@@ -352,8 +219,8 @@ export default class extends React.Component {
 
 			if (!!err) return false;
 
-			if (!!values.publish_at) {
-				values.publish_at = values.publish_at.map(item => moment(item).format('YYYY-MM-DD HH:mm:ss')).join(',')
+			if (!!values.create_at) {
+				values.create_at = values.create_at.map(item => moment(item).format('YYYY-MM-DD HH:mm:ss')).join(',')
 			}
 
 			this.loadData({ page: 0, ...values })
@@ -438,12 +305,12 @@ export default class extends React.Component {
 										marginBottom: 20
 									}}
 								>
-									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
+									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="昵称">
 										{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
 									</Form.Item>
 
-									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
-										{getFieldDecorator('publish_at')(
+									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="注册时间">
+										{getFieldDecorator('create_at')(
 											<RangePicker
 												showTime
 												format="YYYY-MM-DD HH:mm:ss"

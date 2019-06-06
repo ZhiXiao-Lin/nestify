@@ -126,7 +126,7 @@ export default class extends React.Component {
             initialValue: !currentUser ? null : currentUser['nickname'],
           })(<Input {...formItemStyle} type="text" placeholder="请填写昵称" />)}
         </Form.Item>
-        <Form.Item {...formItemLayout} label="昵称">
+        <Form.Item {...formItemLayout} label="性别">
           {getFieldDecorator('gender', {
             initialValue: !currentUser ? null : currentUser['gender'],
           })(<Radio.Group {...formItemStyle}>

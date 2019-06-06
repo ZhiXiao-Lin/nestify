@@ -14,8 +14,7 @@ export class Role extends Base {
 
     @Column({
         comment: '标识',
-        unique: true,
-        default: ''
+        unique: true
     })
     token: string;
 
