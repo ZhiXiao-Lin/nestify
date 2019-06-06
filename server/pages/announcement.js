@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { withRouter } from 'next/router';
+import * as moment from 'moment';
+import { Pagination, Divider } from 'antd';
 
 import CommonLayout from './layouts/CommonLayout';
 import GlobalContext from './contexts/GlobalContext';
 
 import Menu from './components/Menu';
-import Annoucement from './components/Annoucement';
 import TourGuide from './components/TourGuide';
 import BreadCrumbs from './components/BreadCrumbs';
 import NaviPanel from './components/NaviPanel';
-import SceneryList from './components/SceneryList';
 
 import config from './_config';
 
@@ -17,8 +17,13 @@ import './styles/introduction.scss';
 
 @withRouter
 export default class extends Component {
-    renderHandler = () => ({ siteInfo }) => {
+    onChange = (page) => {
+        window.location.href = `${window.location.pathname}?page=${page - 1}`;
+    }
+    renderHandler = () => ({ siteInfo, list, router }) => {
         const { setting } = siteInfo;
+        let { query: { page }, asPath } = router;
+        const notice_hot = list[0].shift();
 
         return (
             <div className="hdz-home-body">
@@ -38,31 +43,24 @@ export default class extends Component {
                             <div className="announcement-view">
                                 <div className="announcement-big">
                                     <div className="announcement-big-content">
-                                        <p>萍乡市委副书记、市长李江河莅临萍安钢铁调研充分肯定企业环境治理成效</p>
-                                        <p>2019-05-12</p>
-                                        <p>5月6日上午，萍乡市委副书记、市长李江河莅临萍安钢铁调研指导工作，充分肯定该公司环境治理成效和国家3A级旅游景区建设工作，并要求按照国家标准，进一步提升企业环保水平。萍乡市政府秘书长兰叶子、市生态环境局局长李秋陪同调研。萍安钢铁领导黄智华、朱德强、梁建国热情接待。5月6日上午，萍乡市委副书记、市长李江河莅临萍安钢铁调研指导工作，充分肯定该公司环境治理成效和国家3A级旅游景区建设工作，并要求按照国家标准，进一步提升企业环保水平。萍乡市政府秘书长兰叶子、市生态环境局局长李秋陪同调研。萍安钢铁领导黄智华、朱德强、梁建国热情接待。</p>
+                                        <p>{notice_hot.title}</p>
+                                        <p>{moment(notice_hot.publish_at).format('YYYY-MM-DD HH:mm:SS')}</p>
+                                        <p>{notice_hot.text.replace(/<[^>]+>/g, "").slice(0, 200)}</p>
                                     </div>
                                 </div>
 
                                 <div className="announcement-list">
-                                    <p>
-                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
-                                        <span>2019-03-26</span>
-                                    </p>
-                                    <p>
-                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
-                                        <span>2019-03-26</span>
-                                    </p>
-                                    <p>
-                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
-                                        <span>2019-03-26</span>
-                                    </p>
-                                    <p>
-                                        <a href="javascript:;">方大钢铁集团全面开展安全生产隐患排查方大钢铁集团全面开展安全生产隐患排查</a>
-                                        <span>2019-03-26</span>
-                                    </p>
+                                    {list[0].map(item => (
+                                        <p key={item.id}>
+                                            <a href={`${config.CONTENT_DETAIL_URL}/${item.id}`}>{item.title}</a>
+                                            <span>{moment(item.publish_at).format('YYYY-MM-DD')}</span>
+                                        </p>
+                                    ))}
                                 </div>
                             </div>
+
+                            <Divider />
+                            <Pagination showQuickJumper defaultPageSize={20} current={page ? page * 1 + 1 : 1} total={list[1]} onChange={this.onChange} />
 
                         </div>
                     </div>

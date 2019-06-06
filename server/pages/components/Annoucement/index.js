@@ -6,9 +6,12 @@ import config from '../../_config';
 import './index.scss';
 
 class Annoucement extends Component {
-    state = {
-        notice: ['这是第一条消息', '这是第二条消息', '这是第三条消息'],
-        current: 0
+    constructor(props) {
+        super(props)
+        this.state = {
+            notice: props.list.map(item => item.text.replace(/<[^>]+>/g, "").slice(0, 100)),
+            current: 0
+        }
     }
     componentDidMount() {
         this.toClearTimer();
@@ -19,7 +22,6 @@ class Annoucement extends Component {
     }
     toStartNoticeScroller = () => {
         let { current, notice } = this.state;
-
         if (current === notice.length - 1) {
             this.setState({ current: 0 });
         } else {

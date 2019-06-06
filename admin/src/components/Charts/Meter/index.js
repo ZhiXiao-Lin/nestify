@@ -172,7 +172,7 @@ export default class extends React.Component {
 
                         <Html
                             position={['50%', '95%']}
-                            html={() => (`<div style="width: 300px;text-align: center;font-size: 12px!important;"><p style="font-size: 3em;color: rgba(0,0,0,0.85);margin: 0;">${val <= 0 ? '加载中...' : val.toFixed(2) + '%'}</p></div>`)}
+                            html={() => (`<div style="width: 300px;text-align: center;font-size: 12px!important;"><p style="font-size: 3em;color: rgba(0,0,0,0.85);margin: 0;">${!val ? '加载中...' : val.toFixed(2) + '%'}</p></div>`)}
                         />
                     </Guide>
                     <Geom

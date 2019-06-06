@@ -21,7 +21,7 @@ const Contact = ({ setting }) => (
 
 const TourGuide = () => {
     const toRenderTourGuide = () => ({ siteInfo }) => {
-        const { setting, openInfo } = siteInfo;
+        const { setting } = siteInfo;
         return (
             <div className="tour-guide">
                 <div className="guide">
@@ -30,7 +30,7 @@ const TourGuide = () => {
                         <p>开放时间：</p>
                         <p>方大特钢生态森林全面对外开放</p>
                     </div>
-                    <div>{openInfo.map((info, i) => <p key={i}>{info.content}</p>)}</div>
+                    <div>{setting.openInfo.slice(0, 75)}</div>
                     <a className="guide-more" href="javascript:;"></a>
                 </div>
                 <Contact setting={setting} />
