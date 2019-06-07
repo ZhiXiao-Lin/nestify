@@ -2,7 +2,7 @@ import { Module, Global, CacheModule } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { RedisModule } from 'nestjs-redis'
+import { RedisModule } from 'nestjs-redis';
 import { ScheduleModule } from 'nest-schedule';
 import { config } from '../config';
 import { UserService } from './services/user.service';
@@ -23,34 +23,46 @@ import { StatusTask } from './tasks/status.task';
 import { OrganizationService } from './services/organization.service';
 import { RoleService } from './services/role.service';
 import { AuthorityService } from './services/authority.service';
-
+import { SearchService } from './services/search.service';
 
 @Global()
 @Module({
-	imports: [
-		// CacheModule.register({
-		// 	...config.cache
-		// }),
-		RedisModule.register(config.redis),
-		ScheduleModule.register(),
-		PassportModule.register({ defaultStrategy: 'jwt' }),
-		JwtModule.register(config.jwt),
-		TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
-		TypeOrmModule.forFeature([Setting, Category, User, Content, Organization, Role, Authority])
-	],
-	providers: [
-		JwtStrategy,
-		ImportService,
-		CommonService,
-		CategoryService,
-		ContentService,
-		UserService,
-		SettingService,
-		OrganizationService,
-		AuthorityService,
-		RoleService,
-		StatusTask
-	],
-	exports: [ImportService, CommonService, CategoryService, ContentService, UserService, SettingService, OrganizationService, AuthorityService, RoleService]
+    imports: [
+        // CacheModule.register({
+        // 	...config.cache
+        // }),
+        RedisModule.register(config.redis),
+        ScheduleModule.register(),
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register(config.jwt),
+        TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
+        TypeOrmModule.forFeature([Setting, Category, User, Content, Organization, Role, Authority])
+    ],
+    providers: [
+        JwtStrategy,
+        ImportService,
+        CommonService,
+        CategoryService,
+        ContentService,
+        UserService,
+        SettingService,
+        OrganizationService,
+        AuthorityService,
+        RoleService,
+        SearchService,
+        StatusTask
+    ],
+    exports: [
+        ImportService,
+        CommonService,
+        CategoryService,
+        ContentService,
+        UserService,
+        SettingService,
+        OrganizationService,
+        AuthorityService,
+        RoleService,
+        SearchService
+    ]
 })
-export class CommonModule { }
+export class CommonModule {}

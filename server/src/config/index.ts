@@ -60,23 +60,26 @@ let config = {
             {
                 measurement: 'system_status',
                 fields: {
-                    "cpu": Influx.FieldType.FLOAT,
-                    "memory": Influx.FieldType.INTEGER,
-                    "ppid": Influx.FieldType.INTEGER,
-                    "pid": Influx.FieldType.INTEGER,
-                    "ctime": Influx.FieldType.INTEGER,
-                    "elapsed": Influx.FieldType.INTEGER,
-                    "timestamp": Influx.FieldType.INTEGER
+                    cpu: Influx.FieldType.FLOAT,
+                    memory: Influx.FieldType.INTEGER,
+                    ppid: Influx.FieldType.INTEGER,
+                    pid: Influx.FieldType.INTEGER,
+                    ctime: Influx.FieldType.INTEGER,
+                    elapsed: Influx.FieldType.INTEGER,
+                    timestamp: Influx.FieldType.INTEGER
                 },
-                tags: [
-                    'status'
-                ]
+                tags: ['status']
             }
         ]
     },
 
     websocket: {
         port: 9000
+    },
+
+    es: {
+        host: '127.0.0.1:9200',
+        log: 'trace'
     }
 };
 

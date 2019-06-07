@@ -1,51 +1,45 @@
 import io from 'socket.io-client';
-import { notification } from 'antd';
 import config from '@/config';
 
-
 export default {
-	namespace: 'status',
+  namespace: 'status',
 
-	state: {
-		status: []
-	},
+  state: {
+    status: [],
+  },
 
-	subscriptions: {
-		onConnection({ dispatch, history }) {
-			let client = null;
-			history.listen((location) => {
+  subscriptions: {
+    onConnection({ dispatch, history }) {
+      let client = null;
+      history.listen((location) => {
+        if ('/studio' === location.pathname) {
+          client = io(`${config.SOCKET_ROOT}/status`);
 
-				if ('/studio' === location.pathname) {
+          client.on('connect', (socket) => {
+            console.log(`================ on ${client.id} connect`, client);
 
-					client = io(`${config.SOCKET_ROOT}/status`);
+            client.on('status', (status) => {
+              dispatch({
+                type: 'set',
+                payload: {
+                  status,
+                },
+              });
+            });
+          });
+        } else {
+          !!client && client.close();
+        }
+      });
+    },
+  },
 
-					client.on('connect', (socket) => {
-						console.log(`================ on ${client.id} connect`, client);
-
-						client.on('status', (status) => {
-
-							dispatch({
-								type: 'set',
-								payload: {
-									status
-								}
-							});
-						});
-					});
-				} else {
-					!!client && client.close();
-				}
-			});
-
-		}
-	},
-
-	reducers: {
-		set(state, { payload }) {
-			return {
-				...state,
-				...payload,
-			};
-		},
-	},
+  reducers: {
+    set(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+  },
 };

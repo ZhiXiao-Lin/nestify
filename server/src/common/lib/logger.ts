@@ -24,12 +24,11 @@ export class ContextTrace {
         public readonly path?: string,
         public readonly lineNumber?: number,
         public readonly columnNumber?: number
-    ) { }
+    ) {}
 }
 
 Log4js.addLayout('Nestify', (logConfig: any) => {
     return (logEvent: Log4js.LoggingEvent): string => {
-
         let moduleName: string = '';
         let position: string = '';
 
@@ -89,7 +88,7 @@ Log4js.configure({
         console: {
             type: 'stdout',
             layout: { type: 'Nestify' }
-        },
+        }
     },
     categories: {
         default: {
@@ -115,7 +114,15 @@ export class Logger {
         logger.info(Logger.getStackTrace(), ...args);
     }
 
+    static info(...args) {
+        logger.info(Logger.getStackTrace(), ...args);
+    }
+
     static warn(...args) {
+        logger.warn(Logger.getStackTrace(), ...args);
+    }
+
+    static warning(...args) {
         logger.warn(Logger.getStackTrace(), ...args);
     }
 
@@ -141,5 +148,37 @@ export class Logger {
         const context: string = _.upperFirst(_.camelCase(basename));
 
         return new ContextTrace(context, fileName, lineNumber, columnNumber);
+    }
+
+    trace(...args) {
+        logger.trace(Logger.getStackTrace(), ...args);
+    }
+
+    debug(...args) {
+        logger.debug(Logger.getStackTrace(), ...args);
+    }
+
+    log(...args) {
+        logger.info(Logger.getStackTrace(), ...args);
+    }
+
+    info(...args) {
+        logger.info(Logger.getStackTrace(), ...args);
+    }
+
+    warn(...args) {
+        logger.warn(Logger.getStackTrace(), ...args);
+    }
+
+    warning(...args) {
+        logger.warn(Logger.getStackTrace(), ...args);
+    }
+
+    error(...args) {
+        logger.error(Logger.getStackTrace(), ...args);
+    }
+
+    fatal(...args) {
+        logger.fatal(Logger.getStackTrace(), ...args);
     }
 }
