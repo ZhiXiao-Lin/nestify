@@ -153,7 +153,7 @@ export default class StudioLayout extends PureComponent {
           <Layout
             className={`${menuLayout === 'sidemenu' && styles.mainLayout} ${
               collapsed && menuLayout === 'sidemenu' ? styles.layoutCollapsed : ''
-              }`}
+            }`}
           >
             <Header className={styles.header}>
               <GlobalHeader

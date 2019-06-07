@@ -1,5 +1,7 @@
 export function textInterception(text, length = 120) {
-	const plainText = !!text ? text.replace(new RegExp('<.+?>', 'g'), '') : '';
+    return text.length >= length ? text.substr(0, length) + '...' : text;
+}
 
-	return plainText.length >= length ? plainText.substr(0, length) + '...' : plainText;
+export function extractionTextInHtml(html) {
+    return !!html ? html.replace(new RegExp('<.+?>', 'g'), '') : '';
 }

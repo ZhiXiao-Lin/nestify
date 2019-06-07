@@ -7,88 +7,121 @@ import { ExcelHelper } from '../common/lib/excel';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { Logger } from '../common/lib/logger';
+import { es } from '../common/lib/elastic-search';
 import { Organization } from '../common/entities/organization.entity';
 import { Role } from '../common/entities/role.entity';
 import { Authority } from '../common/entities/authority.entity';
+import { Content } from '../common/entities/content.entity';
 
 @Injectable()
 export class Seed {
-	constructor(@InjectConnection() private readonly connection: Connection) { }
+    constructor(@InjectConnection() private readonly connection: Connection) {}
 
-	async start() {
-		Logger.log('seed start');
+    async start() {
+        Logger.log('seed start');
 
-		await this.connection.getRepository(Setting).save({
-			token: 'default',
-			ex_info: await ExcelHelper.loadFromFile(resolve('./seeds/settings.xlsx'), Setting.sheetsMap)
-		});
+        await this.initElasticSearchIndices();
 
-		await this.importCategorys();
-		await this.importOrganizations();
-		await this.importAuthoritys();
-		await this.importRoles();
+        await this.connection.getRepository(Setting).save({
+            token: 'default',
+            info: await ExcelHelper.loadFromFile(
+                resolve('./seeds/settings.xlsx'),
+                Setting.sheetsMap
+            )
+        });
 
-		const roleAdmin = await this.connection.getRepository(Role).findOne({ token: 'superAdmin' });
+        await this.importCategorys();
+        await this.importOrganizations();
+        await this.importAuthoritys();
+        await this.importRoles();
 
-		const superAdmin = User.create({ account: 'SysAdmin', password: '12345678', nickname: '超级管理员', avatar: '/images/superadmin.png' });
-		superAdmin.roles = [roleAdmin];
+        const roleAdmin = await this.connection
+            .getRepository(Role)
+            .findOne({ token: 'superAdmin' });
 
-		await this.connection.getRepository(User).save(superAdmin);
-	}
+        const superAdmin = User.create({
+            account: 'SysAdmin',
+            password: '12345678',
+            nickname: '超级管理员',
+            avatar: '/images/superadmin.png'
+        });
+        superAdmin.roles = [roleAdmin];
 
-	async importCategorys() {
-		const categorysResult = await ExcelHelper.loadFromFile(resolve('./seeds/categorys.xlsx'), Category.sheetsMap);
-		const categorys = categorysResult['categorys'];
-		const categoryArr = [];
+        await this.connection.getRepository(User).save(superAdmin);
+    }
 
-		categorys.forEach((item) => {
-			if (!!item.parent) {
-				item.parent = categoryArr.find((cate) => cate.id === item.parent);
-			}
-			categoryArr.push(Category.create(item));
-		});
-		await this.connection.getTreeRepository(Category).save(categoryArr);
-	}
+    async initElasticSearchIndices() {
+        if (await es.indices.exists({ index: Content.esIndex.index })) {
+            await es.indices.delete({ index: Content.esIndex.index });
+        }
 
-	async importOrganizations() {
-		const organizationsResult = await ExcelHelper.loadFromFile(resolve('./seeds/organizations.xlsx'), Organization.sheetsMap);
-		const organizations = organizationsResult['organizations'];
-		const organizationArr = [];
+        await es.indices.create(Content.esIndex);
+    }
 
-		organizations.forEach((item) => {
-			if (!!item.parent) {
-				item.parent = organizationArr.find((org) => org.id === item.parent);
-			}
-			organizationArr.push(Organization.create(item));
-		});
-		await this.connection.getTreeRepository(Organization).save(organizationArr);
-	}
+    async importCategorys() {
+        const categorysResult = await ExcelHelper.loadFromFile(
+            resolve('./seeds/categorys.xlsx'),
+            Category.sheetsMap
+        );
+        const categorys = categorysResult['categorys'];
+        const categoryArr = [];
 
-	async importAuthoritys() {
-		const result = await ExcelHelper.loadFromFile(resolve('./seeds/authoritys.xlsx'), Authority.sheetsMap);
-		const athoritys = result['authoritys'];
-		const arr = [];
+        categorys.forEach((item) => {
+            if (!!item.parent) {
+                item.parent = categoryArr.find((cate) => cate.id === item.parent);
+            }
+            categoryArr.push(Category.create(item));
+        });
+        await this.connection.getTreeRepository(Category).save(categoryArr);
+    }
 
-		for (let item of athoritys) {
-			if (!!item.parent) {
-				item.parent = arr.find((auth) => auth.id === item.parent);
-			}
-			arr.push(Authority.create(item))
-		}
+    async importOrganizations() {
+        const organizationsResult = await ExcelHelper.loadFromFile(
+            resolve('./seeds/organizations.xlsx'),
+            Organization.sheetsMap
+        );
+        const organizations = organizationsResult['organizations'];
+        const organizationArr = [];
 
-		await this.connection.getRepository(Authority).save(arr);
-	}
+        organizations.forEach((item) => {
+            if (!!item.parent) {
+                item.parent = organizationArr.find((org) => org.id === item.parent);
+            }
+            organizationArr.push(Organization.create(item));
+        });
+        await this.connection.getTreeRepository(Organization).save(organizationArr);
+    }
 
-	async importRoles() {
-		const rolesResult = await ExcelHelper.loadFromFile(resolve('./seeds/roles.xlsx'), Role.sheetsMap);
-		const roles = rolesResult['roles'];
-		const rolesArr = [];
+    async importAuthoritys() {
+        const result = await ExcelHelper.loadFromFile(
+            resolve('./seeds/authoritys.xlsx'),
+            Authority.sheetsMap
+        );
+        const athoritys = result['authoritys'];
+        const arr = [];
 
-		for (let item of roles) {
+        for (let item of athoritys) {
+            if (!!item.parent) {
+                item.parent = arr.find((auth) => auth.id === item.parent);
+            }
+            arr.push(Authority.create(item));
+        }
 
-			rolesArr.push(Role.create(item))
-		}
+        await this.connection.getRepository(Authority).save(arr);
+    }
 
-		await this.connection.getRepository(Role).save(rolesArr);
-	}
+    async importRoles() {
+        const rolesResult = await ExcelHelper.loadFromFile(
+            resolve('./seeds/roles.xlsx'),
+            Role.sheetsMap
+        );
+        const roles = rolesResult['roles'];
+        const rolesArr = [];
+
+        for (let item of roles) {
+            rolesArr.push(Role.create(item));
+        }
+
+        await this.connection.getRepository(Role).save(rolesArr);
+    }
 }
