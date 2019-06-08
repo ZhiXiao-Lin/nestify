@@ -1,13 +1,14 @@
 import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Entity, Column, Tree, TreeChildren, TreeParent, ManyToOne } from 'typeorm';
 import { ExcelHandleType } from '../lib/excel';
+import { User } from './user.entity';
 
 @Entity()
 @Tree('materialized-path')
 export class Organization extends Base {
     @Column({
-        comment: '名称',
+        comment: '名称'
     })
     name: string;
 
@@ -23,6 +24,9 @@ export class Organization extends Base {
     @TreeChildren() children: Organization[];
 
     @TreeParent() parent: Organization;
+
+    @ManyToOne((type) => User, (user) => user.org)
+    users: User[];
 
     @Expose()
     get title(): string {
