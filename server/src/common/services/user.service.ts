@@ -8,98 +8,98 @@ import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { User } from '../entities/user.entity';
 
-
 @Injectable()
 export class UserService extends BaseService<User> {
-	constructor(
-		private readonly jwtService: JwtService,
-		@InjectRepository(User) private readonly userRepository: Repository<User>
-	) {
-		super(userRepository);
-	}
+    constructor(
+        private readonly jwtService: JwtService,
+        @InjectRepository(User) private readonly userRepository: Repository<User>
+    ) {
+        super(userRepository);
+    }
 
-	@TransformClassToPlain()
-	async query(payload: any) {
-		const qb = this.userRepository.createQueryBuilder('t');
+    @TransformClassToPlain()
+    async query(payload: any) {
+        const qb = this.userRepository.createQueryBuilder('t');
 
-		qb.leftJoinAndSelect('t.roles', 'role');
+        qb.leftJoinAndSelect('t.roles', 'role');
 
-		if (!payload.page) {
-			payload.page = 0;
-		}
+        if (!payload.page) {
+            payload.page = 0;
+        }
 
-		if (!payload.pageSize) {
-			payload.pageSize = 10;
-		}
+        if (!payload.pageSize) {
+            payload.pageSize = 10;
+        }
 
-		if (!!payload.keyword) {
-			qb.andWhere(`t.nickname LIKE '%${payload.keyword}%'`);
-		}
+        if (!!payload.keyword) {
+            qb.andWhere(`t.nickname LIKE '%${payload.keyword}%'`);
+        }
 
-		if (!!payload.create_at) {
-			payload.create_at = payload.create_at.split(',');
-			qb.andWhere(`t.create_at BETWEEN '${payload.create_at.shift()}' AND '${payload.create_at.pop()}'`);
-		}
+        if (!!payload.create_at) {
+            payload.create_at = payload.create_at.split(',');
+            qb.andWhere(
+                `t.create_at BETWEEN '${payload.create_at.shift()}' AND '${payload.create_at.pop()}'`
+            );
+        }
 
-		if (!!payload.sort && !!payload.order) {
-			qb.addOrderBy(`t.${payload.sort}`, payload.order);
-		} else {
-			qb.addOrderBy('t.create_at', 'DESC');
-		}
+        if (!!payload.sort && !!payload.order) {
+            qb.addOrderBy(`t.${payload.sort}`, payload.order);
+        } else {
+            qb.addOrderBy('t.create_at', 'DESC');
+        }
 
-		if (!!payload.isExport) {
-			if (!payload.category) throw new BadRequestException('分类参数错误');
+        if (!!payload.isExport) {
+            if (!payload.category) throw new BadRequestException('分类参数错误');
 
-			const dataSource = await qb.getMany();
+            const dataSource = await qb.getMany();
 
-			// 执行导出逻辑
-			// return await ExcelHelper.export(dataSource, Content.sheetsMap[payload.category], payload.fields.split(','));
+            // 执行导出逻辑
+            // return await ExcelHelper.export(dataSource, Content.sheetsMap[payload.category], payload.fields.split(','));
+        } else {
+            qb.skip(payload.page * payload.pageSize);
+            qb.take(payload.pageSize);
+        }
 
-		} else {
-			qb.skip(payload.page * payload.pageSize);
-			qb.take(payload.pageSize);
-		}
+        return await qb.getManyAndCount();
+    }
 
-		return await qb.getManyAndCount();
-	}
+    @TransformClassToPlain()
+    async findOneById(id) {
+        return await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
+    }
 
-	@TransformClassToPlain()
-	async findOneById(id) {
-		return await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
-	}
+    async login(account, password) {
+        const user = await this.userRepository.findOne({ account });
 
-	async login(account, password) {
-		const user = await this.userRepository.findOne({ account });
+        if (!user) throw new BadRequestException('用户不存在');
 
-		if (!user) throw new BadRequestException('用户不存在');
+        if (!(await bcrypt.compare(password, user.password)))
+            throw new BadRequestException('密码错误');
 
-		if (!await bcrypt.compare(password, user.password)) throw new BadRequestException('密码错误');
+        return await this.jwtService.sign(_.toPlainObject(user));
+    }
 
-		return await this.jwtService.sign(_.toPlainObject(user));
-	}
+    async changePassword(id, dto) {
+        const user = await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
 
-	async changePassword(id, dto) {
-		const user = await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
+        if (!(await bcrypt.compare(dto.oldPassword, user.password)))
+            throw new BadRequestException('旧密码错误');
 
-		if (!await bcrypt.compare(dto.oldPassword, user.password)) throw new BadRequestException('旧密码错误');
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(dto.password, salt);
 
-		const salt = await bcrypt.genSalt(10);
-		user.password = await bcrypt.hash(dto.password, salt);
+        return await this.userRepository.save(user);
+    }
 
-		return await this.userRepository.save(user);
-	}
+    @TransformClassToPlain()
+    async save(payload: any) {
+        const user = User.create(payload) as User;
 
-	@TransformClassToPlain()
-	async save(payload: any) {
-		const user = User.create(payload) as User;
+        return await this.userRepository.save(user);
+    }
 
-		return await this.userRepository.save(user);
-	}
-
-	async remove(ids: string[]) {
-
-		// 软删除
-
-		return await this.userRepository.delete(ids);
-	}
+    // async remove(ids: string[]) {
+    //     // 软删除
+    //     return await this.userRepository.delete(ids);
+    // }
 }

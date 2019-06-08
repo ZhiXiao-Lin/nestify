@@ -1,0 +1,22 @@
+.itemPanel {
+  flex: 1;
+  background: #fafafa;
+
+  :global {
+    .ant-card {
+      background: #fafafa;
+    }
+
+    .ant-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      > div {
+        margin-bottom: 16px;
+        overflow: auto;
+        height: 500px;
+      }
+    }
+  }
+}

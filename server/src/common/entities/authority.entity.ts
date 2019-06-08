@@ -1,4 +1,4 @@
-import { plainToClass } from 'class-transformer';
+import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
 import { Entity, Column, Tree, TreeParent, TreeChildren, ManyToMany } from 'typeorm';
 import { ExcelHandleType } from '../lib/excel';
@@ -9,6 +9,7 @@ import { Role } from '../../common/entities/role.entity';
 export class Authority extends Base {
     @Column({
         comment: '名称',
+        unique: true
     })
     name: string;
 
@@ -31,14 +32,41 @@ export class Authority extends Base {
 
     @TreeParent() parent: Authority;
 
-    @ManyToMany(type => Role, role => role.authoritys)
+    @ManyToMany((type) => Role, (role) => role.authoritys)
     roles: Role[];
+
+    @Expose()
+    get label(): string {
+        return this.name;
+    }
+
+    @Expose()
+    get title(): string {
+        return this.name;
+    }
+
+    @Expose()
+    get key(): string {
+        return this.id;
+    }
+
+    @Expose()
+    get value(): string {
+        return this.id;
+    }
 
     static readonly sheetsMap: object = {
         权限: {
             map: 'authoritys',
             handleType: ExcelHandleType.ARRAY,
-            cellsMap: { ID: 'id', 名称: 'name', 标识: 'token', 描述: 'desc', 排序: 'sort', PID: 'parent' }
+            cellsMap: {
+                ID: 'id',
+                名称: 'name',
+                标识: 'token',
+                描述: 'desc',
+                排序: 'sort',
+                PID: 'parent'
+            }
         }
     };
 

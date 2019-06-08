@@ -17,7 +17,7 @@ import {
   Menu,
   Tree,
   Upload,
-  message
+  message,
 } from 'antd';
 
 import { UploadActionType, apiUploadOne } from '@/utils';
@@ -31,10 +31,10 @@ const ButtonGroup = Button.Group;
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
   labelCol: { xs: { span: 24 }, sm: { span: 8 } },
-  wrapperCol: { xs: { span: 24 }, sm: { span: 16 } }
+  wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
 };
 const tailFormItemLayout = {
-  wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } }
+  wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } },
 };
 
 const MODEL_NAME = 'organization';
@@ -42,7 +42,6 @@ const MODEL_NAME = 'organization';
 @connect()
 @Form.create()
 class CreateForm extends React.Component {
-
   submitHandler = (e) => {
     e.preventDefault();
 
@@ -55,7 +54,7 @@ class CreateForm extends React.Component {
 
       dispatch({
         type: `${MODEL_NAME}/create`,
-        payload: values
+        payload: values,
       });
 
       onClose();
@@ -63,71 +62,78 @@ class CreateForm extends React.Component {
   };
 
   render() {
-    const { visible, onClose, form: { getFieldDecorator } } = this.props;
+    const {
+      visible,
+      onClose,
+      form: { getFieldDecorator },
+    } = this.props;
 
-    return <Drawer
-      title="新增节点"
-      placement="right"
-      width={500}
-      closable
-      maskClosable
-      onClose={onClose}
-      visible={visible}
-    >
-      <Form onSubmit={this.submitHandler} className="panel-form">
-        <Form.Item {...formItemLayout} label="名称">
-          {getFieldDecorator('name', {
-            rules: [
-              {
-                required: true,
-                message: '名称不能为空'
-              }
-            ]
-          })(<Input {...formItemStyle} type="text" placeholder="请填写名称" />)}
-        </Form.Item>
+    return (
+      <Drawer
+        title="新增节点"
+        placement="right"
+        width={500}
+        closable
+        maskClosable
+        onClose={onClose}
+        visible={visible}
+      >
+        <Form onSubmit={this.submitHandler} className="panel-form">
+          <Form.Item {...formItemLayout} label="名称">
+            {getFieldDecorator('name', {
+              rules: [
+                {
+                  required: true,
+                  message: '名称不能为空',
+                },
+              ],
+            })(<Input {...formItemStyle} type="text" placeholder="请填写名称" />)}
+          </Form.Item>
 
-        <Form.Item {...formItemLayout} label="描述">
-          {getFieldDecorator('desc')(<Input {...formItemStyle} type="text" placeholder="请填写描述" />)}
-        </Form.Item>
+          <Form.Item {...formItemLayout} label="描述">
+            {getFieldDecorator('desc')(
+              <Input {...formItemStyle} type="text" placeholder="请填写描述" />
+            )}
+          </Form.Item>
 
-        <Form.Item {...formItemLayout} label="排序">
-          {getFieldDecorator('sort', {
-            initialValue: 0
-          })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
-        </Form.Item>
+          <Form.Item {...formItemLayout} label="排序">
+            {getFieldDecorator('sort', {
+              initialValue: 0,
+            })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
+          </Form.Item>
 
-        <Form.Item {...tailFormItemLayout}>
-          <Row>
-            <Col>
-              <Button type="primary" htmlType="submit">
-                保存
-              </Button>
-            </Col>
-          </Row>
-        </Form.Item>
-      </Form>
-    </Drawer>
+          <Form.Item {...tailFormItemLayout}>
+            <Row>
+              <Col>
+                <Button type="primary" htmlType="submit">
+                  保存
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
+      </Drawer>
+    );
   }
 }
 
 @connect(({ organization, loading }) => ({
   ...organization,
-  loading: loading.models.organization
+  loading: loading.models.organization,
 }))
 @Form.create()
 export default class extends React.Component {
-
   state = {
     tabKey: 'basic',
     visible: false,
     expandedKeys: [],
     autoExpandParent: true,
     rightClickNodeTreeItem: {
-      pageX: "",
-      pageY: "",
-      id: "",
-      categoryName: ""
-    }
+      pageX: '',
+      pageY: '',
+      id: '',
+      categoryName: '',
+    },
   };
 
   componentDidMount() {
@@ -136,13 +142,15 @@ export default class extends React.Component {
     const self = this;
     document.addEventListener('click', () => {
       self.setState({
-        rightClickNodeTreeItem: null
-      })
-    })
+        rightClickNodeTreeItem: null,
+      });
+    });
   }
 
   componentWillReceiveProps(nextProps) {
-    const { match: { params } } = nextProps;
+    const {
+      match: { params },
+    } = nextProps;
     if (this.props.match.params.channel !== params.channel) {
       this.loadData({ page: 0, category: params.channel });
     }
@@ -153,13 +161,16 @@ export default class extends React.Component {
   };
 
   loadData = (payload) => {
-    const { dispatch, match: { params } } = this.props;
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
 
     dispatch({
       type: `${MODEL_NAME}/fetch`,
       payload: {
-        category: !!payload.category ? payload.category : params.channel
-      }
+        category: !!payload.category ? payload.category : params.channel,
+      },
     });
   };
 
@@ -172,15 +183,15 @@ export default class extends React.Component {
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
-        parentId
-      }
+        parentId,
+      },
     });
 
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
-      visible: true
+      visible: true,
     }));
-  }
+  };
 
   toRemove = () => {
     this.props.dispatch({
@@ -189,118 +200,122 @@ export default class extends React.Component {
         callback: () => {
           this.refresh();
           message.success('删除成功');
-        }
-      }
+        },
+      },
     });
-  }
+  };
 
   onClose = () => {
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
-        parentId: null
-      }
+        parentId: null,
+      },
     });
 
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
-      visible: false
+      visible: false,
     }));
-  }
+  };
 
   onCheck = (selectedRows) => {
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
-        selectedRows
-      }
+        selectedRows,
+      },
     });
-  }
+  };
 
-  onDrop = e => {
-
+  onDrop = (e) => {
     this.props.dispatch({
       type: `${MODEL_NAME}/parent`,
       payload: {
         id: e.dragNode.props.dataRef.id,
-        parentId: e.node.props.dataRef.id
-      }
+        parentId: e.node.props.dataRef.id,
+      },
     });
-  }
+  };
 
   onSelect = (selectedKeys) => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
 
     if (selectedKeys.length > 0) {
-
       const id = selectedKeys[0];
 
       dispatch({
         type: `${MODEL_NAME}/detail`,
         payload: {
           id,
-          callback: (val) => setFieldsValue(val)
-        }
-      })
+          callback: (val) => setFieldsValue(val),
+        },
+      });
     }
-
   };
 
-  onExpand = expandedKeys => {
+  onExpand = (expandedKeys) => {
     this.setState({
       expandedKeys,
       autoExpandParent: false,
     });
   };
 
-  onRightClick = e => {
+  onRightClick = (e) => {
     this.setState({
       rightClickNodeTreeItem: {
         pageX: e.event.pageX,
         pageY: e.event.pageY,
-        id: e.node.props.dataRef.id
-      }
+        id: e.node.props.dataRef.id,
+      },
     });
   };
 
   onRightMenuClick = (e, id) => {
-
     switch (e.key) {
       case 'add':
         this.toCreate(id);
         break;
     }
-  }
+  };
 
-  renderTreeNodes = data =>
-    data.sort((a, b) => a.sort - b.sort).map(item => {
-      if (item.children) {
-        return (
-          <TreeNode title={item.name} key={item.id} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
-          </TreeNode>
-        );
-      }
-      return <TreeNode {...item} />;
-    });
+  renderTreeNodes = (data) =>
+    data
+      .sort((a, b) => a.sort - b.sort)
+      .map((item) => {
+        if (item.children) {
+          return (
+            <TreeNode title={item.name} key={item.id} dataRef={item}>
+              {this.renderTreeNodes(item.children)}
+            </TreeNode>
+          );
+        }
+        return <TreeNode {...item} />;
+      });
 
   renderTreeNodesRightMenu = () => {
     const { pageX, pageY, id } = { ...this.state.rightClickNodeTreeItem };
 
     const tmpStyle = {
-      position: "absolute",
+      position: 'absolute',
       minWidth: '120px',
       left: `${pageX - 220}px`,
       top: `${pageY - 102}px`,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
     };
     const menu = (
       <Menu style={tmpStyle} onClick={(e) => this.onRightMenuClick(e, id)}>
-        <Menu.Item key="add"><Icon type="plus" />新增子节点</Menu.Item>
+        <Menu.Item key="add">
+          <Icon type="plus" />
+          新增子节点
+        </Menu.Item>
       </Menu>
     );
 
-    return this.state.rightClickNodeTreeItem == null ? "" : menu;
+    return this.state.rightClickNodeTreeItem == null ? '' : menu;
   };
 
   submitHandler = (e) => {
@@ -315,27 +330,28 @@ export default class extends React.Component {
 
       dispatch({
         type: `${MODEL_NAME}/save`,
-        payload: values
+        payload: values,
       });
     });
-
   };
 
   renderBasicForm = () => {
-    const { selectedNode, form: { getFieldDecorator } } = this.props;
+    const {
+      selectedNode,
+      form: { getFieldDecorator },
+    } = this.props;
 
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
-
         <Form.Item {...formItemLayout} label="编号">
           {getFieldDecorator('id', {
             initialValue: !selectedNode ? null : selectedNode['id'],
             rules: [
               {
                 required: true,
-                message: '编号不能为空'
-              }
-            ]
+                message: '编号不能为空',
+              },
+            ],
           })(<Input disabled {...formItemStyle} type="text" placeholder="请填写编号" />)}
         </Form.Item>
 
@@ -345,21 +361,21 @@ export default class extends React.Component {
             rules: [
               {
                 required: true,
-                message: '名称不能为空'
-              }
-            ]
+                message: '名称不能为空',
+              },
+            ],
           })(<Input {...formItemStyle} type="text" placeholder="请填写名称" />)}
         </Form.Item>
 
         <Form.Item {...formItemLayout} label="描述">
           {getFieldDecorator('desc', {
-            initialValue: !selectedNode ? null : selectedNode['desc']
+            initialValue: !selectedNode ? null : selectedNode['desc'],
           })(<Input {...formItemStyle} type="text" placeholder="请填写描述" />)}
         </Form.Item>
 
         <Form.Item {...formItemLayout} label="排序">
           {getFieldDecorator('sort', {
-            initialValue: !selectedNode ? 0 : selectedNode['sort']
+            initialValue: !selectedNode ? 0 : selectedNode['sort'],
           })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
         </Form.Item>
 
@@ -377,12 +393,13 @@ export default class extends React.Component {
   };
 
   render() {
-    const { data, selectedNode, selectedRows } = this.props
+    const { data, selectedNode, selectedRows } = this.props;
 
     const uploadOneProps = {
       name: 'file',
       action: null,
-      accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
+      accept:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
       showUploadList: false,
       beforeUpload: async (file) => {
         message.loading('正在执行导入', 0);
@@ -395,7 +412,7 @@ export default class extends React.Component {
         }, 3000);
 
         return false;
-      }
+      },
     };
 
     return (
@@ -419,12 +436,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                    <Tooltip placement="bottom" title="删除">
-                      <Button disabled={true}>
-                        <Icon type="delete" />
-                      </Button>
-                    </Tooltip>
-                  )}
+                  <Tooltip placement="bottom" title="删除">
+                    <Button disabled={true}>
+                      <Icon type="delete" />
+                    </Button>
+                  </Tooltip>
+                )}
                 <Tooltip placement="bottom" title="刷新">
                   <Button onClick={this.refresh}>
                     <Icon type="reload" />
@@ -456,12 +473,15 @@ export default class extends React.Component {
               {this.renderTreeNodesRightMenu()}
             </Col>
             <Col className="gutter-row" span={14} offset={1}>
-              {!!selectedNode ?
+              {!!selectedNode ? (
                 <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
                   <Tabs.TabPane tab="基本信息" key="basic">
                     {this.renderBasicForm()}
                   </Tabs.TabPane>
-                </Tabs> : ''}
+                </Tabs>
+              ) : (
+                ''
+              )}
             </Col>
           </Row>
         </Content>

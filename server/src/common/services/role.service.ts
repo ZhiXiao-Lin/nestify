@@ -6,45 +6,43 @@ import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { Role } from '../entities/role.entity';
 
-
 @Injectable()
 export class RoleService extends BaseService<Role> {
-	constructor(
-		@InjectRepository(Role) private readonly roleRepository: Repository<Role>
-	) {
-		super(roleRepository);
-	}
+    constructor(@InjectRepository(Role) private readonly roleRepository: Repository<Role>) {
+        super(roleRepository);
+    }
 
-	@TransformClassToPlain()
-	async findOneAndRelations(id: string) {
-		return await this.roleRepository.findOne({ where: { id }, relations: ['authoritys'] });
-	}
+    @TransformClassToPlain()
+    async findOneAndRelations(id: string) {
+        return await this.roleRepository.findOne({ where: { id }, relations: ['authoritys'] });
+    }
 
-	@TransformClassToPlain()
-	async query(payload: any) {
-		const qb = this.roleRepository.createQueryBuilder('t');
+    @TransformClassToPlain()
+    async query(payload: any) {
+        const qb = this.roleRepository.createQueryBuilder('t');
 
-		if (!!payload.keyword) {
-			qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
-		}
+        qb.leftJoinAndSelect('t.authoritys', 'authority');
 
-		if (!!payload.sort && !!payload.order) {
-			qb.addOrderBy(`t.${payload.sort}`, payload.order);
-		} else {
-			// 默认排序规则
-			qb.addOrderBy('t.sort', 'DESC');
-		}
+        if (!!payload.keyword) {
+            qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
+        }
 
-		qb.skip(payload.page * payload.pageSize);
-		qb.take(payload.pageSize);
+        if (!!payload.sort && !!payload.order) {
+            qb.addOrderBy(`t.${payload.sort}`, payload.order);
+        } else {
+            // 默认排序规则
+            qb.addOrderBy('t.sort', 'DESC');
+        }
 
+        qb.skip(payload.page * payload.pageSize);
+        qb.take(payload.pageSize);
 
-		return await qb.getManyAndCount();
-	}
+        return await qb.getManyAndCount();
+    }
 
-	async save(payload: any) {
-		const role = Role.create(payload) as Role;
+    async save(payload: any) {
+        const role = Role.create(payload) as Role;
 
-		return await this.roleRepository.save(role);
-	}
+        return await this.roleRepository.save(role);
+    }
 }
