@@ -7,197 +7,244 @@ import { Tabs, Form, Input, Row, Col, Icon, Button, Skeleton, Radio, message } f
 import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
+import RolesEditor from '@/components/RolesEditor';
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
-	labelCol: { xs: { span: 24 }, sm: { span: 8 } },
-	wrapperCol: { xs: { span: 24 }, sm: { span: 16 } }
+  labelCol: { xs: { span: 24 }, sm: { span: 8 } },
+  wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
 };
 const tailFormItemLayout = {
-	wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } }
+  wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } },
 };
 
 const MODEL_NAME = 'users';
 
 @Form.create()
-@connect(({ role, users }) => ({
-	role,
-	selectedNode: users.selectedNode,
-	columns: users.columns
+@connect(({ role, authority, users }) => ({
+  role,
+  authority,
+  selectedNode: users.selectedNode,
+  columns: users.columns,
 }))
 export default class extends React.Component {
-	state = {
-		tabKey: 'basic',
-		expandedKeys: [],
-		autoExpandParent: true,
-	};
+  state = {
+    tabKey: 'basic',
+    expandedKeys: [],
+    autoExpandParent: true,
+  };
 
-	componentDidMount() {
-		this.loadData();
-	}
+  componentDidMount() {
+    this.loadData();
+  }
 
-	componentWillReceiveProps(nextProps) {
-		const { match: { params } } = nextProps;
-		if (this.props.match.params.id !== params.id) {
-			this.loadData(params.id);
-		}
-	}
+  componentWillReceiveProps(nextProps) {
+    const {
+      match: { params },
+    } = nextProps;
+    if (this.props.match.params.id !== params.id) {
+      this.loadData(params.id);
+    }
+  }
 
-	loadData = (id) => {
-		const { dispatch, match: { params } } = this.props;
+  loadData = (id) => {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
 
-		if (!!params.id) {
-			if ('CREATE' !== params.id) {
-				dispatch({
-					type: `${MODEL_NAME}/detail`,
-					payload: {
-						id: id || params.id
-					}
-				});
-			} else {
-				dispatch({
-					type: `${MODEL_NAME}/set`,
-					payload: {
-						selectedNode: {}
-					}
-				});
-			}
-		}
+    if (!!params.id) {
+      if ('CREATE' !== params.id) {
+        dispatch({
+          type: `${MODEL_NAME}/detail`,
+          payload: {
+            id: id || params.id,
+          },
+        });
+      } else {
+        dispatch({
+          type: `${MODEL_NAME}/set`,
+          payload: {
+            selectedNode: {},
+          },
+        });
+      }
+    }
 
-		dispatch({
-			type: 'role/fetch',
-			payload: {}
-		});
-	};
+    dispatch({
+      type: 'role/fetch',
+      payload: {
+        pageSize: 1000,
+      },
+    });
+    dispatch({
+      type: 'authority/fetch',
+      payload: {},
+    });
+  };
 
-	onTabChange = (tabKey) => {
-		this.setState({ tabKey });
-	};
+  onTabChange = (tabKey) => {
+    this.setState({ tabKey });
+  };
 
-	onThumbnailUpload = async (file) => {
-		const { dispatch } = this.props;
+  onThumbnailUpload = async (file) => {
+    const { dispatch } = this.props;
 
-		const res = await apiUploadOne(file);
+    const res = await apiUploadOne(file);
 
-		if (!!res && !!res.path) {
+    if (!!res && !!res.path) {
+      dispatch({
+        type: `${MODEL_NAME}/save`,
+        payload: {
+          avatar: res.path,
+        },
+      });
+    }
+  };
 
-			dispatch({
-				type: `${MODEL_NAME}/save`,
-				payload: {
-					avatar: res.path
-				}
-			});
+  resetHandler = () => {
+    this.props.form.resetFields();
+  };
 
-		}
-	};
+  submitHandler = (e) => {
+    e.preventDefault();
 
-	resetHandler = () => {
-		this.props.form.resetFields();
-	};
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
 
-	submitHandler = (e) => {
-		e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!!err || Object.keys(values).length === 0) {
+        return;
+      }
 
-		const { dispatch, match: { params } } = this.props;
+      dispatch({
+        type: `${MODEL_NAME}/save`,
+        payload: values,
+      });
+    });
+  };
 
-		this.props.form.validateFields((err, values) => {
-			if (!!err || Object.keys(values).length === 0) {
-				return;
-			}
+  renderBasicForm = () => {
+    const {
+      selectedNode,
+      columns,
+      form: { getFieldDecorator },
+    } = this.props;
 
-			dispatch({
-				type: `${MODEL_NAME}/save`,
-				payload: values
-			});
-		});
-	};
+    const fields = columns.map((item) => item.dataIndex);
 
-	renderBasicForm = () => {
-		const { selectedNode, columns, form: { getFieldDecorator } } = this.props;
+    return (
+      <Form onSubmit={this.submitHandler} className="panel-form">
+        <Form.Item {...formItemLayout} label="账号">
+          {getFieldDecorator('account', {
+            initialValue: !selectedNode ? null : selectedNode['account'],
+          })(
+            <Input
+              disabled={!!selectedNode.id}
+              {...formItemStyle}
+              type="text"
+              placeholder="请填写账号"
+            />
+          )}
+        </Form.Item>
 
-		const fields = columns.map(item => item.dataIndex);
+        <Form.Item {...formItemLayout} label="昵称">
+          {getFieldDecorator('nickname', {
+            initialValue: !selectedNode ? null : selectedNode['nickname'],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写昵称" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="性别">
+          {getFieldDecorator('gender', {
+            initialValue: !selectedNode ? null : selectedNode['gender'],
+          })(
+            <Radio.Group {...formItemStyle}>
+              <Radio value={0}>男</Radio>
+              <Radio value={1}>女</Radio>
+            </Radio.Group>
+          )}
+        </Form.Item>
 
-		return (
-			<Form onSubmit={this.submitHandler} className="panel-form">
+        <Form.Item {...tailFormItemLayout}>
+          <Row>
+            <Col span={3}>
+              <Button onClick={this.resetHandler}>重置</Button>
+            </Col>
+            <Col>
+              <Button type="primary" htmlType="submit">
+                {!selectedNode['id'] ? '新增' : '保存'}
+              </Button>
+            </Col>
+          </Row>
+        </Form.Item>
+      </Form>
+    );
+  };
 
-				<Form.Item {...formItemLayout} label="账号">
-					{getFieldDecorator('account', {
-						initialValue: !selectedNode ? null : selectedNode['account']
-					})(<Input disabled={!!selectedNode.id} {...formItemStyle} type="text" placeholder="请填写账号" />)}
-				</Form.Item>
+  onSave = () => {
+    const { dispatch } = this.props;
 
-				<Form.Item {...formItemLayout} label="昵称">
-					{getFieldDecorator('nickname', {
-						initialValue: !selectedNode ? null : selectedNode['nickname']
-					})(<Input {...formItemStyle} type="text" placeholder="请填写昵称" />)}
-				</Form.Item>
-				<Form.Item {...formItemLayout} label="性别">
-					{getFieldDecorator('gender', {
-						initialValue: !selectedNode ? null : selectedNode['gender'],
-					})(<Radio.Group {...formItemStyle}>
-						<Radio value={0}>男</Radio>
-						<Radio value={1}>女</Radio>
-					</Radio.Group>)}
-				</Form.Item>
+    dispatch({
+      type: `${MODEL_NAME}/save`,
+      payload: {},
+    });
+  };
 
-				<Form.Item {...tailFormItemLayout}>
-					<Row>
-						<Col span={3}>
-							<Button onClick={this.resetHandler}>重置</Button>
-						</Col>
-						<Col>
-							<Button type="primary" htmlType="submit">
-								{!selectedNode['id'] ? '新增' : '保存'}
-							</Button>
-						</Col>
-					</Row>
-				</Form.Item>
-			</Form>
-		);
-	};
+  onRolesCheck = (roles) => {
+    const { dispatch, selectedNode } = this.props;
+    selectedNode.roles = roles;
 
-	onSave = () => {
-		const { dispatch } = this.props;
+    dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        selectedNode,
+      },
+    });
+  };
 
-		dispatch({
-			type: `${MODEL_NAME}/save`,
-			payload: {}
-		});
-	};
+  render() {
+    const { selectedNode, columns, role, authority } = this.props;
 
-	render() {
-		const { selectedNode, columns } = this.props;
+    if (!selectedNode) return <Skeleton active loading />;
 
-		if (!selectedNode) return <Skeleton active loading />;
+    const fields = columns.map((item) => item.dataIndex);
 
-		const fields = columns.map(item => item.dataIndex);
-
-		return (
-			<Fragment>
-				<Button onClick={() => router.go(-1)}>
-					<Icon type="arrow-left" />返回
-				</Button>
-				<Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
-					<Tabs.TabPane tab="基本信息" key="basic">
-						{this.renderBasicForm()}
-					</Tabs.TabPane>
-					{selectedNode.id ? (
-						<Tabs.TabPane tab="头像" key="avatarPath">
-							<ImageCropper
-								url={!selectedNode.avatar ? '' : selectedNode.avatarPath}
-								onUpload={this.onThumbnailUpload}
-								width={200}
-								height={200}
-							/>
-						</Tabs.TabPane>
-					) : null}
-					{selectedNode.id ? (
-						<Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="角色分配" key="role">
-							<Button type="primary" onClick={this.onSave}>保存</Button>
-
-						</Tabs.TabPane>) : null}
-				</Tabs>
-			</Fragment>
-		);
-	}
+    return (
+      <Fragment>
+        <Button onClick={() => router.go(-1)}>
+          <Icon type="arrow-left" />
+          返回
+        </Button>
+        <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
+          <Tabs.TabPane tab="基本信息" key="basic">
+            {this.renderBasicForm()}
+          </Tabs.TabPane>
+          {selectedNode.id ? (
+            <Tabs.TabPane tab="头像" key="avatarPath">
+              <ImageCropper
+                url={!selectedNode.avatar ? '' : selectedNode.avatarPath}
+                onUpload={this.onThumbnailUpload}
+                width={200}
+                height={200}
+              />
+            </Tabs.TabPane>
+          ) : null}
+          {selectedNode.id ? (
+            <Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="角色分配" key="role">
+              <Button type="primary" onClick={this.onSave}>
+                保存
+              </Button>
+              <RolesEditor
+                user={selectedNode}
+                roles={role.data.list}
+                authoritys={authority.data}
+                onRolesCheck={this.onRolesCheck}
+              />
+            </Tabs.TabPane>
+          ) : null}
+        </Tabs>
+      </Fragment>
+    );
+  }
 }

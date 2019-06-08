@@ -7,44 +7,44 @@ import { Authority } from '../entities/authority.entity';
 
 @Injectable()
 export class AuthorityService extends BaseService<Authority> {
-	constructor(@InjectRepository(Authority) private readonly authorityRepository: TreeRepository<Authority>) {
-		super(authorityRepository);
-	}
+    constructor(
+        @InjectRepository(Authority) private readonly authorityRepository: TreeRepository<Authority>
+    ) {
+        super(authorityRepository);
+    }
 
-	async query(payload: any) {
+    async query(payload: any) {
+        return await this.authorityRepository.findTrees();
+    }
 
-		return await this.authorityRepository.findTrees();
-	}
+    async findOneByName(name: string) {
+        return await this.authorityRepository.findOne({ name });
+    }
 
-	async findOneByName(name: string) {
-		return await this.authorityRepository.findOne({ name });
-	}
+    async save(payload: any) {
+        const target = Authority.create(payload) as Authority;
 
-	async save(payload: any) {
-		const target = Authority.create(payload) as Authority;
+        if (!!payload.parentId) {
+            target.parent = await this.authorityRepository.findOne(payload.parentId);
+        }
 
-		if (!!payload.parentId) {
-			target.parent = await this.authorityRepository.findOne(payload.parentId);
-		}
+        return await this.authorityRepository.save(target);
+    }
 
-		return await this.authorityRepository.save(target);
-	}
+    async parent(payload: any) {
+        const target = await this.authorityRepository.findOne(payload.id);
+        target.parent = await this.authorityRepository.findOne(payload.parentId);
 
-	async parent(payload: any) {
-		const target = await this.authorityRepository.findOne(payload.id);
-		target.parent = await this.authorityRepository.findOne(payload.parentId);
+        return await this.authorityRepository.save(target);
+    }
 
-		return await this.authorityRepository.save(target);
-	}
+    async delete(ids: string[]) {
+        const roots = await this.authorityRepository.findRoots();
 
-	async remove(ids: string[]) {
+        // roots.forEach(root => {
+        // 	if (ids.includes(root.id)) throw new BadRequestException('不能删除根节点');
+        // });
 
-		const roots = await this.authorityRepository.findRoots();
-
-		// roots.forEach(root => {
-		// 	if (ids.includes(root.id)) throw new BadRequestException('不能删除根节点');
-		// });
-
-		return await this.authorityRepository.delete(ids);
-	}
+        return await this.authorityRepository.delete(ids);
+    }
 }

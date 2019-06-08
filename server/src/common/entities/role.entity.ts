@@ -9,6 +9,7 @@ import { User } from './user.entity';
 export class Role extends Base {
     @Column({
         comment: '名称',
+        unique: true
     })
     name: string;
 
@@ -27,11 +28,11 @@ export class Role extends Base {
     @Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
     ex_info: any;
 
-    @ManyToMany(type => Authority, authority => authority.roles)
+    @ManyToMany((type) => Authority, (authority) => authority.roles)
     @JoinTable()
     authoritys: Authority[];
 
-    @ManyToMany(type => User, user => user.roles)
+    @ManyToMany((type) => User, (user) => user.roles)
     users: User[];
 
     static readonly sheetsMap: object = {

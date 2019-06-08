@@ -2,240 +2,352 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Form, Input, InputNumber, Row, Col, Icon, Tree, Button, Skeleton, message, Divider } from 'antd';
+import {
+  Tabs,
+  Form,
+  Input,
+  InputNumber,
+  Row,
+  Col,
+  Icon,
+  Menu,
+  Tree,
+  Button,
+  Skeleton,
+  message,
+  Divider,
+} from 'antd';
 
 const { TreeNode } = Tree;
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
-	labelCol: { xs: { span: 24 }, sm: { span: 8 } },
-	wrapperCol: { xs: { span: 24 }, sm: { span: 16 } }
+  labelCol: { xs: { span: 24 }, sm: { span: 8 } },
+  wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
 };
 const tailFormItemLayout = {
-	wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } }
+  wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } },
 };
 
 const MODEL_NAME = 'role';
 
 @Form.create()
 @connect(({ authority, role }) => ({
-	authority,
-	selectedNode: role.selectedNode
+  authority,
+  selectedNode: role.selectedNode,
 }))
 export default class extends React.Component {
-	state = {
-		tabKey: 'basic',
-		expandedKeys: [],
-		autoExpandParent: true,
-	};
+  state = {
+    tabKey: 'basic',
+    targetKeys: [],
+    expandedKeys: [],
+    autoExpandParent: true,
+    rightClickNodeTreeItem: {
+      pageX: '',
+      pageY: '',
+      id: '',
+      categoryName: '',
+    },
+  };
 
-	componentDidMount() {
-		this.loadData();
-	}
+  componentDidMount() {
+    this.loadData();
 
-	componentWillReceiveProps(nextProps) {
-		const { match: { params } } = nextProps;
-		if (this.props.match.params.id !== params.id) {
-			this.loadData(params.id);
-		}
-	}
+    const self = this;
+    document.addEventListener('click', () => {
+      self.setState({
+        rightClickNodeTreeItem: null,
+      });
+    });
+  }
 
-	loadData = (id) => {
-		const { dispatch, match: { params } } = this.props;
+  componentWillReceiveProps(nextProps) {
+    const {
+      match: { params },
+    } = nextProps;
+    if (this.props.match.params.id !== params.id) {
+      this.loadData(params.id);
+    }
+  }
 
-		if (!!params.id) {
-			if ('CREATE' !== params.id) {
-				dispatch({
-					type: `${MODEL_NAME}/detail`,
-					payload: {
-						id: id || params.id,
-						callback: (selectedNode) => {
-							this.setState({
-								expandedKeys: selectedNode.authoritys.map(item => item.id),
-								autoExpandParent: false,
-							});
-						}
-					}
-				});
-			} else {
-				dispatch({
-					type: `${MODEL_NAME}/set`,
-					payload: {
-						selectedNode: {}
-					}
-				});
-			}
-		}
+  loadData = (id) => {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
 
-		dispatch({
-			type: 'authority/fetch',
-			payload: {}
-		});
-	};
+    if (!!params.id) {
+      if ('CREATE' !== params.id) {
+        dispatch({
+          type: `${MODEL_NAME}/detail`,
+          payload: {
+            id: id || params.id,
+            callback: (selectedNode) => {
+              this.setState({
+                expandedKeys: selectedNode.authoritys,
+                autoExpandParent: false,
+              });
+            },
+          },
+        });
+      } else {
+        dispatch({
+          type: `${MODEL_NAME}/set`,
+          payload: {
+            selectedNode: {},
+          },
+        });
+      }
+    }
 
-	onTabChange = (tabKey) => {
-		this.setState({ tabKey });
-	};
+    dispatch({
+      type: 'authority/fetch',
+      payload: {},
+    });
+  };
 
-	resetHandler = () => {
-		this.props.form.resetFields();
-	};
+  onTabChange = (tabKey) => {
+    this.setState({ tabKey });
+  };
 
-	submitHandler = (e) => {
-		e.preventDefault();
+  resetHandler = () => {
+    this.props.form.resetFields();
+  };
 
-		const { dispatch, match: { params } } = this.props;
+  submitHandler = (e) => {
+    e.preventDefault();
 
-		this.props.form.validateFields((err, values) => {
-			if (!!err || Object.keys(values).length === 0) {
-				return;
-			}
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
 
-			values['publish_at'] = moment(values['publish_at']).format('YYYY-MM-DD HH:mm:ss');
-			values['category'] = params.channel;
+    this.props.form.validateFields((err, values) => {
+      if (!!err || Object.keys(values).length === 0) {
+        return;
+      }
 
-			dispatch({
-				type: `${MODEL_NAME}/save`,
-				payload: values
-			});
-		});
-	};
+      values['publish_at'] = moment(values['publish_at']).format('YYYY-MM-DD HH:mm:ss');
+      values['category'] = params.channel;
 
-	onSave = () => {
-		const { dispatch } = this.props;
+      dispatch({
+        type: `${MODEL_NAME}/save`,
+        payload: values,
+      });
+    });
+  };
 
-		dispatch({
-			type: `${MODEL_NAME}/save`,
-			payload: {}
-		});
-	};
+  onSave = () => {
+    const { dispatch } = this.props;
 
-	onCheck = (selectedRows) => {
-		const { selectedNode } = this.props;
+    dispatch({
+      type: `${MODEL_NAME}/save`,
+      payload: {},
+    });
+  };
 
-		selectedNode.authoritys = selectedRows.map(item => ({ id: item }))
+  onCheck = (selectedRows) => {
+    this.changeAuthoritys(selectedRows.checked.map((item) => item));
+  };
 
-		this.props.dispatch({
-			type: `${MODEL_NAME}/set`,
-			payload: {
-				selectedNode
-			}
-		});
-	}
+  onExpand = (expandedKeys) => {
+    this.setState({
+      expandedKeys,
+      autoExpandParent: false,
+    });
+  };
 
-	onExpand = expandedKeys => {
+  renderBasicForm = () => {
+    const {
+      selectedNode,
+      form: { getFieldDecorator },
+    } = this.props;
 
-		this.setState({
-			expandedKeys,
-			autoExpandParent: false,
-		});
-	};
+    return (
+      <Form onSubmit={this.submitHandler} className="panel-form">
+        <Form.Item {...formItemLayout} label="名称">
+          {getFieldDecorator('name', {
+            initialValue: !selectedNode ? null : selectedNode['name'],
+            rules: [
+              {
+                required: true,
+                message: '名称不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写名称" />)}
+        </Form.Item>
 
-	renderBasicForm = () => {
-		const { selectedNode, form: { getFieldDecorator } } = this.props;
+        <Form.Item {...formItemLayout} label="标识">
+          {getFieldDecorator('token', {
+            initialValue: !selectedNode ? 0 : selectedNode['token'],
+            rules: [
+              {
+                required: true,
+                message: '标识不能为空',
+              },
+            ],
+          })(
+            <Input
+              disabled={selectedNode.isSuperAdmin}
+              {...formItemStyle}
+              placeholder="请填写标识"
+            />
+          )}
+        </Form.Item>
 
-		return (
-			<Form onSubmit={this.submitHandler} className="panel-form">
+        <Form.Item {...formItemLayout} label="描述">
+          {getFieldDecorator('desc', {
+            initialValue: !selectedNode ? 0 : selectedNode['desc'],
+          })(<Input {...formItemStyle} placeholder="请填写描述" />)}
+        </Form.Item>
 
-				<Form.Item {...formItemLayout} label="名称">
-					{getFieldDecorator('name', {
-						initialValue: !selectedNode ? null : selectedNode['name'],
-						rules: [
-							{
-								required: true,
-								message: '名称不能为空'
-							}
-						]
-					})(<Input {...formItemStyle} type="text" placeholder="请填写名称" />)}
-				</Form.Item>
+        <Form.Item {...formItemLayout} label="排序">
+          {getFieldDecorator('sort', {
+            initialValue: !selectedNode ? 0 : selectedNode['sort'],
+          })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
+        </Form.Item>
 
-				<Form.Item {...formItemLayout} label="标识">
-					{getFieldDecorator('token', {
-						initialValue: !selectedNode ? 0 : selectedNode['token'],
-						rules: [
-							{
-								required: true,
-								message: '标识不能为空'
-							}
-						]
-					})(<Input disabled={selectedNode.isSuperAdmin} {...formItemStyle} placeholder="请填写标识" />)}
-				</Form.Item>
+        <Form.Item {...tailFormItemLayout}>
+          <Row>
+            <Col span={3}>
+              <Button onClick={this.resetHandler}>重置</Button>
+            </Col>
+            <Col>
+              <Button type="primary" htmlType="submit">
+                {!selectedNode['id'] ? '新增' : '保存'}
+              </Button>
+            </Col>
+          </Row>
+        </Form.Item>
+      </Form>
+    );
+  };
 
-				<Form.Item {...formItemLayout} label="描述">
-					{getFieldDecorator('desc', {
-						initialValue: !selectedNode ? 0 : selectedNode['desc']
-					})(<Input {...formItemStyle} placeholder="请填写描述" />)}
-				</Form.Item>
+  renderTreeNodes = (data) =>
+    data
+      .sort((a, b) => a.sort - b.sort)
+      .map((item) => {
+        if (item.children) {
+          return (
+            <TreeNode title={item.name} key={item.id} dataRef={item}>
+              {this.renderTreeNodes(item.children)}
+            </TreeNode>
+          );
+        }
+        return <TreeNode {...item} />;
+      });
 
-				<Form.Item {...formItemLayout} label="排序">
-					{getFieldDecorator('sort', {
-						initialValue: !selectedNode ? 0 : selectedNode['sort']
-					})(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
-				</Form.Item>
+  renderTreeNodesRightMenu = () => {
+    const { pageX, pageY, id } = { ...this.state.rightClickNodeTreeItem };
 
+    const tmpStyle = {
+      position: 'absolute',
+      minWidth: '120px',
+      left: `${pageX - 220}px`,
+      top: `${pageY - 102}px`,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    };
+    const menu = (
+      <Menu style={tmpStyle} onClick={(e) => this.onRightMenuClick(e, id)}>
+        <Menu.Item key="select">
+          <Icon type="check-circle" />
+          全选
+        </Menu.Item>
+        <Menu.Item key="unselect">
+          <Icon type="close-circle" />
+          取消全选
+        </Menu.Item>
+      </Menu>
+    );
 
-				<Form.Item {...tailFormItemLayout}>
-					<Row>
-						<Col span={3}>
-							<Button onClick={this.resetHandler}>重置</Button>
-						</Col>
-						<Col>
-							<Button type="primary" htmlType="submit">
-								{!selectedNode['id'] ? '新增' : '保存'}
-							</Button>
-						</Col>
-					</Row>
-				</Form.Item>
-			</Form>
-		);
-	};
+    return this.state.rightClickNodeTreeItem == null ? '' : menu;
+  };
 
-	renderTreeNodes = data =>
-		data.sort((a, b) => a.sort - b.sort).map(item => {
-			if (item.children) {
-				return (
-					<TreeNode title={item.name} key={item.id} dataRef={item}>
-						{this.renderTreeNodes(item.children)}
-					</TreeNode>
-				);
-			}
-			return <TreeNode {...item} />;
-		});
+  changeAuthoritys = (descendants) => {
+    const { selectedNode } = this.props;
 
-	render() {
-		const { selectedNode, authority } = this.props;
+    selectedNode.authoritys = descendants;
 
-		if (!selectedNode) return <Skeleton active loading />;
+    this.props.dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        selectedNode,
+      },
+    });
+  };
 
-		const checkedKeys = !!selectedNode.authoritys ? selectedNode.authoritys.map(item => item.id) : [];
+  onRightMenuClick = (e, id) => {
+    const {
+      authority: { authoritys },
+    } = this.props;
 
-		return (
-			<Fragment>
-				<Button onClick={() => router.go(-1)}>
-					<Icon type="arrow-left" />返回
-				</Button>
-				<Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
-					<Tabs.TabPane tab="基本信息" key="basic">
-						{this.renderBasicForm()}
-					</Tabs.TabPane>
-					{selectedNode.id ?
-						<Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="权限分配" key="authority">
-							<Button type="primary" onClick={this.onSave}>保存</Button>
-							<Tree
-								blockNode
-								checkable
-								onExpand={this.onExpand}
-								checkedKeys={checkedKeys}
-								expandedKeys={this.state.expandedKeys}
-								autoExpandParent={this.state.autoExpandParent}
-								onCheck={this.onCheck}
-							>
-								{this.renderTreeNodes(authority.data)}
-							</Tree>
-						</Tabs.TabPane>
-						: null}
-				</Tabs>
-			</Fragment>
-		);
-	}
+    const descendants = authoritys
+      .filter((item) => item.mPath.search(id) >= 0)
+      .map((item) => item.id);
+
+    switch (e.key) {
+      case 'select':
+        this.changeAuthoritys(
+          Array.from(new Set(this.props.selectedNode.authoritys.concat(descendants)))
+        );
+        break;
+      case 'unselect':
+        this.changeAuthoritys(
+          this.props.selectedNode.authoritys.filter((item) => !descendants.includes(item))
+        );
+        break;
+    }
+  };
+
+  render() {
+    const { selectedNode, authority } = this.props;
+
+    if (!selectedNode) return <Skeleton active loading />;
+
+    // console.log(selectedNode.authoritys);
+
+    return (
+      <Fragment>
+        <Button onClick={() => router.go(-1)}>
+          <Icon type="arrow-left" />
+          返回
+        </Button>
+        <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
+          <Tabs.TabPane tab="基本信息" key="basic">
+            {this.renderBasicForm()}
+          </Tabs.TabPane>
+          {selectedNode.id ? (
+            <Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="权限分配" key="authority">
+              <Button type="primary" onClick={this.onSave} style={{ marginBottom: 20 }}>
+                保存
+              </Button>
+
+              <Tree
+                blockNode
+                checkable
+                checkStrictly
+                onExpand={this.onExpand}
+                checkedKeys={selectedNode.authoritys}
+                expandedKeys={this.state.expandedKeys}
+                autoExpandParent={this.state.autoExpandParent}
+                onCheck={this.onCheck}
+                onRightClick={(e) =>
+                  this.setState({
+                    rightClickNodeTreeItem: {
+                      pageX: e.event.pageX,
+                      pageY: e.event.pageY,
+                      id: e.node.props.dataRef.id,
+                    },
+                  })
+                }
+              >
+                {this.renderTreeNodes(authority.data)}
+              </Tree>
+              {this.renderTreeNodesRightMenu()}
+            </Tabs.TabPane>
+          ) : null}
+        </Tabs>
+      </Fragment>
+    );
+  }
 }
