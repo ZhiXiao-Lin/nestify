@@ -24,7 +24,7 @@ export class Seed {
 
         await this.connection.getRepository(Setting).save({
             token: 'default',
-            info: await ExcelHelper.loadFromFile(
+            ex_info: await ExcelHelper.loadFromFile(
                 resolve('./seeds/settings.xlsx'),
                 Setting.sheetsMap
             )
