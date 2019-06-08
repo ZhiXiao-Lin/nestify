@@ -143,10 +143,7 @@ export default [
         component: './users',
         Routes: ['src/pages/Authorized'],
         authority: AUTHORITY.CONTENT,
-        routes: [
-          { name: '管理员', path: '/studio/users/admin' },
-          { name: '客户', path: '/studio/users/customer' },
-        ],
+        routes: [{ name: '用户列表', path: '/studio/users/customer' }],
       },
       {
         name_noshow: '详情',
