@@ -231,14 +231,15 @@ export default class extends React.Component {
             </Tabs.TabPane>
           ) : null}
           {selectedNode.id ? (
-            <Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="角色分配" key="role">
-              <Button type="primary" onClick={this.onSave}>
+            <Tabs.TabPane disabled={selectedNode.isSuperAdmin} tab="权限管理" key="role">
+              <Button type="primary" onClick={this.onSave} style={{ marginBottom: 20 }}>
                 保存
               </Button>
               <RolesEditor
                 user={selectedNode}
                 roles={role.data.list}
-                authoritys={authority.data}
+                authoritysTree={authority.data}
+                authoritys={authority.authoritys}
                 onRolesCheck={this.onRolesCheck}
               />
             </Tabs.TabPane>

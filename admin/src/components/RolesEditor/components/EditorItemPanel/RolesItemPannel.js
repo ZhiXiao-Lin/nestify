@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Card, Input, Checkbox } from 'antd';
-import { ItemPanel } from 'gg-editor';
 
 import styles from './index.less';
 
@@ -33,22 +32,20 @@ export default class extends Component {
       .map((item) => ({ label: item.name, value: item.id }));
 
     return (
-      <ItemPanel className={styles.itemPanel}>
-        <Card bordered={false} style={{ paddingBottom: 200 }}>
-          <Search
-            placeholder="筛选"
-            allowClear
-            style={{ marginBottom: 20 }}
-            onChange={this.onFilterChange}
-            onSearch={(value) => console.log(value)}
-          />
-          <Checkbox.Group
-            options={rolesOptions}
-            value={user.roles.map((item) => item.id)}
-            onChange={this.onRolesCheck}
-          />
-        </Card>
-      </ItemPanel>
+      <Card bordered={false} className={styles.itemPanel}>
+        <Search
+          placeholder="筛选"
+          allowClear
+          style={{ marginBottom: 20 }}
+          onChange={this.onFilterChange}
+          onSearch={(value) => console.log(value)}
+        />
+        <Checkbox.Group
+          options={rolesOptions}
+          value={user.roles.map((item) => item.id)}
+          onChange={this.onRolesCheck}
+        />
+      </Card>
     );
   }
 }

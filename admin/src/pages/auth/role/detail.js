@@ -304,8 +304,6 @@ export default class extends React.Component {
 
     if (!selectedNode) return <Skeleton active loading />;
 
-    // console.log(selectedNode.authoritys);
-
     return (
       <Fragment>
         <Button onClick={() => router.go(-1)}>
@@ -323,6 +321,7 @@ export default class extends React.Component {
               </Button>
 
               <Tree
+                style={{ paddingBottom: 200 }}
                 blockNode
                 checkable
                 checkStrictly
