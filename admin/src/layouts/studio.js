@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import { Layout, Menu, BackTop, Icon, Spin } from 'antd';
-import _ from 'lodash';
+import { uniqBy } from 'lodash';
 import Link from 'umi/link';
 import router from 'umi/router';
 import DocumentTitle from 'react-document-title';
@@ -15,30 +15,11 @@ import styles from './studio.less';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const MenuLoop = (authorities, role, menulist) => {
-  const roleAuthorities = '0b' + role.authorities;
-
+const MenuLoop = (authorities, user, menulist) => {
   return menulist
     .filter((item) => !!item.name && !!item.path)
+    .filter((item) => user.isSuperAdmin || authorities.includes(item.path))
     .map((item) => {
-      // if (item.notLeftMenu) return;
-      /* Todo: fix bug !!!
-		if (!!item.authority) {
-			const itemAuthorities = _.find(authorities, (val) => val.name === item.authority);
-
-			// console.log(roleAuthorities, item.name, item.authority, authorities, itemAuthorities);
-
-			if (!itemAuthorities || !itemAuthorities.authority) return;
-			// console.log(
-			// 	roleAuthorities,
-			// 	item.name,
-			// 	'0b' + itemAuthorities.authority,
-			// 	roleAuthorities & ('0b' + itemAuthorities.authority)
-			// );
-
-			if ((roleAuthorities & ('0b' + itemAuthorities.authority)) <= 0) return;
-		}
-		*/
       if (!!item.routes && item.routes.length > 0) {
         return (
           <Menu.SubMenu
@@ -50,7 +31,7 @@ const MenuLoop = (authorities, role, menulist) => {
               </span>
             }
           >
-            {MenuLoop(authorities, role, item.routes)}
+            {MenuLoop(authorities, user, item.routes)}
           </Menu.SubMenu>
         );
       } else {
@@ -66,25 +47,34 @@ const MenuLoop = (authorities, role, menulist) => {
     });
 };
 
-const StudioMenu = ({ authorities, role, items, collapsed, mode, theme }) => (
+const StudioMenu = ({ authorities, user, items, collapsed, mode, theme }) => (
   <Menu
     theme={theme || 'dark'}
     mode={mode || 'inline'}
     inlineCollapsed={mode !== 'horizontal' && collapsed}
   >
-    {MenuLoop(authorities, role, items)}
+    {MenuLoop(authorities, user, items)}
   </Menu>
 );
 
-@connect(({ global, user, authorities }) => ({
+@connect(({ global, user, role }) => ({
   loading: global.loading,
   collapsed: global.collapsed,
   menuLayout: global.menuLayout,
   currentUser: user.currentUser,
-  authorities: [],
+  roles: role.data.list,
   noticesList: [],
 }))
 export default class StudioLayout extends PureComponent {
+  componentDidMount() {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'role/fetch',
+      payload: {},
+    });
+  }
+
   handleMenuCollapse = (collapsed) => {
     const { dispatch } = this.props;
     dispatch({
@@ -112,21 +102,25 @@ export default class StudioLayout extends PureComponent {
     }
   };
 
+  getUserAuthorities = () => {
+    const { currentUser, roles } = this.props;
+
+    let authorities = [];
+    roles.forEach((item) => {
+      if (currentUser.roles.map((role) => role.id).includes(item.id)) {
+        authorities = authorities.concat(item.authoritys);
+      }
+    });
+
+    return uniqBy(authorities, 'id').map((item) => item.token);
+  };
+
   render() {
-    const {
-      children,
-      collapsed,
-      currentUser,
-      authorities,
-      noticesList,
-      loading,
-      menuLayout,
-    } = this.props;
+    const { children, collapsed, currentUser, noticesList, loading, menuLayout } = this.props;
     const { routes } = this.props.route;
 
     if (!currentUser) return null;
-
-    const role = currentUser.role || {};
+    const userAuthorities = this.getUserAuthorities();
 
     return (
       <DocumentTitle title={config.TITLE}>
@@ -142,8 +136,8 @@ export default class StudioLayout extends PureComponent {
                 </div>
               }
               <StudioMenu
-                authorities={authorities}
-                role={role}
+                authorities={userAuthorities}
+                user={currentUser}
                 items={routes}
                 collapsed={collapsed}
                 mode="inline"
@@ -159,8 +153,8 @@ export default class StudioLayout extends PureComponent {
               <GlobalHeader
                 menu={
                   <StudioMenu
-                    authorities={authorities}
-                    role={role}
+                    authorities={userAuthorities}
+                    user={currentUser}
                     items={routes}
                     collapsed={collapsed}
                     mode="horizontal"

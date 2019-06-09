@@ -184,7 +184,11 @@ export default class extends React.Component {
         </Form.Item>
         <Form.Item {...formItemLayout} label="组织架构">
           {getFieldDecorator('org', {
-            initialValue: !selectedNode ? null : selectedNode['org']['id'],
+            initialValue: !selectedNode
+              ? null
+              : !selectedNode['org']
+              ? null
+              : selectedNode['org']['id'],
           })(
             <TreeSelect
               treeNodeFilterProp="title"

@@ -1,16 +1,3 @@
-const AUTHORITY = {
-  DASHBOARD: 'AUTH-DASHBOARD',
-  PRODUCT: 'AUTH-PRODUCT',
-  ORDER: 'AUTH-ORDER',
-  FINANCE: 'AUTH-FINANCE',
-  PROJECT: 'AUTH-PROJECT',
-  APPLY: 'AUTH-APPLY',
-  CONTENT: 'AUTH-CONTENT',
-  ORGANIZATION: 'AUTH-ORGANIZATION',
-  USER: 'AUTH-USER',
-  MAINDATA: 'AUTH-MAINDATA',
-};
-
 export default [
   {
     path: '/user',
@@ -30,12 +17,10 @@ export default [
     path: '/studio',
     component: '../layouts/studio',
     Routes: ['src/pages/Authorized'],
-    authority: 100,
     routes: [
       { path: '/', redirect: '/studio' },
       {
         name: '首页看板',
-        authority: AUTHORITY.DASHBOARD,
         icon: 'dashboard',
         path: '/studio',
         component: './home',
@@ -51,7 +36,6 @@ export default [
         path: '/studio/survey/:channel',
         component: './content',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [
           { name: '景区介绍', path: '/studio/survey/景区介绍' },
           { name: '地理概况', path: '/studio/survey/地理概况' },
@@ -70,7 +54,6 @@ export default [
         path: '/studio/scenery/:channel',
         component: './content',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [
           { name: '景点一览', path: '/studio/scenery/景点一览' },
           { name: '720度全景', path: '/studio/scenery/720度全景' },
@@ -86,7 +69,6 @@ export default [
         path: '/studio/strategy/:channel',
         component: './content',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [
           { name: '特色餐饮', path: '/studio/strategy/特色餐饮' },
           { name: '周边住宿', path: '/studio/strategy/周边住宿' },
@@ -103,7 +85,6 @@ export default [
         path: '/studio/news/:channel',
         component: './content',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [
           { name: '官方公告', path: '/studio/news/官方公告' },
           { name: '精彩活动', path: '/studio/news/精彩活动' },
@@ -121,7 +102,6 @@ export default [
         path: '/studio/about/:channel',
         component: './content',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [
           { name: '联系方式', path: '/studio/about/联系方式' },
           { name: '留言咨询', path: '/studio/about/留言咨询' },
@@ -134,7 +114,6 @@ export default [
         path: '/studio/organization',
         component: './organization',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
       },
       {
         name: '用户管理',
@@ -142,7 +121,6 @@ export default [
         path: '/studio/users/:channel',
         component: './users',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [{ name: '用户列表', path: '/studio/users/customer' }],
       },
       {
@@ -151,14 +129,13 @@ export default [
         component: './users/detail',
       },
       {
-        name: '权限管理',
+        name: '权限角色',
         icon: 'cluster',
         path: '/studio/auth',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
         routes: [
-          { name: '角色', component: './auth/role', path: '/studio/auth/role' },
-          { name: '权限', component: './auth/authority', path: '/studio/auth/authority' },
+          { name: '角色管理', component: './auth/role', path: '/studio/auth/role' },
+          { name: '权限管理', component: './auth/authority', path: '/studio/auth/authority' },
         ],
       },
       {
@@ -172,7 +149,6 @@ export default [
         path: '/studio/category',
         component: './category',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
       },
       {
         name: '站点设置',
@@ -180,7 +156,6 @@ export default [
         path: '/studio/setting',
         component: './setting',
         Routes: ['src/pages/Authorized'],
-        authority: AUTHORITY.CONTENT,
       },
       {
         name_noshow: '个人设置',
@@ -224,8 +199,8 @@ export default [
     path: '/exception',
     authority: 0,
     routes: [
-      { path: '/exception/403', component: './Exception/404' },
-      { path: '/exception/404', component: './Exception/403' },
+      { path: '/exception/403', component: './Exception/403' },
+      { path: '/exception/404', component: './Exception/404' },
       { path: '/exception/500', component: './Exception/500' },
     ],
   },
