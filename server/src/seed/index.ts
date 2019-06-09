@@ -65,6 +65,50 @@ export class Seed {
     }
 
     async initElasticSearchIndices() {
+        if (await es.indices.exists({ index: 'uploads' })) {
+            await es.indices.delete({ index: 'uploads' });
+        }
+
+        await es.indices.create({
+            index: 'uploads',
+            body: {
+                type: 'uploads',
+                mappings: {
+                    file: {
+                        properties: {
+                            baseName: {
+                                type: 'text',
+                                analyzer: 'ik_max_word',
+                                search_analyzer: 'ik_max_word'
+                            },
+                            dirName: {
+                                type: 'text',
+                                analyzer: 'ik_max_word',
+                                search_analyzer: 'ik_max_word'
+                            },
+                            extName: {
+                                type: 'text',
+                                analyzer: 'ik_max_word',
+                                search_analyzer: 'ik_max_word'
+                            },
+                            path: {
+                                type: 'text',
+                                analyzer: 'ik_max_word',
+                                search_analyzer: 'ik_max_word'
+                            },
+                            type: {
+                                type: 'string'
+                            },
+                            // https://nodejs.org/api/fs.html#fs_stats_dev
+                            stat: {
+                                type: 'object'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
         if (await es.indices.exists({ index: Content.esIndex.index })) {
             await es.indices.delete({ index: Content.esIndex.index });
         }

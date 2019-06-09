@@ -5,11 +5,11 @@ import { Content } from '../entities/content.entity';
 @Injectable()
 export class SearchService {
     async search(payload: any) {
-        console.log(payload);
+        const qb = new esb.RequestBodySearch();
 
-        const qb = new esb.RequestBodySearch().query(
-            new esb.MatchQuery(payload.field, payload.keyword)
-        );
+        if (!!payload.keyword) {
+            qb.query(new esb.MatchQuery(payload.field, payload.keyword));
+        }
 
         if (!payload.page) {
             payload.page = 1;
