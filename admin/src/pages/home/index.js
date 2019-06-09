@@ -9,128 +9,132 @@ import { getTimeDistance } from '@/utils/utils';
 
 import styles from './index.less';
 
-
 const SystemStatus = React.lazy(() => import('./SystemStatus'));
 
 @connect(({ chart, status, loading }) => ({
-	chart,
-	status: status.status,
-	loading: loading.effects['chart/fetch']
+  chart,
+  ...status,
+  loading: loading.effects['chart/fetch'],
 }))
 export default class Index extends Component {
-	state = {
-		salesType: 'all',
-		currentTabKey: '',
-		rangePickerValue: getTimeDistance('year')
-	};
+  state = {
+    salesType: 'all',
+    currentTabKey: '',
+    rangePickerValue: getTimeDistance('year'),
+  };
 
-	componentDidMount() {
-		const { dispatch } = this.props;
-		this.reqRef = requestAnimationFrame(() => {
-			dispatch({
-				type: 'chart/fetch'
-			});
-		});
-	}
+  componentDidMount() {
+    const { dispatch } = this.props;
+    this.reqRef = requestAnimationFrame(() => {
+      dispatch({
+        type: 'chart/fetch',
+      });
+    });
+  }
 
-	componentWillUnmount() {
-		const { dispatch } = this.props;
-		dispatch({
-			type: 'chart/clear'
-		});
-		cancelAnimationFrame(this.reqRef);
-		clearTimeout(this.timeoutId);
-	}
+  componentWillUnmount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'chart/clear',
+    });
+    cancelAnimationFrame(this.reqRef);
+    clearTimeout(this.timeoutId);
+  }
 
-	handleChangeSalesType = (e) => {
-		this.setState({
-			salesType: e.target.value
-		});
-	};
+  handleChangeSalesType = (e) => {
+    this.setState({
+      salesType: e.target.value,
+    });
+  };
 
-	handleTabChange = (key) => {
-		this.setState({
-			currentTabKey: key
-		});
-	};
+  handleTabChange = (key) => {
+    this.setState({
+      currentTabKey: key,
+    });
+  };
 
-	handleRangePickerChange = (rangePickerValue) => {
-		const { dispatch } = this.props;
-		this.setState({
-			rangePickerValue
-		});
+  handleRangePickerChange = (rangePickerValue) => {
+    const { dispatch } = this.props;
+    this.setState({
+      rangePickerValue,
+    });
 
-		dispatch({
-			type: 'chart/fetchSalesData'
-		});
-	};
+    dispatch({
+      type: 'chart/fetchSalesData',
+    });
+  };
 
-	selectDate = (type) => {
-		const { dispatch } = this.props;
-		this.setState({
-			rangePickerValue: getTimeDistance(type)
-		});
+  selectDate = (type) => {
+    const { dispatch } = this.props;
+    this.setState({
+      rangePickerValue: getTimeDistance(type),
+    });
 
-		dispatch({
-			type: 'chart/fetchSalesData'
-		});
-	};
+    dispatch({
+      type: 'chart/fetchSalesData',
+    });
+  };
 
-	isActive = (type) => {
-		const { rangePickerValue } = this.state;
-		const value = getTimeDistance(type);
-		if (!rangePickerValue[0] || !rangePickerValue[1]) {
-			return '';
-		}
-		if (rangePickerValue[0].isSame(value[0], 'day') && rangePickerValue[1].isSame(value[1], 'day')) {
-			return styles.currentDate;
-		}
-		return '';
-	};
+  isActive = (type) => {
+    const { rangePickerValue } = this.state;
+    const value = getTimeDistance(type);
+    if (!rangePickerValue[0] || !rangePickerValue[1]) {
+      return '';
+    }
+    if (
+      rangePickerValue[0].isSame(value[0], 'day') &&
+      rangePickerValue[1].isSame(value[1], 'day')
+    ) {
+      return styles.currentDate;
+    }
+    return '';
+  };
 
-	render() {
-		const { rangePickerValue, salesType, currentTabKey } = this.state;
-		const { chart, status, loading } = this.props;
-		const {
-			visitData,
-			visitData2,
-			salesData,
-			searchData,
-			offlineData,
-			offlineChartData,
-			salesTypeData,
-			salesTypeDataOnline,
-			salesTypeDataOffline
-		} = chart;
-		let salesPieData;
-		if (salesType === 'all') {
-			salesPieData = salesTypeData;
-		} else {
-			salesPieData = salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
-		}
-		const menu = (
-			<Menu>
-				<Menu.Item>操作一</Menu.Item>
-				<Menu.Item>操作二</Menu.Item>
-			</Menu>
-		);
+  render() {
+    const { rangePickerValue, salesType, currentTabKey } = this.state;
+    const { chart, status, fileChangeList, loading } = this.props;
+    const {
+      visitData,
+      visitData2,
+      salesData,
+      searchData,
+      offlineData,
+      offlineChartData,
+      salesTypeData,
+      salesTypeDataOnline,
+      salesTypeDataOffline,
+    } = chart;
+    let salesPieData;
+    if (salesType === 'all') {
+      salesPieData = salesTypeData;
+    } else {
+      salesPieData = salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
+    }
+    const menu = (
+      <Menu>
+        <Menu.Item>操作一</Menu.Item>
+        <Menu.Item>操作二</Menu.Item>
+      </Menu>
+    );
 
-		const dropdownGroup = (
-			<span className={styles.iconGroup}>
-				<Dropdown overlay={menu} placement="bottomRight">
-					<Icon type="ellipsis" />
-				</Dropdown>
-			</span>
-		);
+    const dropdownGroup = (
+      <span className={styles.iconGroup}>
+        <Dropdown overlay={menu} placement="bottomRight">
+          <Icon type="ellipsis" />
+        </Dropdown>
+      </span>
+    );
 
-		const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
+    const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
 
-		return (
-			<GridContent>
-				<Suspense fallback={<PageLoading />}>
-					<SystemStatus loading={loading} status={status} />
-				</Suspense>
-				{/* <Suspense fallback={null}>
+    console.log(fileChangeList);
+
+    return (
+      <GridContent>
+        <Suspense fallback={<PageLoading />}>
+          <SystemStatus loading={loading} status={status} />
+        </Suspense>
+        {/* <Suspense fallback={null}>
 					<SalesCard
 						rangePickerValue={rangePickerValue}
 						salesData={salesData}
@@ -173,7 +177,7 @@ export default class Index extends Component {
 						handleTabChange={this.handleTabChange}
 					/>
 				</Suspense> */}
-			</GridContent>
-		);
-	}
+      </GridContent>
+    );
+  }
 }
