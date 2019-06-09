@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import { Exclude, Expose, plainToClass } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, BeforeInsert, ManyToMany, OneToOne, JoinTable } from 'typeorm';
+import { Entity, Column, BeforeInsert, ManyToMany, ManyToOne, JoinTable } from 'typeorm';
 import { Gender } from '../aspects/enum';
 import { Role } from './role.entity';
 import { Organization } from './organization.entity';
@@ -34,7 +34,7 @@ export class User extends Base {
     @JoinTable()
     roles: Role[];
 
-    @OneToOne((type) => Organization, (org) => org.users)
+    @ManyToOne((type) => Organization, (org) => org.users)
     org: Organization;
 
     role: Role;

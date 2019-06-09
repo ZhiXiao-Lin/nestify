@@ -4,22 +4,22 @@ import moment from 'moment';
 import router from 'umi/router';
 import { connect } from 'dva';
 import {
-	Upload,
-	Input,
-	TreeSelect,
-	Popconfirm,
-	Table,
-	Tooltip,
-	Layout,
-	Row,
-	Col,
-	Form,
-	Button,
-	Icon,
-	Select,
-	Divider,
-	Collapse,
-	message
+  Upload,
+  Input,
+  TreeSelect,
+  Popconfirm,
+  Table,
+  Tooltip,
+  Layout,
+  Row,
+  Col,
+  Form,
+  Button,
+  Icon,
+  Select,
+  Divider,
+  Collapse,
+  message,
 } from 'antd';
 
 import { UploadActionType, apiUploadOne } from '@/utils';
@@ -35,341 +35,358 @@ const MODEL_NAME = 'role';
 const DETAIL_URL = '/studio/roledetail';
 
 @connect(({ role, loading }) => ({
-	...role,
-	loading: loading.models.role
+  ...role,
+  loading: loading.models.role,
 }))
 @Form.create()
 export default class extends React.Component {
+  componentDidMount() {
+    const {
+      match: { params },
+    } = this.props;
 
-	componentDidMount() {
-		const { match: { params } } = this.props;
+    this.init(params.channel);
+    this.onReset();
+    this.refresh();
+  }
 
-		this.init(params.channel);
-		this.onReset();
-		this.refresh();
-	}
+  componentWillReceiveProps(nextProps) {
+    const {
+      match: { params },
+    } = nextProps;
+    if (this.props.match.params.channel !== params.channel) {
+      this.init(params.channel);
+      this.loadData({ page: 0, category: params.channel });
+    }
+  }
 
-	componentWillReceiveProps(nextProps) {
-		const { match: { params } } = nextProps;
-		if (this.props.match.params.channel !== params.channel) {
-			this.init(params.channel);
-			this.loadData({ page: 0, category: params.channel });
-		}
-	}
+  init = (channel) => {
+    let columns = [];
+    let fields = [];
+    let showQueryCondition = false;
 
-	init = (channel) => {
+    switch (channel) {
+      default:
+        columns = [
+          {
+            title: '详情',
+            dataIndex: 'id',
+            render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
+          },
+          {
+            title: '名称',
+            dataIndex: 'name',
+            render: (val) => {
+              const {
+                queryParams: { keyword },
+              } = this.props;
 
-		let columns = [];
-		let fields = [];
-		let showQueryCondition = false;
+              const reg = new RegExp(keyword, 'gi');
 
-		switch (channel) {
-			default:
-				columns = [
-					{
-						title: '详情',
-						dataIndex: 'id',
-						render: (val) => <a onClick={this.toDetail(val)}>详情</a>
-					},
-					{
-						title: '名称',
-						dataIndex: 'name',
-						render: (val) => {
+              return !!keyword
+                ? val
+                    .toString()
+                    .split(reg)
+                    .map((text, i) =>
+                      i > 0
+                        ? [
+                            <span key={i} col={i} style={{ color: 'red' }}>
+                              <b>{val.toString().match(reg)[0]}</b>
+                            </span>,
+                            text,
+                          ]
+                        : text
+                    )
+                : val;
+            },
+          },
+          {
+            title: '标识',
+            dataIndex: 'token',
+          },
+          {
+            title: '描述',
+            dataIndex: 'desc',
+          },
+          {
+            title: '排序',
+            dataIndex: 'sort',
+            sorter: true,
+          },
+          {
+            title: '修改时间',
+            dataIndex: 'update_at',
+            sorter: true,
+            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+          },
+          {
+            title: '创建时间',
+            dataIndex: 'create_at',
+            sorter: true,
+            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+          },
+        ];
 
-							const { queryParams: { keyword } } = this.props;
+        fields = ['id', 'name', 'token', 'desc', 'sort', 'update_at', 'create_at'];
+        showQueryCondition = true;
+        break;
+    }
 
-							const reg = new RegExp(keyword, 'gi');
+    this.props.dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        columns,
+        fields,
+        showQueryCondition,
+      },
+    });
+  };
 
+  loadData = (payload) => {
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
 
-							return !!keyword ? val.toString().split(reg).map(
-								(text, i) =>
-									i > 0
-										? [
-											<span key={i} col={i} style={{ color: 'red' }}>
-												<b>{val.toString().match(reg)[0]}</b>
-											</span>,
-											text
-										]
-										: text
-							) : val;
-						}
-					},
-					{
-						title: '标识',
-						dataIndex: 'token'
-					},
-					{
-						title: '描述',
-						dataIndex: 'desc'
-					},
-					{
-						title: '排序',
-						dataIndex: 'sort',
-						sorter: true
-					},
-					{
-						title: '修改时间',
-						dataIndex: 'update_at',
-						sorter: true,
-						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-					},
-					{
-						title: '创建时间',
-						dataIndex: 'create_at',
-						sorter: true,
-						render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss')
-					},
-				];
+    payload.category = !!payload.category ? payload.category : params.channel;
 
-				fields = ['id', 'name', 'token', 'desc', 'sort', 'update_at', 'create_at'];
-				showQueryCondition = true;
-				break;
-		}
+    dispatch({
+      type: `${MODEL_NAME}/fetch`,
+      payload,
+    });
+  };
 
+  refresh = () => {
+    const { data } = this.props;
+    this.loadData({ page: data.page });
+  };
 
+  toCreate = () => {
+    router.push(`${DETAIL_URL}/CREATE`);
+  };
 
-		this.props.dispatch({
-			type: `${MODEL_NAME}/set`,
-			payload: {
-				columns,
-				fields,
-				showQueryCondition
-			}
-		})
-	}
+  toDetail = (id) => (e) => {
+    router.push(`${DETAIL_URL}/${id}`);
+  };
 
-	loadData = (payload) => {
-		const { dispatch, match: { params } } = this.props;
+  toRemove = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: `${MODEL_NAME}/remove`,
+      payload: {
+        callback: () => this.refresh(),
+      },
+    });
+  };
 
-		payload.category = !!payload.category ? payload.category : params.channel;
+  toExport = () => {
+    const { dispatch, fields } = this.props;
 
-		dispatch({
-			type: `${MODEL_NAME}/fetch`,
-			payload
-		});
-	};
+    dispatch({
+      type: `${MODEL_NAME}/export`,
+      payload: {
+        fields: fields.join(','),
+      },
+    });
+  };
 
-	refresh = () => {
-		const { data } = this.props;
-		this.loadData({ page: data.page });
-	};
+  onTableChange = (pagination, filters, sorter, extra) => {
+    let sort = null;
+    let order = null;
 
-	toCreate = () => {
+    if (!_.isEmpty(sorter)) {
+      sort = sorter.columnKey;
+      order = sorter.order === 'ascend' ? 'ASC' : 'DESC';
+    }
 
-		router.push(`${DETAIL_URL}/CREATE`);
-	};
+    this.loadData({ page: pagination.current, sort, order });
+  };
 
-	toDetail = (id) => (e) => {
+  onFieldsChange = (fields) => {
+    this.props.dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        fields,
+      },
+    });
+  };
 
-		router.push(`${DETAIL_URL}/${id}`);
-	};
+  onSubmit = (e) => {
+    e.preventDefault();
 
-	toRemove = () => {
-		const { dispatch } = this.props;
-		dispatch({
-			type: `${MODEL_NAME}/remove`,
-			payload: {
-				callback: () => this.refresh()
-			}
-		});
-	};
+    this.props.form.validateFields((err, values) => {
+      if (!!err) return false;
 
-	toExport = () => {
-		const { dispatch, fields } = this.props;
+      this.loadData({ page: 0, ...values });
+    });
+  };
 
-		dispatch({
-			type: `${MODEL_NAME}/export`,
-			payload: {
-				fields: fields.join(',')
-			}
-		});
-	};
+  onReset = () => {
+    this.props.form.resetFields();
 
-	onTableChange = (pagination, filters, sorter, extra) => {
-		let sort = null;
-		let order = null;
+    const {
+      match: { params },
+    } = this.props;
 
-		if (!_.isEmpty(sorter)) {
-			sort = sorter.columnKey;
-			order = sorter.order === 'ascend' ? 'ASC' : 'DESC';
-		}
+    this.props.dispatch({
+      type: `${MODEL_NAME}/set`,
+      payload: {
+        queryParams: {
+          category: params.channel,
+        },
+      },
+    });
+  };
 
-		this.loadData({ page: pagination.current, sort, order });
-	};
+  onOrganizationSearch = (e) => {
+    console.log(e);
+  };
 
-	onFieldsChange = (fields) => {
+  renderTreeNodes = (data) =>
+    data
+      .sort((a, b) => a.sort - b.sort)
+      .map((item) => {
+        if (item.children) {
+          return (
+            <TreeNode title={item.name} key={item.id} dataRef={item}>
+              {this.renderTreeNodes(item.children)}
+            </TreeNode>
+          );
+        }
+        return <TreeNode {...item} />;
+      });
 
-		this.props.dispatch({
-			type: `${MODEL_NAME}/set`,
-			payload: {
-				fields
-			}
-		});
-	};
+  render() {
+    const {
+      dispatch,
+      data,
+      selectedRows,
+      selectedRowKeys,
+      columns,
+      fields,
+      showQueryCondition,
+      loading,
+    } = this.props;
+    const { getFieldDecorator } = this.props.form;
 
-	onSubmit = (e) => {
-		e.preventDefault();
+    const tableColumns = columns.filter((item) => fields.includes(item.dataIndex));
 
-		this.props.form.validateFields((err, values) => {
+    const list = data.list || [];
 
-			if (!!err) return false;
+    const uploadOneProps = {
+      name: 'file',
+      action: null,
+      accept:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
+      showUploadList: false,
+      beforeUpload: async (file) => {
+        message.loading('正在执行导入', 0);
+        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'role' });
 
-			this.loadData({ page: 0, ...values })
-		});
-	}
+        setTimeout(() => {
+          message.destroy();
+          message.success('导入成功');
+          this.refresh();
+        }, 3000);
 
-	onReset = () => {
-		this.props.form.resetFields();
+        return false;
+      },
+    };
 
-		const { match: { params } } = this.props;
+    const pagination = {
+      defaultCurrent: 1,
+      current: data.page,
+      pageSize: data.pageSize,
+      total: data.total,
+      hideOnSinglePage: true,
+      showTotal: (total) => `共${total}条记录 `,
+    };
 
-		this.props.dispatch({
-			type: `${MODEL_NAME}/set`,
-			payload: {
-				queryParams: {
-					category: params.channel
-				}
-			}
-		});
-	};
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: (selectedRowKeys, selectedRows) => {
+        dispatch({
+          type: `${MODEL_NAME}/set`,
+          payload: {
+            selectedRowKeys,
+            selectedRows,
+          },
+        });
+      },
+    };
 
-	onOrganizationSearch = (e) => {
-		console.log(e)
-	}
+    return (
+      <Layout>
+        <Content className={styles.normal}>
+          {showQueryCondition ? (
+            <Collapse defaultActiveKey={['1']}>
+              <Panel header="查询条件" key="1">
+                <Form
+                  onSubmit={this.onSubmit}
+                  style={{
+                    padding: 5,
+                    marginBottom: 20,
+                  }}
+                >
+                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
+                    {getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
+                  </Form.Item>
 
-	renderTreeNodes = data =>
-		data.sort((a, b) => a.sort - b.sort).map(item => {
-			if (item.children) {
-				return (
-					<TreeNode title={item.name} key={item.id} dataRef={item}>
-						{this.renderTreeNodes(item.children)}
-					</TreeNode>
-				);
-			}
-			return <TreeNode {...item} />;
-		});
-
-	render() {
-		const { dispatch, data, selectedRows, selectedRowKeys, columns, fields, showQueryCondition, loading } = this.props;
-		const { getFieldDecorator } = this.props.form;
-
-		const tableColumns = columns.filter((item) => fields.includes(item.dataIndex));
-
-
-		const list = data.list || [];
-
-		const uploadOneProps = {
-			name: 'file',
-			action: null,
-			accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
-			showUploadList: false,
-			beforeUpload: async (file) => {
-				message.loading('正在执行导入', 0);
-				await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'role' });
-
-				setTimeout(() => {
-					message.destroy();
-					message.success('导入成功');
-					this.refresh();
-				}, 3000);
-
-				return false;
-			}
-		};
-
-		const pagination = {
-			defaultCurrent: 1,
-			current: data.page,
-			pageSize: data.pageSize,
-			total: data.total,
-			hideOnSinglePage: true,
-			showTotal: (total) => `共${total}条记录 `
-		};
-
-		const rowSelection = {
-			selectedRowKeys,
-			onChange: (selectedRowKeys, selectedRows) => {
-				dispatch({
-					type: `${MODEL_NAME}/set`,
-					payload: {
-						selectedRowKeys,
-						selectedRows
-					}
-				});
-			}
-		};
-
-		return (
-			<Layout>
-				<Content className={styles.normal}>
-					{showQueryCondition ?
-						<Collapse defaultActiveKey={['1']}>
-							<Panel header="查询条件" key="1">
-								<Form
-									onSubmit={this.onSubmit}
-									style={{
-										padding: 5,
-										marginBottom: 20
-									}}
-								>
-									<Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
-										{getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
-									</Form.Item>
-									{/* <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="组织架构">
-										{getFieldDecorator('organization')(<TreeSelect treeNodeFilterProp="title" showSearch treeDefaultExpandAll treeData={organization.data} />)}
-									</Form.Item> */}
-
-									<Row>
-										<Col span={12} offset={3}>
-											<Button type="primary" htmlType="submit">
-												<Icon type="search" />搜索
-										</Button>
-											<Button style={{ marginLeft: 8 }} onClick={this.onReset}>
-												<Icon type="undo" />重置
-										</Button>
-										</Col>
-									</Row>
-								</Form>
-							</Panel>
-						</Collapse> : ''
-					}
-					<Divider orientation="left" />
-					<Row>
-						<Col className="gutter-row" span={24}>
-							<Row className="filter-row" gutter={6}>
-								<Col className="gutter-row" span={10}>
-									<ButtonGroup>
-										{selectedRows.length > 0 ? (
-											<Popconfirm
-												title={`是否确认要删除选中的 ${selectedRows.length} 条记录？`}
-												okText="是"
-												cancelText="否"
-												onConfirm={this.toRemove}
-											>
-												<Tooltip placement="bottom" title="删除">
-													<Button>
-														<Icon type="delete" />
-													</Button>
-												</Tooltip>
-											</Popconfirm>
-										) : (
-												<Tooltip placement="bottom" title="删除">
-													<Button disabled={true}>
-														<Icon type="delete" />
-													</Button>
-												</Tooltip>
-											)}
-										<Tooltip placement="bottom" title="新增">
-											<Button onClick={this.toCreate}>
-												<Icon type="file-add" />
-											</Button>
-										</Tooltip>
-										<Tooltip placement="bottom" title="刷新">
-											<Button onClick={this.refresh}>
-												<Icon type="reload" />
-											</Button>
-										</Tooltip>
-										{/* <Upload {...uploadOneProps}>
+                  <Row>
+                    <Col span={12} offset={3}>
+                      <Button type="primary" htmlType="submit">
+                        <Icon type="search" />
+                        搜索
+                      </Button>
+                      <Button style={{ marginLeft: 8 }} onClick={this.onReset}>
+                        <Icon type="undo" />
+                        重置
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form>
+              </Panel>
+            </Collapse>
+          ) : (
+            ''
+          )}
+          <Divider orientation="left" />
+          <Row>
+            <Col className="gutter-row" span={24}>
+              <Row className="filter-row" gutter={6}>
+                <Col className="gutter-row" span={10}>
+                  <ButtonGroup>
+                    {selectedRows.length > 0 ? (
+                      <Popconfirm
+                        title={`是否确认要删除选中的 ${selectedRows.length} 条记录？`}
+                        okText="是"
+                        cancelText="否"
+                        onConfirm={this.toRemove}
+                      >
+                        <Tooltip placement="bottom" title="删除">
+                          <Button>
+                            <Icon type="delete" />
+                          </Button>
+                        </Tooltip>
+                      </Popconfirm>
+                    ) : (
+                      <Tooltip placement="bottom" title="删除">
+                        <Button disabled={true}>
+                          <Icon type="delete" />
+                        </Button>
+                      </Tooltip>
+                    )}
+                    <Tooltip placement="bottom" title="新增">
+                      <Button onClick={this.toCreate}>
+                        <Icon type="file-add" />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip placement="bottom" title="刷新">
+                      <Button onClick={this.refresh}>
+                        <Icon type="reload" />
+                      </Button>
+                    </Tooltip>
+                    {/* <Upload {...uploadOneProps}>
 									<Tooltip placement="bottom" title="导入">
 										<Button>
 											<Icon type="import" />
@@ -381,41 +398,43 @@ export default class extends React.Component {
 										<Icon type="export" />
 									</Button>
 								</Tooltip> */}
-									</ButtonGroup>
-								</Col>
-								<Col className="gutter-row" span={10} offset={4}>
-									<Select
-										mode="multiple"
-										style={{ width: '100%' }}
-										allowClear={true}
-										placeholder="请选择要查看的字段"
-										value={fields}
-										onChange={this.onFieldsChange}
-									>
-										{columns.map((item) => <Option key={item.dataIndex}>{item.title}</Option>)}
-									</Select>
-								</Col>
-							</Row>
-							<Row className="filter-row" gutter={6}>
-								<Col className="gutter-row" span={24}>
-									<Divider orientation="left">
-										已选中 {selectedRows.length} 项 / 共 {list.length} 项
-							</Divider>
-									<Table
-										rowKey="id"
-										loading={loading}
-										columns={tableColumns}
-										onChange={this.onTableChange}
-										rowSelection={rowSelection}
-										pagination={pagination}
-										dataSource={list}
-									/>
-								</Col>
-							</Row>
-						</Col>
-					</Row>
-				</Content>
-			</Layout>
-		);
-	}
+                  </ButtonGroup>
+                </Col>
+                <Col className="gutter-row" span={10} offset={4}>
+                  <Select
+                    mode="multiple"
+                    style={{ width: '100%' }}
+                    allowClear={true}
+                    placeholder="请选择要查看的字段"
+                    value={fields}
+                    onChange={this.onFieldsChange}
+                  >
+                    {columns.map((item) => (
+                      <Option key={item.dataIndex}>{item.title}</Option>
+                    ))}
+                  </Select>
+                </Col>
+              </Row>
+              <Row className="filter-row" gutter={6}>
+                <Col className="gutter-row" span={24}>
+                  <Divider orientation="left">
+                    已选中 {selectedRows.length} 项 / 共 {list.length} 项
+                  </Divider>
+                  <Table
+                    rowKey="id"
+                    loading={loading}
+                    columns={tableColumns}
+                    onChange={this.onTableChange}
+                    rowSelection={rowSelection}
+                    pagination={pagination}
+                    dataSource={list}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    );
+  }
 }

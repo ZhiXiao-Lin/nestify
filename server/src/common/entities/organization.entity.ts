@@ -1,6 +1,6 @@
 import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, Tree, TreeChildren, TreeParent, ManyToOne } from 'typeorm';
+import { Entity, Column, Tree, TreeChildren, TreeParent, OneToMany } from 'typeorm';
 import { ExcelHandleType } from '../lib/excel';
 import { User } from './user.entity';
 
@@ -25,7 +25,7 @@ export class Organization extends Base {
 
     @TreeParent() parent: Organization;
 
-    @ManyToOne((type) => User, (user) => user.org)
+    @OneToMany((type) => User, (user) => user.org)
     users: User[];
 
     @Expose()

@@ -1,8 +1,19 @@
 import React, { Fragment } from 'react';
-import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Tabs, Form, Input, Row, Col, Icon, Button, Skeleton, Radio, message } from 'antd';
+import {
+  Tabs,
+  Form,
+  Input,
+  Row,
+  Col,
+  Icon,
+  Button,
+  Skeleton,
+  Radio,
+  TreeSelect,
+  message,
+} from 'antd';
 
 import { apiUploadOne } from '@/utils';
 
@@ -21,9 +32,10 @@ const tailFormItemLayout = {
 const MODEL_NAME = 'users';
 
 @Form.create()
-@connect(({ role, authority, users }) => ({
+@connect(({ role, authority, organization, users }) => ({
   role,
   authority,
+  organization,
   selectedNode: users.selectedNode,
   columns: users.columns,
 }))
@@ -81,6 +93,10 @@ export default class extends React.Component {
       type: 'authority/fetch',
       payload: {},
     });
+    dispatch({
+      type: 'organization/fetch',
+      payload: {},
+    });
   };
 
   onTabChange = (tabKey) => {
@@ -129,6 +145,7 @@ export default class extends React.Component {
   renderBasicForm = () => {
     const {
       selectedNode,
+      organization,
       columns,
       form: { getFieldDecorator },
     } = this.props;
@@ -163,6 +180,18 @@ export default class extends React.Component {
               <Radio value={0}>男</Radio>
               <Radio value={1}>女</Radio>
             </Radio.Group>
+          )}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="组织架构">
+          {getFieldDecorator('org', {
+            initialValue: !selectedNode ? null : selectedNode['org']['id'],
+          })(
+            <TreeSelect
+              treeNodeFilterProp="title"
+              showSearch
+              treeDefaultExpandAll
+              treeData={organization.data}
+            />
           )}
         </Form.Item>
 
