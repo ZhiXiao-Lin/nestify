@@ -22,6 +22,7 @@ export class UserService extends BaseService<User> {
         const qb = this.userRepository.createQueryBuilder('t');
 
         qb.leftJoinAndSelect('t.roles', 'role');
+        qb.leftJoinAndSelect('t.org', 'organization');
 
         if (!payload.page) {
             payload.page = 0;
@@ -33,6 +34,10 @@ export class UserService extends BaseService<User> {
 
         if (!!payload.keyword) {
             qb.andWhere(`t.nickname LIKE '%${payload.keyword}%'`);
+        }
+
+        if (!!payload.org) {
+            qb.andWhere('organization.id = :org', { org: payload.org });
         }
 
         if (!!payload.create_at) {
@@ -65,7 +70,10 @@ export class UserService extends BaseService<User> {
 
     @TransformClassToPlain()
     async findOneById(id) {
-        return await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
+        return await this.userRepository.findOne({
+            where: { id },
+            relations: ['roles', 'org']
+        });
     }
 
     async login(account, password) {
