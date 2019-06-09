@@ -64,11 +64,15 @@ typings/
 /dist
 /.vscode
 
-### umi ###
-admin/src/pages/.umi
-server/static/uploads/
-!server/static/uploads/.gitkeep
-
 admin/dist/
 server/dist/
 server/.next/
+
+server/static/uploads/
+!server/static/uploads/.gitkeep
+
+### umi ###
+admin/src/pages/.umi
+
+# mac
+.DS_Store
