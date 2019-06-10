@@ -2,6 +2,10 @@
 
 -   开箱即用的内容管理框架
 
+![搜索](/server/static/images/搜索.gif)
+![导入](/server/static/images/导入.gif)
+![新增用户](/server/static/images/新增用户.gif)
+
 ## 技术选型
 
 -   Nestjs、Nextjs、Fastify、TypeORM、ElasticSearch、Ant Design...
