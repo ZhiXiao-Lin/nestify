@@ -15,6 +15,12 @@
 5. 回到根目录执行 yarn db:create 和 yarn db:init
 6. 开发模式启动前后台执行 yarn dev
 
+## 文档
+
+-   [在线文档](https://gallant-carson-ad89bb.netlify.com/)
+-   启动项目后访问 http://127.0.0.0:3000/docs/ 查看接口文档
+-   执行 yarn doc 然后访问 http://127.0.0.0:8080/ 查看项目文档
+
 ## 功能概览
 
 -   Fastify 的超强性能
