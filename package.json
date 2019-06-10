@@ -1,30 +1,32 @@
 {
-	"name": "nestify",
-	"version": "1.0.0",
-	"main": "index.js",
-	"repository": "git@github.com:ZhiXiao-Lin/nestify.git",
-	"author": "roylin <1002591652@qq.com>",
-	"license": "MIT",
-	"scripts": {
-		"prod": "cd ./server && yarn prod",
-		"stop": "cd ./server && yarn stop",
-		"dev": "run-p dev:**",
-		"dev:server": "cd ./server && yarn dev",
-		"dev:app": "cd ./admin && yarn dev",
-		"build": "run-p build:**",
-		"build:server": "cd ./server && yarn build",
-		"build:app": "cd ./admin && yarn build",
-		"db:create": "cd ./server && yarn db:create",
-		"db:init": "cd ./server && yarn db:init"
-	},
-	"devDependencies": {
-		"cross-env": "^5.2.0",
-		"cz-conventional-changelog": "^2.1.0",
-		"npm-run-all": "^4.1.5"
-	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		}
-	}
+    "name": "nestify",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "git@github.com:ZhiXiao-Lin/nestify.git",
+    "author": "roylin <1002591652@qq.com>",
+    "license": "MIT",
+    "scripts": {
+        "prod": "cd ./server && yarn prod",
+        "stop": "cd ./server && yarn stop",
+        "dev": "run-p dev:**",
+        "dev:server": "cd ./server && yarn dev",
+        "dev:app": "cd ./admin && yarn dev",
+        "build": "run-p build:**",
+        "build:server": "cd ./server && yarn build",
+        "build:app": "cd ./admin && yarn build",
+        "db:create": "cd ./server && yarn db:create",
+        "db:init": "cd ./server && yarn db:init",
+        "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator -w"
+    },
+    "devDependencies": {
+        "@compodoc/compodoc": "^1.1.9",
+        "cross-env": "^5.2.0",
+        "cz-conventional-changelog": "^2.1.0",
+        "npm-run-all": "^4.1.5"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    }
 }

@@ -1,0 +1,668 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Nestify</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">Nestify</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="请输入查询关键字"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>可注入的</li>
+  <li>Seed</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>文件</h3>
+        </p>
+        <p class="comment">
+            <code>server/src/seed/index.ts</code>
+        </p>
+
+
+
+
+            <section>
+    <h3 id="index">索引</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>方法</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#importAuthoritys">importAuthoritys</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#importCategorys">importCategorys</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#importOrganizations">importOrganizations</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#importRoles">importRoles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#initElasticSearchIndices">initElasticSearchIndices</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#start">start</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">构造方法</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(connection: <a href="https://angular.io/api/http/Connection" target="_blank">Connection</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">被定义在 <a href="" data-line="17" class="link-to-prism">server/src/seed/index.ts:17</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>参数列表 :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>名称</td>
+                                                    <td>类型</td>
+                                                <td>可选的</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>connection</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://angular.io/api/http/Connection" target="_blank" >Connection</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        方法
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="importAuthoritys"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            importAuthoritys
+                        </b>
+                        <a href="#importAuthoritys"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>importAuthoritys()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="153"
+                            class="link-to-prism">server/src/seed/index.ts:153</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="importCategorys"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            importCategorys
+                        </b>
+                        <a href="#importCategorys"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>importCategorys()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="119"
+                            class="link-to-prism">server/src/seed/index.ts:119</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="importOrganizations"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            importOrganizations
+                        </b>
+                        <a href="#importOrganizations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>importOrganizations()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="136"
+                            class="link-to-prism">server/src/seed/index.ts:136</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="importRoles"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            importRoles
+                        </b>
+                        <a href="#importRoles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>importRoles()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="171"
+                            class="link-to-prism">server/src/seed/index.ts:171</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initElasticSearchIndices"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            initElasticSearchIndices
+                        </b>
+                        <a href="#initElasticSearchIndices"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initElasticSearchIndices()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="67"
+                            class="link-to-prism">server/src/seed/index.ts:67</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="start"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            start
+                        </b>
+                        <a href="#start"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>start()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="20"
+                            class="link-to-prism">server/src/seed/index.ts:20</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { resolve } from &#x27;path&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { User } from &#x27;../common/entities/user.entity&#x27;;
+import { Category } from &#x27;../common/entities/category.entity&#x27;;
+import { Setting } from &#x27;../common/entities/setting.entity&#x27;;
+import { ExcelHelper } from &#x27;../common/lib/excel&#x27;;
+import { InjectConnection } from &#x27;@nestjs/typeorm&#x27;;
+import { Connection } from &#x27;typeorm&#x27;;
+import { Logger } from &#x27;../common/lib/logger&#x27;;
+import { es } from &#x27;../common/lib/elastic-search&#x27;;
+import { Organization } from &#x27;../common/entities/organization.entity&#x27;;
+import { Role } from &#x27;../common/entities/role.entity&#x27;;
+import { Authority } from &#x27;../common/entities/authority.entity&#x27;;
+import { Content } from &#x27;../common/entities/content.entity&#x27;;
+
+@Injectable()
+export class Seed {
+    constructor(@InjectConnection() private readonly connection: Connection) {}
+
+    async start() {
+        Logger.log(&#x27;seed start&#x27;);
+
+        await this.initElasticSearchIndices();
+
+        await this.connection.getRepository(Setting).save({
+            token: &#x27;default&#x27;,
+            ex_info: await ExcelHelper.loadFromFile(
+                resolve(&#x27;./seeds/settings.xlsx&#x27;),
+                Setting.sheetsMap
+            )
+        });
+
+        await this.importCategorys();
+        await this.importOrganizations();
+        await this.importAuthoritys();
+        await this.importRoles();
+
+        const roleAdmin &#x3D; await this.connection
+            .getRepository(Role)
+            .findOne({ token: &#x27;superAdmin&#x27; });
+
+        const superAdmin &#x3D; User.create({
+            account: &#x27;SysAdmin&#x27;,
+            password: &#x27;12345678&#x27;,
+            nickname: &#x27;超级管理员&#x27;,
+            avatar: &#x27;/images/superadmin.png&#x27;
+        });
+        superAdmin.roles &#x3D; [roleAdmin];
+        superAdmin.org &#x3D; await this.connection
+            .getRepository(Organization)
+            .findOne({ name: &#x27;股东会&#x27; });
+
+        await this.connection.getRepository(User).save(superAdmin);
+
+        // 查询拥有超级管理员角色的用户
+        const users &#x3D; await this.connection
+            .createQueryBuilder(User, &#x27;user&#x27;)
+            .leftJoinAndSelect(&#x27;user.org&#x27;, &#x27;organization&#x27;)
+            .leftJoinAndMapOne(&#x27;user.role&#x27;, &#x27;user.roles&#x27;, &#x27;role&#x27;, &#x27;role.token &#x3D; :token&#x27;, {
+                token: &#x27;superAdmin&#x27;
+            })
+            .getManyAndCount();
+
+        Logger.log(users);
+    }
+
+    async initElasticSearchIndices() {
+        if (await es.indices.exists({ index: &#x27;uploads&#x27; })) {
+            await es.indices.delete({ index: &#x27;uploads&#x27; });
+        }
+
+        await es.indices.create({
+            index: &#x27;uploads&#x27;,
+            body: {
+                type: &#x27;uploads&#x27;,
+                mappings: {
+                    file: {
+                        properties: {
+                            baseName: {
+                                type: &#x27;text&#x27;,
+                                analyzer: &#x27;ik_max_word&#x27;,
+                                search_analyzer: &#x27;ik_max_word&#x27;
+                            },
+                            dirName: {
+                                type: &#x27;text&#x27;,
+                                analyzer: &#x27;ik_max_word&#x27;,
+                                search_analyzer: &#x27;ik_max_word&#x27;
+                            },
+                            extName: {
+                                type: &#x27;text&#x27;,
+                                analyzer: &#x27;ik_max_word&#x27;,
+                                search_analyzer: &#x27;ik_max_word&#x27;
+                            },
+                            path: {
+                                type: &#x27;text&#x27;,
+                                analyzer: &#x27;ik_max_word&#x27;,
+                                search_analyzer: &#x27;ik_max_word&#x27;
+                            },
+                            type: {
+                                type: &#x27;string&#x27;
+                            },
+                            // https://nodejs.org/api/fs.html#fs_stats_dev
+                            stat: {
+                                type: &#x27;object&#x27;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (await es.indices.exists({ index: Content.esIndex.index })) {
+            await es.indices.delete({ index: Content.esIndex.index });
+        }
+
+        await es.indices.create(Content.esIndex);
+    }
+
+    async importCategorys() {
+        const categorysResult &#x3D; await ExcelHelper.loadFromFile(
+            resolve(&#x27;./seeds/categorys.xlsx&#x27;),
+            Category.sheetsMap
+        );
+        const categorys &#x3D; categorysResult[&#x27;categorys&#x27;];
+        const categoryArr &#x3D; [];
+
+        categorys.forEach((item) &#x3D;&gt; {
+            if (!!item.parent) {
+                item.parent &#x3D; categoryArr.find((cate) &#x3D;&gt; cate.id &#x3D;&#x3D;&#x3D; item.parent);
+            }
+            categoryArr.push(Category.create(item));
+        });
+        await this.connection.getTreeRepository(Category).save(categoryArr);
+    }
+
+    async importOrganizations() {
+        const organizationsResult &#x3D; await ExcelHelper.loadFromFile(
+            resolve(&#x27;./seeds/organizations.xlsx&#x27;),
+            Organization.sheetsMap
+        );
+        const organizations &#x3D; organizationsResult[&#x27;organizations&#x27;];
+        const organizationArr &#x3D; [];
+
+        organizations.forEach((item) &#x3D;&gt; {
+            if (!!item.parent) {
+                item.parent &#x3D; organizationArr.find((org) &#x3D;&gt; org.id &#x3D;&#x3D;&#x3D; item.parent);
+            }
+            organizationArr.push(Organization.create(item));
+        });
+        await this.connection.getTreeRepository(Organization).save(organizationArr);
+    }
+
+    async importAuthoritys() {
+        const result &#x3D; await ExcelHelper.loadFromFile(
+            resolve(&#x27;./seeds/authoritys.xlsx&#x27;),
+            Authority.sheetsMap
+        );
+        const athoritys &#x3D; result[&#x27;authoritys&#x27;];
+        const arr &#x3D; [];
+
+        for (let item of athoritys) {
+            if (!!item.parent) {
+                item.parent &#x3D; arr.find((auth) &#x3D;&gt; auth.id &#x3D;&#x3D;&#x3D; item.parent);
+            }
+            arr.push(Authority.create(item));
+        }
+
+        await this.connection.getRepository(Authority).save(arr);
+    }
+
+    async importRoles() {
+        const rolesResult &#x3D; await ExcelHelper.loadFromFile(
+            resolve(&#x27;./seeds/roles.xlsx&#x27;),
+            Role.sheetsMap
+        );
+        const roles &#x3D; rolesResult[&#x27;roles&#x27;];
+        const rolesArr &#x3D; [];
+
+        for (let item of roles) {
+            rolesArr.push(Role.create(item));
+        }
+
+        await this.connection.getRepository(Role).save(rolesArr);
+    }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">无匹配的结果 "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'Seed.html';
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
