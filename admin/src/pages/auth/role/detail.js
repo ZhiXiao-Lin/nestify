@@ -146,8 +146,24 @@ export default class extends React.Component {
     });
   };
 
-  onCheck = (selectedRows) => {
-    this.changeAuthoritys(selectedRows.checked.map((item) => item));
+  onCheck = (selectedRows, e) => {
+    const {
+      selectedNode,
+      authority: { authoritys },
+    } = this.props;
+
+    let authorities = [];
+    if (e.checked) {
+      const descendants = authoritys
+        .filter((item) => item.mPath.search(e.node.props.dataRef.id) >= 0)
+        .map((item) => item.id);
+
+      authorities = Array.from(new Set(selectedNode.authoritys.concat(descendants)));
+    } else {
+      authorities = selectedNode.authoritys.filter((item) => item !== e.node.props.dataRef.id);
+    }
+
+    this.changeAuthoritys(authorities);
   };
 
   onExpand = (expandedKeys) => {

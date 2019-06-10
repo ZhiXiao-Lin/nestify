@@ -79,7 +79,9 @@ export default {
 
       let res = null;
 
-      selectedNode.authoritys = selectedNode.authoritys.map((item) => ({ id: item }));
+      selectedNode.authoritys = selectedNode.authoritys
+        ? selectedNode.authoritys.map((item) => ({ id: item }))
+        : [];
 
       if (_.isEmpty(selectedNode)) {
         res = yield call(apiPost, API_URL, payload);
