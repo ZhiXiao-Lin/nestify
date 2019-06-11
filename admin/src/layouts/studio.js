@@ -66,13 +66,15 @@ const StudioMenu = ({ authorities, user, items, collapsed, mode, theme }) => (
   noticesList: [],
 }))
 export default class StudioLayout extends PureComponent {
-  componentDidMount() {
-    const { dispatch } = this.props;
+  state = {
+    userAuthorities: [],
+  };
 
-    dispatch({
-      type: 'role/fetch',
-      payload: {},
-    });
+  componentDidMount() {
+    this.setState((state) => ({
+      ...state,
+      userAuthorities: this.getUserAuthorities(),
+    }));
   }
 
   handleMenuCollapse = (collapsed) => {
@@ -86,9 +88,6 @@ export default class StudioLayout extends PureComponent {
   handleHeaderMenuClick = (menu) => {
     const { dispatch } = this.props;
     switch (menu.key) {
-      // case 'userCenter':
-      // 	router.push(gUrlUserCenter);
-      // 	return;
       case 'userinfo':
         router.push('/studio/user/setting');
         return;
@@ -116,11 +115,11 @@ export default class StudioLayout extends PureComponent {
   };
 
   render() {
+    const { userAuthorities } = this.state;
     const { children, collapsed, currentUser, noticesList, loading, menuLayout } = this.props;
     const { routes } = this.props.route;
 
     if (!currentUser) return null;
-    const userAuthorities = this.getUserAuthorities();
 
     return (
       <DocumentTitle title={config.TITLE}>
