@@ -39,7 +39,7 @@ export class UserController {
     @Get('current')
     @UseInterceptors(ClassSerializerInterceptor)
     async current(@CurrentUser() user) {
-        return await this.userService.findOneById(user.id);
+        return await this.userService.findCurrent(user.id);
     }
 
     @Put('password')

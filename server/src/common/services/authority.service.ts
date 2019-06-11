@@ -17,6 +17,14 @@ export class AuthorityService extends BaseService<Authority> {
         return await this.authorityRepository.findTrees();
     }
 
+    async findByRoles(roles: string[]) {
+        return await this.authorityRepository
+            .createQueryBuilder('t')
+            .leftJoin('t.roles', 'role')
+            .where(`role.id IN(${roles.join(',')})`)
+            .getMany();
+    }
+
     async findOneByName(name: string) {
         return await this.authorityRepository.findOne({ name });
     }

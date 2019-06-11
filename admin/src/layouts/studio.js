@@ -1,7 +1,6 @@
 import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import { Layout, Menu, BackTop, Icon, Spin } from 'antd';
-import { uniqBy } from 'lodash';
 import Link from 'umi/link';
 import router from 'umi/router';
 import DocumentTitle from 'react-document-title';
@@ -66,17 +65,6 @@ const StudioMenu = ({ authorities, user, items, collapsed, mode, theme }) => (
   noticesList: [],
 }))
 export default class StudioLayout extends PureComponent {
-  state = {
-    userAuthorities: [],
-  };
-
-  componentDidMount() {
-    this.setState((state) => ({
-      ...state,
-      userAuthorities: this.getUserAuthorities(),
-    }));
-  }
-
   handleMenuCollapse = (collapsed) => {
     const { dispatch } = this.props;
     dispatch({
@@ -101,25 +89,13 @@ export default class StudioLayout extends PureComponent {
     }
   };
 
-  getUserAuthorities = () => {
-    const { currentUser, roles } = this.props;
-
-    let authorities = [];
-    roles.forEach((item) => {
-      if (currentUser.roles.map((role) => role.id).includes(item.id)) {
-        authorities = authorities.concat(item.authoritys);
-      }
-    });
-
-    return uniqBy(authorities, 'id').map((item) => item.token);
-  };
-
   render() {
-    const { userAuthorities } = this.state;
     const { children, collapsed, currentUser, noticesList, loading, menuLayout } = this.props;
     const { routes } = this.props.route;
 
     if (!currentUser) return null;
+
+    const userAuthorities = currentUser.authorities.map((item) => item.token);
 
     return (
       <DocumentTitle title={config.TITLE}>

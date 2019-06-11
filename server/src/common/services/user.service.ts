@@ -3,15 +3,18 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, TreeRepository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
+import { AuthorityService } from './authority.service';
 import { User } from '../entities/user.entity';
+import { Authority } from '../entities/authority.entity';
 
 @Injectable()
 export class UserService extends BaseService<User> {
     constructor(
         private readonly jwtService: JwtService,
+        private readonly authorityService: AuthorityService,
         @InjectRepository(User) private readonly userRepository: Repository<User>
     ) {
         super(userRepository);
@@ -74,6 +77,19 @@ export class UserService extends BaseService<User> {
             where: { id },
             relations: ['roles', 'org']
         });
+    }
+
+    @TransformClassToPlain()
+    async findCurrent(id) {
+        const currentUser = await this.findOneById(id);
+        const authorities = await this.authorityService.findByRoles(
+            currentUser.roles.map((item) => `'${item.id}'`)
+        );
+
+        return {
+            ...currentUser,
+            authorities
+        };
     }
 
     async login(account, password) {

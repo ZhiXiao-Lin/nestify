@@ -3,11 +3,12 @@ export default [
     path: '/user',
     component: '../layouts/user',
     routes: [
-      { path: '/user', redirect: '/user/login' },
-      { path: '/user/login', component: './user/login' },
-      { path: '/user/register', component: './user/register' },
+      { path: '/user', authority: false, redirect: '/user/login' },
+      { path: '/user/login', authority: false, component: './user/login' },
+      { path: '/user/register', authority: false, component: './user/register' },
       {
         path: '/user/forgot',
+        authority: false,
         component: './user/forgot',
         routes: [{ path: '/user/forgot', redirect: '/user/forgot/info' }],
       },
@@ -21,6 +22,7 @@ export default [
       { path: '/', redirect: '/studio' },
       {
         name: '首页看板',
+        authority: false,
         icon: 'dashboard',
         path: '/studio',
         component: './home',
@@ -159,6 +161,7 @@ export default [
       },
       {
         name_noshow: '个人设置',
+        authority: false,
         path: '/studio/user/setting',
         component: './user/setting',
       },
@@ -166,11 +169,10 @@ export default [
   },
   {
     path: '/exception',
-    authority: 0,
     routes: [
-      { path: '/exception/403', component: './exception/403' },
-      { path: '/exception/404', component: './exception/404' },
-      { path: '/exception/500', component: './exception/500' },
+      { path: '/exception/403', authority: false, component: './exception/403' },
+      { path: '/exception/404', authority: false, component: './exception/404' },
+      { path: '/exception/500', authority: false, component: './exception/500' },
     ],
   },
 ];
