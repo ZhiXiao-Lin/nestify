@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import _ from 'lodash';
 import Redirect from 'umi/redirect';
 import { connect } from 'dva';
 
@@ -7,18 +6,45 @@ import { connect } from 'dva';
   location: routing.location,
 }))
 class Authorized extends React.Component {
+  state = {
+    routes: [],
+  };
+
   componentDidMount() {
+    const { routes } = this.props;
+
+    this.treeToArray(routes);
+
     this.props.dispatch({
       type: 'user/fetchCurrentUser',
     });
   }
 
+  treeToArray = (tree) => {
+    const { routes } = this.state;
+    return tree.map((item) => {
+      if (item.routes && item.routes.length > 0) {
+        this.treeToArray(item.routes, item);
+      }
+
+      routes.push(item);
+
+      this.setState((state) => ({
+        ...state,
+        routes,
+      }));
+    });
+  };
+
   render() {
-    const { children, authority, location } = this.props;
+    const { routes } = this.state;
+    const { children, location } = this.props;
 
-    const userStr = sessionStorage.getItem('currentUser');
+    const route = routes.find((item) => item.path === location.pathname);
 
-    const currentUser = !!userStr ? JSON.parse(userStr) : null;
+    const userJson = sessionStorage.getItem('currentUser');
+
+    const currentUser = !!userJson ? JSON.parse(userJson) : null;
 
     if (!currentUser) {
       return (
@@ -31,10 +57,24 @@ class Authorized extends React.Component {
       );
     }
 
+    if (
+      !!route &&
+      route.authority !== false &&
+      !currentUser.authorities.find((item) => item.token === location.pathname)
+    ) {
+      return (
+        <Redirect
+          to={{
+            pathname: '/exception/403',
+          }}
+        />
+      );
+    }
+
     return <Fragment>{children}</Fragment>;
   }
 }
 
 export default ({ children }) => (
-  <Authorized authority={children.props.route.authority}>{children}</Authorized>
+  <Authorized routes={children.props.route.routes}>{children}</Authorized>
 );

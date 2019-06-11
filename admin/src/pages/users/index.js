@@ -159,11 +159,6 @@ export default class extends React.Component {
       type: `${MODEL_NAME}/fetch`,
       payload,
     });
-
-    dispatch({
-      type: `organization/fetch`,
-      payload: {},
-    });
   };
 
   refresh = () => {

@@ -3,11 +3,12 @@ export default [
     path: '/user',
     component: '../layouts/user',
     routes: [
-      { path: '/user', redirect: '/user/login' },
-      { path: '/user/login', component: './user/login' },
-      { path: '/user/register', component: './user/register' },
+      { path: '/user', authority: false, redirect: '/user/login' },
+      { path: '/user/login', authority: false, component: './user/login' },
+      { path: '/user/register', authority: false, component: './user/register' },
       {
         path: '/user/forgot',
+        authority: false,
         component: './user/forgot',
         routes: [{ path: '/user/forgot', redirect: '/user/forgot/info' }],
       },
@@ -21,6 +22,7 @@ export default [
       { path: '/', redirect: '/studio' },
       {
         name: '首页看板',
+        authority: false,
         icon: 'dashboard',
         path: '/studio',
         component: './home',
@@ -159,49 +161,18 @@ export default [
       },
       {
         name_noshow: '个人设置',
+        authority: false,
         path: '/studio/user/setting',
         component: './user/setting',
       },
-      // {
-      // 	name_noshow: '个人设置',
-      // 	path: '/studio/user/settings',
-      // 	component: './user/settings/Info',
-      // 	routes: [
-      // 		{
-      // 			path: '/studio/user/settings',
-      // 			redirect: '/studio/user/settings/base'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/base',
-      // 			component: './user/settings/BaseView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/password',
-      // 			component: './user/settings/PasswordView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/security',
-      // 			component: './user/settings/SecurityView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/binding',
-      // 			component: './user/settings/BindingView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/notification',
-      // 			component: './user/settings/NotificationView'
-      // 		}
-      // 	]
-      // }
     ],
   },
   {
     path: '/exception',
-    authority: 0,
     routes: [
-      { path: '/exception/403', component: './Exception/403' },
-      { path: '/exception/404', component: './Exception/404' },
-      { path: '/exception/500', component: './Exception/500' },
+      { path: '/exception/403', authority: false, component: './exception/403' },
+      { path: '/exception/404', authority: false, component: './exception/404' },
+      { path: '/exception/500', authority: false, component: './exception/500' },
     ],
   },
 ];

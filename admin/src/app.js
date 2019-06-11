@@ -1,24 +1,20 @@
 export const dva = {
-	config: {
-		onError(err) {
-			err.preventDefault();
-			console.error(err.message);
-		}
-	},
+  config: {
+    onError(err) {
+      err.preventDefault();
+      console.error(err.message);
+    },
+  },
 
-	plugins: [
-		require('dva-logger')({
-			predicate: (getState, action) => {
-				if (action.type.startsWith('@@DVA_LOADING/')) {
-					// console.log(getState, action);
-					return false;
-				} else {
-					return true;
-				}
-			},
-			collapsed: true,
-			duration: true,
-			diff: true
-		})
-	]
+  plugins: [
+    require('dva-logger')({
+      predicate: (getState, action) => {
+        if (process.env.NODE_ENV === 'production') return false;
+        return action.type.endsWith('/@@end');
+      },
+      collapsed: true,
+      duration: true,
+      diff: false,
+    }),
+  ],
 };

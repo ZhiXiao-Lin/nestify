@@ -42,4 +42,14 @@ export default {
       };
     },
   },
+
+  subscriptions: {
+    init({ dispatch, history }) {
+      history.listen((location) => {
+        if ('POP' === history.action) {
+          localStorage.removeItem('routes');
+        }
+      });
+    },
+  },
 };
