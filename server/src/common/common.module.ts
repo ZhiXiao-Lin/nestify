@@ -1,4 +1,4 @@
-import { Module, Global, CacheModule } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -28,9 +28,6 @@ import { SearchService } from './services/search.service';
 @Global()
 @Module({
     imports: [
-        // CacheModule.register({
-        // 	...config.cache
-        // }),
         RedisModule.register(config.redis),
         ScheduleModule.register(),
         PassportModule.register({ defaultStrategy: 'jwt' }),
