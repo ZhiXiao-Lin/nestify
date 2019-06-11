@@ -107,11 +107,13 @@ async function bootstrap() {
     const options = new DocumentBuilder()
         .setTitle('Nestify')
         .setDescription('The Nestify API Documents')
-        .setVersion('1.0')
+        .setVersion('0.0.1')
         .addTag('Nestify')
         .addBearerAuth()
         .build();
+
     const document = SwaggerModule.createDocument(app, options);
+
     SwaggerModule.setup('docs', app, document);
 
     app.enableCors();
