@@ -1,5 +1,7 @@
 # Nestify
 
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![Gitter](https://badges.gitter.im/nestify-stack/community.svg)](https://gitter.im/nestify-stack/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) <iframe src="https://ghbtns.com/github-btn.html?user=ZhiXiao-Lin&repo=nestify&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+
 -   开箱即用的内容管理框架
 
 ![搜索](/server/static/images/搜索.gif)
@@ -18,6 +20,7 @@
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 回到根目录执行 yarn db:create 和 yarn db:init
 6. 开发模式启动前后台执行 yarn dev
+7. 默认账号：SysAdmin 密码：12345678
 
 ## 文档
 
@@ -46,14 +49,19 @@
 -   WebSocket
 -   系统监控
 -   缓存模块
+-   短信模块
 
 ## 正在开发的功能
 
 -   容器部署
 -   K8S
--   短信模块
 -   邮件模块
 -   消息队列
+-   单元测试
+-   持续集成
+-   工作流引擎
+-   云存储接入
+-   即时通讯接入
 -   ...
 
 ## 协议
