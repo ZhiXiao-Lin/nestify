@@ -76,13 +76,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/CommonModule.html" data-type="entity-link">CommonModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-toggle="collapse" ${ isNormalMode ?
-                                        'data-target="#injectables-links-module-CommonModule-c95f2edcc052104bc3c91d5f0be61550"' : 'data-target="#xs-injectables-links-module-CommonModule-c95f2edcc052104bc3c91d5f0be61550"' }>
+                                        'data-target="#injectables-links-module-CommonModule-712d5c11ef1a6d6e298a21cdd81ab61d"' : 'data-target="#xs-injectables-links-module-CommonModule-712d5c11ef1a6d6e298a21cdd81ab61d"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>可注入的</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CommonModule-c95f2edcc052104bc3c91d5f0be61550"' :
-                                        'id="xs-injectables-links-module-CommonModule-c95f2edcc052104bc3c91d5f0be61550"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CommonModule-712d5c11ef1a6d6e298a21cdd81ab61d"' :
+                                        'id="xs-injectables-links-module-CommonModule-712d5c11ef1a6d6e298a21cdd81ab61d"' }>
                                         <li class="link">
                                             <a href="injectables/AuthorityService.html"
                                                 data-type="entity-link" data-context="sub-entity" data-context-id="modules" }>AuthorityService</a>
@@ -226,6 +226,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SettingController.html" data-type="entity-link">SettingController</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SMS.html" data-type="entity-link">SMS</a>
                             </li>
                             <li class="link">
                                 <a href="classes/StatusTask.html" data-type="entity-link">StatusTask</a>

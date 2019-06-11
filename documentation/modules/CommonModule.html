@@ -452,7 +452,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module, Global, CacheModule } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module, Global } from &#x27;@nestjs/common&#x27;;
 import { PassportModule } from &#x27;@nestjs/passport&#x27;;
 import { JwtModule } from &#x27;@nestjs/jwt&#x27;;
 import { TypeOrmModule, TypeOrmModuleOptions } from &#x27;@nestjs/typeorm&#x27;;
@@ -482,9 +482,6 @@ import { SearchService } from &#x27;./services/search.service&#x27;;
 @Global()
 @Module({
     imports: [
-        // CacheModule.register({
-        // 	...config.cache
-        // }),
         RedisModule.register(config.redis),
         ScheduleModule.register(),
         PassportModule.register({ defaultStrategy: &#x27;jwt&#x27; }),

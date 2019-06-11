@@ -1,6 +1,6 @@
 # Nestify
 
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![Gitter](https://badges.gitter.im/nestify-stack/community.svg)](https://gitter.im/nestify-stack/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/determineMediaType) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/determineMediaType/fork)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![Gitter](https://badges.gitter.im/nestify-stack/community.svg)](https://gitter.im/nestify-stack/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
 -   开箱即用的内容管理框架
 
@@ -24,7 +24,7 @@
 
 ## 文档
 
--   [在线文档](https://gallant-carson-ad89bb.netlify.com/)
+-   [在线文档](http://docs.nestify.cn/)
 -   启动项目后访问 http://127.0.0.0:3000/docs/ 查看接口文档
 -   执行 yarn doc 然后访问 http://127.0.0.0:8080/ 查看项目文档
 

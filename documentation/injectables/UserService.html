@@ -87,6 +87,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findCurrent">findCurrent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findOneById">findOneById</a>
                             </li>
                             <li>
@@ -127,12 +131,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(jwtService: JwtService, userRepository: <a href="../classes/User.html">Repository<User></a>)</code>
+<code>constructor(jwtService: JwtService, authorityService: <a href="../injectables/AuthorityService.html">AuthorityService</a>, userRepository: <a href="../classes/User.html">Repository<User></a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">被定义在 <a href="" data-line="12" class="link-to-prism">server/src/common/services/user.service.ts:12</a></div>
+                                <div class="io-line">被定义在 <a href="" data-line="14" class="link-to-prism">server/src/common/services/user.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -154,6 +158,18 @@
                                                   
                                                         <td>
                                                                     <code>JwtService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authorityService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorityService.html" target="_self" >AuthorityService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -211,8 +227,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="90"
-                            class="link-to-prism">server/src/common/services/user.service.ts:90</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="106"
+                            class="link-to-prism">server/src/common/services/user.service.ts:106</a></div>
                 </td>
             </tr>
 
@@ -268,6 +284,81 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findCurrent"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            findCurrent
+                        </b>
+                        <a href="#findCurrent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findCurrent(id)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>装饰器列表 : </b>
+                    <br />
+                    <code>@TransformClassToPlain()<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="83"
+                            class="link-to-prism">server/src/common/services/user.service.ts:83</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findOneById"></a>
                     <span class="name">
                         <b>
@@ -295,8 +386,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="72"
-                            class="link-to-prism">server/src/common/services/user.service.ts:72</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="75"
+                            class="link-to-prism">server/src/common/services/user.service.ts:75</a></div>
                 </td>
             </tr>
 
@@ -363,8 +454,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="79"
-                            class="link-to-prism">server/src/common/services/user.service.ts:79</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="95"
+                            class="link-to-prism">server/src/common/services/user.service.ts:95</a></div>
                 </td>
             </tr>
 
@@ -447,8 +538,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="21"
-                            class="link-to-prism">server/src/common/services/user.service.ts:21</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="24"
+                            class="link-to-prism">server/src/common/services/user.service.ts:24</a></div>
                 </td>
             </tr>
 
@@ -526,8 +617,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="103"
-                            class="link-to-prism">server/src/common/services/user.service.ts:103</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="119"
+                            class="link-to-prism">server/src/common/services/user.service.ts:119</a></div>
                 </td>
             </tr>
 
@@ -741,15 +832,18 @@ import * as bcrypt from &#x27;bcryptjs&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
 import { Injectable, BadRequestException } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { Repository } from &#x27;typeorm&#x27;;
+import { Repository, TreeRepository } from &#x27;typeorm&#x27;;
 import { TransformClassToPlain } from &#x27;class-transformer&#x27;;
 import { BaseService } from &#x27;./base.service&#x27;;
+import { AuthorityService } from &#x27;./authority.service&#x27;;
 import { User } from &#x27;../entities/user.entity&#x27;;
+import { Authority } from &#x27;../entities/authority.entity&#x27;;
 
 @Injectable()
 export class UserService extends BaseService&lt;User&gt; {
     constructor(
         private readonly jwtService: JwtService,
+        private readonly authorityService: AuthorityService,
         @InjectRepository(User) private readonly userRepository: Repository&lt;User&gt;
     ) {
         super(userRepository);
@@ -812,6 +906,19 @@ export class UserService extends BaseService&lt;User&gt; {
             where: { id },
             relations: [&#x27;roles&#x27;, &#x27;org&#x27;]
         });
+    }
+
+    @TransformClassToPlain()
+    async findCurrent(id) {
+        const currentUser &#x3D; await this.findOneById(id);
+        const authorities &#x3D; await this.authorityService.findByRoles(
+            currentUser.roles.map((item) &#x3D;&gt; &#x60;&#x27;${item.id}&#x27;&#x60;)
+        );
+
+        return {
+            ...currentUser,
+            authorities
+        };
     }
 
     async login(account, password) {

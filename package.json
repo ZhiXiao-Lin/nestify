@@ -16,7 +16,7 @@
         "build:app": "cd ./admin && yarn build",
         "db:create": "cd ./server && yarn db:create",
         "db:init": "cd ./server && yarn db:init",
-        "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator -w"
+        "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator"
     },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.9",

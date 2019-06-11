@@ -76,3 +76,6 @@ admin/src/pages/.umi
 
 # mac
 .DS_Store
+
+# docs
+documentation/

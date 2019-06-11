@@ -87,6 +87,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByRoles">findByRoles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findOneByName">findOneByName</a>
                             </li>
                             <li>
@@ -199,8 +203,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="41"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:41</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="49"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:49</a></div>
                 </td>
             </tr>
 
@@ -251,6 +255,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findByRoles"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            findByRoles
+                        </b>
+                        <a href="#findByRoles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByRoles(roles: string[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="20"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:20</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>roles</td>
+                                    <td>
+                                            <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findOneByName"></a>
                     <span class="name">
                         <b>
@@ -271,8 +347,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="20"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:20</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="28"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:28</a></div>
                 </td>
             </tr>
 
@@ -343,8 +419,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="34"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:34</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="42"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:42</a></div>
                 </td>
             </tr>
 
@@ -487,8 +563,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="24"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:24</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="32"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:32</a></div>
                 </td>
             </tr>
 
@@ -714,6 +790,14 @@ export class AuthorityService extends BaseService&lt;Authority&gt; {
 
     async query(payload: any) {
         return await this.authorityRepository.findTrees();
+    }
+
+    async findByRoles(roles: string[]) {
+        return await this.authorityRepository
+            .createQueryBuilder(&#x27;t&#x27;)
+            .leftJoin(&#x27;t.roles&#x27;, &#x27;role&#x27;)
+            .where(&#x60;role.id IN(${roles.join(&#x27;,&#x27;)})&#x60;)
+            .getMany();
     }
 
     async findOneByName(name: string) {
