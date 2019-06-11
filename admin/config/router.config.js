@@ -162,46 +162,15 @@ export default [
         path: '/studio/user/setting',
         component: './user/setting',
       },
-      // {
-      // 	name_noshow: '个人设置',
-      // 	path: '/studio/user/settings',
-      // 	component: './user/settings/Info',
-      // 	routes: [
-      // 		{
-      // 			path: '/studio/user/settings',
-      // 			redirect: '/studio/user/settings/base'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/base',
-      // 			component: './user/settings/BaseView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/password',
-      // 			component: './user/settings/PasswordView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/security',
-      // 			component: './user/settings/SecurityView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/binding',
-      // 			component: './user/settings/BindingView'
-      // 		},
-      // 		{
-      // 			path: '/studio/user/settings/notification',
-      // 			component: './user/settings/NotificationView'
-      // 		}
-      // 	]
-      // }
     ],
   },
   {
     path: '/exception',
     authority: 0,
     routes: [
-      { path: '/exception/403', component: './Exception/403' },
-      { path: '/exception/404', component: './Exception/404' },
-      { path: '/exception/500', component: './Exception/500' },
+      { path: '/exception/403', component: './exception/403' },
+      { path: '/exception/404', component: './exception/404' },
+      { path: '/exception/500', component: './exception/500' },
     ],
   },
 ];

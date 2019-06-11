@@ -44,13 +44,6 @@ export default {
                 },
               });
             });
-
-            // client.on('fileChange', (data) => {
-            //   dispatch({
-            //     type: 'onFileChange',
-            //     payload: data,
-            //   });
-            // });
           });
         } else {
           !!client && client.close();
