@@ -64,6 +64,10 @@
 -   即时通讯接入
 -   ...
 
+## 其他
+
+-   本项目由开源组织 [NestifyStack](https://github.com/nestify-stack) 强力驱动
+
 ## 协议
 
 Nestify is [MIT licensed](LICENSE).

@@ -13,7 +13,9 @@ class Authorized extends React.Component {
   componentDidMount() {
     const { routes } = this.props;
 
-    this.treeToArray(routes);
+    if (!!routes) {
+      this.treeToArray(routes);
+    }
 
     this.props.dispatch({
       type: 'user/fetchCurrentUser',

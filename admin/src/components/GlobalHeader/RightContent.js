@@ -140,7 +140,7 @@ export default class GlobalHeaderRight extends PureComponent {
         <Tooltip title={'帮助'}>
           <a
             target="_blank"
-            href="https://gallant-carson-ad89bb.netlify.com/"
+            href="https://docs.nestify.cn/"
             rel="noopener noreferrer"
             className={styles.action}
           >

@@ -15,7 +15,7 @@ export default {
           webpackChunkName: true,
         },
         dll: true,
-        title: '方大特钢',
+        title: 'Nestify',
       },
     ],
   ],

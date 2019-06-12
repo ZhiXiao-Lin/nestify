@@ -8,8 +8,8 @@ let config = {
 
   PAGE_SIZE: 10,
 
-  TITLE: '方大特钢',
-  COPYRIGHT: '江西方大钢铁集团有限公司',
+  TITLE: 'Nestify',
+  COPYRIGHT: 'NestifyStack',
 };
 
 if (process.env.NODE_ENV === 'production') {
