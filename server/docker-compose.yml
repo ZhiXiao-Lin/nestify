@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '3000'
+        volumes:
+            - .:/code
+        networks:
+            - app
+
+    redis:
+        image: 'redis:alpine'
+        restart: always
+        ports:
+            - '6379'
+        networks:
+            - app
+
+    postgres:
+        image: postgres:9.6
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: 123456
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        networks:
+            - app
+
+    elasticsearch:
+        image: elasticsearch:5.6
+        restart: always
+        ports:
+            - '9200'
+            - '9300'
+        networks:
+            - app
+
+    influxdb:
+        image: influxdb
+        restart: always
+        ports:
+            - '8086'
+            - '8083'
+        networks:
+            - app
+
+networks:
+    app:
+
+volumes:
+    db-data:
+    es-data:

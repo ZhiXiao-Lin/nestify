@@ -7,44 +7,47 @@ import { Organization } from '../entities/organization.entity';
 
 @Injectable()
 export class OrganizationService extends BaseService<Organization> {
-	constructor(@InjectRepository(Organization) private readonly organizationRepository: TreeRepository<Organization>) {
-		super(organizationRepository);
-	}
+    constructor(
+        @InjectRepository(Organization)
+        private readonly organizationRepository: TreeRepository<Organization>
+    ) {
+        super(organizationRepository);
+    }
 
-	async query(payload: any) {
+    async query(payload: any) {
+        return await this.organizationRepository.findTrees();
+    }
 
-		return await this.organizationRepository.findTrees();
-	}
+    async findOneByName(name: string) {
+        return await this.organizationRepository.findOne({ name });
+    }
 
-	async findOneByName(name: string) {
-		return await this.organizationRepository.findOne({ name });
-	}
+    async save(payload: any) {
+        const organization = Organization.create(payload) as Organization;
 
-	async save(payload: any) {
-		const organization = Organization.create(payload) as Organization;
+        if (!!payload.parentId) {
+            organization.parent = await this.organizationRepository.findOne(payload.parentId);
+        }
 
-		if (!!payload.parentId) {
-			organization.parent = await this.organizationRepository.findOne(payload.parentId);
-		}
+        return await this.organizationRepository.save(organization);
+    }
 
-		return await this.organizationRepository.save(organization);
-	}
+    async parent(payload: any) {
+        const target = await this.organizationRepository.findOne(payload.id);
+        target.parent = await this.organizationRepository.findOne(payload.parentId);
 
-	async parent(payload: any) {
-		const target = await this.organizationRepository.findOne(payload.id);
-		target.parent = await this.organizationRepository.findOne(payload.parentId);
+        return await this.organizationRepository.save(target);
+    }
 
-		return await this.organizationRepository.save(target);
-	}
+    async remove(ids: string[]) {
+        const roots = await this.organizationRepository.findRoots();
 
-	async remove(ids: string[]) {
+        roots.forEach((root) => {
+            if (ids.includes(root.id)) throw new BadRequestException('不能删除根节点');
+        });
 
-		const roots = await this.organizationRepository.findRoots();
-
-		roots.forEach(root => {
-			if (ids.includes(root.id)) throw new BadRequestException('不能删除根节点');
-		});
-
-		return await this.organizationRepository.delete(ids);
-	}
+        return await this.organizationRepository.remove(
+            await this.organizationRepository.findByIds(ids)
+        );
+    }
 }
