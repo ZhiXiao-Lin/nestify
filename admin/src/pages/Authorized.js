@@ -59,7 +59,8 @@ class Authorized extends React.Component {
 
     if (
       !!route &&
-      route.authority !== false &&
+      !route.no_authority &&
+      !currentUser.isSuperAdmin &&
       !currentUser.authorities.find((item) => item.token === location.pathname)
     ) {
       return (

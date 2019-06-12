@@ -1,6 +1,6 @@
 {
     "name": "nestify",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "main": "index.js",
     "repository": "git@github.com:ZhiXiao-Lin/nestify.git",
     "author": "roylin <1002591652@qq.com>",
@@ -16,7 +16,10 @@
         "build:app": "cd ./admin && yarn build",
         "db:create": "cd ./server && yarn db:create",
         "db:init": "cd ./server && yarn db:init",
-        "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator"
+        "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator",
+        "ic": "run-s ic:**",
+        "ic:server": "cd server && yarn",
+        "ic:admin": "cd admin && yarn"
     },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.9",

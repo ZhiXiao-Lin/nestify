@@ -15,7 +15,7 @@
 ## 使用方法
 
 1. git clone 项目到本地
-2. 分别在 根、server、admin 目录中安装依赖
+2. 执行 yarn && yarn:ic
 3. 安装 ElasticSearch、InfluxDB、PostgreSQL、Redis
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 回到根目录执行 yarn db:create 和 yarn db:init
