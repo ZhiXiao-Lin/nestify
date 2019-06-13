@@ -2,7 +2,7 @@
 
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![Gitter](https://badges.gitter.im/nestify-stack/community.svg)](https://gitter.im/nestify-stack/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
--   开箱即用的内容管理框架
+-   开箱即用的中后台全栈解决方案
 
 ![搜索](/server/static/images/搜索.gif)
 ![导入](/server/static/images/导入.gif)
@@ -50,19 +50,6 @@
 -   系统监控
 -   缓存模块
 -   短信模块
-
-## 正在开发的功能
-
--   容器部署
--   K8S
--   邮件模块
--   消息队列
--   单元测试
--   持续集成
--   工作流引擎
--   云存储接入
--   即时通讯接入
--   ...
 
 ## 其他
 
