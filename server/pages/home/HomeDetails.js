@@ -7,8 +7,8 @@ class HomeDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sortTag1: ['热门', '最新', '评论'],
-            sortTag2: ['本周最热', '本月最热', '历史最热'],
+            sortTag1: ['热门', '最新'],
+            sortTag2: [],
             sortTagMap: {
                 hot: '热门',
                 latest: '最新',
@@ -25,11 +25,6 @@ class HomeDetails extends Component {
 
     componentDidMount() {
         console.log('初始化加载内容', this.props.tag);
-        getArticleList().then((res) => {
-            this.setState({
-                articleList: res.articleList
-            });
-        });
     }
 
     componentDidUpdate() {

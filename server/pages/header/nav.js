@@ -13,24 +13,14 @@ class Nav extends Component {
                     path: '/'
                 },
                 {
-                    text: '沸点',
-                    isActived: false,
-                    path: '/pins'
-                },
-                {
                     text: '话题',
                     isActived: false,
                     path: '/topics'
                 },
                 {
-                    text: '小册',
+                    text: '专辑',
                     isActived: false,
                     path: '/books'
-                },
-                {
-                    text: '活动',
-                    isActived: false,
-                    path: '/events/all'
                 }
             ]
         };

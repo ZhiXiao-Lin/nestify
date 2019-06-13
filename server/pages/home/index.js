@@ -50,7 +50,7 @@ class Home extends Component {
                 <div className="ct marginTop20">
                     <Row gutter={14}>
                         <Col className="gutter-row" span={18}>
-                            <HomeSecondNav />
+                            {/* <HomeSecondNav /> */}
                             <HomeDetails tag={tagType} />
                             {/*   <Route
                                 exact

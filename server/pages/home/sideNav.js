@@ -62,7 +62,7 @@ function SideNav({ goodAuthor, recommendBooks, linkList }) {
     return (
         <div>
             <Card
-                title="掘金优秀作者"
+                title="优秀作者"
                 style={{ width: '100%' }}
                 hoverable={'true'}
                 bodyStyle={{ padding: '0 16px' }}

@@ -87,11 +87,7 @@ class ArticleList extends Component {
                                                 }
                                             />
                                             <Popover
-                                                content={
-                                                    <Qrcode
-                                                        value={window.location.href + '/' + item.id}
-                                                    />
-                                                }
+                                                content={<Qrcode value={item.id} />}
                                                 placement="bottom"
                                             >
                                                 <Icon
@@ -120,13 +116,7 @@ class ArticleList extends Component {
                                             </span>
                                             <span className="link-btn share">
                                                 <Popover
-                                                    content={
-                                                        <Qrcode
-                                                            value={
-                                                                window.location.href + '/' + item.id
-                                                            }
-                                                        />
-                                                    }
+                                                    content={<Qrcode value={item.id} />}
                                                     placement="bottom"
                                                 >
                                                     <Icon
