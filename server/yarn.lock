@@ -10855,10 +10855,10 @@ typedarray@^0.0.6:
   resolved "https://registry.npm.taobao.org/typedarray/download/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typeorm@^0.2.17:
-  version "0.2.17"
-  resolved "https://registry.npm.taobao.org/typeorm/download/typeorm-0.2.17.tgz#eb98e9eeb2ce0dfc884620f49de0aeca3dc4e027"
-  integrity sha1-65jp7rLODfyIRiD0neCuyj3E4Cc=
+typeorm@^0.2.18:
+  version "0.2.18"
+  resolved "https://registry.npm.taobao.org/typeorm/download/typeorm-0.2.18.tgz#8ae1d21104117724af41ddc11035c40a705e1de8"
+  integrity sha1-iuHSEQQRdySvQd3BEDXECnBeHeg=
   dependencies:
     app-root-path "^2.0.1"
     buffer "^5.1.0"

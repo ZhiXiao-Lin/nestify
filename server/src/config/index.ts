@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import { resolve } from 'path';
 import * as Influx from 'influx';
 import * as productionConfig from './production';
-import * as localConfig from './local';
 
 let config = {
     port: 3000,
@@ -85,10 +84,6 @@ let config = {
 
 if (process.env.NODE_ENV === 'production') {
     config = _.merge(config, productionConfig.default);
-}
-
-if (!!process.env.DB_SYNC) {
-    config = _.merge(config, localConfig.default);
 }
 
 export { config };

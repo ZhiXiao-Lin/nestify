@@ -18,9 +18,15 @@
 2. 执行 yarn && yarn:ic
 3. 安装 ElasticSearch、InfluxDB、PostgreSQL、Redis
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
-5. 回到根目录执行 yarn db:create 和 yarn db:init
-6. 开发模式启动前后台执行 yarn dev
-7. 默认账号：SysAdmin 密码：12345678
+5. 根目录执行 yarn db:create 用于创建数据库和数据库用户
+6. 执行 yarn db:init 用于创建数据表和导入种子数据
+7. 开发模式启动前后台执行 yarn dev
+8. 默认账号：SysAdmin 密码：12345678
+9. 在开发模式下修改了实体需要执行 yarn db:init，用于重新构建数据表和导入种子数据
+10. yarn orm 是 TypeORM CLI 的封装, 例如：执行 yarn orm schema:sync 等同于执行 typeorm schema:sync
+11. 所有被导入种子数据的 excel 文件都存放在 src/seeds 中，可以根据需要进行调整
+
+注：永远不要在生产环境下使用 yarn db:init
 
 ## 文档
 
@@ -38,9 +44,9 @@
 -   日志模块
 -   配置文件
 -   安全保护
--   访问频率
--   堆栈跟踪
--   定时任务
+-   访问频率限制
+-   堆栈跟踪，全局异常捕获
+-   定时任务、延时任务、间隔任务
 -   文件上传、监控、搜索、管理
 -   脚本创建、初始化、迁移、回滚数据库
 -   Excel 导入、导出
@@ -50,6 +56,9 @@
 -   系统监控
 -   缓存模块
 -   短信模块
+-   单元测试
+-   持续集成
+-   持续部署
 
 ## 其他
 
