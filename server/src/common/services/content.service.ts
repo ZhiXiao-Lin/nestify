@@ -59,12 +59,14 @@ export class ContentService extends BaseService<Content> {
 
             const dataSource = await qb.getMany();
 
+            return dataSource;
+
             // 执行导出逻辑
-            return await ExcelHelper.export(
-                dataSource,
-                Content.sheetsMap[payload.category],
-                payload.fields.split(',')
-            );
+            // return await ExcelHelper.export(
+            //     dataSource,
+            //     Content.sheetsMap[payload.category],
+            //     payload.fields.split(',')
+            // );
         } else {
             qb.skip(payload.page * payload.pageSize);
             qb.take(payload.pageSize);

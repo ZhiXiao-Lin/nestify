@@ -15,12 +15,12 @@ import { Content } from '../common/entities/content.entity';
 
 @Injectable()
 export class Seed {
-    constructor(@InjectConnection() private readonly connection: Connection) {}
+    constructor(@InjectConnection() private readonly connection: Connection) { }
 
     async start() {
         Logger.log('seed start');
 
-        await this.initElasticSearchIndices();
+        // await this.initElasticSearchIndices();
 
         await this.connection.getRepository(Setting).save({
             token: 'default',

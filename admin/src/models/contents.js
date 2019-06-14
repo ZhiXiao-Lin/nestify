@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { message } from 'antd';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
-import { downloadBuffer } from '@/utils/utils';
+import { ExcelHelper } from '@/utils/excel';
 import config from '@/config';
 
 const API_URL = config.API_ROOT + '/content';
@@ -105,10 +105,9 @@ export default {
 		*export({ payload }, { call, select }) {
 			message.loading('正在执行导出', 0);
 
-			const queryParams = yield select((state) => state.contents.queryParams);
+			const { queryParams, columns, fields } = yield select((state) => state.contents);
 
-			const fileBuffer = yield call(apiGet, API_URL + '/export', {
-				responseType: 'arraybuffer',
+			const res = yield call(apiGet, API_URL + '/export', {
 				params: {
 					isExport: true,
 					...payload,
@@ -116,7 +115,8 @@ export default {
 				}
 			});
 
-			downloadBuffer(fileBuffer, queryParams.category + '-' + moment().format('YYYY-MM-DD-HH-mm-ss'));
+
+			yield call(ExcelHelper.export, queryParams.category + '-' + moment().format('YYYY-MM-DD-HH-mm-ss'), res, columns, fields);
 
 			message.destroy();
 			message.success('导出成功');

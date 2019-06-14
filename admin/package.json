@@ -28,6 +28,7 @@
     "axios": "^0.18.0",
     "braft-editor": "^2.2.5",
     "dva-logger": "^1.0.0",
+    "exceljs": "^1.12.1",
     "formik": "^1.4.2",
     "gg-editor": "^2.0.4",
     "localforage": "^1.7.3",

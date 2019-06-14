@@ -16,7 +16,7 @@ export class StatusTask extends NestSchedule {
     constructor() {
         super();
 
-        this.watchFiles();
+        // this.watchFiles();
     }
 
     // # ┌────────────── second (optional)
@@ -47,9 +47,6 @@ export class StatusTask extends NestSchedule {
         Logger.log(`watching ${uploadDirPath}`);
 
         chokidar.watch(uploadDirPath, { ignored: /(^|[\/\\])\../ }).on('all', (event, path) => {
-            // if (!!this.server) {
-            //     this.server.emit('fileChange', { event, path, date });
-            // }
             stat(path, (err, stats) => {
                 Logger.log(event, path, stats);
 

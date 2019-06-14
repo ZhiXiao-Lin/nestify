@@ -313,13 +313,10 @@ export default class extends React.Component {
 	};
 
 	toExport = () => {
-		const { dispatch, fields } = this.props;
+		const { dispatch } = this.props;
 
 		dispatch({
 			type: `${MODEL_NAME}/export`,
-			payload: {
-				fields: fields.join(',')
-			}
 		});
 	};
 
