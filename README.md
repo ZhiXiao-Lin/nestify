@@ -12,11 +12,20 @@
 
 -   Nestjs、Nextjs、Fastify、TypeORM、ElasticSearch、Ant Design...
 
+## 开发环境
+
+-   macOS Mojave 10.14.5
+-   Node.js 11.10.0
+-   Redis 5.0.3
+-   PostgreSQL 9.6
+-   InfluxDB 1.7.6
+-   ElasticSearch 5.6 以及中文分词插件 IK 5.6 (关于 ES 对机器配置要求高的问题，正在寻找轻量级替代方案)
+
 ## 使用方法
 
 1. git clone 项目到本地
 2. 执行 yarn && yarn:ic
-3. 安装 ElasticSearch、InfluxDB、PostgreSQL、Redis
+3. 安装 Node.js、Redis、PostgreSQL、InfluxDB、ElasticSearch
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 根目录执行 yarn db:create 用于创建数据库和数据库用户
 6. 执行 yarn db:init 用于创建数据表和导入种子数据
@@ -26,7 +35,7 @@
 10. yarn orm 是 TypeORM CLI 的封装, 例如：执行 yarn orm schema:sync 等同于执行 typeorm schema:sync
 11. 所有被导入种子数据的 excel 文件都存放在 src/seeds 中，可以根据需要进行调整
 
-注：永远不要在生产环境下使用 yarn db:init
+-   注：永远不要在生产环境下使用 yarn db:init
 
 ## 文档
 
@@ -39,6 +48,8 @@
 -   Fastify 的超强性能
 -   React 服务端渲染
 -   React SPA 后台管理系统
+-   InfluxDB 时序数据库
+-   Socket.IO 双向通讯
 -   ElasticSearch 全文检索
 -   RBAC 权限管理
 -   日志模块
@@ -51,8 +62,6 @@
 -   脚本创建、初始化、迁移、回滚数据库
 -   Excel 导入、导出
 -   Swagger API 文档
--   InfluxDB 时序数据库
--   WebSocket
 -   系统监控
 -   缓存模块
 -   短信模块

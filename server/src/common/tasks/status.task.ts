@@ -2,20 +2,23 @@ import { stat } from 'fs';
 import { resolve, basename, dirname, extname } from 'path';
 import * as pidusage from 'pidusage';
 import * as chokidar from 'chokidar';
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
 import { influx } from '../lib/influx';
 import { Logger } from '../lib/logger';
 import { es } from '../lib/elastic-search';
-import { config } from '../../config';
+import { io } from '../lib/io';
 
-@WebSocketGateway(config.websocket.port, { namespace: 'status' })
 export class StatusTask extends NestSchedule {
-    @WebSocketServer() server: any;
+    server: any;
 
     constructor() {
         super();
 
+        this.server = io.server.of('/status');
+        this.server.use((socket, next) => {
+            Logger.log('/status ---> id', socket.id);
+            next();
+        });
         // this.watchFiles();
     }
 

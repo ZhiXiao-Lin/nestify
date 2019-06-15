@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { resolve } from 'path';
 import * as util from 'util';
 import * as Fastify from 'fastify';
 import * as Nextjs from 'next';
@@ -9,16 +10,16 @@ import * as RateLimit from 'fastify-rate-limit';
 import * as Cookie from 'fastify-cookie';
 import * as Session from 'fastify-session';
 import * as ConnectRedis from 'connect-redis';
-import { influx } from './common/lib/influx';
-import { config } from './config';
-import { resolve } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { Seed } from './seed';
-import { Logger } from './common/lib/logger';
+import { config } from './config';
 import { ExceptionsFilter } from './common/aspects/exceptions.filter';
+import { influx } from './common/lib/influx';
+import { io } from './common/lib/io';
+import { Logger } from './common/lib/logger';
 
 declare const module: any;
 
@@ -113,12 +114,13 @@ async function bootstrap() {
         .build();
 
     const document = SwaggerModule.createDocument(app, options);
-
     SwaggerModule.setup('docs', app, document);
 
     app.enableCors();
-
     app.useGlobalFilters(new ExceptionsFilter());
+
+    io.server.listen(fastify.server);
+    await io.init();
 
     await app.listen(config.port, config.hostName, () => {
         Logger.log(`Server run at port ${config.port}`);
@@ -130,4 +132,5 @@ async function bootstrap() {
         module.hot.dispose(() => app.close());
     }
 }
+
 bootstrap();
