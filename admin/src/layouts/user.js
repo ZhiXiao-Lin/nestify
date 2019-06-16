@@ -1,39 +1,46 @@
 import React from 'react';
-import { Icon } from 'antd';
+import { LocaleProvider, Icon } from 'antd';
 import Link from 'umi/link';
 import DocumentTitle from 'react-document-title';
-import GlobalFooter from '@/components/GlobalFooter';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 
+import GlobalFooter from '@/components/GlobalFooter';
+import config from '@/config';
+
+import zhCN from 'antd/lib/locale-provider/zh_CN';
 import logo from '../assets/logo.svg';
 import styles from './user.less';
 
-import config from '@/config';
+moment.locale('zh-cn');
 
 function UserLayout(props) {
   return (
     <DocumentTitle title={''}>
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <div className={styles.top}>
-            <div className={styles.header}>
-              <Link to="/">
-                <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}> {config.TITLE} </span>
-              </Link>
+      <LocaleProvider locale={zhCN}>
+        <div className={styles.container}>
+          <div className={styles.content}>
+            <div className={styles.top}>
+              <div className={styles.header}>
+                <Link to="/">
+                  <img alt="logo" className={styles.logo} src={logo} />
+                  <span className={styles.title}> {config.TITLE} </span>
+                </Link>
+              </div>
+              <div className={styles.desc}>中后台全栈解决方案</div>
             </div>
-            <div className={styles.desc}>中后台全栈解决方案</div>
+            {props.children}
           </div>
-          {props.children}
+          <GlobalFooter
+            links={[]}
+            copyright={
+              <React.Fragment>
+                Copyright <Icon type="copyright" /> {new Date().getFullYear()} {config.COPYRIGHT}
+              </React.Fragment>
+            }
+          />
         </div>
-        <GlobalFooter
-          links={[]}
-          copyright={
-            <React.Fragment>
-              Copyright <Icon type="copyright" /> {new Date().getFullYear()} {config.COPYRIGHT}
-            </React.Fragment>
-          }
-        />
-      </div>
+      </LocaleProvider>
     </DocumentTitle>
   );
 }

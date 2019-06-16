@@ -471,43 +471,7 @@ export default class extends React.Component {
                 },
               ],
             })(
-              <DatePicker
-                showTime
-                format="YYYY-MM-DD HH:mm:ss"
-                locale={{
-                  lang: {
-                    placeholder: 'Select date',
-                    rangePlaceholder: ['开始时间', '结束时间'],
-                    today: '今天',
-                    now: '现在',
-                    backToToday: 'Back to today',
-                    ok: 'Ok',
-                    clear: 'Clear',
-                    month: 'Month',
-                    year: 'Year',
-                    timeSelect: '选择时间',
-                    dateSelect: '选择日期',
-                    monthSelect: 'Choose a month',
-                    yearSelect: 'Choose a year',
-                    decadeSelect: 'Choose a decade',
-                    yearFormat: 'YYYY',
-                    dateFormat: 'M/D/YYYY',
-                    dayFormat: 'D',
-                    dateTimeFormat: 'M/D/YYYY HH:mm:ss',
-                    monthFormat: 'MMMM',
-                    monthBeforeYear: true,
-                    previousMonth: 'Previous month (PageUp)',
-                    nextMonth: 'Next month (PageDown)',
-                    previousYear: 'Last year (Control + left)',
-                    nextYear: 'Next year (Control + right)',
-                    previousDecade: 'Last decade',
-                    nextDecade: 'Next decade',
-                    previousCentury: 'Last century',
-                    nextCentury: 'Next century',
-                  },
-                }}
-                placeholder="请选择发布日期时间"
-              />
+              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" placeholder="请选择发布日期时间" />
             )}
           </Form.Item>
         ) : null}
