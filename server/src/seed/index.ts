@@ -12,6 +12,7 @@ import { Organization } from '../common/entities/organization.entity';
 import { Role } from '../common/entities/role.entity';
 import { Authority } from '../common/entities/authority.entity';
 import { Content } from '../common/entities/content.entity';
+import { StorageType } from '../common/aspects/enum';
 
 @Injectable()
 export class Seed {
@@ -43,7 +44,10 @@ export class Seed {
             account: 'SysAdmin',
             password: '12345678',
             nickname: '超级管理员',
-            avatar: '/images/superadmin.png'
+            avatar: {
+                storageType: StorageType.LOCAL,
+                path: '/images/superadmin.png'
+            }
         });
         superAdmin.roles = [roleAdmin];
         superAdmin.org = await this.connection

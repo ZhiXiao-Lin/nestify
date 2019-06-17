@@ -4,9 +4,7 @@ import moment from 'moment';
 import router from 'umi/router';
 import { connect } from 'dva';
 import {
-  Upload,
   Input,
-  TreeSelect,
   Popconfirm,
   Table,
   Tooltip,
@@ -19,10 +17,7 @@ import {
   Select,
   Divider,
   Collapse,
-  message,
 } from 'antd';
-
-import { UploadActionType, apiUploadOne } from '@/utils';
 
 import styles from './index.css';
 
@@ -85,18 +80,18 @@ export default class extends React.Component {
 
               return !!keyword
                 ? val
-                    .toString()
-                    .split(reg)
-                    .map((text, i) =>
-                      i > 0
-                        ? [
-                            <span key={i} col={i} style={{ color: 'red' }}>
-                              <b>{val.toString().match(reg)[0]}</b>
-                            </span>,
-                            text,
-                          ]
-                        : text
-                    )
+                  .toString()
+                  .split(reg)
+                  .map((text, i) =>
+                    i > 0
+                      ? [
+                        <span key={i} col={i} style={{ color: 'red' }}>
+                          <b>{val.toString().match(reg)[0]}</b>
+                        </span>,
+                        text,
+                      ]
+                      : text
+                  )
                 : val;
             },
           },
@@ -273,26 +268,6 @@ export default class extends React.Component {
 
     const list = data.list || [];
 
-    const uploadOneProps = {
-      name: 'file',
-      action: null,
-      accept:
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
-      showUploadList: false,
-      beforeUpload: async (file) => {
-        message.loading('正在执行导入', 0);
-        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'role' });
-
-        setTimeout(() => {
-          message.destroy();
-          message.success('导入成功');
-          this.refresh();
-        }, 3000);
-
-        return false;
-      },
-    };
-
     const pagination = {
       defaultCurrent: 1,
       current: data.page,
@@ -348,8 +323,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row>
             <Col className="gutter-row" span={24}>
@@ -370,12 +345,12 @@ export default class extends React.Component {
                         </Tooltip>
                       </Popconfirm>
                     ) : (
-                      <Tooltip placement="bottom" title="删除">
-                        <Button disabled={true}>
-                          <Icon type="delete" />
-                        </Button>
-                      </Tooltip>
-                    )}
+                        <Tooltip placement="bottom" title="删除">
+                          <Button disabled={true}>
+                            <Icon type="delete" />
+                          </Button>
+                        </Tooltip>
+                      )}
                     <Tooltip placement="bottom" title="新增">
                       <Button onClick={this.toCreate}>
                         <Icon type="file-add" />

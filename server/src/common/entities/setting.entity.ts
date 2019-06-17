@@ -1,6 +1,6 @@
 import { Base } from './base';
 import { Entity, Column } from 'typeorm';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, Expose } from 'class-transformer';
 import { ExcelHandleType } from '../lib/excel';
 
 @Entity()
@@ -50,5 +50,15 @@ export class Setting extends Base {
 
 	static create(target: object) {
 		return plainToClass(Setting, target);
+	}
+
+	@Expose()
+	get wechatImg() {
+		return Base.getFullPath(this.ex_info.setting ? this.ex_info.setting.wechat : null)
+	}
+
+	@Expose()
+	get weiboImg() {
+		return Base.getFullPath(this.ex_info.setting ? this.ex_info.setting.weibo : null)
 	}
 }

@@ -24,6 +24,7 @@ import { Logger } from './common/lib/logger';
 declare const module: any;
 
 const readFileAsync = util.promisify(fs.readFile);
+const RedisStore = ConnectRedis(Session);
 
 async function bootstrap() {
     const dev = process.env.NODE_ENV !== 'production';
@@ -35,21 +36,10 @@ async function bootstrap() {
     // Fastify
     const fastify = Fastify();
 
-    fastify.register(Helmet, { hidePoweredBy: { setTo: 'C++ 12' } });
-
-    fastify.register(RateLimit, {
-        timeWindow: 1,
-        max: 5
-    });
-
-    fastify.register(FileUpload, {
-        createParentPath: true,
-        limits: { fileSize: 50 * 1024 * 1024 }
-    });
-
+    fastify.register(Helmet, config.helmet);
+    fastify.register(RateLimit, config.rateLimit);
+    fastify.register(FileUpload, config.fileUpload);
     fastify.register(Cookie);
-
-    const RedisStore = ConnectRedis(Session);
     fastify.register(Session, {
         store: new RedisStore(config.redis),
         ...config.session

@@ -8,6 +8,18 @@ let config = {
     hostName: '0.0.0.0',
     serverUrl: 'http://127.0.0.1:3000',
 
+    helmet: { hidePoweredBy: { setTo: 'C++ 12' } },
+
+    rateLimit: {
+        timeWindow: 1,
+        max: 5
+    },
+
+    fileUpload: {
+        createParentPath: true,
+        limits: { fileSize: 50 * 1024 * 1024 }
+    },
+
     static: {
         root: 'static',
         prefix: '/static/',
@@ -72,8 +84,15 @@ let config = {
         ]
     },
 
-    websocket: {
-        port: 9000
+    qiniu: {
+        accessKey: 'YyxyEPUcKk2vDpjKkCwZQaAC_uaUaxX1eqd26hL6',
+        secretKey: 'gCpsZaPRn8YqWbKzMsVgcEBsQk63Aev9qX2VN_eV',
+        domain: 'http://pt81bm3p8.bkt.clouddn.com',
+        policy: {
+            scope: 'nestify',
+            expires: 7200,
+            returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)","name":"$(x:name)"}'
+        }
     },
 
     es: {

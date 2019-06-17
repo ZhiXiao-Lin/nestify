@@ -8,6 +8,11 @@ export enum UploadActionType {
 	UPLOAD = 'UPLOAD'
 }
 
+export enum StorageType {
+	LOCAL = 'local',
+	QINIU = 'qiniu'
+}
+
 export enum Gender {
 	MALE,
 	FEMALE

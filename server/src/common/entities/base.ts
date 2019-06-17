@@ -1,6 +1,6 @@
 import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column } from 'typeorm';
 import { config } from '../../config';
-import { RowStatus } from '../aspects/enum';
+import { RowStatus, StorageType } from '../aspects/enum';
 import { Exclude } from 'class-transformer';
 
 export abstract class Base {
@@ -25,11 +25,17 @@ export abstract class Base {
 	})
 	update_at: number;
 
-	static getFullPath(path: string) {
-		const staticRoot = `${config.serverUrl}/${config.static.root}`;
+	static getFullPath(info: any) {
 
-		if (!!path) {
-			return path.startsWith('/') ? `${staticRoot}${path}` : path;
+		if (!!info) {
+			switch (info.storageType) {
+				case StorageType.LOCAL:
+					return info.path.startsWith('/') ? `${config.serverUrl}/${config.static.root}${info.path}` : info.path;
+				case StorageType.QINIU:
+					return `${config.qiniu.domain}/${info.path}`;
+				default:
+					return info.path;
+			}
 		}
 
 		return '';

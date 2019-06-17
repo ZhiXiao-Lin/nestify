@@ -2,6 +2,8 @@ import _ from 'lodash';
 import axios from 'axios';
 import router from 'umi/router';
 import { message } from 'antd';
+import moment from 'moment';
+import UUID from 'uuid';
 import config from '@/config';
 
 const instance = axios.create({
@@ -14,7 +16,7 @@ const instance = axios.create({
 
 // Add a request interceptor
 instance.interceptors.request.use(
-  function(config) {
+  function (config) {
     const token = localStorage.getItem('token');
 
     if (!!token) {
@@ -24,7 +26,7 @@ instance.interceptors.request.use(
     // console.log('onRequest --->', config);
     return config;
   },
-  function(error) {
+  function (error) {
     // Do something with request error
     return Promise.reject(error);
   }
@@ -32,10 +34,10 @@ instance.interceptors.request.use(
 
 // Add a response interceptor
 instance.interceptors.response.use(
-  function(response) {
+  function (response) {
     return response.data;
   },
-  function(error) {
+  function (error) {
     // Do something with response error
 
     if (error.response) {
@@ -94,7 +96,7 @@ export const UploadActionType = {
   UPLOAD: 'UPLOAD',
 };
 
-export function apiUploadOne(
+export async function apiUploadOne(
   file,
   params = { action: UploadActionType.UPLOAD, fileSizeLimit: 15 * 1024 * 1024 },
   options = {}
@@ -109,8 +111,38 @@ export function apiUploadOne(
 
   Object.keys(params).forEach((item) => param.append(item, params[item]));
 
-  return instance.post('/storage', param, options);
+  const res = await apiPost(`${config.API_ROOT}/storage`, param, options);
+  res.storageType = 'local';
+  return res;
 }
+
+export async function apiUploadOneToQiniu(
+  file,
+  params = { action: UploadActionType.UPLOAD, fileSizeLimit: 15 * 1024 * 1024 },
+  options = {}
+) {
+  if (file.size > params.fileSizeLimit) {
+    message.error(`请上传小于${(params.fileSizeLimit / 1024 / 1024).toFixed(0)}M的文件`);
+    return false;
+  }
+
+  const uploadToken = await apiGet(`${config.API_ROOT}/storage/qiniu/uploadToken`);
+
+  params.key = `${moment().format('YYYY-MM-DD')}/${UUID.v4()}-${file.name}`;
+  params.token = uploadToken;
+
+  const param = new FormData();
+  param.append('file', file, file.name);
+
+  Object.keys(params).forEach((item) => param.append(item, params[item]));
+
+  const res = await apiPost(`${config.QINIU_UPLOAD_URL}`, param, options);
+  res.storageType = 'qiniu';
+  res.path = res.key;
+  return res;
+}
+
+
 
 export function apiGet(url, options) {
   return instance.get(url, options);

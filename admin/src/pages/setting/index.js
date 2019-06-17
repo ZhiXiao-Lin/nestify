@@ -3,10 +3,10 @@ import _ from 'lodash';
 import UUIDV4 from 'uuid/v4';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Tabs, Form, Input, Row, Col, Popconfirm, Button, Icon, Skeleton, message } from 'antd';
+import { Tabs, Form, Input, Row, Col, Popconfirm, Button, Skeleton } from 'antd';
 
 import config from '@/config';
-import { apiUploadOne } from '@/utils';
+import { apiUploadOneToQiniu } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
 import EditableTable from '@/components/EditableTable';
@@ -51,7 +51,7 @@ export default class extends React.Component {
   onWechatUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOne(file);
+    const res = await apiUploadOneToQiniu(file);
 
     if (!!res && !!res.path) {
       dispatch({
@@ -59,7 +59,7 @@ export default class extends React.Component {
         payload: {
           ex_info: {
             setting: {
-              wechat: res.path,
+              wechat: res,
             },
           },
         },
@@ -70,7 +70,7 @@ export default class extends React.Component {
   onWeiboUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOne(file);
+    const res = await apiUploadOneToQiniu(file);
 
     if (!!res && !!res.path) {
       dispatch({
@@ -78,7 +78,7 @@ export default class extends React.Component {
         payload: {
           ex_info: {
             setting: {
-              weibo: res.path,
+              weibo: res,
             },
           },
         },
@@ -467,8 +467,8 @@ export default class extends React.Component {
 
     if (!selectedNode) return <Skeleton active loading />;
 
-    const wechatImg = config.STATIC_ROOT + selectedNode.ex_info.setting.wechat;
-    const weiboImg = config.STATIC_ROOT + selectedNode.ex_info.setting.weibo;
+    const wechatImg = selectedNode.wechatImg;
+    const weiboImg = selectedNode.weiboImg;
 
     return (
       <Fragment>

@@ -2,13 +2,14 @@ import * as UUID from 'uuid';
 import * as moment from 'moment';
 import { ApiUseTags, ApiConsumes, ApiImplicitFile, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { Post, Req, Res, BadRequestException, InternalServerErrorException, UseGuards } from '@nestjs/common';
+import { Post, Req, Res, BadRequestException, InternalServerErrorException, UseGuards, Get } from '@nestjs/common';
 import { config } from '../../config';
 import { Api } from '../../common/aspects/decorator';
 import { resolve } from 'path';
-import { UploadActionType } from '../../common/aspects/enum';
+import { UploadActionType, StorageType } from '../../common/aspects/enum';
 import { ImportService } from '../../common/services/import.service';
 import { Logger } from '../../common/lib/logger';
+import { Qiniu } from '../../common/lib/qiniu';
 
 @Api('storage')
 @ApiUseTags('storage')
@@ -55,6 +56,7 @@ export class StorageController {
 					if (err) throw new InternalServerErrorException('文件移动失败', err);
 
 					res.send({
+						storageType: StorageType.LOCAL,
 						path: `${config.static.uploadPath}/${path}`,
 						filePath,
 						name: file.name,
@@ -65,5 +67,10 @@ export class StorageController {
 				});
 				break;
 		}
+	}
+
+	@Get('qiniu/uploadToken')
+	async uploadToken() {
+		return await Qiniu.createUploadToken();
 	}
 }

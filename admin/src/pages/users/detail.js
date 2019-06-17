@@ -12,10 +12,9 @@ import {
   Skeleton,
   Radio,
   TreeSelect,
-  message,
 } from 'antd';
 
-import { apiUploadOne } from '@/utils';
+import { apiUploadOneToQiniu } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
 import RolesEditor from '@/components/RolesEditor';
@@ -106,13 +105,13 @@ export default class extends React.Component {
   onThumbnailUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOne(file);
+    const res = await apiUploadOneToQiniu(file);
 
     if (!!res && !!res.path) {
       dispatch({
         type: `${MODEL_NAME}/save`,
         payload: {
-          avatar: res.path,
+          avatar: res,
         },
       });
     }
@@ -187,8 +186,8 @@ export default class extends React.Component {
             initialValue: !selectedNode
               ? null
               : !selectedNode['org']
-              ? null
-              : selectedNode['org']['id'],
+                ? null
+                : selectedNode['org']['id'],
           })(
             <TreeSelect
               treeNodeFilterProp="title"

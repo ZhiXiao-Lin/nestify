@@ -48,11 +48,11 @@ export class Content extends Base {
     @Column({ comment: '排序', default: 0 })
     sort: number;
 
-    @Column({ comment: '图片', default: '' })
-    thumbnail: string;
+    @Column({ type: 'simple-json', default: null, comment: '图片' })
+    thumbnail: any;
 
-    @Column({ comment: '视频', default: '' })
-    video: string;
+    @Column({ type: 'simple-json', default: null, comment: '视频' })
+    video: any;
 
     @Column({ comment: '摘要', default: '' })
     summary: string;

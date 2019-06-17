@@ -3,7 +3,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Tabs, Form, Input, Row, Col, Button, Radio, Skeleton } from 'antd';
 
-import { apiUploadOne } from '@/utils';
+import { apiUploadOneToQiniu } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
 
@@ -48,13 +48,13 @@ export default class extends React.Component {
   onAvatarUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOne(file);
+    const res = await apiUploadOneToQiniu(file);
 
     if (!!res && !!res.path) {
       dispatch({
         type: `${MODEL_NAME}/save`,
         payload: {
-          avatar: res.path,
+          avatar: res,
         },
       });
     }

@@ -13,11 +13,10 @@ import {
   DatePicker,
   Button,
   Skeleton,
-  message,
 } from 'antd';
 
 import config from '@/config';
-import { apiUploadOne } from '@/utils';
+import { apiUploadOneToQiniu } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
 import VideoEditor from '@/components/VideoEditor';
@@ -312,13 +311,13 @@ export default class extends React.Component {
   onThumbnailUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOne(file);
+    const res = await apiUploadOneToQiniu(file);
 
     if (!!res && !!res.path) {
       dispatch({
         type: `${MODEL_NAME}/save`,
         payload: {
-          thumbnail: res.path,
+          thumbnail: res,
         },
       });
     }
@@ -327,13 +326,13 @@ export default class extends React.Component {
   onVideoUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOne(file);
+    const res = await apiUploadOneToQiniu(file);
 
     if (!!res && !!res.path) {
       dispatch({
         type: `${MODEL_NAME}/save`,
         payload: {
-          video: res.path,
+          video: res,
         },
       });
     }
@@ -342,7 +341,7 @@ export default class extends React.Component {
   onEditorMediaUpload = async (context) => {
     if (!context || !context.file) return;
 
-    const res = await apiUploadOne(context.file);
+    const res = await apiUploadOneToQiniu(context.file);
     if (!res) {
       context.error({ error: '上传失败' });
     } else {
@@ -481,8 +480,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['company']
-                : '',
+                  ? selectedNode['ex_info']['company']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="公司名称" />)}
           </Form.Item>
         ) : null}
@@ -492,8 +491,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['nickname']
-                : '',
+                  ? selectedNode['ex_info']['nickname']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="昵称" />)}
           </Form.Item>
         ) : null}
@@ -503,8 +502,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['title']
-                : '',
+                  ? selectedNode['ex_info']['title']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="标题" />)}
           </Form.Item>
         ) : null}
@@ -514,8 +513,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['content']
-                : '',
+                  ? selectedNode['ex_info']['content']
+                  : '',
             })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="内容" />)}
           </Form.Item>
         ) : null}
@@ -525,8 +524,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['phone']
-                : '',
+                  ? selectedNode['ex_info']['phone']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="电话" />)}
           </Form.Item>
         ) : null}
@@ -536,8 +535,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['fax']
-                : '',
+                  ? selectedNode['ex_info']['fax']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="传真" />)}
           </Form.Item>
         ) : null}
@@ -547,8 +546,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['sale']
-                : '',
+                  ? selectedNode['ex_info']['sale']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="销售" />)}
           </Form.Item>
         ) : null}
@@ -558,8 +557,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['address']
-                : '',
+                  ? selectedNode['ex_info']['address']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="地址" />)}
           </Form.Item>
         ) : null}
@@ -569,8 +568,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['postcode']
-                : '',
+                  ? selectedNode['ex_info']['postcode']
+                  : '',
             })(<Input {...formItemStyle} type="text" placeholder="邮编" />)}
           </Form.Item>
         ) : null}
@@ -580,8 +579,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['question']
-                : '',
+                  ? selectedNode['ex_info']['question']
+                  : '',
             })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="问题" />)}
           </Form.Item>
         ) : null}
@@ -591,8 +590,8 @@ export default class extends React.Component {
               initialValue: !selectedNode
                 ? null
                 : selectedNode['ex_info']
-                ? selectedNode['ex_info']['reply']
-                : '',
+                  ? selectedNode['ex_info']['reply']
+                  : '',
             })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="回复" />)}
           </Form.Item>
         ) : null}

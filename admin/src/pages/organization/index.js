@@ -16,11 +16,8 @@ import {
   Tooltip,
   Menu,
   Tree,
-  Upload,
   message,
 } from 'antd';
-
-import { UploadActionType, apiUploadOne } from '@/utils';
 
 import styles from './index.css';
 
@@ -395,26 +392,6 @@ export default class extends React.Component {
   render() {
     const { data, selectedNode, selectedRows } = this.props;
 
-    const uploadOneProps = {
-      name: 'file',
-      action: null,
-      accept:
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
-      showUploadList: false,
-      beforeUpload: async (file) => {
-        message.loading('正在执行导入', 0);
-        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'organizations' });
-
-        setTimeout(() => {
-          message.destroy();
-          message.success('导入成功');
-          this.refresh();
-        }, 3000);
-
-        return false;
-      },
-    };
-
     return (
       <Layout>
         <Content className={styles.normal}>
@@ -436,12 +413,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                  <Tooltip placement="bottom" title="删除">
-                    <Button disabled={true}>
-                      <Icon type="delete" />
-                    </Button>
-                  </Tooltip>
-                )}
+                    <Tooltip placement="bottom" title="删除">
+                      <Button disabled={true}>
+                        <Icon type="delete" />
+                      </Button>
+                    </Tooltip>
+                  )}
                 <Tooltip placement="bottom" title="刷新">
                   <Button onClick={this.refresh}>
                     <Icon type="reload" />
@@ -480,8 +457,8 @@ export default class extends React.Component {
                   </Tabs.TabPane>
                 </Tabs>
               ) : (
-                ''
-              )}
+                  ''
+                )}
             </Col>
           </Row>
         </Content>
