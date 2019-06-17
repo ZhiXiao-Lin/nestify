@@ -8,6 +8,7 @@ import { Tabs, Form, Input, Row, Col, Popconfirm, Button, Skeleton } from 'antd'
 import config from '@/config';
 import { apiUploadOneToQiniu } from '@/utils';
 
+import DetailPlus from '@/components/DetailPlus';
 import ImageCropper from '@/components/ImageCropper';
 import EditableTable from '@/components/EditableTable';
 
@@ -462,6 +463,13 @@ export default class extends React.Component {
     });
   };
 
+  toSave = (payload) => {
+    this.props.dispatch({
+      type: `${MODEL_NAME}/save`,
+      payload
+    });
+  }
+
   render() {
     const { selectedNode } = this.props;
 
@@ -472,7 +480,7 @@ export default class extends React.Component {
 
     return (
       <Fragment>
-        <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
+        {/* <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
           <Tabs.TabPane tab="基础设置" key="basic">
             {this.renderBasicForm()}
           </Tabs.TabPane>
@@ -481,23 +489,6 @@ export default class extends React.Component {
           </Tabs.TabPane>
           <Tabs.TabPane tab="SEO设置" key="seo">
             {this.renderSEOForm()}
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="微信设置" key="wecaht">
-            <ImageCropper
-              url={!wechatImg ? '' : wechatImg}
-              onUpload={this.onWechatUpload}
-              width={200}
-              height={200}
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="微博设置" key="weibo">
-            <ImageCropper
-              url={!weiboImg ? '' : weiboImg}
-              onUpload={this.onWeiboUpload}
-              width={200}
-              height={200}
-            />
           </Tabs.TabPane>
 
           <Tabs.TabPane tab="友情链接" key="richtext">
@@ -539,7 +530,60 @@ export default class extends React.Component {
               handleSave={this.handleSave}
             />
           </Tabs.TabPane>
-        </Tabs>
+        </Tabs> */}
+
+        <DetailPlus
+          data={selectedNode}
+          tabs={[
+            { key: 'basic', name: '基础设置', render: this.renderBasicForm },
+            { key: 'detail', name: '详细设置', render: this.renderDetailForm },
+            { key: 'seo', name: 'SEO设置', render: this.renderBasicForm },
+            {
+              key: 'image', tabKey: 'wecahtQRCode', name: '微信二维码', options: {
+                width: 200,
+                height: 200
+              },
+              renderValue: (data) => data.wechatImg,
+              saveValue: async (file) => {
+                const res = await apiUploadOneToQiniu(file);
+
+                if (!!res && !!res.path) {
+                  this.toSave({
+                    ex_info: {
+                      setting: {
+                        wechat: res,
+                      },
+                    }
+                  })
+                }
+              }
+            },
+            {
+              key: 'image', tabKey: 'weiboQRCode', name: '微博二维码', options: {
+                width: 200,
+                height: 200
+              },
+              renderValue: (data) => data.weiboImg,
+              saveValue: async (file) => {
+                const res = await apiUploadOneToQiniu(file);
+
+                if (!!res && !!res.path) {
+                  this.toSave({
+                    ex_info: {
+                      setting: {
+                        weibo: res,
+                      },
+                    }
+                  })
+                }
+              }
+            },
+            {
+              key: 'editableTable', name: '友情链接'
+            }
+          ]}
+          toSave={this.toSave}
+        />
       </Fragment>
     );
   }

@@ -13,6 +13,7 @@ import config from '@/config';
 import { apiUploadOneToQiniu } from '@/utils';
 import ImageCropper from '@/components/ImageCropper';
 import VideoEditor from '@/components/VideoEditor';
+import EditableTable from '@/components/EditableTable';
 
 export default class DetailPlus extends Component {
 
@@ -74,6 +75,26 @@ export default class DetailPlus extends Component {
                         }
                     }
                 },
+                editableTable: {
+                    name: '表格',
+                    render: this.rednerEditorTable,
+                    options: {},
+                    renderValue: (data) => BraftEditor.createEditorState(data.text),
+                    saveValue: () => this.props.toSave({
+                        text: this.editorRef.getValue().toHTML()
+                    }),
+                    uploadFn: async (context) => {
+                        if (!context || !context.file) return;
+
+                        const res = await apiUploadOneToQiniu(context.file);
+                        if (!res) {
+                            context.error({ error: '上传失败' });
+                        } else {
+                            context.progress(101);
+                            context.success({ url: `${config.qiniu.domain}/${res.path}` });
+                        }
+                    }
+                },
             }
         });
     }
@@ -86,6 +107,7 @@ export default class DetailPlus extends Component {
         return <ImageCropper
             url={render.renderValue(data)}
             onUpload={render.saveValue}
+            {...render.options}
         />
     }
 
@@ -118,15 +140,15 @@ export default class DetailPlus extends Component {
         );
     }
 
-    getRender = (tab) => {
+    getRender = (tab, currentTab) => {
         const { renderList } = this.state;
-        const { tabs, data } = this.props;
-        const defaultRender = merge(renderList[tab.key], tabs.find(item => item.key === tab.key));
-        const { render, key, name } = defaultRender;
+        const { data } = this.props;
+        const defaultRender = merge(renderList[tab.key], currentTab);
+        const { render, key, name, tabKey } = defaultRender;
 
         if (!render) return '';
 
-        return <Tabs.TabPane key={key} tab={name}>{render(data, defaultRender)}</Tabs.TabPane>;
+        return <Tabs.TabPane key={tabKey || key} tab={name}>{render(data, defaultRender)}</Tabs.TabPane>;
     }
 
     render() {
@@ -136,7 +158,7 @@ export default class DetailPlus extends Component {
 
         return (
             <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
-                {tabs.map((tab) => this.getRender(tab))}
+                {tabs.map((tab, index) => this.getRender(tab, tabs[index]))}
             </Tabs>
         );
     }
