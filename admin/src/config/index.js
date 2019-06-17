@@ -8,7 +8,7 @@ let config = {
 
   PAGE_SIZE: 10,
 
-  TITLE: 'Nestify - 中后台全栈解决方案',
+  TITLE: 'Nestify',
   COPYRIGHT: 'NestifyStack',
 };
 
