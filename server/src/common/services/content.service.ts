@@ -29,11 +29,11 @@ export class ContentService extends BaseService<Content> {
             payload.pageSize = 10;
         }
 
-        if (!!payload.category) {
-            qb.innerJoinAndSelect('t.category', 'category', 'category.name = :category', {
-                category: payload.category
-            });
-        }
+        // if (!!payload.category) {
+        //     qb.innerJoinAndSelect('t.category', 'category', 'category.name = :category', {
+        //         category: payload.category
+        //     });
+        // }
 
         if (!!payload.keyword) {
             qb.andWhere(`t.title LIKE '%${payload.keyword}%'`);
@@ -57,16 +57,7 @@ export class ContentService extends BaseService<Content> {
         if (!!payload.isExport) {
             if (!payload.category) throw new BadRequestException('分类参数错误');
 
-            const dataSource = await qb.getMany();
-
-            return dataSource;
-
-            // 执行导出逻辑
-            // return await ExcelHelper.export(
-            //     dataSource,
-            //     Content.sheetsMap[payload.category],
-            //     payload.fields.split(',')
-            // );
+            return await qb.getMany();
         } else {
             qb.skip(payload.page * payload.pageSize);
             qb.take(payload.pageSize);

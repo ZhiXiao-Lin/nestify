@@ -79,117 +79,95 @@ export class Content extends Base {
     static readonly sheetsMap: object = {
         景区介绍: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         地理概况: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         人文历史: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         工艺特色: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         发展规划: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         当地特产: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         特色工艺品: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         游览须知: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
 
         景点一览: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         全景720度: {
             map: '720度全景',
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         电子导游导览: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         摄影佳作: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         视频赏析: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
 
         特色餐饮: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         周边住宿: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         旅游购物: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         周边娱乐: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         游程推荐: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         美文游记: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
 
         官方公告: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         精彩活动: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         新闻动态: {
             handleType,
-            cellsMap,
-
+            cellsMap
         },
         联系方式: {
             handleType,
@@ -200,8 +178,7 @@ export class Content extends Base {
                 销售: 'ex_info.sale',
                 地址: 'ex_info.address',
                 邮编: 'ex_info.postcode'
-            },
-
+            }
         },
         留言咨询: {
             handleType,
@@ -209,7 +186,6 @@ export class Content extends Base {
                 问题: 'ex_info.question',
                 回复: 'ex_info.reply'
             }
-
         },
         投诉建议: {
             handleType,
@@ -218,8 +194,7 @@ export class Content extends Base {
                 标题: 'ex_info.title',
                 内容: 'ex_info.content',
                 电话: 'ex_info.phone'
-            },
-
+            }
         }
     };
 
@@ -286,20 +261,20 @@ export class Content extends Base {
         return Base.getFullPath(this.video);
     }
 
-    // @BeforeInsert()
-    // async beforeInsert() {
-    //     if (_.isEmpty(this.publish_at)) {
-    //         this.publish_at = moment().format('YYYY-MM-DD HH:mm:ss');
-    //     }
-    //     const text = extractionTextInHtml(this.text);
-    //     this.summary = textInterception(text, 120);
-    // }
+    @BeforeInsert()
+    async beforeInsert() {
+        if (_.isEmpty(this.publish_at)) {
+            this.publish_at = moment().format('YYYY-MM-DD HH:mm:ss');
+        }
+        const text = extractionTextInHtml(this.text);
+        this.summary = textInterception(text, 120);
+    }
 
-    // @BeforeUpdate()
-    // async beforeUpdate() {
-    //     const text = extractionTextInHtml(this.text);
-    //     this.summary = textInterception(text, 120);
-    // }
+    @BeforeUpdate()
+    async beforeUpdate() {
+        const text = extractionTextInHtml(this.text);
+        this.summary = textInterception(text, 120);
+    }
 
     // @AfterInsert()
     // async afterInsert() {
