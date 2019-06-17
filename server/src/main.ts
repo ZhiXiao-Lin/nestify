@@ -119,7 +119,7 @@ async function bootstrap() {
     app.enableCors();
     app.useGlobalFilters(new ExceptionsFilter());
 
-    io.server.listen(fastify.server);
+    io.server.listen(app.getHttpServer());
     await io.init();
 
     await app.listen(config.port, config.hostName, () => {
