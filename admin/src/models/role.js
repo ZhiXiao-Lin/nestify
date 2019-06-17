@@ -5,7 +5,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
 import { downloadBuffer } from '@/utils/utils';
 import config from '@/config';
 
-const API_URL = config.API_ROOT + '/role';
+const API_URL = config.apiRoot + '/role';
 
 export default {
   namespace: 'role',
@@ -17,7 +17,7 @@ export default {
     queryParams: {},
     data: {
       page: 0,
-      pageSize: config.PAGE_SIZE,
+      pageSize: config.pagination.size,
       total: 0,
       totalPage: 0,
       list: [],
@@ -30,7 +30,7 @@ export default {
   effects: {
     *fetch({ payload }, { call, put, select }) {
       payload.page = !!payload.page ? payload.page - 1 : 0;
-      payload.pageSize = payload.pageSize || config.PAGE_SIZE;
+      payload.pageSize = payload.pageSize || config.pagination.size;
 
       const { queryParams } = yield select((state) => state.role);
 
@@ -51,10 +51,10 @@ export default {
             queryParams: params,
             data: {
               page: params.page + 1,
-              pageSize: config.PAGE_SIZE,
+              pageSize: config.pagination.size,
               list: res[0],
               total: res[1],
-              totalPage: Math.ceil(res[1] / config.PAGE_SIZE),
+              totalPage: Math.ceil(res[1] / config.pagination.size),
             },
           },
         });

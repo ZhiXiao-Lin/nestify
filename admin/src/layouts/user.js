@@ -24,10 +24,10 @@ function UserLayout(props) {
               <div className={styles.header}>
                 <Link to="/">
                   <img alt="logo" className={styles.logo} src={logo} />
-                  <span className={styles.title}> {config.TITLE} </span>
+                  <span className={styles.title}> {config.siteInfo.title} </span>
                 </Link>
               </div>
-              <div className={styles.desc}>中后台全栈解决方案</div>
+              <div className={styles.desc}>{config.siteInfo.desc}</div>
             </div>
             {props.children}
           </div>
@@ -35,7 +35,7 @@ function UserLayout(props) {
             links={[]}
             copyright={
               <React.Fragment>
-                Copyright <Icon type="copyright" /> {new Date().getFullYear()} {config.COPYRIGHT}
+                Copyright <Icon type="copyright" /> {new Date().getFullYear()} {config.siteInfo.copyright}
               </React.Fragment>
             }
           />

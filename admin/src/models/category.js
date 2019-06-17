@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { apiGet, apiPost, apiPut, apiDelete } from '@/utils';
 import config from '@/config';
 
-const API_URL = config.API_ROOT + '/category';
+const API_URL = config.apiRoot + '/category';
 
 export default {
 	namespace: 'category',
@@ -22,7 +22,7 @@ export default {
 	effects: {
 		*fetch({ payload }, { call, put, select }) {
 			payload.page = !!payload.page ? payload.page - 1 : 0;
-			payload.pageSize = config.PAGE_SIZE;
+			payload.pageSize = config.pagination.size;
 
 			const { queryParams } = yield select((state) => state.category);
 

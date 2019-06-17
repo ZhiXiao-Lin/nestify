@@ -3,7 +3,7 @@ import moment from 'moment';
 import config from '@/config';
 import { apiPost } from '@/utils';
 
-const API_URL = config.API_ROOT + '/search';
+const API_URL = config.apiRoot + '/search';
 
 const indexTypeMaps = {
   contents: {

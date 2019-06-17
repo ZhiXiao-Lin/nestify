@@ -2,19 +2,29 @@ import { merge } from 'lodash';
 import productionConfig from './production';
 
 let config = {
-  API_ROOT: 'http://127.0.0.1:3000/api',
-  SOCKET_ROOT: 'http://127.0.0.1:3000',
-  STATIC_ROOT: 'http://127.0.0.1:3000/static',
-  QINIU_UPLOAD_URL: 'https://up-z2.qiniup.com',
+  apiRoot: 'http://127.0.0.1:3000/api',
+  socketRoot: 'http://127.0.0.1:3000',
+  staticRoot: 'http://127.0.0.1:3000/static',
 
-  PAGE_SIZE: 10,
+  qiniu: {
+    uploadUrl: 'https://up-z2.qiniup.com',
+    domain: 'http://pt81bm3p8.bkt.clouddn.com'
+  },
 
-  TITLE: 'Nestify',
-  COPYRIGHT: 'NestifyStack',
+  pagination: {
+    size: 10
+  },
+
+  siteInfo: {
+    title: 'Nestify',
+    desc: '中后台全栈解决方案',
+    copyright: 'NestifyStack',
+  }
 };
 
 if (process.env.NODE_ENV === 'production') {
   config = merge(config, productionConfig);
 }
 
+export { config };
 export default config;

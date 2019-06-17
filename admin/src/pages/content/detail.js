@@ -3,7 +3,6 @@ import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
 import {
-  Tabs,
   Form,
   Input,
   InputNumber,
@@ -12,17 +11,9 @@ import {
   Icon,
   DatePicker,
   Button,
-  Skeleton,
 } from 'antd';
 
-import config from '@/config';
-import { apiUploadOneToQiniu } from '@/utils';
-
-import ImageCropper from '@/components/ImageCropper';
-import VideoEditor from '@/components/VideoEditor';
-
-import BraftEditor from 'braft-editor';
-import 'braft-editor/dist/index.css';
+import DetailPlus from '@/components/DetailPlus';
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -41,9 +32,6 @@ const MODEL_NAME = 'contents';
   columns: contents.columns,
 }))
 export default class extends React.Component {
-  state = {
-    tabKey: 'basic',
-  };
 
   componentDidMount() {
     const {
@@ -304,52 +292,6 @@ export default class extends React.Component {
     }
   };
 
-  onTabChange = (tabKey) => {
-    this.setState({ tabKey });
-  };
-
-  onThumbnailUpload = async (file) => {
-    const { dispatch } = this.props;
-
-    const res = await apiUploadOneToQiniu(file);
-
-    if (!!res && !!res.path) {
-      dispatch({
-        type: `${MODEL_NAME}/save`,
-        payload: {
-          thumbnail: res,
-        },
-      });
-    }
-  };
-
-  onVideoUpload = async (file) => {
-    const { dispatch } = this.props;
-
-    const res = await apiUploadOneToQiniu(file);
-
-    if (!!res && !!res.path) {
-      dispatch({
-        type: `${MODEL_NAME}/save`,
-        payload: {
-          video: res,
-        },
-      });
-    }
-  };
-
-  onEditorMediaUpload = async (context) => {
-    if (!context || !context.file) return;
-
-    const res = await apiUploadOneToQiniu(context.file);
-    if (!res) {
-      context.error({ error: '上传失败' });
-    } else {
-      context.progress(101);
-      context.success({ url: `${config.STATIC_ROOT}${res.path}` });
-    }
-  };
-
   resetHandler = () => {
     this.props.form.resetFields();
   };
@@ -375,36 +317,6 @@ export default class extends React.Component {
         payload: values,
       });
     });
-  };
-
-  toSaveRichText = () => {
-    this.props.dispatch({
-      type: `${MODEL_NAME}/save`,
-      payload: {
-        text: this.editorRef.getValue().toHTML(),
-      },
-    });
-  };
-
-  renderRichText = (content) => {
-    const editorProps = {
-      placeholder: '请输入内容',
-      contentFormat: 'html',
-      contentId: content.id,
-      value: BraftEditor.createEditorState(content.text),
-      onSave: this.toSaveRichText,
-      media: {
-        uploadFn: this.onEditorMediaUpload,
-      },
-    };
-    return (
-      <Fragment>
-        <Button type="primary" onClick={this.toSaveRichText}>
-          保存
-        </Button>
-        <BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
-      </Fragment>
-    );
   };
 
   renderBasicForm = () => {
@@ -611,12 +523,24 @@ export default class extends React.Component {
     );
   };
 
+  toSave = (payload) => {
+    this.props.dispatch({
+      type: `${MODEL_NAME}/save`,
+      payload
+    });
+  }
+
   render() {
-    const { selectedNode, columns } = this.props;
 
-    if (!selectedNode) return <Skeleton active loading />;
+    const { selectedNode } = this.props;
 
-    const fields = columns.map((item) => item.dataIndex);
+    let tabs = [{ key: 'basic', render: this.renderBasicForm }];
+
+    if (!!selectedNode && !!selectedNode.id) {
+      tabs = tabs.concat([{ key: 'image' },
+      { key: 'video' },
+      { key: 'text' },])
+    }
 
     return (
       <Fragment>
@@ -624,33 +548,11 @@ export default class extends React.Component {
           <Icon type="arrow-left" />
           返回
         </Button>
-        <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
-          <Tabs.TabPane tab="基本信息" key="basic">
-            {this.renderBasicForm()}
-          </Tabs.TabPane>
-          {selectedNode.id && fields.includes('thumbnailPath') ? (
-            <Tabs.TabPane tab="图片" key="thumbnail">
-              <ImageCropper
-                url={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
-                onUpload={this.onThumbnailUpload}
-              />
-            </Tabs.TabPane>
-          ) : null}
-          {selectedNode.id && fields.includes('videoPath') ? (
-            <Tabs.TabPane tab="视频" key="video">
-              <VideoEditor
-                url={!selectedNode.video ? '' : selectedNode.videoPath}
-                onUpload={this.onVideoUpload}
-                width={500}
-              />
-            </Tabs.TabPane>
-          ) : null}
-          {selectedNode.id && fields.includes('text') ? (
-            <Tabs.TabPane tab="正文" key="text">
-              {this.renderRichText(selectedNode)}
-            </Tabs.TabPane>
-          ) : null}
-        </Tabs>
+        <DetailPlus
+          data={selectedNode}
+          tabs={tabs}
+          toSave={this.toSave}
+        />
       </Fragment>
     );
   }

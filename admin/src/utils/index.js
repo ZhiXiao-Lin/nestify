@@ -7,7 +7,7 @@ import UUID from 'uuid';
 import config from '@/config';
 
 const instance = axios.create({
-  baseURL: config.API_ROOT,
+  baseURL: config.apiRoot,
   timeout: 150000,
   headers: {
     xhr: true,
@@ -111,8 +111,12 @@ export async function apiUploadOne(
 
   Object.keys(params).forEach((item) => param.append(item, params[item]));
 
-  const res = await apiPost(`${config.API_ROOT}/storage`, param, options);
-  res.storageType = 'local';
+  const res = await apiPost(`${config.apiRoot}/storage`, param, options);
+
+  if (_.isObject(res)) {
+    res.storageType = 'local';
+  }
+
   return res;
 }
 
@@ -126,7 +130,7 @@ export async function apiUploadOneToQiniu(
     return false;
   }
 
-  const uploadToken = await apiGet(`${config.API_ROOT}/storage/qiniu/uploadToken`);
+  const uploadToken = await apiGet(`${config.apiRoot}/storage/qiniu/uploadToken`);
 
   params.key = `${moment().format('YYYY-MM-DD')}/${UUID.v4()}-${file.name}`;
   params.token = uploadToken;
@@ -136,7 +140,7 @@ export async function apiUploadOneToQiniu(
 
   Object.keys(params).forEach((item) => param.append(item, params[item]));
 
-  const res = await apiPost(`${config.QINIU_UPLOAD_URL}`, param, options);
+  const res = await apiPost(`${config.qiniu.uploadUrl}`, param, options);
   res.storageType = 'qiniu';
   res.path = res.key;
   return res;

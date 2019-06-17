@@ -103,7 +103,7 @@ export default class StudioLayout extends PureComponent {
     const userAuthorities = currentUser.authorities.map((item) => item.token);
 
     return (
-      <DocumentTitle title={config.TITLE}>
+      <DocumentTitle title={config.siteInfo.title}>
         <LocaleProvider locale={zhCN}>
           <Layout>
             {menuLayout === 'sidemenu' && (
@@ -112,7 +112,7 @@ export default class StudioLayout extends PureComponent {
                   <div className={styles.logo} id="logo">
                     <Link to={'/'}>
                       <img src={logo} alt="logo" />
-                      <h1>{config.TITLE}</h1>
+                      <h1>{config.siteInfo.title}</h1>
                     </Link>
                   </div>
                 }
@@ -128,7 +128,7 @@ export default class StudioLayout extends PureComponent {
             <Layout
               className={`${menuLayout === 'sidemenu' && styles.mainLayout} ${
                 collapsed && menuLayout === 'sidemenu' ? styles.layoutCollapsed : ''
-              }`}
+                }`}
             >
               <Header className={styles.header}>
                 <GlobalHeader
@@ -161,7 +161,7 @@ export default class StudioLayout extends PureComponent {
                   copyright={
                     <Fragment>
                       Copyright <Icon type="copyright" /> {new Date().getFullYear()}{' '}
-                      {config.COPYRIGHT}
+                      {config.siteInfo.copyright}
                     </Fragment>
                   }
                 />

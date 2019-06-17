@@ -4,7 +4,7 @@ import { apiGet, apiPost, apiPut } from '@/utils';
 
 import config from '@/config';
 
-const API_URL = config.API_ROOT + '/setting';
+const API_URL = config.apiRoot + '/setting';
 
 export default {
   namespace: 'setting',

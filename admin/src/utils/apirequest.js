@@ -6,7 +6,7 @@ import { getKeyValue } from '../utils/persistance';
 import config from './config';
 
 const gAppName = config.APP_NAME;
-const gApiRoot = config.API_ROOT;
+const gApiRoot = config.apiRoot;
 const gApiUploadBackend = config.API_URL.UPLOAD.BACKEND_STORAGE;
 const gUrlRoot = config.LOCAL_URL.ROOT;
 

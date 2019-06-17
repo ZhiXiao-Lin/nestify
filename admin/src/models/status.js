@@ -31,7 +31,7 @@ export default {
       let client = null;
       history.listen((location) => {
         if ('/studio' === location.pathname) {
-          client = io(`${config.SOCKET_ROOT}/status`);
+          client = io(`${config.socketRoot}/status`);
 
           client.on('connect', (socket) => {
             console.log(`================ on ${client.id} connect`, client);

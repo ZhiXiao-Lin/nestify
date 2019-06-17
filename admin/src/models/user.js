@@ -4,10 +4,10 @@ import router from 'umi/router';
 import config from '@/config';
 import { apiGet, apiPost, apiPut } from '@/utils';
 
-const API_LOGIN_URL = config.API_ROOT + '/login';
-const API_URL = config.API_ROOT + '/user';
-const API_CURRENT_USER_URL = config.API_ROOT + '/user/current';
-const API_CHANGE_PASSWORD_URL = config.API_ROOT + '/user/password';
+const API_LOGIN_URL = config.apiRoot + '/login';
+const API_URL = config.apiRoot + '/user';
+const API_CURRENT_USER_URL = config.apiRoot + '/user/current';
+const API_CHANGE_PASSWORD_URL = config.apiRoot + '/user/password';
 
 export default {
   namespace: 'user',
