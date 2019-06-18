@@ -58,42 +58,29 @@ export default class DetailPlus extends Component {
                 text: {
                     name: '正文',
                     render: this.renderText,
-                    options: {},
+                    options: {
+                        uploadFn: async (context) => {
+                            if (!context || !context.file) return;
+
+                            const res = await apiUploadOneToQiniu(context.file);
+                            if (!res) {
+                                context.error({ error: '上传失败' });
+                            } else {
+                                context.progress(101);
+                                context.success({ url: `${config.qiniu.domain}/${res.path}` });
+                            }
+                        }
+                    },
                     renderValue: (data) => BraftEditor.createEditorState(data.text),
                     saveValue: () => this.props.toSave({
                         text: this.editorRef.getValue().toHTML()
-                    }),
-                    uploadFn: async (context) => {
-                        if (!context || !context.file) return;
-
-                        const res = await apiUploadOneToQiniu(context.file);
-                        if (!res) {
-                            context.error({ error: '上传失败' });
-                        } else {
-                            context.progress(101);
-                            context.success({ url: `${config.qiniu.domain}/${res.path}` });
-                        }
-                    }
+                    })
                 },
                 editableTable: {
                     name: '表格',
                     render: this.rednerEditorTable,
                     options: {},
-                    renderValue: (data) => BraftEditor.createEditorState(data.text),
-                    saveValue: () => this.props.toSave({
-                        text: this.editorRef.getValue().toHTML()
-                    }),
-                    uploadFn: async (context) => {
-                        if (!context || !context.file) return;
-
-                        const res = await apiUploadOneToQiniu(context.file);
-                        if (!res) {
-                            context.error({ error: '上传失败' });
-                        } else {
-                            context.progress(101);
-                            context.success({ url: `${config.qiniu.domain}/${res.path}` });
-                        }
-                    }
+                    renderValue: (data) => data.ex_info.links,
                 },
             }
         });
@@ -127,7 +114,7 @@ export default class DetailPlus extends Component {
             value: render.renderValue(data),
             onSave: render.saveValue,
             media: {
-                uploadFn: render.uploadFn,
+                uploadFn: render.options.uploadFn,
             },
         };
         return (
@@ -138,6 +125,13 @@ export default class DetailPlus extends Component {
                 <BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
             </Fragment>
         );
+    }
+
+    rednerEditorTable = (data, render) => {
+        return <EditableTable
+            dataSource={render.renderValue(data)}
+            {...render.options}
+        />
     }
 
     getRender = (tab, currentTab) => {

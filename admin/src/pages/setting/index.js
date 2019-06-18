@@ -475,69 +475,14 @@ export default class extends React.Component {
 
     if (!selectedNode) return <Skeleton active loading />;
 
-    const wechatImg = selectedNode.wechatImg;
-    const weiboImg = selectedNode.weiboImg;
-
     return (
       <Fragment>
-        {/* <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
-          <Tabs.TabPane tab="基础设置" key="basic">
-            {this.renderBasicForm()}
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="详细设置" key="detail">
-            {this.renderDetailForm()}
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="SEO设置" key="seo">
-            {this.renderSEOForm()}
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="友情链接" key="richtext">
-            <EditableTable
-              dataSource={selectedNode.ex_info.links}
-              columns={[
-                {
-                  title: '标题',
-                  key: 'id',
-                  dataIndex: 'title',
-                  editable: true,
-                },
-                {
-                  title: '地址',
-                  dataIndex: 'url',
-                  editable: true,
-                },
-                {
-                  title: '排序',
-                  dataIndex: 'sort',
-                  editable: true,
-                },
-                {
-                  title: '操作',
-                  dataIndex: 'title',
-                  render: (val, row) => (
-                    <Popconfirm
-                      title="确定要删除吗?"
-                      okText="确定"
-                      cancelText="取消"
-                      onConfirm={() => this.handleDelete(row)}
-                    >
-                      <a href="javascript:;">删除</a>
-                    </Popconfirm>
-                  ),
-                },
-              ]}
-              handleAdd={this.handleAdd}
-              handleSave={this.handleSave}
-            />
-          </Tabs.TabPane>
-        </Tabs> */}
-
         <DetailPlus
           data={selectedNode}
           tabs={[
             { key: 'basic', name: '基础设置', render: this.renderBasicForm },
             { key: 'detail', name: '详细设置', render: this.renderDetailForm },
-            { key: 'seo', name: 'SEO设置', render: this.renderBasicForm },
+            { key: 'seo', name: 'SEO设置', render: this.renderSEOForm },
             {
               key: 'image', tabKey: 'wecahtQRCode', name: '微信二维码', options: {
                 width: 200,
@@ -579,7 +524,42 @@ export default class extends React.Component {
               }
             },
             {
-              key: 'editableTable', name: '友情链接'
+              key: 'editableTable', name: '友情链接', options: {
+                columns: [
+                  {
+                    title: '标题',
+                    key: 'id',
+                    dataIndex: 'title',
+                    editable: true,
+                  },
+                  {
+                    title: '地址',
+                    dataIndex: 'url',
+                    editable: true,
+                  },
+                  {
+                    title: '排序',
+                    dataIndex: 'sort',
+                    editable: true,
+                  },
+                  {
+                    title: '操作',
+                    dataIndex: 'title',
+                    render: (val, row) => (
+                      <Popconfirm
+                        title="确定要删除吗?"
+                        okText="确定"
+                        cancelText="取消"
+                        onConfirm={() => this.handleDelete(row)}
+                      >
+                        <a href="javascript:;">删除</a>
+                      </Popconfirm>
+                    ),
+                  }
+                ],
+                handleAdd: this.handleAdd,
+                handleSave: this.handleSave,
+              }
             }
           ]}
           toSave={this.toSave}

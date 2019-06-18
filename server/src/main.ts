@@ -84,7 +84,7 @@ async function bootstrap() {
 
     if (!!process.env.DB_INIT) {
         try {
-            Logger.log('Database initializing ...');
+            Logger.log('Database initializing');
 
             const seed = app.get(Seed);
             await seed.start();
