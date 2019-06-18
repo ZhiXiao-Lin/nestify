@@ -15,13 +15,14 @@
 -   Redis 5.0.3
 -   PostgreSQL 9.6
 -   InfluxDB 1.7.6
--   ElasticSearch 5.6 以及中文分词插件 IK 5.6 (关于 ES 对机器配置要求高的问题，正在寻找轻量级替代方案)
+-   ElasticSearch 5.6 以及中文分词插件 IK 5.6
+-   RabbitMQ 3.7.15
 
 ## 使用方法
 
 1. git clone 项目到本地
 2. 执行 yarn && yarn:ic
-3. 安装 Node.js、Redis、PostgreSQL、InfluxDB、ElasticSearch
+3. 安装 Node.js、Redis、PostgreSQL、InfluxDB、ElasticSearch、RabbitMQ
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 根目录执行 yarn db:create 用于创建数据库和数据库用户
 6. 执行 yarn db:init 用于创建数据表和导入种子数据
@@ -41,13 +42,15 @@
 
 ## 功能概览
 
--   Fastify 的超强性能
+-   Fastify 高性能 HTTP 服务
 -   React 服务端渲染
 -   React SPA 后台管理系统
 -   InfluxDB 时序数据库
 -   Socket.IO 双向通讯
 -   ElasticSearch 全文检索
+-   RabbitMQ 消息队列
 -   RBAC 权限管理
+-   工作流引擎
 -   日志模块
 -   配置文件
 -   安全保护

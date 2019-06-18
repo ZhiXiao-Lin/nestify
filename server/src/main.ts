@@ -19,6 +19,8 @@ import { config } from './config';
 import { ExceptionsFilter } from './common/aspects/exceptions.filter';
 import { influx } from './common/lib/influx';
 import { io } from './common/lib/io';
+import { mq } from './common/lib/mq';
+import { wf } from './common/lib/wf';
 import { Logger } from './common/lib/logger';
 
 declare const module: any;
@@ -109,12 +111,14 @@ async function bootstrap() {
     app.enableCors();
     app.useGlobalFilters(new ExceptionsFilter());
 
+    await mq.init();
+    await wf.init();
+
     io.server.listen(app.getHttpServer());
     await io.init();
 
     await app.listen(config.port, config.hostName, () => {
         Logger.log(`Server run at port ${config.port}`);
-        Logger.log(config);
     });
 
     if (module.hot) {

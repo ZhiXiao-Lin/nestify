@@ -2,7 +2,7 @@ import * as SocketIO from 'socket.io';
 import { Logger } from './logger';
 
 export class IO {
-    socketIO: SocketIO.Server;
+    private readonly socketIO: SocketIO.Server;
 
     constructor() {
         this.socketIO = SocketIO();

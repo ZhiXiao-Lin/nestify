@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { resolve } from 'path';
 import * as Influx from 'influx';
 import * as productionConfig from './production';
+import { LoggerLevel } from '../common/lib/logger';
 
 let config = {
     port: 3000,
@@ -24,6 +25,10 @@ let config = {
         root: 'static',
         prefix: '/static/',
         uploadPath: '/uploads'
+    },
+
+    logger: {
+        level: LoggerLevel.ALL
     },
 
     jwt: {
@@ -98,6 +103,11 @@ let config = {
     es: {
         host: '127.0.0.1:9200',
         log: 'trace'
+    },
+
+    mq: {
+        url: 'amqp://localhost',
+        options: {},
     }
 };
 

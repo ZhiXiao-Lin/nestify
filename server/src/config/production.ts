@@ -1,7 +1,12 @@
 import { resolve } from 'path';
+import { LoggerLevel } from '../common/lib/logger';
 
 export default {
 	port: 8008,
+
+	logger: {
+		level: LoggerLevel.INFO
+	},
 
 	cache: {
 		ttl: 3600,

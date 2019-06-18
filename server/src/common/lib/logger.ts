@@ -24,7 +24,7 @@ export class ContextTrace {
         public readonly path?: string,
         public readonly lineNumber?: number,
         public readonly columnNumber?: number
-    ) {}
+    ) { }
 }
 
 Log4js.addLayout('Nestify', (logConfig: any) => {
@@ -99,7 +99,7 @@ Log4js.configure({
 });
 
 const logger = Log4js.getLogger();
-logger.level = 'debug';
+logger.level = LoggerLevel.TRACE;
 
 export class Logger {
     static trace(...args) {
