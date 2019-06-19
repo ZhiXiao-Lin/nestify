@@ -10,12 +10,6 @@ export class Category extends Base {
 	@Column({ comment: '名称' })
 	name: string;
 
-	@Column({ comment: '图标', default: '' })
-	icon: string;
-
-	@Column({ comment: '地址' })
-	url: string;
-
 	@Column({ comment: '排序', default: 0 })
 	sort: number;
 
@@ -33,7 +27,7 @@ export class Category extends Base {
 		分类: {
 			map: 'categorys',
 			handleType: ExcelHandleType.ARRAY,
-			cellsMap: { ID: 'id', 名称: 'name', 图标: 'icon', 链接: 'url', 排序: 'sort', PID: 'parent' }
+			cellsMap: { ID: 'id', 名称: 'name', 排序: 'sort', PID: 'parent' }
 		}
 	};
 

@@ -36,12 +36,11 @@ export default [
         name: '内容管理',
         icon: 'book',
         path: '/studio/content',
-        component: './content',
+
         Routes: ['src/pages/Authorized'],
         routes: [
-          { name: '文章管理', path: '/studio/content' },
-          { name: '文章分类', path: '/studio/content/category' },
-
+          { name: '文章管理', path: '/studio/content', component: './content' },
+          { name: '文章分类', path: '/studio/content/category', component: './content/category' },
         ],
       },
       {

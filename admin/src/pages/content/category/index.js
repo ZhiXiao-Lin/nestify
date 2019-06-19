@@ -142,24 +142,6 @@ export default class extends React.Component {
           })(<Input disabled {...formItemStyle} type="text" placeholder="请填写名称" />)}
         </Form.Item>
 
-        <Form.Item {...formItemLayout} label="链接">
-          {getFieldDecorator('url', {
-            initialValue: !selectedNode ? null : selectedNode['url'],
-            rules: [
-              {
-                required: true,
-                message: '链接不能为空'
-              }
-            ]
-          })(<Input {...formItemStyle} type="text" placeholder="请填写链接" />)}
-        </Form.Item>
-
-        <Form.Item {...formItemLayout} label="图标">
-          {getFieldDecorator('icon', {
-            initialValue: !selectedNode ? null : selectedNode['icon']
-          })(<Input {...formItemStyle} type="text" placeholder="请填写图标" />)}
-        </Form.Item>
-
         <Form.Item {...formItemLayout} label="排序">
           {getFieldDecorator('sort', {
             initialValue: !selectedNode ? 0 : selectedNode['sort']
@@ -194,7 +176,7 @@ export default class extends React.Component {
         <Content className={styles.normal}>
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={6}>
-              <Divider orientation="left" >菜单</Divider>
+              <Divider orientation="left" >文章分类</Divider>
               <Tree
                 showLine
                 onExpand={this.onExpand}
