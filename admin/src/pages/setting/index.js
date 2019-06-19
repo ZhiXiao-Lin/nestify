@@ -207,39 +207,6 @@ export default class extends React.Component {
     } = this.props;
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
-        <Form.Item {...formItemLayout} label="游玩时间">
-          {getFieldDecorator('ex_info.setting.openInfo', {
-            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['openInfo'],
-            rules: [
-              {
-                required: true,
-                message: '游玩时间不能为空',
-              },
-            ],
-          })(
-            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写游玩时间" />
-          )}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="在线预定地址">
-          {getFieldDecorator('ex_info.setting.onlineSaleUrl', {
-            initialValue: !selectedNode
-              ? null
-              : selectedNode['ex_info']['setting']['onlineSaleUrl'],
-            rules: [
-              {
-                required: true,
-                message: '在线预定地址不能为空',
-              },
-            ],
-          })(
-            <Input.TextArea
-              rows={5}
-              {...formItemStyle}
-              type="text"
-              placeholder="请填写在线预定地址"
-            />
-          )}
-        </Form.Item>
         <Form.Item {...formItemLayout} label="服务热线">
           {getFieldDecorator('ex_info.setting.serviceHotline', {
             initialValue: !selectedNode
@@ -252,43 +219,6 @@ export default class extends React.Component {
               },
             ],
           })(<Input {...formItemStyle} type="text" placeholder="请填写服务热线" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="售票热线">
-          {getFieldDecorator('ex_info.setting.bookingHotline', {
-            initialValue: !selectedNode
-              ? null
-              : selectedNode['ex_info']['setting']['bookingHotline'],
-            rules: [
-              {
-                required: true,
-                message: '售票热线不能为空',
-              },
-            ],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写售票热线" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="商务合作热线">
-          {getFieldDecorator('ex_info.setting.cooperationHotline', {
-            initialValue: !selectedNode
-              ? null
-              : selectedNode['ex_info']['setting']['cooperationHotline'],
-            rules: [
-              {
-                required: true,
-                message: '商务合作热线不能为空',
-              },
-            ],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写商务合作热线" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="景区办公热线">
-          {getFieldDecorator('ex_info.setting.officeTel', {
-            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['officeTel'],
-            rules: [
-              {
-                required: true,
-                message: '景区办公热线不能为空',
-              },
-            ],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写景区办公热线" />)}
         </Form.Item>
         <Form.Item {...formItemLayout} label="邮政编码">
           {getFieldDecorator('ex_info.setting.postcode', {
@@ -312,31 +242,29 @@ export default class extends React.Component {
             ],
           })(<Input {...formItemStyle} type="text" placeholder="请填写传真号码" />)}
         </Form.Item>
+        <Form.Item {...formItemLayout} label="邮箱">
+          {getFieldDecorator('ex_info.setting.email', {
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['email'],
+            rules: [
+              {
+                required: true,
+                message: '邮箱不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写邮箱" />)}
+        </Form.Item>
 
-        <Form.Item {...formItemLayout} label="景区地址">
+        <Form.Item {...formItemLayout} label="地址">
           {getFieldDecorator('ex_info.setting.address', {
             initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['address'],
             rules: [
               {
                 required: true,
-                message: '景区地址不能为空',
+                message: '地址不能为空',
               },
             ],
           })(
-            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写景区地址" />
-          )}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="乘车路线">
-          {getFieldDecorator('ex_info.setting.busLine', {
-            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['busLine'],
-            rules: [
-              {
-                required: true,
-                message: '乘车路线不能为空',
-              },
-            ],
-          })(
-            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写乘车路线" />
+            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写地址" />
           )}
         </Form.Item>
 
@@ -484,6 +412,46 @@ export default class extends React.Component {
             { key: 'detail', name: '详细设置', render: this.renderDetailForm },
             { key: 'seo', name: 'SEO设置', render: this.renderSEOForm },
             {
+              key: 'image', tabKey: 'logoLight', name: '亮色logo', options: {
+                width: 440,
+                height: 80
+              },
+              renderValue: (data) => data.logoLightImg,
+              saveValue: async (file) => {
+                const res = await apiUploadOneToQiniu(file);
+
+                if (!!res && !!res.path) {
+                  this.toSave({
+                    ex_info: {
+                      setting: {
+                        logoLight: res,
+                      },
+                    }
+                  })
+                }
+              }
+            },
+            {
+              key: 'image', tabKey: 'logoDark', name: '暗色logo', options: {
+                width: 440,
+                height: 80
+              },
+              renderValue: (data) => data.logoDarkImg,
+              saveValue: async (file) => {
+                const res = await apiUploadOneToQiniu(file);
+
+                if (!!res && !!res.path) {
+                  this.toSave({
+                    ex_info: {
+                      setting: {
+                        logoDark: res,
+                      },
+                    }
+                  })
+                }
+              }
+            },
+            {
               key: 'image', tabKey: 'wecahtQRCode', name: '微信二维码', options: {
                 width: 200,
                 height: 200
@@ -523,7 +491,7 @@ export default class extends React.Component {
                 }
               }
             },
-            {
+            {/* {
               key: 'editableTable', name: '友情链接', options: {
                 columns: [
                   {
@@ -560,7 +528,7 @@ export default class extends React.Component {
                 handleAdd: this.handleAdd,
                 handleSave: this.handleSave,
               }
-            }
+            } */}
           ]}
           toSave={this.toSave}
         />

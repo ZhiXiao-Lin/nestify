@@ -35,14 +35,18 @@ export default [
       {
         name: '内容管理',
         icon: 'book',
-        path: '/studio/content/:channel',
+        path: '/studio/content',
         component: './content',
         Routes: ['src/pages/Authorized'],
-        routes: [{ name: '文章管理', path: '/studio/content/article' }],
+        routes: [
+          { name: '文章管理', path: '/studio/content' },
+          { name: '文章分类', path: '/studio/content/category' },
+
+        ],
       },
       {
-        name_noshow: '内容详情',
-        path: '/studio/contentdetail/:channel/:id',
+        name_noshow: '文章详情',
+        path: '/studio/contentdetail/:id',
         component: './content/detail',
       },
       {
@@ -79,13 +83,6 @@ export default [
         name_noshow: '详情',
         path: '/studio/roledetail/:id',
         component: './auth/role/detail',
-      },
-      {
-        name: '菜单管理',
-        icon: 'menu',
-        path: '/studio/category',
-        component: './category',
-        Routes: ['src/pages/Authorized'],
       },
       {
         name: '站点设置',

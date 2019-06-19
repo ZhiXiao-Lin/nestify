@@ -42,263 +42,133 @@ const DETAIL_URL = '/studio/contentdetail';
 @Form.create()
 export default class extends React.Component {
   componentDidMount() {
-    const {
-      match: { params },
-    } = this.props;
 
-    this.init(params.channel);
+    this.init();
     this.onReset();
     this.refresh();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {
-      match: { params },
-    } = nextProps;
-    if (this.props.match.params.channel !== params.channel) {
-      this.init(params.channel);
-      this.loadData({ page: 0, category: params.channel });
-    }
-  }
+  init = () => {
 
-  init = (channel) => {
-    let columns = [];
-    let fields = [];
-    let showQueryCondition = false;
 
-    switch (channel) {
-      case '联系方式':
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-            render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
-          },
-          {
-            title: '公司名称',
-            dataIndex: 'ex_info.company',
-          },
-          {
-            title: '电话',
-            dataIndex: 'ex_info.phone',
-          },
-          {
-            title: '传真',
-            dataIndex: 'ex_info.fax',
-          },
-          {
-            title: '销售',
-            dataIndex: 'ex_info.sale',
-          },
-          {
-            title: '地址',
-            dataIndex: 'ex_info.address',
-          },
-          {
-            title: '邮编',
-            dataIndex: 'ex_info.postcode',
-          },
-        ];
-        fields = [
-          'id',
-          'ex_info.company',
-          'ex_info.phone',
-          'ex_info.fax',
-          'ex_info.sale',
-          'ex_info.address',
-          'ex_info.postcode',
-        ];
-        break;
-      case '留言咨询':
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-            render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
-          },
-          {
-            title: '问题',
-            dataIndex: 'ex_info.question',
-          },
-          {
-            title: '回复',
-            dataIndex: 'ex_info.reply',
-          },
-          {
-            title: '回复时间',
-            dataIndex: 'update_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '留言时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-        ];
-        fields = ['id', 'ex_info.question', 'ex_info.reply', 'update_at', 'create_at'];
-        break;
-      case '投诉建议':
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-            render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
-          },
-          {
-            title: '昵称',
-            dataIndex: 'ex_info.nickname',
-          },
-          {
-            title: '标题',
-            dataIndex: 'ex_info.title',
-          },
-          {
-            title: '内容',
-            dataIndex: 'ex_info.content',
-          },
-          {
-            title: '电话',
-            dataIndex: 'ex_info.phone',
-          },
-          {
-            title: '提交时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-        ];
-        fields = [
-          'id',
-          'ex_info.nickname',
-          'ex_info.title',
-          'ex_info.content',
-          'ex_info.phone',
-          'create_at',
-        ];
-        break;
-      default:
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-            render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
-          },
-          {
-            title: '图片',
-            dataIndex: 'thumbnailPath',
-            render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />),
-          },
-          {
-            title: '视频',
-            dataIndex: 'videoPath',
-            render: (val) => val,
-          },
-          {
-            title: '标题',
-            dataIndex: 'title',
-            render: (val) => {
-              const {
-                queryParams: { keyword },
-              } = this.props;
+    const columns = [
+      {
+        title: '详情',
+        dataIndex: 'id',
+        render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
+      },
+      {
+        title: '图片',
+        dataIndex: 'thumbnailPath',
+        render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />),
+      },
+      {
+        title: '视频',
+        dataIndex: 'videoPath',
+        render: (val) => val,
+      },
+      {
+        title: '标题',
+        dataIndex: 'title',
+        render: (val) => {
+          const {
+            queryParams: { keyword },
+          } = this.props;
 
-              const reg = new RegExp(keyword, 'gi');
+          const reg = new RegExp(keyword, 'gi');
 
-              return !!keyword
-                ? val
-                    .toString()
-                    .split(reg)
-                    .map((text, i) =>
-                      i > 0
-                        ? [
-                            <span key={i} col={i} style={{ color: 'red' }}>
-                              <b>{val.toString().match(reg)[0]}</b>
-                            </span>,
-                            text,
-                          ]
-                        : text
-                    )
-                : val;
-            },
-          },
-          {
-            title: '作者',
-            dataIndex: 'author',
-          },
-          {
-            title: '分类',
-            dataIndex: 'category',
-            render: (val) => val.name,
-          },
-          {
-            title: '来源',
-            dataIndex: 'source',
-          },
-          {
-            title: '摘要',
-            dataIndex: 'summary',
-          },
-          {
-            title: '地址',
-            dataIndex: 'address',
-          },
-          {
-            title: '排序',
-            dataIndex: 'sort',
-            sorter: true,
-          },
-          {
-            title: '浏览量',
-            dataIndex: 'views',
-            sorter: true,
-          },
-          {
-            title: '发布时间',
-            dataIndex: 'publish_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '修改时间',
-            dataIndex: 'update_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '创建时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '正文',
-            dataIndex: 'text',
-            render: (val) => '略',
-          },
-        ];
+          return !!keyword
+            ? val
+              .toString()
+              .split(reg)
+              .map((text, i) =>
+                i > 0
+                  ? [
+                    <span key={i} col={i} style={{ color: 'red' }}>
+                      <b>{val.toString().match(reg)[0]}</b>
+                    </span>,
+                    text,
+                  ]
+                  : text
+              )
+            : val;
+        },
+      },
+      {
+        title: '作者',
+        dataIndex: 'author',
+      },
+      {
+        title: '分类',
+        dataIndex: 'category',
+        render: (val) => val.name,
+      },
+      {
+        title: '来源',
+        dataIndex: 'source',
+      },
+      {
+        title: '摘要',
+        dataIndex: 'summary',
+      },
+      {
+        title: '地址',
+        dataIndex: 'address',
+      },
+      {
+        title: '排序',
+        dataIndex: 'sort',
+        sorter: true,
+      },
+      {
+        title: '浏览量',
+        dataIndex: 'views',
+        sorter: true,
+      },
+      {
+        title: '发布时间',
+        dataIndex: 'publish_at',
+        sorter: true,
+        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: '修改时间',
+        dataIndex: 'update_at',
+        sorter: true,
+        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'create_at',
+        sorter: true,
+        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: '正文',
+        dataIndex: 'text',
+        render: (val) => '略',
+      },
+    ];
 
-        fields = [
-          'id',
-          'thumbnailPath',
-          'title',
-          'author',
-          'source',
-          'sort',
-          'views',
-          'publish_at',
-          'update_at',
-        ];
-        showQueryCondition = true;
-        break;
-    }
+    const fields = [
+      'id',
+      'thumbnailPath',
+      'title',
+      'author',
+      'source',
+      'sort',
+      'views',
+      'publish_at',
+      'update_at',
+    ];
+
 
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
         columns,
         fields,
-        showQueryCondition,
+        showQueryCondition: true
       },
     });
   };
@@ -323,19 +193,11 @@ export default class extends React.Component {
   };
 
   toCreate = () => {
-    const {
-      match: { params },
-    } = this.props;
-
-    router.push(`${DETAIL_URL}/${params.channel}/CREATE`);
+    router.push(`${DETAIL_URL}/CREATE`);
   };
 
   toDetail = (id) => (e) => {
-    const {
-      match: { params },
-    } = this.props;
-
-    router.push(`${DETAIL_URL}/${params.channel}/${id}`);
+    router.push(`${DETAIL_URL}/${id}`);
   };
 
   toRemove = () => {
@@ -508,8 +370,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>
@@ -528,12 +390,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                  <Tooltip placement="bottom" title="删除">
-                    <Button disabled={true}>
-                      <Icon type="delete" />
-                    </Button>
-                  </Tooltip>
-                )}
+                    <Tooltip placement="bottom" title="删除">
+                      <Button disabled={true}>
+                        <Icon type="delete" />
+                      </Button>
+                    </Tooltip>
+                  )}
                 <Tooltip placement="bottom" title="新增">
                   <Button onClick={this.toCreate}>
                     <Icon type="file-add" />

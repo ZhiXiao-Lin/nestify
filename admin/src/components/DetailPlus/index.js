@@ -121,7 +121,7 @@ export default class DetailPlus extends Component {
             <Fragment>
                 <Button type="primary" onClick={render.saveValue}>
                     保存
-              </Button>
+                </Button>
                 <BraftEditor ref={(e) => (this.editorRef = e)} {...editorProps} />
             </Fragment>
         );

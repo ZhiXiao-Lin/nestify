@@ -238,7 +238,7 @@ export default class extends React.Component {
           {
             title: '正文',
             dataIndex: 'text',
-            render: (val) => '略',
+            render: (val) => '...',
           },
         ];
 
@@ -300,8 +300,7 @@ export default class extends React.Component {
     e.preventDefault();
 
     const {
-      dispatch,
-      match: { params },
+      dispatch
     } = this.props;
 
     this.props.form.validateFields((err, values) => {
@@ -310,7 +309,6 @@ export default class extends React.Component {
       }
 
       values['publish_at'] = moment(values['publish_at']).format('YYYY-MM-DD HH:mm:ss');
-      values['category'] = params.channel;
 
       dispatch({
         type: `${MODEL_NAME}/save`,
@@ -343,34 +341,6 @@ export default class extends React.Component {
             })(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
           </Form.Item>
         ) : null}
-        {fields.includes('author') ? (
-          <Form.Item {...formItemLayout} label="作者">
-            {getFieldDecorator('author', {
-              initialValue: !selectedNode ? null : selectedNode['author'],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('source') ? (
-          <Form.Item {...formItemLayout} label="来源">
-            {getFieldDecorator('source', {
-              initialValue: !selectedNode ? null : selectedNode['source'],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写来源" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('address') ? (
-          <Form.Item {...formItemLayout} label="地址">
-            {getFieldDecorator('address', {
-              initialValue: !selectedNode ? null : selectedNode['address'],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写地址" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('sort') ? (
-          <Form.Item {...formItemLayout} label="排序">
-            {getFieldDecorator('sort', {
-              initialValue: !selectedNode ? 0 : selectedNode['sort'],
-            })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
-          </Form.Item>
-        ) : null}
         {fields.includes('publish_at') ? (
           <Form.Item {...formItemLayout} label="发布时间">
             {getFieldDecorator('publish_at', {
@@ -386,125 +356,32 @@ export default class extends React.Component {
             )}
           </Form.Item>
         ) : null}
-        {fields.includes('ex_info.company') ? (
-          <Form.Item {...formItemLayout} label="公司名称">
-            {getFieldDecorator('ex_info.company', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['company']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="公司名称" />)}
+        {fields.includes('author') ? (
+          <Form.Item {...formItemLayout} label="作者">
+            {getFieldDecorator('author', {
+              initialValue: !selectedNode ? null : selectedNode['author'],
+            })(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
           </Form.Item>
         ) : null}
-        {fields.includes('ex_info.nickname') ? (
-          <Form.Item {...formItemLayout} label="昵称">
-            {getFieldDecorator('ex_info.nickname', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['nickname']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="昵称" />)}
+        {fields.includes('source') ? (
+          <Form.Item {...formItemLayout} label="来源">
+            {getFieldDecorator('source', {
+              initialValue: !selectedNode ? null : selectedNode['source'],
+            })(<Input {...formItemStyle} type="text" placeholder="请填写来源" />)}
           </Form.Item>
         ) : null}
-        {fields.includes('ex_info.title') ? (
-          <Form.Item {...formItemLayout} label="标题">
-            {getFieldDecorator('ex_info.title', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['title']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="标题" />)}
+        {fields.includes('address') ? (
+          <Form.Item {...formItemLayout} label="原文地址">
+            {getFieldDecorator('address', {
+              initialValue: !selectedNode ? null : selectedNode['address'],
+            })(<Input {...formItemStyle} type="text" placeholder="请填写原文地址" />)}
           </Form.Item>
         ) : null}
-        {fields.includes('ex_info.content') ? (
-          <Form.Item {...formItemLayout} label="内容">
-            {getFieldDecorator('ex_info.content', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['content']
-                  : '',
-            })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="内容" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.phone') ? (
-          <Form.Item {...formItemLayout} label="电话">
-            {getFieldDecorator('ex_info.phone', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['phone']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="电话" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.fax') ? (
-          <Form.Item {...formItemLayout} label="传真">
-            {getFieldDecorator('ex_info.fax', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['fax']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="传真" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.sale') ? (
-          <Form.Item {...formItemLayout} label="销售">
-            {getFieldDecorator('ex_info.sale', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['sale']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="销售" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.address') ? (
-          <Form.Item {...formItemLayout} label="地址">
-            {getFieldDecorator('ex_info.address', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['address']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="地址" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.postcode') ? (
-          <Form.Item {...formItemLayout} label="邮编">
-            {getFieldDecorator('ex_info.postcode', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['postcode']
-                  : '',
-            })(<Input {...formItemStyle} type="text" placeholder="邮编" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.question') ? (
-          <Form.Item {...formItemLayout} label="问题">
-            {getFieldDecorator('ex_info.question', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['question']
-                  : '',
-            })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="问题" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('ex_info.reply') ? (
-          <Form.Item {...formItemLayout} label="回复">
-            {getFieldDecorator('ex_info.reply', {
-              initialValue: !selectedNode
-                ? null
-                : selectedNode['ex_info']
-                  ? selectedNode['ex_info']['reply']
-                  : '',
-            })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="回复" />)}
+        {fields.includes('sort') ? (
+          <Form.Item {...formItemLayout} label="排序">
+            {getFieldDecorator('sort', {
+              initialValue: !selectedNode ? 0 : selectedNode['sort'],
+            })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
           </Form.Item>
         ) : null}
         <Form.Item {...tailFormItemLayout}>

@@ -61,4 +61,14 @@ export class Setting extends Base {
 	get weiboImg() {
 		return Base.getFullPath(this.ex_info.setting ? this.ex_info.setting.weibo : null)
 	}
+
+	@Expose()
+	get logoLightImg() {
+		return Base.getFullPath(this.ex_info.setting ? this.ex_info.setting.logoLight : null)
+	}
+
+	@Expose()
+	get logoDarkImg() {
+		return Base.getFullPath(this.ex_info.setting ? this.ex_info.setting.logoDark : null)
+	}
 }
