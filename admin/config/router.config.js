@@ -33,6 +33,15 @@ export default [
         component: './search',
       },
       {
+        name: '服务管理',
+        icon: 'cloud-server',
+        path: '/studio/service',
+        Routes: ['src/pages/Authorized'],
+        routes: [
+          { name: '服务分类', path: '/studio/service/category', component: './service/category' },
+        ],
+      },
+      {
         name: '内容管理',
         icon: 'book',
         path: '/studio/content',

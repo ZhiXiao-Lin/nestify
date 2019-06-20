@@ -33,121 +33,144 @@ const Option = Select.Option;
 const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
-const MODEL_NAME = 'users';
-const DETAIL_URL = '/studio/usersdetail';
+const MODEL_NAME = 'contents';
+const DETAIL_URL = '/studio/content/detail';
 
-@connect(({ users, organization, loading }) => ({
-  ...users,
-  organization,
-  loading: loading.models.users,
+@connect(({ contents, category, loading }) => ({
+  ...contents,
+  category,
+  loading: loading.models.contents,
 }))
 @Form.create()
 export default class extends React.Component {
   componentDidMount() {
-    const {
-      match: { params },
-    } = this.props;
 
-    this.init(params.channel);
+    this.init();
     this.onReset();
     this.refresh();
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {
-      match: { params },
-    } = nextProps;
-    if (this.props.match.params.channel !== params.channel) {
-      this.init(params.channel);
-      this.loadData({ page: 0, category: params.channel });
-    }
-  }
+  init = () => {
 
-  init = (channel) => {
-    let columns = [];
-    let fields = [];
-    let showQueryCondition = false;
+    const columns = [
+      {
+        title: '详情',
+        dataIndex: 'id',
+        render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
+      },
+      {
+        title: '图片',
+        dataIndex: 'thumbnailPath',
+        render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />),
+      },
+      {
+        title: '视频',
+        dataIndex: 'videoPath',
+        render: (val) => val,
+      },
+      {
+        title: '标题',
+        dataIndex: 'title',
+        render: (val) => {
+          const {
+            queryParams: { keyword },
+          } = this.props;
 
-    switch (channel) {
-      default:
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-            render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
-          },
-          {
-            title: '头像',
-            dataIndex: 'avatarPath',
-            render: (val) => (!val ? null : <img style={{ width: '30px' }} src={val} />),
-          },
-          {
-            title: '昵称',
-            dataIndex: 'nickname',
-            render: (val) => {
-              const {
-                queryParams: { keyword },
-              } = this.props;
+          const reg = new RegExp(keyword, 'gi');
 
-              const reg = new RegExp(keyword, 'gi');
+          return !!keyword
+            ? val
+              .toString()
+              .split(reg)
+              .map((text, i) =>
+                i > 0
+                  ? [
+                    <span key={i} col={i} style={{ color: 'red' }}>
+                      <b>{val.toString().match(reg)[0]}</b>
+                    </span>,
+                    text,
+                  ]
+                  : text
+              )
+            : val;
+        },
+      },
+      {
+        title: '作者',
+        dataIndex: 'author',
+      },
+      {
+        title: '分类',
+        dataIndex: 'category',
+        render: (val) => val.name,
+      },
+      {
+        title: '来源',
+        dataIndex: 'source',
+      },
+      {
+        title: '摘要',
+        dataIndex: 'summary',
+      },
+      {
+        title: '地址',
+        dataIndex: 'address',
+      },
+      {
+        title: '排序',
+        dataIndex: 'sort',
+        sorter: true,
+      },
+      {
+        title: '浏览量',
+        dataIndex: 'views',
+        sorter: true,
+      },
+      {
+        title: '发布时间',
+        dataIndex: 'publish_at',
+        sorter: true,
+        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: '修改时间',
+        dataIndex: 'update_at',
+        sorter: true,
+        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'create_at',
+        sorter: true,
+        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: '正文',
+        dataIndex: 'text',
+        render: (val) => '略',
+      },
+    ];
 
-              return !!keyword
-                ? val
-                  .toString()
-                  .split(reg)
-                  .map((text, i) =>
-                    i > 0
-                      ? [
-                        <span key={i} col={i} style={{ color: 'red' }}>
-                          <b>{val.toString().match(reg)[0]}</b>
-                        </span>,
-                        text,
-                      ]
-                      : text
-                  )
-                : val;
-            },
-          },
-          {
-            title: '账号',
-            dataIndex: 'account',
-          },
-          {
-            title: '部门',
-            dataIndex: 'org',
-            render: (val) => !!val ? val.name : '暂无'
-          },
-          {
-            title: '性别',
-            dataIndex: 'gender',
-            render: (val) => (!_.isEmpty(val) ? '' : val <= 0 ? '男' : '女'),
-          },
+    const fields = [
+      'id',
+      'thumbnailPath',
+      'title',
+      'category',
+      'author',
+      'source',
+      'sort',
+      'views',
+      'publish_at',
+      'update_at',
+    ];
 
-          {
-            title: '修改时间',
-            dataIndex: 'update_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '注册时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-        ];
-
-        fields = ['id', 'avatarPath', 'nickname', 'org', 'account', 'gender', 'create_at'];
-        showQueryCondition = true;
-        break;
-    }
 
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
         columns,
         fields,
-        showQueryCondition,
+        showQueryCondition: true
       },
     });
   };
@@ -164,6 +187,11 @@ export default class extends React.Component {
       type: `${MODEL_NAME}/fetch`,
       payload,
     });
+
+    dispatch({
+      type: 'category/fetch',
+      payload,
+    });
   };
 
   refresh = () => {
@@ -172,19 +200,11 @@ export default class extends React.Component {
   };
 
   toCreate = () => {
-    const {
-      match: { params },
-    } = this.props;
-
-    router.push(`${DETAIL_URL}/${params.channel}/CREATE`);
+    router.push(`${DETAIL_URL}/CREATE`);
   };
 
   toDetail = (id) => (e) => {
-    const {
-      match: { params },
-    } = this.props;
-
-    router.push(`${DETAIL_URL}/${params.channel}/${id}`);
+    router.push(`${DETAIL_URL}/${id}`);
   };
 
   toRemove = () => {
@@ -198,13 +218,10 @@ export default class extends React.Component {
   };
 
   toExport = () => {
-    const { dispatch, fields } = this.props;
+    const { dispatch } = this.props;
 
     dispatch({
       type: `${MODEL_NAME}/export`,
-      payload: {
-        fields: fields.join(','),
-      },
     });
   };
 
@@ -235,8 +252,8 @@ export default class extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!!err) return false;
 
-      if (!!values.create_at) {
-        values.create_at = values.create_at
+      if (!!values.publish_at) {
+        values.publish_at = values.publish_at
           .map((item) => moment(item).format('YYYY-MM-DD HH:mm:ss'))
           .join(',');
       }
@@ -265,8 +282,8 @@ export default class extends React.Component {
   render() {
     const {
       dispatch,
+      category,
       data,
-      organization,
       selectedRows,
       selectedRowKeys,
       columns,
@@ -279,6 +296,26 @@ export default class extends React.Component {
     const tableColumns = columns.filter((item) => fields.includes(item.dataIndex));
 
     const list = data.list || [];
+
+    const uploadOneProps = {
+      name: 'file',
+      action: null,
+      accept:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
+      showUploadList: false,
+      beforeUpload: async (file) => {
+        message.loading('正在执行导入', 0);
+        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'contents' });
+
+        setTimeout(() => {
+          message.destroy();
+          message.success('导入成功');
+          this.refresh();
+        }, 3000);
+
+        return false;
+      },
+    };
 
     const pagination = {
       defaultCurrent: 1,
@@ -315,26 +352,26 @@ export default class extends React.Component {
                     marginBottom: 20,
                   }}
                 >
-                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="昵称">
+                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
                     {getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
                   </Form.Item>
 
-                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="注册时间">
-                    {getFieldDecorator('create_at')(
+                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
+                    {getFieldDecorator('publish_at')(
                       <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
                     )}
                   </Form.Item>
-
-                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="组织架构">
-                    {getFieldDecorator('org')(
+                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="分类">
+                    {getFieldDecorator('category')(
                       <TreeSelect
                         treeNodeFilterProp="title"
                         showSearch
                         treeDefaultExpandAll
-                        treeData={organization.data}
+                        treeData={category.data}
                       />
                     )}
                   </Form.Item>
+
                   <Row>
                     <Col span={12} offset={3}>
                       <Button type="primary" htmlType="submit">
@@ -385,6 +422,18 @@ export default class extends React.Component {
                 <Tooltip placement="bottom" title="刷新">
                   <Button onClick={this.refresh}>
                     <Icon type="reload" />
+                  </Button>
+                </Tooltip>
+                <Upload {...uploadOneProps}>
+                  <Tooltip placement="bottom" title="导入">
+                    <Button>
+                      <Icon type="import" />
+                    </Button>
+                  </Tooltip>
+                </Upload>
+                <Tooltip placement="bottom" title="导出">
+                  <Button onClick={this.toExport}>
+                    <Icon type="export" />
                   </Button>
                 </Tooltip>
               </ButtonGroup>
