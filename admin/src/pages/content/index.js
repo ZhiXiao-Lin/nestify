@@ -19,6 +19,7 @@ import {
   Select,
   Divider,
   Collapse,
+  TreeSelect,
   message,
 } from 'antd';
 
@@ -35,8 +36,9 @@ const { RangePicker } = DatePicker;
 const MODEL_NAME = 'contents';
 const DETAIL_URL = '/studio/content/detail';
 
-@connect(({ contents, loading }) => ({
+@connect(({ contents, category, loading }) => ({
   ...contents,
+  category,
   loading: loading.models.contents,
 }))
 @Form.create()
@@ -49,7 +51,6 @@ export default class extends React.Component {
   }
 
   init = () => {
-
 
     const columns = [
       {
@@ -186,6 +187,11 @@ export default class extends React.Component {
       type: `${MODEL_NAME}/fetch`,
       payload,
     });
+
+    dispatch({
+      type: 'category/fetch',
+      payload,
+    });
   };
 
   refresh = () => {
@@ -276,6 +282,7 @@ export default class extends React.Component {
   render() {
     const {
       dispatch,
+      category,
       data,
       selectedRows,
       selectedRowKeys,
@@ -352,6 +359,16 @@ export default class extends React.Component {
                   <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
                     {getFieldDecorator('publish_at')(
                       <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                    )}
+                  </Form.Item>
+                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="分类">
+                    {getFieldDecorator('category')(
+                      <TreeSelect
+                        treeNodeFilterProp="title"
+                        showSearch
+                        treeDefaultExpandAll
+                        treeData={category.data}
+                      />
                     )}
                   </Form.Item>
 
