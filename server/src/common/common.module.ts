@@ -62,4 +62,4 @@ import { SearchService } from './services/search.service';
         SearchService
     ]
 })
-export class CommonModule {}
+export class CommonModule { }

@@ -157,10 +157,10 @@ export default class extends React.Component {
         </Form.Item>
 
         <Form.Item {...formItemLayout} label="网站描述">
-          {getFieldDecorator('ex_info.setting.recommendation', {
+          {getFieldDecorator('ex_info.setting.desc', {
             initialValue: !selectedNode
               ? null
-              : selectedNode['ex_info']['setting']['recommendation'],
+              : selectedNode['ex_info']['setting']['desc'],
             rules: [
               {
                 required: true,
@@ -207,18 +207,18 @@ export default class extends React.Component {
     } = this.props;
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
-        <Form.Item {...formItemLayout} label="服务热线">
-          {getFieldDecorator('ex_info.setting.serviceHotline', {
+        <Form.Item {...formItemLayout} label="联系电话">
+          {getFieldDecorator('ex_info.setting.tel', {
             initialValue: !selectedNode
               ? null
-              : selectedNode['ex_info']['setting']['serviceHotline'],
+              : selectedNode['ex_info']['setting']['tel'],
             rules: [
               {
                 required: true,
-                message: '服务热线不能为空',
+                message: '联系电话不能为空',
               },
             ],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写服务热线" />)}
+          })(<Input {...formItemStyle} type="text" placeholder="请填写联系电话" />)}
         </Form.Item>
         <Form.Item {...formItemLayout} label="邮政编码">
           {getFieldDecorator('ex_info.setting.postcode', {
@@ -230,17 +230,6 @@ export default class extends React.Component {
               },
             ],
           })(<Input {...formItemStyle} type="text" placeholder="请填写邮政编码" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="传真号码">
-          {getFieldDecorator('ex_info.setting.fax', {
-            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['fax'],
-            rules: [
-              {
-                required: true,
-                message: '传真号码不能为空',
-              },
-            ],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写传真号码" />)}
         </Form.Item>
         <Form.Item {...formItemLayout} label="邮箱">
           {getFieldDecorator('ex_info.setting.email', {
@@ -452,52 +441,17 @@ export default class extends React.Component {
               }
             },
             {
-              key: 'image', tabKey: 'wecahtQRCode', name: '微信二维码', options: {
-                width: 200,
-                height: 200
-              },
-              renderValue: (data) => data.wechatImg,
-              saveValue: async (file) => {
-                const res = await apiUploadOneToQiniu(file);
-
-                if (!!res && !!res.path) {
-                  this.toSave({
-                    ex_info: {
-                      setting: {
-                        wechat: res,
-                      },
-                    }
-                  })
-                }
-              }
-            },
-            {
-              key: 'image', tabKey: 'weiboQRCode', name: '微博二维码', options: {
-                width: 200,
-                height: 200
-              },
-              renderValue: (data) => data.weiboImg,
-              saveValue: async (file) => {
-                const res = await apiUploadOneToQiniu(file);
-
-                if (!!res && !!res.path) {
-                  this.toSave({
-                    ex_info: {
-                      setting: {
-                        weibo: res,
-                      },
-                    }
-                  })
-                }
-              }
-            },
-            {/* {
               key: 'editableTable', name: '友情链接', options: {
                 columns: [
                   {
                     title: '标题',
                     key: 'id',
                     dataIndex: 'title',
+                    editable: true,
+                  },
+                  {
+                    title: '描述',
+                    dataIndex: 'desc',
                     editable: true,
                   },
                   {
@@ -528,7 +482,7 @@ export default class extends React.Component {
                 handleAdd: this.handleAdd,
                 handleSave: this.handleSave,
               }
-            } */}
+            }
           ]}
           toSave={this.toSave}
         />
