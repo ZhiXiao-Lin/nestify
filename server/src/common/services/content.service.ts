@@ -5,13 +5,10 @@ import { Repository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { Content } from '../entities/content.entity';
-import { CategoryService } from './category.service';
-import { ExcelHelper } from '../lib/excel';
 
 @Injectable()
 export class ContentService extends BaseService<Content> {
     constructor(
-        private readonly categoryService: CategoryService,
         @InjectRepository(Content) private readonly contentRepository: Repository<Content>
     ) {
         super(contentRepository);
@@ -21,6 +18,8 @@ export class ContentService extends BaseService<Content> {
     async query(payload: any) {
         const qb = this.contentRepository.createQueryBuilder('t');
 
+        qb.leftJoinAndSelect('t.category', 'category');
+
         if (!payload.page) {
             payload.page = 0;
         }
@@ -29,11 +28,9 @@ export class ContentService extends BaseService<Content> {
             payload.pageSize = 10;
         }
 
-        // if (!!payload.category) {
-        //     qb.innerJoinAndSelect('t.category', 'category', 'category.name = :category', {
-        //         category: payload.category
-        //     });
-        // }
+        if (!!payload.category) {
+            qb.andWhere('category.id =:category', { category: payload.category });
+        }
 
         if (!!payload.keyword) {
             qb.andWhere(`t.title LIKE '%${payload.keyword}%'`);
@@ -67,24 +64,16 @@ export class ContentService extends BaseService<Content> {
     }
 
     @TransformClassToPlain()
-    async findOneAndParents(id: string) {
-        const content = await this.contentRepository.findOne({
+    async findOneById(id) {
+        return await this.contentRepository.findOne({
             where: { id },
             relations: ['category']
         });
-
-        const parents = await this.categoryService.findParentsTree(content.category);
-
-        return { content, parents };
     }
 
     async save(payload: any) {
-        const content = Content.create(payload) as Content;
+        const target = Content.create(payload) as Content;
 
-        if (!_.isEmpty(content.category) && _.isString(content.category)) {
-            content.category = await this.categoryService.findOneByName(content.category);
-        }
-
-        return await this.contentRepository.save(content);
+        return await this.contentRepository.save(target);
     }
 }

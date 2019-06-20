@@ -11,6 +11,7 @@ import {
   Icon,
   DatePicker,
   Button,
+  TreeSelect
 } from 'antd';
 
 import DetailPlus from '@/components/DetailPlus';
@@ -27,18 +28,15 @@ const tailFormItemLayout = {
 const MODEL_NAME = 'contents';
 
 @Form.create()
-@connect(({ contents }) => ({
+@connect(({ contents, category }) => ({
+  category,
   selectedNode: contents.selectedNode,
-  columns: contents.columns,
+  columns: contents.columns
 }))
 export default class extends React.Component {
 
   componentDidMount() {
-    const {
-      match: { params },
-    } = this.props;
 
-    this.init(params.channel);
     this.loadData();
   }
 
@@ -47,7 +45,7 @@ export default class extends React.Component {
       match: { params },
     } = nextProps;
     if (this.props.match.params.id !== params.id) {
-      this.init(params.channel);
+
       this.loadData(params.id);
     }
   }
@@ -58,114 +56,6 @@ export default class extends React.Component {
     let showQueryCondition = false;
 
     switch (channel) {
-      case '联系方式':
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-          },
-          {
-            title: '公司名称',
-            dataIndex: 'ex_info.company',
-          },
-          {
-            title: '电话',
-            dataIndex: 'ex_info.phone',
-          },
-          {
-            title: '传真',
-            dataIndex: 'ex_info.fax',
-          },
-          {
-            title: '销售',
-            dataIndex: 'ex_info.sale',
-          },
-          {
-            title: '地址',
-            dataIndex: 'ex_info.address',
-          },
-          {
-            title: '邮编',
-            dataIndex: 'ex_info.postcode',
-          },
-        ];
-        fields = [
-          'id',
-          'ex_info.company',
-          'ex_info.phone',
-          'ex_info.fax',
-          'ex_info.sale',
-          'ex_info.address',
-          'ex_info.postcode',
-        ];
-        break;
-      case '留言咨询':
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-          },
-          {
-            title: '问题',
-            dataIndex: 'ex_info.question',
-          },
-          {
-            title: '回复',
-            dataIndex: 'ex_info.reply',
-          },
-          {
-            title: '回复时间',
-            dataIndex: 'update_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '留言时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-        ];
-        fields = ['id', 'ex_info.question', 'ex_info.reply', 'update_at', 'create_at'];
-        break;
-      case '投诉建议':
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-          },
-          {
-            title: '昵称',
-            dataIndex: 'ex_info.nickname',
-          },
-          {
-            title: '标题',
-            dataIndex: 'ex_info.title',
-          },
-          {
-            title: '内容',
-            dataIndex: 'ex_info.content',
-          },
-          {
-            title: '电话',
-            dataIndex: 'ex_info.phone',
-          },
-          {
-            title: '提交时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-        ];
-        fields = [
-          'id',
-          'ex_info.nickname',
-          'ex_info.title',
-          'ex_info.content',
-          'ex_info.phone',
-          'create_at',
-        ];
-        break;
       default:
         columns = [
           {
@@ -290,6 +180,11 @@ export default class extends React.Component {
         });
       }
     }
+
+    dispatch({
+      type: 'category/fetch',
+      payload: {},
+    });
   };
 
   resetHandler = () => {
@@ -319,6 +214,7 @@ export default class extends React.Component {
 
   renderBasicForm = () => {
     const {
+      category,
       selectedNode,
       columns,
       form: { getFieldDecorator },
@@ -356,6 +252,28 @@ export default class extends React.Component {
             )}
           </Form.Item>
         ) : null}
+        <Form.Item {...formItemLayout} label="分类">
+          {getFieldDecorator('category', {
+            initialValue: !selectedNode
+              ? null
+              : !selectedNode['category']
+                ? null
+                : selectedNode['category']['id'],
+            rules: [
+              {
+                required: true,
+                message: '请选择分类',
+              },
+            ],
+          })(
+            <TreeSelect
+              treeNodeFilterProp="title"
+              showSearch
+              treeDefaultExpandAll
+              treeData={category.data}
+            />
+          )}
+        </Form.Item>
         {fields.includes('author') ? (
           <Form.Item {...formItemLayout} label="作者">
             {getFieldDecorator('author', {

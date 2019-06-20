@@ -1,6 +1,6 @@
 import { Base } from './base';
 import { Entity, Column, Tree, TreeChildren, TreeParent, OneToMany } from 'typeorm';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, Expose } from 'class-transformer';
 import { ExcelHandleType } from '../lib/excel';
 import { Content } from './content.entity';
 
@@ -22,6 +22,21 @@ export class Category extends Base {
 	@TreeChildren() children: Category[];
 
 	@TreeParent() parent: Category;
+
+	@Expose()
+	get title(): string {
+		return this.name;
+	}
+
+	@Expose()
+	get key(): string {
+		return this.id;
+	}
+
+	@Expose()
+	get value(): string {
+		return this.id;
+	}
 
 	static readonly sheetsMap: object = {
 		分类: {

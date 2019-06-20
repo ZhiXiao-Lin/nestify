@@ -149,8 +149,6 @@ export default class extends React.Component {
       form: { getFieldDecorator },
     } = this.props;
 
-    const fields = columns.map((item) => item.dataIndex);
-
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
         <Form.Item {...formItemLayout} label="账号">

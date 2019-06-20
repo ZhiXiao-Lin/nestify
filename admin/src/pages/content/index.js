@@ -154,6 +154,7 @@ export default class extends React.Component {
       'id',
       'thumbnailPath',
       'title',
+      'category',
       'author',
       'source',
       'sort',

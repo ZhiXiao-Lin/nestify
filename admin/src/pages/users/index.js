@@ -275,26 +275,6 @@ export default class extends React.Component {
 
     const list = data.list || [];
 
-    const uploadOneProps = {
-      name: 'file',
-      action: null,
-      accept:
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
-      showUploadList: false,
-      beforeUpload: async (file) => {
-        message.loading('正在执行导入', 0);
-        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'news' });
-
-        setTimeout(() => {
-          message.destroy();
-          message.success('导入成功');
-          this.refresh();
-        }, 3000);
-
-        return false;
-      },
-    };
-
     const pagination = {
       defaultCurrent: 1,
       current: data.page,
