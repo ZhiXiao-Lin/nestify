@@ -154,6 +154,12 @@ export default class extends React.Component {
         <Form.Item {...formItemLayout} label="账号">
           {getFieldDecorator('account', {
             initialValue: !selectedNode ? null : selectedNode['account'],
+            rules: [
+              {
+                required: true,
+                message: '账号不能为空',
+              },
+            ],
           })(
             <Input
               disabled={!!selectedNode.id}
@@ -171,7 +177,7 @@ export default class extends React.Component {
         </Form.Item>
         <Form.Item {...formItemLayout} label="性别">
           {getFieldDecorator('gender', {
-            initialValue: !selectedNode ? null : selectedNode['gender'],
+            initialValue: !selectedNode ? 0 : selectedNode['gender'] || 0,
           })(
             <Radio.Group {...formItemStyle}>
               <Radio value={0}>男</Radio>
