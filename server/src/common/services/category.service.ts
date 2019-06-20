@@ -25,12 +25,12 @@ export class CategoryService extends BaseService<Category> {
 	}
 
 	async save(payload: any) {
-		const category = Category.create(payload) as Category;
+		const target = Category.create(payload) as Category;
 
-		// if (!_.isEmpty(payload.category) && _.isString(content.category)) {
-		// 	content.category = await this.categoryRepository.findOneById(category.parent);
-		// }
+		if (!!payload.parentId) {
+			target.parent = await this.categoryRepository.findOne(payload.parentId);
+		}
 
-		return await this.categoryRepository.save(category);
+		return await this.categoryRepository.save(target);
 	}
 }

@@ -9,6 +9,7 @@ export default {
 	namespace: 'category',
 
 	state: {
+		parentId: null,
 		selectedNode: null,
 		selectedRows: [],
 		selectedRowKeys: [],
@@ -79,12 +80,28 @@ export default {
 				message.success('保存成功');
 			}
 		},
+		*create({ payload }, { call, put, select }) {
+			const parentId = yield select((state) => state.category.parentId);
+
+			const res = yield call(apiPost, API_URL, {
+				parentId,
+				...payload,
+			});
+
+			if (!!res) {
+				yield put({
+					type: 'fetch',
+					payload: {},
+				});
+				message.success('保存成功');
+			}
+		},
 		*remove({ payload }, { call, select }) {
 			const selectedRows = yield select((state) => state.category.selectedRows);
 
 			yield call(apiDelete, API_URL, {
 				params: {
-					selectedRows: selectedRows.map((item) => item.id).join(',')
+					selectedRows: selectedRows.join(',')
 				}
 			});
 
