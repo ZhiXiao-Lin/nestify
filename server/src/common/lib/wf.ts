@@ -1,32 +1,42 @@
 import { Logger } from './logger';
 import { mq, MQChannel } from './mq';
 
-// 步骤： 执行的最小单元
-export class Step {
+export class Flow {
+    readonly id: string;
+    readonly tasks: any;
 
-    private readonly executor: Function;
+    private state: string;
 
-    async execute(): Promise<boolean> {
-        return await this.executor();
+    constructor(id, tasks, initState?) {
+        this.id = id;
+        this.tasks = tasks;
+        this.state = initState ? initState : Object.keys(tasks)[0];
+    }
+
+    async execute(task, options = {}) {
+
+        const nextState = await this.tasks[this.state][task](options);
+        this.state = nextState;
+
+        return this.state;
+    }
+
+    get CurrentState() {
+        return this.state;
+    }
+
+    get Tasks() {
+        return this.tasks;
+    }
+
+    get ExecutableTasks() {
+        return Object.keys(this.tasks[this.state]);
     }
 }
 
-// 任务: 调度的最小单元，多个 Step 的执行流程，串行或并行执行一组 Step
-export class Task {
-
-    async append(step: Step) { }
-
-    async appendParallel(steps: Step[]) { }
-}
-
-// 流程：多个 Task 的执行流程，串行执行一组 Task
-export class Flow {
-
-    async append(task: Task) { }
-}
-
-// 引擎：任务调度中心
 export class Engine {
+
+    flows: Flow[] = [];
 
     async init() {
         Logger.trace('Workflow Engine Starting');
@@ -37,20 +47,37 @@ export class Engine {
         Logger.trace('Workflow Engine Started');
     }
 
-    async dispatch(task: Task) {
+    add(flow: Flow) {
+        Logger.log(`Flow:${flow.id} add ---> ${flow.id}`);
+        this.flows.push(flow);
+    }
 
-        Logger.log('WF dispatch --->', task);
+    over(flowId: string) {
+        Logger.log(`Flow:${flowId} over`);
+        this.flows = this.flows.filter(item => item.id !== flowId);
+    }
 
-        return await mq.Channel.sendToQueue(MQChannel.WF, new Buffer(JSON.stringify(task)));
+    async dispatch(id, taskName, options = {}) {
+        Logger.log('WF dispatch --->', id, taskName, options);
+        return await mq.Channel.sendToQueue(MQChannel.WF, Buffer.from(JSON.stringify({ id, name: taskName, options })));
     }
 
     private async start() {
 
         await mq.Channel.consume(MQChannel.WF, async msg => {
 
-            const task = JSON.parse(msg.content.toString()) as Task;
+            const task = JSON.parse(msg.content.toString());
 
-            Logger.log('WF consume --->', task);
+            const flow = this.flows.find(item => item.id === task.id);
+
+            if (!!flow) {
+                Logger.log(`Flow:${flow.id} current state --->`, flow.CurrentState);
+                Logger.log(`Flow:${flow.id} executable tasks --->`, flow.ExecutableTasks);
+
+                if (flow.ExecutableTasks.includes(task.name)) {
+                    await flow.execute(task.name, task.options);
+                }
+            }
 
             await mq.Channel.ack(msg);
         });

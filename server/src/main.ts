@@ -20,7 +20,7 @@ import { ExceptionsFilter } from './common/aspects/exceptions.filter';
 import { influx } from './common/lib/influx';
 import { io } from './common/lib/io';
 import { mq } from './common/lib/mq';
-import { wf } from './common/lib/wf';
+import { wf, Flow } from './common/lib/wf';
 import { Logger } from './common/lib/logger';
 
 declare const module: any;
