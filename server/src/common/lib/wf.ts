@@ -1,42 +1,16 @@
 import { Logger } from './logger';
 import { mq, MQChannel } from './mq';
 
-export class Flow {
-    readonly id: string;
-    readonly tasks: any;
-
-    private state: string;
-
-    constructor(id, tasks, initState?) {
-        this.id = id;
-        this.tasks = tasks;
-        this.state = initState ? initState : Object.keys(tasks)[0];
-    }
-
-    async execute(task, options = {}) {
-
-        const nextState = await this.tasks[this.state][task](options);
-        this.state = nextState;
-
-        return this.state;
-    }
-
-    get CurrentState() {
-        return this.state;
-    }
-
-    get Tasks() {
-        return this.tasks;
-    }
-
-    get ExecutableTasks() {
-        return Object.keys(this.tasks[this.state]);
-    }
+export interface IFlow {
+    id: string;
+    State: string;
+    ExecutableTasks: string[];
+    execute(name, options);
 }
 
 export class Engine {
 
-    flows: Flow[] = [];
+    flows: IFlow[] = [];
 
     async init() {
         Logger.trace('Workflow Engine Starting');
@@ -47,14 +21,20 @@ export class Engine {
         Logger.trace('Workflow Engine Started');
     }
 
-    add(flow: Flow) {
-        Logger.log(`Flow:${flow.id} add ---> ${flow.id}`);
-        this.flows.push(flow);
+    getFlows() {
+        return this.flows.map(item => item.id);
     }
 
-    over(flowId: string) {
-        Logger.log(`Flow:${flowId} over`);
-        this.flows = this.flows.filter(item => item.id !== flowId);
+    add(flow: IFlow) {
+        if (this.flows.findIndex(item => item.id === flow.id) < 0) {
+            Logger.log(`Flow:${flow.id} add ---> ${flow.id}`);
+            this.flows.push(flow);
+        }
+    }
+
+    over(flow: IFlow) {
+        Logger.log(`Flow:${flow.id} over`);
+        this.flows = this.flows.filter(item => item.id !== flow.id);
     }
 
     async dispatch(id, taskName, options = {}) {
@@ -71,7 +51,7 @@ export class Engine {
             const flow = this.flows.find(item => item.id === task.id);
 
             if (!!flow) {
-                Logger.log(`Flow:${flow.id} current state --->`, flow.CurrentState);
+                Logger.log(`Flow:${flow.id} current state --->`, flow.State);
                 Logger.log(`Flow:${flow.id} executable tasks --->`, flow.ExecutableTasks);
 
                 if (flow.ExecutableTasks.includes(task.name)) {

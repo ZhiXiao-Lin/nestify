@@ -50,22 +50,7 @@ export class Seed {
             }
         });
         superAdmin.roles = [roleAdmin];
-        superAdmin.org = await this.connection
-            .getRepository(Organization)
-            .findOne({ name: '股东会' });
-
         await this.connection.getRepository(User).save(superAdmin);
-
-        // 查询拥有超级管理员角色的用户
-        const users = await this.connection
-            .createQueryBuilder(User, 'user')
-            .leftJoinAndSelect('user.org', 'organization')
-            .leftJoinAndMapOne('user.role', 'user.roles', 'role', 'role.token = :token', {
-                token: 'superAdmin'
-            })
-            .getManyAndCount();
-
-        Logger.log(users);
     }
 
     async initElasticSearchIndices() {

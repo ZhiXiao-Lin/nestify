@@ -8,6 +8,7 @@ import { UserService } from './services/user.service';
 import { JwtStrategy } from './strategys/jwt.strategy';
 import { User } from './entities/user.entity';
 import { Content } from './entities/content.entity';
+import { Flow } from './entities/flow.entity';
 import { Category } from './entities/category.entity';
 import { Setting } from './entities/setting.entity';
 import { Organization } from './entities/organization.entity';
@@ -23,6 +24,7 @@ import { OrganizationService } from './services/organization.service';
 import { RoleService } from './services/role.service';
 import { AuthorityService } from './services/authority.service';
 import { SearchService } from './services/search.service';
+import { FlowService } from './services/flow.service';
 
 @Global()
 @Module({
@@ -31,12 +33,13 @@ import { SearchService } from './services/search.service';
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register(config.jwt),
         TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([Setting, Category, User, Content, Organization, Role, Authority])
+        TypeOrmModule.forFeature([Setting, Flow, Category, User, Content, Organization, Role, Authority])
     ],
     providers: [
         JwtStrategy,
         ImportService,
         CommonService,
+        FlowService,
         CategoryService,
         ContentService,
         UserService,
@@ -50,6 +53,7 @@ import { SearchService } from './services/search.service';
     exports: [
         ImportService,
         CommonService,
+        FlowService,
         CategoryService,
         ContentService,
         UserService,

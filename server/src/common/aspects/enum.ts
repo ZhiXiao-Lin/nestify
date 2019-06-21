@@ -17,3 +17,7 @@ export enum Gender {
 	MALE,
 	FEMALE
 }
+
+export enum FlowTemplate {
+	WORK_ORDER = 'workOrder'
+}
