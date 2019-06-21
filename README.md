@@ -3,7 +3,9 @@
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![Gitter](https://badges.gitter.im/nestify-stack/community.svg)](https://gitter.im/nestify-stack/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
 [![Nestify](http://pt81bm3p8.bkt.clouddn.com/Nestify.svg)](http://cms.nestify.cn/)
--   开箱即用的中后台全栈解决方案
+- 开箱即用的中后台全栈解决方案
+
+- 正在开发探索中...
 
 ## 技术选型
 
@@ -15,7 +17,6 @@
 -   Node.js 11.10.0
 -   Redis 5.0.3
 -   PostgreSQL 9.6
--   InfluxDB 1.7.6
 -   ElasticSearch 5.6 以及中文分词插件 IK 5.6
 -   RabbitMQ 3.7.15
 
@@ -23,7 +24,7 @@
 
 1. git clone 项目到本地
 2. 执行 yarn && yarn:ic
-3. 安装 Node.js、Redis、PostgreSQL、InfluxDB、ElasticSearch、RabbitMQ
+3. 安装 Node.js、Redis、PostgreSQL、ElasticSearch、RabbitMQ
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 根目录执行 yarn db:create 用于创建数据库和数据库用户
 6. 执行 yarn db:init 用于创建数据表和导入种子数据
@@ -47,7 +48,6 @@
 -   React 服务端渲染
 -   React SPA 后台管理系统
 -   Redis 高速缓存
--   InfluxDB 时序数据库
 -   Socket.IO 双向通讯
 -   ElasticSearch 全文检索
 -   RabbitMQ 消息队列

@@ -7,7 +7,7 @@ import { ExcelHelper } from '../common/lib/excel';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { Logger } from '../common/lib/logger';
-import { es } from '../common/lib/elastic-search';
+import { es } from '../common/lib/es';
 import { Organization } from '../common/entities/organization.entity';
 import { Role } from '../common/entities/role.entity';
 import { Authority } from '../common/entities/authority.entity';

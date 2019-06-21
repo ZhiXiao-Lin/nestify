@@ -19,7 +19,7 @@ const SystemStatus = memo(({ loading, status }) => (
     </Col>
 
     <Col {...topColResponsiveProps}>
-      <Area name="内存用量" data={status ? status.reverse() : []} />
+      <Area name="内存用量" data={status || []} />
     </Col>
   </Row>
 ));

@@ -56,7 +56,6 @@
         "log4js": "^4.3.1",
         "moment": "^2.24.0",
         "nest-schedule": "^0.6.0",
-        "nestjs-redis": "^1.1.2",
         "next": "^8.1.0",
         "npm-run-all": "^4.1.5",
         "passport": "^0.4.0",

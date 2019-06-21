@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { es, esb } from '../lib/elastic-search';
+import { es, esb } from '../lib/es';
 import { Content } from '../entities/content.entity';
 
 @Injectable()

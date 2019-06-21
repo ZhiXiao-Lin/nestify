@@ -2,10 +2,11 @@ import { stat } from 'fs';
 import { resolve, basename, dirname, extname } from 'path';
 import * as pidusage from 'pidusage';
 import * as chokidar from 'chokidar';
+import * as moment from 'moment';
 import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
-import { influx } from '../lib/influx';
 import { Logger } from '../lib/logger';
-import { es } from '../lib/elastic-search';
+import { redis } from '../lib/redis';
+import { es } from '../lib/es';
 import { io } from '../lib/io';
 
 export class StatusTask extends NestSchedule {
@@ -115,28 +116,28 @@ export class StatusTask extends NestSchedule {
         });
     }
 
-    @Interval(3000)
+    @Interval(2000)
     async pushStatus() {
-        if (!this.server) return false;
-
-        const status = await influx.query(
-            `select * from system_status order by time desc limit 30`
-        );
-        this.server.emit('status', status);
-    }
-
-    @Interval(3000)
-    async intervalJob() {
         const status = await pidusage(process.pid);
 
-        await influx.writePoints([
-            {
-                measurement: 'system_status',
-                tags: { status: 'status' },
-                fields: status,
-                timestamp: new Date()
-            }
-        ]);
+        const statusJson = await redis.get('system_status');
+
+        let statusArr = [];
+
+        if (!!statusJson) {
+            statusArr = JSON.parse(statusJson);
+        }
+
+        status.time = moment().valueOf();
+        statusArr.unshift(status);
+
+        if (statusArr.length > 30) {
+            statusArr = statusArr.splice(0, 30);
+        }
+
+        await redis.set('system_status', JSON.stringify(statusArr));
+
+        this.server.emit('status', statusArr);
 
         return false;
     }

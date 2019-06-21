@@ -14,7 +14,7 @@ import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
 import { Category } from './category.entity';
 import { ExcelHandleType } from '../lib/excel';
-import { es } from '../lib/elastic-search';
+import { es } from '../lib/es';
 import { textInterception, extractionTextInHtml } from '../lib/helper';
 import { IndicesCreateParams } from 'elasticsearch';
 

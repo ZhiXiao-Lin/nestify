@@ -6,24 +6,10 @@ export default {
 
   state: {
     status: [],
-    fileChangeList: [],
   },
 
   effects: {
-    *onFileChange({ payload }, { put, select }) {
-      const fileChangeList = yield select((state) => state.status.fileChangeList);
 
-      fileChangeList.push(payload);
-
-      if (fileChangeList.length > 5) {
-        fileChangeList.shift();
-      }
-
-      yield put({
-        type: 'set',
-        payload: { fileChangeList },
-      });
-    },
   },
 
   subscriptions: {
