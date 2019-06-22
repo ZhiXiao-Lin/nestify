@@ -1,14 +1,11 @@
 import React, { Fragment } from 'react';
 import _ from 'lodash';
-import UUIDV4 from 'uuid/v4';
 import moment from 'moment';
 import { connect } from 'dva';
-import { Tabs, Form, Input, Row, Col, Popconfirm, Button, Skeleton } from 'antd';
+import { Tabs, Form, Input, Row, Col, Button, Skeleton } from 'antd';
 
-import config from '@/config';
 import { apiUploadOneToQiniu } from '@/utils';
 
-import DetailPlus from '@/components/DetailPlus';
 import ImageCropper from '@/components/ImageCropper';
 import EditableTable from '@/components/EditableTable';
 
@@ -49,38 +46,26 @@ export default class extends React.Component {
     this.setState({ tabKey });
   };
 
-  onWechatUpload = async (file) => {
-    const { dispatch } = this.props;
-
+  onLogoLightUpload = async (file) => {
     const res = await apiUploadOneToQiniu(file);
-
     if (!!res && !!res.path) {
-      dispatch({
-        type: `${MODEL_NAME}/save`,
-        payload: {
-          ex_info: {
-            setting: {
-              wechat: res,
-            },
+      this.toSave({
+        ex_info: {
+          setting: {
+            logoLight: res,
           },
         },
       });
     }
   };
 
-  onWeiboUpload = async (file) => {
-    const { dispatch } = this.props;
-
+  onLogoDarkUpload = async (file) => {
     const res = await apiUploadOneToQiniu(file);
-
     if (!!res && !!res.path) {
-      dispatch({
-        type: `${MODEL_NAME}/save`,
-        payload: {
-          ex_info: {
-            setting: {
-              weibo: res,
-            },
+      this.toSave({
+        ex_info: {
+          setting: {
+            logoDark: res,
           },
         },
       });
@@ -158,9 +143,7 @@ export default class extends React.Component {
 
         <Form.Item {...formItemLayout} label="网站描述">
           {getFieldDecorator('ex_info.setting.desc', {
-            initialValue: !selectedNode
-              ? null
-              : selectedNode['ex_info']['setting']['desc'],
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['desc'],
             rules: [
               {
                 required: true,
@@ -209,9 +192,7 @@ export default class extends React.Component {
       <Form onSubmit={this.submitHandler} className="panel-form">
         <Form.Item {...formItemLayout} label="联系电话">
           {getFieldDecorator('ex_info.setting.tel', {
-            initialValue: !selectedNode
-              ? null
-              : selectedNode['ex_info']['setting']['tel'],
+            initialValue: !selectedNode ? null : selectedNode['ex_info']['setting']['tel'],
             rules: [
               {
                 required: true,
@@ -252,9 +233,7 @@ export default class extends React.Component {
                 message: '地址不能为空',
               },
             ],
-          })(
-            <Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写地址" />
-          )}
+          })(<Input.TextArea rows={5} {...formItemStyle} type="text" placeholder="请填写地址" />)}
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout}>
@@ -329,63 +308,20 @@ export default class extends React.Component {
     );
   };
 
-  handleAdd = () => {
-    const { selectedNode, dispatch } = this.props;
-
-    selectedNode.ex_info.links.push({
-      id: UUIDV4(),
-      title: '标题',
-      url: 'http://',
-      sort: 0,
-    });
-
-    dispatch({
-      type: `${MODEL_NAME}/set`,
-      payload: {
-        selectedNode,
+  toSaveLinks = () => {
+    this.toSave({
+      ex_info: {
+        links: this.linksRef.state.dataSource,
       },
-    });
-  };
-
-  handleDelete = (row) => {
-    const { selectedNode, dispatch } = this.props;
-
-    selectedNode.ex_info.links = selectedNode.ex_info.links.filter(item => item.id !== row.id);
-
-    dispatch({
-      type: `${MODEL_NAME}/set`,
-      payload: {
-        selectedNode
-      },
-    });
-  };
-
-  handleSave = (row, values) => {
-    const { selectedNode, dispatch } = this.props;
-
-    if (!!row) {
-      selectedNode.ex_info.links = selectedNode.ex_info.links.map(item => {
-        if (item.id === row.id) {
-          return _.merge(item, values);
-        }
-        return item;
-      });
-    }
-
-    dispatch({
-      type: `${MODEL_NAME}/save`,
-      payload: {
-        selectedNode
-      }
     });
   };
 
   toSave = (payload) => {
     this.props.dispatch({
       type: `${MODEL_NAME}/save`,
-      payload
+      payload,
     });
-  }
+  };
 
   render() {
     const { selectedNode } = this.props;
@@ -394,98 +330,69 @@ export default class extends React.Component {
 
     return (
       <Fragment>
-        <DetailPlus
-          data={selectedNode}
-          tabs={[
-            { key: 'basic', name: '基础设置', render: this.renderBasicForm },
-            { key: 'detail', name: '详细设置', render: this.renderDetailForm },
-            { key: 'seo', name: 'SEO设置', render: this.renderSEOForm },
-            {
-              key: 'image', tabKey: 'logoLight', name: '亮色logo', options: {
-                width: 440,
-                height: 80
-              },
-              renderValue: (data) => data.logoLightImg,
-              saveValue: async (file) => {
-                const res = await apiUploadOneToQiniu(file);
-
-                if (!!res && !!res.path) {
-                  this.toSave({
-                    ex_info: {
-                      setting: {
-                        logoLight: res,
-                      },
-                    }
-                  })
-                }
-              }
-            },
-            {
-              key: 'image', tabKey: 'logoDark', name: '暗色logo', options: {
-                width: 440,
-                height: 80
-              },
-              renderValue: (data) => data.logoDarkImg,
-              saveValue: async (file) => {
-                const res = await apiUploadOneToQiniu(file);
-
-                if (!!res && !!res.path) {
-                  this.toSave({
-                    ex_info: {
-                      setting: {
-                        logoDark: res,
-                      },
-                    }
-                  })
-                }
-              }
-            },
-            {
-              key: 'editableTable', name: '友情链接', options: {
-                columns: [
-                  {
-                    title: '标题',
-                    key: 'id',
-                    dataIndex: 'title',
-                    editable: true,
-                  },
-                  {
-                    title: '描述',
-                    dataIndex: 'desc',
-                    editable: true,
-                  },
-                  {
-                    title: '地址',
-                    dataIndex: 'url',
-                    editable: true,
-                  },
-                  {
-                    title: '排序',
-                    dataIndex: 'sort',
-                    editable: true,
-                  },
-                  {
-                    title: '操作',
-                    dataIndex: 'title',
-                    render: (val, row) => (
-                      <Popconfirm
-                        title="确定要删除吗?"
-                        okText="确定"
-                        cancelText="取消"
-                        onConfirm={() => this.handleDelete(row)}
-                      >
-                        <a href="javascript:;">删除</a>
-                      </Popconfirm>
-                    ),
-                  }
-                ],
-                handleAdd: this.handleAdd,
-                handleSave: this.handleSave,
-              }
-            }
-          ]}
-          toSave={this.toSave}
-        />
+        <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
+          <Tabs.TabPane key="basic" tab="基础设置">
+            {this.renderBasicForm()}
+          </Tabs.TabPane>
+          <Tabs.TabPane key="detail" tab="详细设置">
+            {this.renderDetailForm()}
+          </Tabs.TabPane>
+          <Tabs.TabPane key="seo" tab="SEO设置">
+            {this.renderSEOForm()}
+          </Tabs.TabPane>
+          <Tabs.TabPane key="light" tab="亮色logo">
+            <ImageCropper
+              url={selectedNode.logoLightImg}
+              onUpload={this.onLogoLightUpload}
+              width={440}
+              height={80}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane key="dark" tab="暗色logo">
+            <ImageCropper
+              url={selectedNode.logoDarkImg}
+              onUpload={this.onLogoDarkUpload}
+              width={440}
+              height={80}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane key="links" tab="友情链接">
+            <Button type="primary" style={{ marginBottom: 10 }} onClick={this.toSaveLinks}>
+              保存
+            </Button>
+            <EditableTable
+              ref={(e) => (this.linksRef = e)}
+              rowsKey="id"
+              columns={[
+                {
+                  title: '标题',
+                  dataIndex: 'title',
+                  editable: true,
+                  defaultValue: '标题',
+                },
+                {
+                  title: '描述',
+                  dataIndex: 'desc',
+                  editable: true,
+                  defaultValue: '描述',
+                },
+                {
+                  title: '地址',
+                  dataIndex: 'url',
+                  editable: true,
+                  defaultValue: 'http://',
+                },
+                {
+                  title: '排序',
+                  dataIndex: 'sort',
+                  editable: true,
+                  defaultValue: 0,
+                },
+              ]}
+              dataSource={selectedNode.ex_info.links}
+            />
+          </Tabs.TabPane>
+        </Tabs>
       </Fragment>
     );
   }

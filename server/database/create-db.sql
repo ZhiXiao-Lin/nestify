@@ -10,7 +10,7 @@ DROP USER IF EXISTS nestify;
 CREATE USER nestify WITH PASSWORD '123456';
 
 \! echo === create database ===
-CREATE DATABASE nestify OWNER nestify;
+CREATE DATABASE nestify WITH OWNER nestify ENCODING = 'UTF8';
 
 \! echo === grant privilege ===
 GRANT ALL PRIVILEGES ON DATABASE nestify TO nestify;

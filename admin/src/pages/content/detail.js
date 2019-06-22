@@ -9,12 +9,18 @@ import {
   Row,
   Col,
   Icon,
+  Tabs,
   DatePicker,
   Button,
-  TreeSelect
+  Skeleton,
+  TreeSelect,
 } from 'antd';
 
-import DetailPlus from '@/components/DetailPlus';
+import ImageCropper from '@/components/ImageCropper';
+import VideoEditor from '@/components/VideoEditor';
+import RichText from '@/components/RichText';
+import config from '@/config';
+import { apiUploadOneToQiniu } from '@/utils';
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -31,12 +37,14 @@ const MODEL_NAME = 'contents';
 @connect(({ contents, category }) => ({
   category,
   selectedNode: contents.selectedNode,
-  columns: contents.columns
+  columns: contents.columns,
 }))
 export default class extends React.Component {
+  state = {
+    tabKey: 'basic',
+  };
 
   componentDidMount() {
-
     this.loadData();
   }
 
@@ -45,10 +53,13 @@ export default class extends React.Component {
       match: { params },
     } = nextProps;
     if (this.props.match.params.id !== params.id) {
-
       this.loadData(params.id);
     }
   }
+
+  onTabChange = (tabKey) => {
+    this.setState({ tabKey });
+  };
 
   init = (channel) => {
     let columns = [];
@@ -194,9 +205,7 @@ export default class extends React.Component {
   submitHandler = (e) => {
     e.preventDefault();
 
-    const {
-      dispatch
-    } = this.props;
+    const { dispatch } = this.props;
 
     this.props.form.validateFields((err, values) => {
       if (!!err || Object.keys(values).length === 0) {
@@ -212,53 +221,70 @@ export default class extends React.Component {
     });
   };
 
+  onThumbnailUpload = async (file) => {
+    const res = await apiUploadOneToQiniu(file);
+    if (!!res && !!res.path) {
+      this.toSave({ thumbnail: res });
+    }
+  };
+
+  onVideoUpload = async (file) => {
+    const res = await apiUploadOneToQiniu(file);
+    if (!!res && !!res.path) {
+      this.toSave({ video: res });
+    }
+  };
+
+  onMediaUpload = async (context) => {
+    if (!context || !context.file) return;
+
+    const res = await apiUploadOneToQiniu(context.file);
+    if (!res) {
+      context.error({ error: '上传失败' });
+    } else {
+      context.progress(101);
+      context.success({ url: `${config.qiniu.domain}/${res.path}` });
+    }
+  };
+
   renderBasicForm = () => {
     const {
       category,
       selectedNode,
-      columns,
       form: { getFieldDecorator },
     } = this.props;
 
-    const fields = columns.map((item) => item.dataIndex);
-
     return (
       <Form onSubmit={this.submitHandler} className="panel-form">
-        {fields.includes('title') ? (
-          <Form.Item {...formItemLayout} label="标题">
-            {getFieldDecorator('title', {
-              initialValue: !selectedNode ? null : selectedNode['title'],
-              rules: [
-                {
-                  required: true,
-                  message: '标题不能为空',
-                },
-              ],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('publish_at') ? (
-          <Form.Item {...formItemLayout} label="发布时间">
-            {getFieldDecorator('publish_at', {
-              initialValue: !selectedNode['publish_at'] ? null : moment(selectedNode['publish_at']),
-              rules: [
-                {
-                  required: true,
-                  message: '发布时间不能为空',
-                },
-              ],
-            })(
-              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" placeholder="请选择发布日期时间" />
-            )}
-          </Form.Item>
-        ) : null}
+        <Form.Item {...formItemLayout} label="标题">
+          {getFieldDecorator('title', {
+            initialValue: !selectedNode ? null : selectedNode['title'],
+            rules: [
+              {
+                required: true,
+                message: '标题不能为空',
+              },
+            ],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="发布时间">
+          {getFieldDecorator('publish_at', {
+            initialValue: !selectedNode['publish_at'] ? null : moment(selectedNode['publish_at']),
+            rules: [
+              {
+                required: true,
+                message: '发布时间不能为空',
+              },
+            ],
+          })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" placeholder="请选择发布日期时间" />)}
+        </Form.Item>
         <Form.Item {...formItemLayout} label="分类">
           {getFieldDecorator('category', {
             initialValue: !selectedNode
               ? null
               : !selectedNode['category']
-                ? null
-                : selectedNode['category']['id'],
+              ? null
+              : selectedNode['category']['id'],
             rules: [
               {
                 required: true,
@@ -274,34 +300,26 @@ export default class extends React.Component {
             />
           )}
         </Form.Item>
-        {fields.includes('author') ? (
-          <Form.Item {...formItemLayout} label="作者">
-            {getFieldDecorator('author', {
-              initialValue: !selectedNode ? null : selectedNode['author'],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('source') ? (
-          <Form.Item {...formItemLayout} label="来源">
-            {getFieldDecorator('source', {
-              initialValue: !selectedNode ? null : selectedNode['source'],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写来源" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('address') ? (
-          <Form.Item {...formItemLayout} label="原文地址">
-            {getFieldDecorator('address', {
-              initialValue: !selectedNode ? null : selectedNode['address'],
-            })(<Input {...formItemStyle} type="text" placeholder="请填写原文地址" />)}
-          </Form.Item>
-        ) : null}
-        {fields.includes('sort') ? (
-          <Form.Item {...formItemLayout} label="排序">
-            {getFieldDecorator('sort', {
-              initialValue: !selectedNode ? 0 : selectedNode['sort'],
-            })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
-          </Form.Item>
-        ) : null}
+        <Form.Item {...formItemLayout} label="作者">
+          {getFieldDecorator('author', {
+            initialValue: !selectedNode ? null : selectedNode['author'],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="来源">
+          {getFieldDecorator('source', {
+            initialValue: !selectedNode ? null : selectedNode['source'],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写来源" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="原文地址">
+          {getFieldDecorator('address', {
+            initialValue: !selectedNode ? null : selectedNode['address'],
+          })(<Input {...formItemStyle} type="text" placeholder="请填写原文地址" />)}
+        </Form.Item>
+        <Form.Item {...formItemLayout} label="排序">
+          {getFieldDecorator('sort', {
+            initialValue: !selectedNode ? 0 : selectedNode['sort'],
+          })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
+        </Form.Item>
         <Form.Item {...tailFormItemLayout}>
           <Row>
             <Col span={3}>
@@ -318,24 +336,21 @@ export default class extends React.Component {
     );
   };
 
+  toSaveRichText = (text) => {
+    this.toSave({ text });
+  };
+
   toSave = (payload) => {
     this.props.dispatch({
       type: `${MODEL_NAME}/save`,
-      payload
+      payload,
     });
-  }
+  };
 
   render() {
-
     const { selectedNode } = this.props;
 
-    let tabs = [{ key: 'basic', render: this.renderBasicForm }];
-
-    if (!!selectedNode && !!selectedNode.id) {
-      tabs = tabs.concat([{ key: 'image' },
-      { key: 'video' },
-      { key: 'text' },])
-    }
+    if (!selectedNode) return <Skeleton active loading />;
 
     return (
       <Fragment>
@@ -343,11 +358,37 @@ export default class extends React.Component {
           <Icon type="arrow-left" />
           返回
         </Button>
-        <DetailPlus
-          data={selectedNode}
-          tabs={tabs}
-          toSave={this.toSave}
-        />
+        <Tabs onChange={this.onTabChange} activeKey={this.state.tabKey}>
+          <Tabs.TabPane key="basic" tab="基础设置">
+            {this.renderBasicForm()}
+          </Tabs.TabPane>
+          {selectedNode.id ? (
+            <Tabs.TabPane key="image" tab="图片">
+              <ImageCropper
+                url={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
+                onUpload={this.onThumbnailUpload}
+              />
+            </Tabs.TabPane>
+          ) : null}
+          {selectedNode.id ? (
+            <Tabs.TabPane key="video" tab="视频">
+              <VideoEditor
+                url={!selectedNode.video ? '' : selectedNode.videoPath}
+                onUpload={this.onVideoUpload}
+              />
+            </Tabs.TabPane>
+          ) : null}
+          {selectedNode.id ? (
+            <Tabs.TabPane key="richtext" tab="正文">
+              <RichText
+                onSave={this.toSaveRichText}
+                html={selectedNode.text}
+                contentId={selectedNode.id}
+                onMediaUpload={this.onMediaUpload}
+              />
+            </Tabs.TabPane>
+          ) : null}
+        </Tabs>
       </Fragment>
     );
   }
