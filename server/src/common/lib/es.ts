@@ -8,18 +8,18 @@ const es = new elasticsearch.Client({
     log: Logger
 });
 
-es.ping(
-    {
-        requestTimeout: 3000
-    },
-    (error) => {
-        if (error) {
-            Logger.error('elasticsearch cluster is down!');
-        } else {
-            Logger.log('All is well');
-        }
-    }
-);
+// es.ping(
+//     {
+//         requestTimeout: 3000
+//     },
+//     (error) => {
+//         if (error) {
+//             Logger.error('elasticsearch cluster is down!');
+//         } else {
+//             Logger.log('All is well');
+//         }
+//     }
+// );
 
 export { es, esb };
 export default es;

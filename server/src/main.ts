@@ -17,28 +17,48 @@ import { AppModule } from './app.module';
 import { Seed } from './seed';
 import { config } from './config';
 import { ExceptionsFilter } from './common/aspects/exceptions.filter';
-import { influx } from './common/lib/influx';
 import { io } from './common/lib/io';
 import { mq } from './common/lib/mq';
 import { wf } from './common/lib/wf';
 import { Logger } from './common/lib/logger';
-import { FlowService } from './common/services/flow.service';
-import { FlowTemplate } from './common/aspects/enum';
-
-declare const module: any;
 
 const readFileAsync = util.promisify(fs.readFile);
-const RedisStore = ConnectRedis(Session);
+const dev = process.env.NODE_ENV !== 'production';
 
-async function bootstrap() {
-    const dev = process.env.NODE_ENV !== 'production';
+async function initSwagger(app) {
+    const options = new DocumentBuilder()
+        .setTitle('Nestify')
+        .setDescription('The Nestify API Documents')
+        .setVersion('0.0.1')
+        .addTag('Nestify')
+        .addBearerAuth()
+        .build();
 
-    // Nextjs
-    const nextjs = Nextjs({ dev });
-    await nextjs.prepare();
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('docs', app, document);
+}
 
+async function initScripts(app) {
+    if (!!process.env.DB_INIT) {
+        try {
+            Logger.log('Database initializing');
+
+            const seed = app.get(Seed);
+            await seed.start();
+
+            Logger.log('Database initialized');
+        } catch (err) {
+            Logger.error(err);
+        } finally {
+            process.exit(0);
+        }
+    }
+}
+
+async function initFastify(nextjs) {
     // Fastify
     const fastify = Fastify();
+    const RedisStore = ConnectRedis(Session);
 
     fastify.register(Helmet, config.helmet);
     fastify.register(RateLimit, config.rateLimit);
@@ -69,43 +89,27 @@ async function bootstrap() {
             .send(content);
     });
 
+    return fastify;
+}
+
+async function bootstrap() {
+    const nextjs = Nextjs({ dev });
+    await nextjs.prepare();
+
     // Nestjs
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
-        new FastifyAdapter(fastify),
+        new FastifyAdapter(await initFastify(nextjs)),
         {
             logger: false
         }
     );
 
-    if (!!process.env.DB_INIT) {
-        try {
-            Logger.log('Database initializing');
-
-            const seed = app.get(Seed);
-            await seed.start();
-
-            Logger.log('Database initialized');
-        } catch (err) {
-            Logger.error(err);
-        } finally {
-            process.exit(0);
-        }
-    }
-
-    const options = new DocumentBuilder()
-        .setTitle('Nestify')
-        .setDescription('The Nestify API Documents')
-        .setVersion('0.0.1')
-        .addTag('Nestify')
-        .addBearerAuth()
-        .build();
-
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup('docs', app, document);
-
     app.enableCors();
     app.useGlobalFilters(new ExceptionsFilter());
+
+    await initScripts(app);
+    await initSwagger(app);
 
     await mq.init();
     await wf.init();
@@ -116,11 +120,6 @@ async function bootstrap() {
     await app.listen(config.port, config.hostName, () => {
         Logger.log(`Server run at port ${config.port}`);
     });
-
-    if (module.hot) {
-        module.hot.accept();
-        module.hot.dispose(() => app.close());
-    }
 }
 
 bootstrap();
