@@ -69,12 +69,6 @@ async function bootstrap() {
             .send(content);
     });
 
-    // InfluxDB
-    const dbNames = await influx.getDatabaseNames();
-    if (!dbNames.includes(config.influx.database)) {
-        await influx.createDatabase(config.influx.database);
-    }
-
     // Nestjs
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
