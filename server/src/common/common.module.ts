@@ -25,6 +25,7 @@ import { RoleService } from './services/role.service';
 import { AuthorityService } from './services/authority.service';
 import { SearchService } from './services/search.service';
 import { FlowService } from './services/flow.service';
+import { WorkOrderFlow } from './flows/work-order.flow';
 
 @Global()
 @Module({
@@ -33,7 +34,16 @@ import { FlowService } from './services/flow.service';
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register(config.jwt),
         TypeOrmModule.forRoot(config.orm as TypeOrmModuleOptions),
-        TypeOrmModule.forFeature([Setting, Flow, Category, User, Content, Organization, Role, Authority])
+        TypeOrmModule.forFeature([
+            Setting,
+            Flow,
+            Category,
+            User,
+            Content,
+            Organization,
+            Role,
+            Authority
+        ])
     ],
     providers: [
         JwtStrategy,
@@ -48,7 +58,8 @@ import { FlowService } from './services/flow.service';
         AuthorityService,
         RoleService,
         SearchService,
-        StatusTask
+        StatusTask,
+        WorkOrderFlow
     ],
     exports: [
         ImportService,
@@ -64,4 +75,4 @@ import { FlowService } from './services/flow.service';
         SearchService
     ]
 })
-export class CommonModule { }
+export class CommonModule {}

@@ -341,7 +341,7 @@ export default class extends React.Component {
         <Content className={styles.normal}>
           {showQueryCondition ? (
             <Collapse defaultActiveKey={['1']}>
-              <Panel header="查询条件" key="1">
+              <Panel header="文章管理 | 查询条件" key="1">
                 <Form
                   onSubmit={this.onSubmit}
                   style={{

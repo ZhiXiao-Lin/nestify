@@ -80,18 +80,18 @@ export default class extends React.Component {
 
               return !!keyword
                 ? val
-                  .toString()
-                  .split(reg)
-                  .map((text, i) =>
-                    i > 0
-                      ? [
-                        <span key={i} col={i} style={{ color: 'red' }}>
-                          <b>{val.toString().match(reg)[0]}</b>
-                        </span>,
-                        text,
-                      ]
-                      : text
-                  )
+                    .toString()
+                    .split(reg)
+                    .map((text, i) =>
+                      i > 0
+                        ? [
+                            <span key={i} col={i} style={{ color: 'red' }}>
+                              <b>{val.toString().match(reg)[0]}</b>
+                            </span>,
+                            text,
+                          ]
+                        : text
+                    )
                 : val;
             },
           },
@@ -295,7 +295,7 @@ export default class extends React.Component {
         <Content className={styles.normal}>
           {showQueryCondition ? (
             <Collapse defaultActiveKey={['1']}>
-              <Panel header="查询条件" key="1">
+              <Panel header="角色管理 | 查询条件" key="1">
                 <Form
                   onSubmit={this.onSubmit}
                   style={{
@@ -323,8 +323,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-              ''
-            )}
+            ''
+          )}
           <Divider orientation="left" />
           <Row>
             <Col className="gutter-row" span={24}>
@@ -345,12 +345,12 @@ export default class extends React.Component {
                         </Tooltip>
                       </Popconfirm>
                     ) : (
-                        <Tooltip placement="bottom" title="删除">
-                          <Button disabled={true}>
-                            <Icon type="delete" />
-                          </Button>
-                        </Tooltip>
-                      )}
+                      <Tooltip placement="bottom" title="删除">
+                        <Button disabled={true}>
+                          <Icon type="delete" />
+                        </Button>
+                      </Tooltip>
+                    )}
                     <Tooltip placement="bottom" title="新增">
                       <Button onClick={this.toCreate}>
                         <Icon type="file-add" />

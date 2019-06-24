@@ -111,8 +111,8 @@ async function bootstrap() {
     await initScripts(app);
     await initSwagger(app);
 
-    await mq.init();
-    await wf.init();
+    // await mq.init();
+    // await wf.init();
 
     io.server.listen(app.getHttpServer());
     await io.init();
