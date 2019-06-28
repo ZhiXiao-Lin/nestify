@@ -11,6 +11,7 @@ export class ExceptionsFilter implements ExceptionFilter {
         const request = ctx.getRequest();
 
         Logger.error('exception', exception);
+        Logger.error(request.headers.xhr);
 
         const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
 

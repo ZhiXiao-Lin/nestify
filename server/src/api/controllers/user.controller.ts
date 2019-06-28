@@ -26,6 +26,7 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get(':id')
+    @UseInterceptors(ClassSerializerInterceptor)
     async fetch(@Param() params) {
         return await this.userService.findOneById(params.id);
     }
@@ -36,6 +37,7 @@ export class UserController {
     }
 
     @Get('current')
+    @UseInterceptors(ClassSerializerInterceptor)
     async current(@CurrentUser() user) {
         return await this.userService.findOneById(user.id);
     }
