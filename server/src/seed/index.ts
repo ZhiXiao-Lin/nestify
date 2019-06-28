@@ -13,10 +13,11 @@ import { Role } from '../common/entities/role.entity';
 import { Authority } from '../common/entities/authority.entity';
 import { Content } from '../common/entities/content.entity';
 import { StorageType } from '../common/aspects/enum';
+import { ServiceCategory } from '../common/entities/service-category.entity';
 
 @Injectable()
 export class Seed {
-    constructor(@InjectConnection() private readonly connection: Connection) { }
+    constructor(@InjectConnection() private readonly connection: Connection) {}
 
     async start() {
         Logger.log('seed start');
@@ -32,8 +33,9 @@ export class Seed {
         });
 
         await this.importCategorys();
+        await this.importServiceCategorys();
         await this.importOrganizations();
-        await this.importAuthoritys();
+        await this.importAuthorities();
         await this.importRoles();
 
         const roleAdmin = await this.connection
@@ -42,14 +44,13 @@ export class Seed {
 
         const superAdmin = User.create({
             account: 'SysAdmin',
-            password: '12345678',
             nickname: '超级管理员',
             avatar: {
                 storageType: StorageType.LOCAL,
                 path: '/images/superadmin.png'
             }
         });
-        superAdmin.roles = [roleAdmin];
+        superAdmin.role = roleAdmin;
         await this.connection.getRepository(User).save(superAdmin);
     }
 
@@ -122,6 +123,23 @@ export class Seed {
         await this.connection.getTreeRepository(Category).save(categoryArr);
     }
 
+    async importServiceCategorys() {
+        const categorysResult = await ExcelHelper.loadFromFile(
+            resolve('./seeds/service-categorys.xlsx'),
+            ServiceCategory.sheetsMap
+        );
+        const categorys = categorysResult['categorys'];
+        const categoryArr = [];
+
+        categorys.forEach((item) => {
+            if (!!item.parent) {
+                item.parent = categoryArr.find((cate) => cate.id === item.parent);
+            }
+            categoryArr.push(Category.create(item));
+        });
+        await this.connection.getTreeRepository(ServiceCategory).save(categoryArr);
+    }
+
     async importOrganizations() {
         const organizationsResult = await ExcelHelper.loadFromFile(
             resolve('./seeds/organizations.xlsx'),
@@ -139,15 +157,15 @@ export class Seed {
         await this.connection.getTreeRepository(Organization).save(organizationArr);
     }
 
-    async importAuthoritys() {
+    async importAuthorities() {
         const result = await ExcelHelper.loadFromFile(
-            resolve('./seeds/authoritys.xlsx'),
+            resolve('./seeds/authorities.xlsx'),
             Authority.sheetsMap
         );
-        const athoritys = result['authoritys'];
+        const authorities = result['authorities'];
         const arr = [];
 
-        for (let item of athoritys) {
+        for (let item of authorities) {
             if (!!item.parent) {
                 item.parent = arr.find((auth) => auth.id === item.parent);
             }

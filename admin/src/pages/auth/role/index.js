@@ -27,7 +27,7 @@ const Option = Select.Option;
 const Panel = Collapse.Panel;
 
 const MODEL_NAME = 'role';
-const DETAIL_URL = '/studio/roledetail';
+const DETAIL_URL = '/studio/auth/role/detail';
 
 @connect(({ role, loading }) => ({
   ...role,
@@ -157,7 +157,7 @@ export default class extends React.Component {
   };
 
   toCreate = () => {
-    router.push(`${DETAIL_URL}/CREATE`);
+    router.push(`${DETAIL_URL}`);
   };
 
   toDetail = (id) => (e) => {

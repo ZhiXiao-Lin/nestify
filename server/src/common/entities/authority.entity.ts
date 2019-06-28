@@ -32,7 +32,7 @@ export class Authority extends Base {
 
     @TreeParent() parent: Authority;
 
-    @ManyToMany((type) => Role, (role) => role.authoritys)
+    @ManyToMany((type) => Role, (role) => role.authorities)
     roles: Role[];
 
     @Expose()
@@ -57,7 +57,7 @@ export class Authority extends Base {
 
     static readonly sheetsMap: object = {
         权限: {
-            map: 'authoritys',
+            map: 'authorities',
             handleType: ExcelHandleType.ARRAY,
             cellsMap: {
                 ID: 'id',

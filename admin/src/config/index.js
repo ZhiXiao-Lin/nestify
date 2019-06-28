@@ -8,18 +8,18 @@ let config = {
 
   qiniu: {
     uploadUrl: 'https://up-z2.qiniup.com',
-    domain: 'http://pt81bm3p8.bkt.clouddn.com'
+    domain: 'http://img.nestify.cn',
   },
 
   pagination: {
-    size: 10
+    size: 10,
   },
 
   siteInfo: {
     title: 'Nestify',
     desc: '中后台全栈解决方案',
     copyright: 'NestifyStack',
-  }
+  },
 };
 
 if (process.env.NODE_ENV === 'production') {

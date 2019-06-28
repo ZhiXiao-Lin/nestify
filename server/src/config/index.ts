@@ -92,11 +92,12 @@ let config = {
     qiniu: {
         accessKey: 'YyxyEPUcKk2vDpjKkCwZQaAC_uaUaxX1eqd26hL6',
         secretKey: 'gCpsZaPRn8YqWbKzMsVgcEBsQk63Aev9qX2VN_eV',
-        domain: 'http://pt81bm3p8.bkt.clouddn.com',
+        domain: 'http://img.nestify.cn',
         policy: {
             scope: 'nestify',
             expires: 7200,
-            returnBody: '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)","name":"$(x:name)"}'
+            returnBody:
+                '{"key":"$(key)","hash":"$(etag)","fsize":$(fsize),"bucket":"$(bucket)","name":"$(x:name)"}'
         }
     },
 
@@ -107,7 +108,7 @@ let config = {
 
     mq: {
         url: 'amqp://localhost',
-        options: {},
+        options: {}
     }
 };
 

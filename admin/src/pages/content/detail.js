@@ -31,13 +31,13 @@ const tailFormItemLayout = {
   wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } },
 };
 
-const MODEL_NAME = 'contents';
+const MODEL_NAME = 'content';
 
 @Form.create()
-@connect(({ contents, category }) => ({
+@connect(({ content, category }) => ({
   category,
-  selectedNode: contents.selectedNode,
-  columns: contents.columns,
+  selectedNode: content.selectedNode,
+  columns: content.columns,
 }))
 export default class extends React.Component {
   state = {
@@ -175,21 +175,19 @@ export default class extends React.Component {
     } = this.props;
 
     if (!!params.id) {
-      if ('CREATE' !== params.id) {
-        dispatch({
-          type: `${MODEL_NAME}/detail`,
-          payload: {
-            id: id || params.id,
-          },
-        });
-      } else {
-        dispatch({
-          type: `${MODEL_NAME}/set`,
-          payload: {
-            selectedNode: {},
-          },
-        });
-      }
+      dispatch({
+        type: `${MODEL_NAME}/detail`,
+        payload: {
+          id: id || params.id,
+        },
+      });
+    } else {
+      dispatch({
+        type: `${MODEL_NAME}/set`,
+        payload: {
+          selectedNode: {},
+        },
+      });
     }
 
     dispatch({

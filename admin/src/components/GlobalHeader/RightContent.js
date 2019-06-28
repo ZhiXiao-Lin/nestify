@@ -125,7 +125,7 @@ export default class GlobalHeaderRight extends PureComponent {
 
     return (
       <div className={className}>
-        <HeaderSearch
+        {/* <HeaderSearch
           className={`${styles.action} ${styles.search}`}
           placeholder={'站内搜索'}
           // dataSource={['提示1', '提示2', '提示3']}
@@ -146,55 +146,55 @@ export default class GlobalHeaderRight extends PureComponent {
           >
             <Icon type="question-circle-o" />
           </a>
-        </Tooltip>
-        {/*
-				<NoticeIcon
-					className={styles.action}
-					count={unreadMsg.count}
-					onItemClick={(item, tabProps) => {
-						console.log(item, tabProps); // eslint-disable-line
-						this.changeReadState(item, tabProps);
-					}}
-					locale={{
-						emptyText: '暂无',
-						clear: '清空',
-						loadedAll: '加载完毕',
-						loadMore: '加载更多'
-					}}
-					onClear={onNoticeClear}
-					onLoadMore={this.fetchMoreNotices}
-					onPopupVisibleChange={onNoticeVisibleChange}
-					loading={fetchingNotices}
-					clearClose
-				>
-					<NoticeIcon.Tab
-						count={unreadMsg.notification}
-						list={noticeData.notification}
-						title={'通知'}
-						name="notification"
-						emptyText={'暂无通知'}
-						emptyImage="https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
-						{...loadMoreProps}
-					/>
-					<NoticeIcon.Tab
-						count={unreadMsg.message}
-						list={noticeData.message}
-						title={'消息'}
-						name="message"
-						emptyText={'暂无消息'}
-						emptyImage="https://gw.alipayobjects.com/zos/rmsportal/sAuJeJzSKbUmHfBQRzmZ.svg"
-						{...loadMoreProps}
-					/>
-					<NoticeIcon.Tab
-						count={unreadMsg.event}
-						list={noticeData.event}
-						title={'待办'}
-						name="event"
-						emptyText={'暂无待办'}
-						emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
-						{...loadMoreProps}
-					/>
-				</NoticeIcon>*/}
+        </Tooltip> */}
+
+        <NoticeIcon
+          className={styles.action}
+          count={unreadMsg.count}
+          onItemClick={(item, tabProps) => {
+            console.log(item, tabProps); // eslint-disable-line
+            this.changeReadState(item, tabProps);
+          }}
+          locale={{
+            emptyText: '暂无',
+            clear: '清空',
+            loadedAll: '加载完毕',
+            loadMore: '加载更多',
+          }}
+          onClear={onNoticeClear}
+          onLoadMore={this.fetchMoreNotices}
+          onPopupVisibleChange={onNoticeVisibleChange}
+          loading={fetchingNotices}
+          clearClose
+        >
+          <NoticeIcon.Tab
+            count={unreadMsg.notification}
+            list={noticeData.notification}
+            title={'通知'}
+            name="notification"
+            emptyText={'暂无通知'}
+            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg"
+            {...loadMoreProps}
+          />
+          <NoticeIcon.Tab
+            count={unreadMsg.message}
+            list={noticeData.message}
+            title={'消息'}
+            name="message"
+            emptyText={'暂无消息'}
+            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/sAuJeJzSKbUmHfBQRzmZ.svg"
+            {...loadMoreProps}
+          />
+          <NoticeIcon.Tab
+            count={unreadMsg.event}
+            list={noticeData.event}
+            title={'待办'}
+            name="event"
+            emptyText={'暂无待办'}
+            emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"
+            {...loadMoreProps}
+          />
+        </NoticeIcon>
         {true ? (
           <HeaderDropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>

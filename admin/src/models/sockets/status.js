@@ -8,9 +8,7 @@ export default {
     status: [],
   },
 
-  effects: {
-
-  },
+  effects: {},
 
   subscriptions: {
     onConnection({ dispatch, history }) {
@@ -20,7 +18,7 @@ export default {
           client = io(`${config.socketRoot}/status`);
 
           client.on('connect', (socket) => {
-            console.log(`================ on ${client.id} connect`, client);
+            console.log(`================ status on ${client.id} connect`, client);
 
             client.on('status', (status) => {
               dispatch({

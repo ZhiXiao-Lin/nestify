@@ -20,9 +20,9 @@ export default {
     *login({ payload }, { call, put }) {
       const token = yield call(apiPost, API_LOGIN_URL, payload);
 
-      if (!token) return false;
+      if (!token || !token.token) return false;
 
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', token.token);
 
       yield put({
         type: 'fetchCurrentUser',
@@ -75,7 +75,7 @@ export default {
 
       message.success('修改成功，请重新登录');
       yield put({
-        type: 'logout'
+        type: 'logout',
       });
     },
     *save({ payload }, { call, put, select }) {
@@ -105,5 +105,5 @@ export default {
     set(state, { payload }) {
       return { ...state, ...payload };
     },
-  }
+  },
 };

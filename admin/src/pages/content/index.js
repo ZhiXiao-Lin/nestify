@@ -33,13 +33,13 @@ const Option = Select.Option;
 const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
-const MODEL_NAME = 'contents';
+const MODEL_NAME = 'content';
 const DETAIL_URL = '/studio/content/detail';
 
-@connect(({ contents, category, loading }) => ({
-  ...contents,
+@connect(({ content, category, loading }) => ({
+  ...content,
   category,
-  loading: loading.models.contents,
+  loading: loading.models.content,
 }))
 @Form.create()
 export default class extends React.Component {
@@ -197,7 +197,7 @@ export default class extends React.Component {
   };
 
   toCreate = () => {
-    router.push(`${DETAIL_URL}/CREATE`);
+    router.push(`${DETAIL_URL}`);
   };
 
   toDetail = (id) => (e) => {

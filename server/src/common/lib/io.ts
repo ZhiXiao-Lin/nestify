@@ -38,5 +38,20 @@ export class IO {
 
 const io = new IO();
 
-export { io };
+const IOServer = {
+    status: io.server.of('/status'),
+    notices: io.server.of('/notices')
+};
+
+IOServer.status.use((socket, next) => {
+    Logger.log('/status ---> id', socket.id);
+    next();
+});
+
+IOServer.notices.use((socket, next) => {
+    Logger.log('/notices ---> id', socket.id);
+    next();
+});
+
+export { io, IOServer };
 export default io;

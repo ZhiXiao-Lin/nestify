@@ -25,6 +25,14 @@ export class AuthorityService extends BaseService<Authority> {
             .getMany();
     }
 
+    async findByRoleId(roleId: string) {
+        return await this.authorityRepository
+            .createQueryBuilder('t')
+            .leftJoin('t.roles', 'role')
+            .where('role.id =:roleId', { roleId })
+            .getMany();
+    }
+
     async findOneByName(name: string) {
         return await this.authorityRepository.findOne({ name });
     }

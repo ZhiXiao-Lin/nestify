@@ -63,7 +63,7 @@ export default {
     *detail({ payload }, { call, put }) {
       const res = yield call(apiGet, API_URL + '/' + payload.id);
 
-      res.authoritys = res.authoritys ? res.authoritys.map((item) => item.id) : [];
+      res.authorities = res.authorities ? res.authorities.map((item) => item.id) : [];
 
       yield put({
         type: 'set',
@@ -79,8 +79,8 @@ export default {
 
       let res = null;
 
-      selectedNode.authoritys = selectedNode.authoritys
-        ? selectedNode.authoritys.map((item) => ({ id: item }))
+      selectedNode.authorities = selectedNode.authorities
+        ? selectedNode.authorities.map((item) => ({ id: item }))
         : [];
 
       if (_.isEmpty(selectedNode)) {

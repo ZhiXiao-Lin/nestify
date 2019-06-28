@@ -14,6 +14,8 @@ import { Setting } from './entities/setting.entity';
 import { Organization } from './entities/organization.entity';
 import { Role } from './entities/role.entity';
 import { Authority } from './entities/authority.entity';
+import { ServiceCategory } from './entities/service-category.entity';
+import { Service } from './entities/service.entity';
 import { CommonService } from './services/common.service';
 import { SettingService } from './services/setting.service';
 import { ImportService } from './services/import.service';
@@ -26,6 +28,14 @@ import { AuthorityService } from './services/authority.service';
 import { SearchService } from './services/search.service';
 import { FlowService } from './services/flow.service';
 import { WorkOrderFlow } from './flows/work-order.flow';
+import { ServiceCategoryService } from './services/service-category.service';
+import { ServiceService } from './services/service.service';
+import { Carousel } from './entities/carousel.entity';
+import { CarouselService } from './services/carousel.service';
+import { ApplyVolunteerFlow } from './flows/apply-volunteer.flow';
+import { FlowTemplate } from './entities/flow-template.entity';
+import { FlowTemplateService } from './services/flow-template.service';
+import { Notice } from './entities/notice.entity';
 
 @Global()
 @Module({
@@ -37,12 +47,17 @@ import { WorkOrderFlow } from './flows/work-order.flow';
         TypeOrmModule.forFeature([
             Setting,
             Flow,
+            FlowTemplate,
             Category,
+            Carousel,
             User,
             Content,
             Organization,
             Role,
-            Authority
+            Authority,
+            Service,
+            ServiceCategory,
+            Notice
         ])
     ],
     providers: [
@@ -50,7 +65,30 @@ import { WorkOrderFlow } from './flows/work-order.flow';
         ImportService,
         CommonService,
         FlowService,
+        CarouselService,
         CategoryService,
+        ContentService,
+        ServiceCategoryService,
+        ServiceService,
+        UserService,
+        SettingService,
+        OrganizationService,
+        AuthorityService,
+        RoleService,
+        SearchService,
+        FlowTemplateService,
+        StatusTask,
+        WorkOrderFlow,
+        ApplyVolunteerFlow
+    ],
+    exports: [
+        ImportService,
+        CommonService,
+        FlowService,
+        CarouselService,
+        CategoryService,
+        ServiceCategoryService,
+        ServiceService,
         ContentService,
         UserService,
         SettingService,
@@ -58,21 +96,7 @@ import { WorkOrderFlow } from './flows/work-order.flow';
         AuthorityService,
         RoleService,
         SearchService,
-        StatusTask,
-        WorkOrderFlow
-    ],
-    exports: [
-        ImportService,
-        CommonService,
-        FlowService,
-        CategoryService,
-        ContentService,
-        UserService,
-        SettingService,
-        OrganizationService,
-        AuthorityService,
-        RoleService,
-        SearchService
+        FlowTemplateService
     ]
 })
 export class CommonModule {}

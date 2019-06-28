@@ -38,12 +38,53 @@ export default [
         path: '/studio/content',
         Routes: ['src/pages/Authorized'],
         routes: [
+          { name: '轮播管理', path: '/studio/content/carousel', component: './content/carousel' },
+          {
+            name_noshow: '轮播详情',
+            path: '/studio/content/carousel/detail/:id?',
+            component: './content/carousel/detail',
+          },
           { name: '文章管理', path: '/studio/content', component: './content' },
           { name: '文章分类', path: '/studio/content/category', component: './content/category' },
           {
             name_noshow: '文章详情',
-            path: '/studio/content/detail/:id',
+            path: '/studio/content/detail/:id?',
             component: './content/detail',
+          },
+        ],
+      },
+      {
+        name: '服务管理',
+        icon: 'audit',
+        path: '/studio/service',
+        Routes: ['src/pages/Authorized'],
+        routes: [
+          { name: '服务管理', path: '/studio/service', component: './service' },
+          { name: '服务分类', path: '/studio/service/category', component: './service/category' },
+          {
+            name_noshow: '服务详情',
+            path: '/studio/service/detail/:id?',
+            component: './service/detail',
+          },
+        ],
+      },
+      {
+        name: '工单管理',
+        icon: 'form',
+        path: '/studio/flow',
+        Routes: ['src/pages/Authorized'],
+        routes: [
+          { name: '流程模板', path: '/studio/flow/template', component: './flow/template' },
+          {
+            name_noshow: '流程模板详情',
+            path: '/studio/flow/template/detail/:id?',
+            component: './flow/template/detail',
+          },
+          { name: '流程管理', path: '/studio/flow', component: './flow' },
+          {
+            name_noshow: '流程详情',
+            path: '/studio/flow/detail/:id?',
+            component: './flow/detail',
           },
         ],
       },
@@ -57,16 +98,18 @@ export default [
       {
         name: '用户管理',
         icon: 'team',
-        path: '/studio/users/:channel',
-        component: './users',
+        path: '/studio/users',
         Routes: ['src/pages/Authorized'],
-        routes: [{ name: '用户列表', path: '/studio/users/customer' }],
+        routes: [
+          { name: '用户列表', component: './users', path: '/studio/users' },
+          {
+            name_noshow: '用户详情',
+            path: '/studio/users/detail/:id?',
+            component: './users/detail',
+          },
+        ],
       },
-      {
-        name_noshow: '详情',
-        path: '/studio/usersdetail/:channel/:id',
-        component: './users/detail',
-      },
+
       {
         name: '权限角色',
         icon: 'cluster',
@@ -74,13 +117,13 @@ export default [
         Routes: ['src/pages/Authorized'],
         routes: [
           { name: '角色管理', component: './auth/role', path: '/studio/auth/role' },
+          {
+            name_noshow: '角色详情',
+            path: '/studio/auth/role/detail/:id?',
+            component: './auth/role/detail',
+          },
           { name: '权限管理', component: './auth/authority', path: '/studio/auth/authority' },
         ],
-      },
-      {
-        name_noshow: '详情',
-        path: '/studio/roledetail/:id',
-        component: './auth/role/detail',
       },
       {
         name: '站点设置',

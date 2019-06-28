@@ -11,7 +11,6 @@ export class ExceptionsFilter implements ExceptionFilter {
         const request = ctx.getRequest();
 
         Logger.error('exception', exception);
-        Logger.error(request.headers.xhr);
 
         const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -31,6 +30,7 @@ export class ExceptionsFilter implements ExceptionFilter {
                 });
         } else {
             if (process.env.NODE_ENV !== 'production' && !request.headers.xhr) {
+                Logger.error('INTERNAL_SERVER_ERROR --->');
                 const youch = new Youch(exception, request.raw);
 
                 const html = await youch

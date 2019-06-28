@@ -10,6 +10,11 @@ import { OrganizationController } from './controllers/organization.controller';
 import { RoleController } from './controllers/role.controller';
 import { AuthorityController } from './controllers/authority.controller';
 import { SearchController } from './controllers/search.controller';
+import { ServiceCategoryController } from './controllers/service-category.controller';
+import { ServiceController } from './controllers/service.controller';
+import { CarouselController } from './controllers/carousel.controller';
+import { FlowTemplateController } from './controllers/flow-template.controller';
+import { FlowController } from './controllers/flow.controller';
 
 @Module({
     controllers: [
@@ -19,10 +24,15 @@ import { SearchController } from './controllers/search.controller';
         UserController,
         ContentController,
         CategoryController,
+        CarouselController,
+        ServiceController,
+        ServiceCategoryController,
         OrganizationController,
         AuthorityController,
         RoleController,
-        SearchController
+        SearchController,
+        FlowController,
+        FlowTemplateController
     ]
 })
 export class ApiModule implements NestModule {

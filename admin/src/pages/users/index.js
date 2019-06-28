@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import router from 'umi/router';
 import { connect } from 'dva';
 import {
-  Upload,
   Input,
   DatePicker,
   Popconfirm,
@@ -20,10 +19,9 @@ import {
   Divider,
   Collapse,
   TreeSelect,
-  message,
+  Modal,
+  InputNumber,
 } from 'antd';
-
-import { UploadActionType, apiUploadOne } from '@/utils';
 
 import styles from './index.css';
 
@@ -34,33 +32,26 @@ const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
 const MODEL_NAME = 'users';
-const DETAIL_URL = '/studio/usersdetail';
+const DETAIL_URL = '/studio/users/detail';
 
-@connect(({ users, organization, loading }) => ({
+@connect(({ users, user, organization, loading }) => ({
   ...users,
+  currentUser: user.currentUser,
   organization,
   loading: loading.models.users,
 }))
 @Form.create()
 export default class extends React.Component {
-  componentDidMount() {
-    const {
-      match: { params },
-    } = this.props;
+  state = {
+    currentNode: null,
+    actionType: 'add',
+    value: 10,
+  };
 
-    this.init(params.channel);
+  componentDidMount() {
+    this.init();
     this.onReset();
     this.refresh();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {
-      match: { params },
-    } = nextProps;
-    if (this.props.match.params.channel !== params.channel) {
-      this.init(params.channel);
-      this.loadData({ page: 0, category: params.channel });
-    }
   }
 
   init = (channel) => {
@@ -113,16 +104,38 @@ export default class extends React.Component {
             dataIndex: 'account',
           },
           {
-            title: '部门',
-            dataIndex: 'org',
-            render: (val) => (!!val ? val.name : '暂无'),
+            title: '姓名',
+            dataIndex: 'realName',
           },
           {
             title: '性别',
             dataIndex: 'gender',
             render: (val) => (!_.isEmpty(val) ? '' : val <= 0 ? '男' : '女'),
           },
+          {
+            title: '积分',
+            dataIndex: 'points',
+            render: (val, row) => (row.isVolunteer ? val : '-'),
+          },
+          {
+            title: '等级',
+            dataIndex: 'vip',
+            render: (val, row) => (row.isVolunteer ? `V${val}` : '-'),
+          },
 
+          {
+            title: '所属',
+            dataIndex: 'org',
+            render: (val) => (!!val ? val.name : '-'),
+          },
+          {
+            title: '角色',
+            dataIndex: 'role.name',
+          },
+          {
+            title: '状态',
+            dataIndex: 'status',
+          },
           {
             title: '修改时间',
             dataIndex: 'update_at',
@@ -135,9 +148,27 @@ export default class extends React.Component {
             sorter: true,
             render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
           },
+          {
+            title: '操作',
+            dataIndex: 'id',
+            render: (val, row) => this.renderActions(row),
+          },
         ];
 
-        fields = ['id', 'avatarPath', 'nickname', 'org', 'account', 'gender', 'create_at'];
+        fields = [
+          'id',
+          'avatarPath',
+          'nickname',
+          'org',
+          'points',
+          'vip',
+          'account',
+          'realName',
+          'gender',
+          'role.name',
+          'status',
+          'create_at',
+        ];
         showQueryCondition = true;
         break;
     }
@@ -153,12 +184,7 @@ export default class extends React.Component {
   };
 
   loadData = (payload) => {
-    const {
-      dispatch,
-      match: { params },
-    } = this.props;
-
-    payload.category = !!payload.category ? payload.category : params.channel;
+    const { dispatch } = this.props;
 
     dispatch({
       type: `${MODEL_NAME}/fetch`,
@@ -172,19 +198,20 @@ export default class extends React.Component {
   };
 
   toCreate = () => {
-    const {
-      match: { params },
-    } = this.props;
-
-    router.push(`${DETAIL_URL}/${params.channel}/CREATE`);
+    router.push(`${DETAIL_URL}`);
   };
 
   toDetail = (id) => (e) => {
-    const {
-      match: { params },
-    } = this.props;
+    router.push(`${DETAIL_URL}/${id}`);
+  };
 
-    router.push(`${DETAIL_URL}/${params.channel}/${id}`);
+  toUpdate = (currentNode) => {
+    this.setState((state) => ({
+      ...state,
+      currentNode,
+      actionType: 'add',
+      value: 10,
+    }));
   };
 
   toRemove = () => {
@@ -262,7 +289,62 @@ export default class extends React.Component {
     });
   };
 
+  toSave = (payload) => {
+    const { dispatch } = this.props;
+
+    payload.callback = (currentNode) => {
+      this.setState((state) => ({
+        ...state,
+        currentNode,
+      }));
+      this.refresh();
+    };
+
+    dispatch({
+      type: `${MODEL_NAME}/save`,
+      payload,
+    });
+  };
+
+  toApplyVolunteer = (payload) => {
+    payload.callback = () => {
+      this.refresh();
+    };
+
+    this.props.dispatch({
+      type: `${MODEL_NAME}/apply`,
+      payload,
+    });
+  };
+
+  renderActions = (user) => {
+    const { currentUser } = this.props;
+
+    return (
+      <Fragment>
+        {!user.isSuperAdmin && user.isVolunteer ? (
+          <Button type="danger" onClick={() => this.toUpdate(user)}>
+            操作
+          </Button>
+        ) : (
+          ''
+        )}
+        {!user.isSuperAdmin && !!currentUser.isSuperAdmin && !user.isVolunteer ? (
+          <Fragment>
+            {' '}
+            <Button type="primary" onClick={() => this.toApplyVolunteer(user)}>
+              申请
+            </Button>
+          </Fragment>
+        ) : (
+          ''
+        )}
+      </Fragment>
+    );
+  };
+
   render() {
+    const { currentNode, actionType, value } = this.state;
     const {
       dispatch,
       data,
@@ -305,6 +387,47 @@ export default class extends React.Component {
     return (
       <Layout>
         <Content className={styles.normal}>
+          <Modal
+            title="操作"
+            visible={currentNode}
+            closable
+            footer={null}
+            onCancel={() => this.toUpdate(null)}
+          >
+            {!!currentNode && (
+              <Fragment>
+                <p>账户: {currentNode.account}</p>
+                <p>修改前积分: {currentNode.points}</p>
+                <p>
+                  修改后积分:{' '}
+                  {actionType === 'add' ? currentNode.points + value : currentNode.points - value}
+                </p>
+                <p>
+                  修改积分:{' '}
+                  <Select
+                    value={actionType}
+                    onChange={(actionType) => this.setState((state) => ({ ...state, actionType }))}
+                  >
+                    <Option value="add">增加</Option>
+                    <Option value="sub">减少</Option>
+                  </Select>{' '}
+                  <InputNumber
+                    min={1}
+                    step={1}
+                    value={value}
+                    onChange={(value) => this.setState((state) => ({ ...state, value }))}
+                  />{' '}
+                  <Button
+                    type="primary"
+                    disabled={actionType === 'sub' && currentNode.points - value < 0}
+                    onClick={() => this.toSave({ ...currentNode, actionType, value })}
+                  >
+                    保存
+                  </Button>
+                </p>
+              </Fragment>
+            )}
+          </Modal>
           {showQueryCondition ? (
             <Collapse defaultActiveKey={['1']}>
               <Panel header="用户管理 | 查询条件" key="1">

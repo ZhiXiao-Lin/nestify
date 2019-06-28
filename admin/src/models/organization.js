@@ -110,6 +110,22 @@ export default {
 
       payload.callback && payload.callback();
     },
+    *delete({ payload }, { call, put }) {
+      yield call(apiDelete, API_URL, {
+        params: {
+          selectedRows: payload.id,
+        },
+      });
+
+      yield put({
+        type: 'set',
+        payload: {
+          selectedNode: null,
+        },
+      });
+
+      payload.callback && payload.callback();
+    },
     *parent({ payload }, { call, put }) {
       yield call(apiPut, API_URL + '/parent', payload);
 

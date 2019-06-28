@@ -61,13 +61,13 @@ const StudioMenu = ({ authorities, user, items, collapsed, mode, theme }) => (
   </Menu>
 );
 
-@connect(({ global, user, role }) => ({
+@connect(({ global, user, role, notices }) => ({
   loading: global.loading,
   collapsed: global.collapsed,
   menuLayout: global.menuLayout,
   currentUser: user.currentUser,
   roles: role.data.list,
-  noticesList: [],
+  noticesList: notices.notices,
 }))
 export default class StudioLayout extends PureComponent {
   handleMenuCollapse = (collapsed) => {
@@ -100,7 +100,7 @@ export default class StudioLayout extends PureComponent {
 
     if (!currentUser) return null;
 
-    const userAuthorities = currentUser.authorities.map((item) => item.token);
+    const userAuthorities = currentUser.role.authorities.map((item) => item.token);
 
     return (
       <DocumentTitle title={config.siteInfo.title}>
@@ -128,7 +128,7 @@ export default class StudioLayout extends PureComponent {
             <Layout
               className={`${menuLayout === 'sidemenu' && styles.mainLayout} ${
                 collapsed && menuLayout === 'sidemenu' ? styles.layoutCollapsed : ''
-                }`}
+              }`}
             >
               <Header className={styles.header}>
                 <GlobalHeader

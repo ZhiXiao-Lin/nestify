@@ -202,6 +202,19 @@ export default class extends React.Component {
     });
   };
 
+  toDelete = (id) => {
+    this.props.dispatch({
+      type: `${MODEL_NAME}/delete`,
+      payload: {
+        id,
+        callback: () => {
+          this.refresh();
+          message.success('删除成功');
+        },
+      },
+    });
+  };
+
   onClose = () => {
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
@@ -276,6 +289,9 @@ export default class extends React.Component {
       case 'add':
         this.toCreate(id);
         break;
+      case 'delete':
+        this.toDelete(id);
+        break;
     }
   };
 
@@ -308,6 +324,10 @@ export default class extends React.Component {
         <Menu.Item key="add">
           <Icon type="plus" />
           新增子节点
+        </Menu.Item>
+        <Menu.Item key="delete">
+          <Icon type="delete" />
+          删除
         </Menu.Item>
       </Menu>
     );
@@ -413,12 +433,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                    <Tooltip placement="bottom" title="删除">
-                      <Button disabled={true}>
-                        <Icon type="delete" />
-                      </Button>
-                    </Tooltip>
-                  )}
+                  <Tooltip placement="bottom" title="删除">
+                    <Button disabled={true}>
+                      <Icon type="delete" />
+                    </Button>
+                  </Tooltip>
+                )}
                 <Tooltip placement="bottom" title="刷新">
                   <Button onClick={this.refresh}>
                     <Icon type="reload" />
@@ -457,8 +477,8 @@ export default class extends React.Component {
                   </Tabs.TabPane>
                 </Tabs>
               ) : (
-                  ''
-                )}
+                ''
+              )}
             </Col>
           </Row>
         </Content>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Input, Checkbox } from 'antd';
+import { Card, Input, Radio } from 'antd';
 
 import styles from './index.less';
 
@@ -18,9 +18,8 @@ export default class extends Component {
     }));
   };
 
-  onRolesCheck = (checkedValues) => {
-    const { roles, onRolesCheck } = this.props;
-    onRolesCheck(roles.filter((item) => checkedValues.includes(item.id)));
+  onRolesCheck = (e) => {
+    this.props.onRolesCheck(e.target.value);
   };
 
   render() {
@@ -40,11 +39,7 @@ export default class extends Component {
           onChange={this.onFilterChange}
           onSearch={(value) => console.log(value)}
         />
-        <Checkbox.Group
-          options={rolesOptions}
-          value={user.roles.map((item) => item.id)}
-          onChange={this.onRolesCheck}
-        />
+        <Radio.Group options={rolesOptions} value={user.role.id} onChange={this.onRolesCheck} />
       </Card>
     );
   }

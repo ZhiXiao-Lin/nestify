@@ -1,18 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import {
-  Tabs,
-  Form,
-  Input,
-  Row,
-  Col,
-  Icon,
-  Button,
-  Skeleton,
-  Radio,
-  TreeSelect,
-} from 'antd';
+import { Tabs, Form, Input, Row, Col, Icon, Button, Skeleton, Radio, TreeSelect } from 'antd';
 
 import { apiUploadOneToQiniu } from '@/utils';
 
@@ -65,21 +54,19 @@ export default class extends React.Component {
     } = this.props;
 
     if (!!params.id) {
-      if ('CREATE' !== params.id) {
-        dispatch({
-          type: `${MODEL_NAME}/detail`,
-          payload: {
-            id: id || params.id,
-          },
-        });
-      } else {
-        dispatch({
-          type: `${MODEL_NAME}/set`,
-          payload: {
-            selectedNode: {},
-          },
-        });
-      }
+      dispatch({
+        type: `${MODEL_NAME}/detail`,
+        payload: {
+          id: id || params.id,
+        },
+      });
+    } else {
+      dispatch({
+        type: `${MODEL_NAME}/set`,
+        payload: {
+          selectedNode: {},
+        },
+      });
     }
 
     dispatch({
@@ -190,8 +177,8 @@ export default class extends React.Component {
             initialValue: !selectedNode
               ? null
               : !selectedNode['org']
-                ? null
-                : selectedNode['org']['id'],
+              ? null
+              : selectedNode['org']['id'],
           })(
             <TreeSelect
               treeNodeFilterProp="title"
@@ -227,24 +214,22 @@ export default class extends React.Component {
     });
   };
 
-  onRolesCheck = (roles) => {
+  onRolesCheck = (role) => {
     const { dispatch, selectedNode } = this.props;
-    selectedNode.roles = roles;
+    selectedNode.role = { id: role };
 
     dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
-        selectedNode,
+        selectedNode: { ...selectedNode },
       },
     });
   };
 
   render() {
-    const { selectedNode, columns, role, authority } = this.props;
+    const { selectedNode, role, authority } = this.props;
 
     if (!selectedNode) return <Skeleton active loading />;
-
-    const fields = columns.map((item) => item.dataIndex);
 
     return (
       <Fragment>
@@ -274,8 +259,8 @@ export default class extends React.Component {
               <RolesEditor
                 user={selectedNode}
                 roles={role.data.list}
-                authoritysTree={authority.data}
-                authoritys={authority.authoritys}
+                authoritiesTree={authority.data}
+                authorities={authority.authorities}
                 onRolesCheck={this.onRolesCheck}
               />
             </Tabs.TabPane>

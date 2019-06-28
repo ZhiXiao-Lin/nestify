@@ -105,14 +105,14 @@ async function bootstrap() {
         }
     );
 
-    app.enableCors();
-    app.useGlobalFilters(new ExceptionsFilter());
-
     await initScripts(app);
     await initSwagger(app);
 
-    // await mq.init();
-    // await wf.init();
+    app.enableCors();
+    app.useGlobalFilters(new ExceptionsFilter());
+
+    await mq.init();
+    await wf.init();
 
     io.server.listen(app.getHttpServer());
     await io.init();

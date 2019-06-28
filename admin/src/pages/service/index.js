@@ -33,25 +33,23 @@ const Option = Select.Option;
 const Panel = Collapse.Panel;
 const { RangePicker } = DatePicker;
 
-const MODEL_NAME = 'contents';
-const DETAIL_URL = '/studio/content/detail';
+const MODEL_NAME = 'service';
+const DETAIL_URL = '/studio/service/detail';
 
-@connect(({ contents, category, loading }) => ({
-  ...contents,
-  category,
-  loading: loading.models.contents,
+@connect(({ service, serviceCategory, loading }) => ({
+  ...service,
+  category: serviceCategory,
+  loading: loading.models.service,
 }))
 @Form.create()
 export default class extends React.Component {
   componentDidMount() {
-
     this.init();
     this.onReset();
     this.refresh();
   }
 
   init = () => {
-
     const columns = [
       {
         title: '详情',
@@ -80,18 +78,18 @@ export default class extends React.Component {
 
           return !!keyword
             ? val
-              .toString()
-              .split(reg)
-              .map((text, i) =>
-                i > 0
-                  ? [
-                    <span key={i} col={i} style={{ color: 'red' }}>
-                      <b>{val.toString().match(reg)[0]}</b>
-                    </span>,
-                    text,
-                  ]
-                  : text
-              )
+                .toString()
+                .split(reg)
+                .map((text, i) =>
+                  i > 0
+                    ? [
+                        <span key={i} col={i} style={{ color: 'red' }}>
+                          <b>{val.toString().match(reg)[0]}</b>
+                        </span>,
+                        text,
+                      ]
+                    : text
+                )
             : val;
         },
       },
@@ -164,13 +162,12 @@ export default class extends React.Component {
       'update_at',
     ];
 
-
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
       payload: {
         columns,
         fields,
-        showQueryCondition: true
+        showQueryCondition: true,
       },
     });
   };
@@ -189,7 +186,7 @@ export default class extends React.Component {
     });
 
     dispatch({
-      type: 'category/fetch',
+      type: 'serviceCategory/fetch',
       payload,
     });
   };
@@ -200,7 +197,7 @@ export default class extends React.Component {
   };
 
   toCreate = () => {
-    router.push(`${DETAIL_URL}/CREATE`);
+    router.push(`${DETAIL_URL}`);
   };
 
   toDetail = (id) => (e) => {
@@ -305,7 +302,7 @@ export default class extends React.Component {
       showUploadList: false,
       beforeUpload: async (file) => {
         message.loading('正在执行导入', 0);
-        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'contents' });
+        await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'services' });
 
         setTimeout(() => {
           message.destroy();
@@ -344,7 +341,7 @@ export default class extends React.Component {
         <Content className={styles.normal}>
           {showQueryCondition ? (
             <Collapse defaultActiveKey={['1']}>
-              <Panel header="查询条件" key="1">
+              <Panel header="服务管理 | 查询条件" key="1">
                 <Form
                   onSubmit={this.onSubmit}
                   style={{
@@ -388,8 +385,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-              ''
-            )}
+            ''
+          )}
           <Divider orientation="left" />
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>
@@ -408,12 +405,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                    <Tooltip placement="bottom" title="删除">
-                      <Button disabled={true}>
-                        <Icon type="delete" />
-                      </Button>
-                    </Tooltip>
-                  )}
+                  <Tooltip placement="bottom" title="删除">
+                    <Button disabled={true}>
+                      <Icon type="delete" />
+                    </Button>
+                  </Tooltip>
+                )}
                 <Tooltip placement="bottom" title="新增">
                   <Button onClick={this.toCreate}>
                     <Icon type="file-add" />

@@ -5,7 +5,7 @@ import config from '@/config';
 
 const API_URL = config.apiRoot + '/authority';
 
-let authoritys = [];
+let authorities = [];
 
 function treeToArray(tree, parent = {}) {
   return tree
@@ -18,7 +18,7 @@ function treeToArray(tree, parent = {}) {
         treeToArray(item.children, item);
       }
 
-      authoritys.push(item);
+      authorities.push(item);
     });
 }
 
@@ -30,7 +30,7 @@ export default {
     selectedNode: null,
     selectedRows: [],
     queryParams: {},
-    authoritys: [],
+    authorities: [],
     data: [],
     showQueryCondition: false,
     columns: [],
@@ -53,13 +53,13 @@ export default {
       const res = yield call(apiGet, API_URL + '/list', { params });
 
       if (!!res) {
-        authoritys = [];
+        authorities = [];
         treeToArray(res);
 
         yield put({
           type: 'set',
           payload: {
-            authoritys,
+            authorities,
             selectedRows: [],
             queryParams: params,
             data: res,

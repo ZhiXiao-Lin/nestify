@@ -15,7 +15,7 @@ const { TreeNode } = Tree;
 export default class extends Component {
   state = {
     tabKey: 'basic',
-    userAuthoritys: [],
+    userAuthorities: [],
     expandedKeys: [],
     autoExpandParent: true,
     rightClickNodeTreeItem: {
@@ -27,27 +27,23 @@ export default class extends Component {
   };
 
   componentDidMount() {
-    this.getUserAuthoritys();
+    this.getUserAuthorities();
   }
 
   componentWillReceiveProps(nextProps) {
-    this.getUserAuthoritys();
+    this.getUserAuthorities();
   }
 
-  getUserAuthoritys = () => {
+  getUserAuthorities = () => {
     const { user, roles } = this.props;
 
-    let userAuthoritys = [];
-    roles.forEach((item) => {
-      if (user.roles.map((role) => role.id).includes(item.id)) {
-        userAuthoritys = userAuthoritys.concat(item.authoritys);
-      }
-    });
-    userAuthoritys = uniqBy(userAuthoritys, 'id').map((item) => item.id);
+    const userAuthorities = uniqBy(roles.find((item) => item.id === user.role.id), 'id').map(
+      (item) => item.id
+    );
 
     this.setState({
-      userAuthoritys,
-      expandedKeys: userAuthoritys,
+      userAuthorities,
+      expandedKeys: userAuthorities,
       autoExpandParent: false,
     });
   };
@@ -82,7 +78,7 @@ export default class extends Component {
       });
 
   render() {
-    const { user, roles, authoritysTree, onRolesCheck } = this.props;
+    const { user, roles, authoritiesTree, onRolesCheck } = this.props;
 
     return (
       <Row type="flex" className={styles.editorBd}>
@@ -98,11 +94,11 @@ export default class extends Component {
             checkable
             checkStrictly
             onExpand={this.onExpand}
-            checkedKeys={this.state.userAuthoritys}
+            checkedKeys={this.state.userAuthorities}
             expandedKeys={this.state.expandedKeys}
             autoExpandParent={this.state.autoExpandParent}
           >
-            {this.renderTreeNodes(authoritysTree)}
+            {this.renderTreeNodes(authoritiesTree)}
           </Tree>
         </Col>
       </Row>

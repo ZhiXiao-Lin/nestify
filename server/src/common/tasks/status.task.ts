@@ -7,21 +7,10 @@ import { Cron, Interval, Timeout, NestSchedule } from 'nest-schedule';
 import { Logger } from '../lib/logger';
 import { redis } from '../lib/redis';
 import { es } from '../lib/es';
-import { io } from '../lib/io';
+import { IOServer } from '../lib/io';
 
 export class StatusTask extends NestSchedule {
-    server: any;
-
-    constructor() {
-        super();
-
-        this.server = io.server.of('/status');
-        this.server.use((socket, next) => {
-            Logger.log('/status ---> id', socket.id);
-            next();
-        });
-        // this.watchFiles();
-    }
+    server: any = IOServer.status;
 
     // # ┌────────────── second (optional)
     // # │ ┌──────────── minute

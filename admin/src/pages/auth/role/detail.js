@@ -77,27 +77,25 @@ export default class extends React.Component {
     } = this.props;
 
     if (!!params.id) {
-      if ('CREATE' !== params.id) {
-        dispatch({
-          type: `${MODEL_NAME}/detail`,
-          payload: {
-            id: id || params.id,
-            callback: (selectedNode) => {
-              this.setState({
-                expandedKeys: selectedNode.authoritys,
-                autoExpandParent: false,
-              });
-            },
+      dispatch({
+        type: `${MODEL_NAME}/detail`,
+        payload: {
+          id: id || params.id,
+          callback: (selectedNode) => {
+            this.setState({
+              expandedKeys: selectedNode.authorities,
+              autoExpandParent: false,
+            });
           },
-        });
-      } else {
-        dispatch({
-          type: `${MODEL_NAME}/set`,
-          payload: {
-            selectedNode: {},
-          },
-        });
-      }
+        },
+      });
+    } else {
+      dispatch({
+        type: `${MODEL_NAME}/set`,
+        payload: {
+          selectedNode: {},
+        },
+      });
     }
 
     dispatch({
@@ -149,21 +147,21 @@ export default class extends React.Component {
   onCheck = (selectedRows, e) => {
     const {
       selectedNode,
-      authority: { authoritys },
+      authority: { authorities },
     } = this.props;
 
-    let authorities = [];
+    let newAuthorities = [];
     if (e.checked) {
-      const descendants = authoritys
+      const descendants = authorities
         .filter((item) => item.mPath.search(e.node.props.dataRef.id) >= 0)
         .map((item) => item.id);
 
-      authorities = Array.from(new Set(selectedNode.authoritys.concat(descendants)));
+      newAuthorities = Array.from(new Set(selectedNode.authorities.concat(descendants)));
     } else {
-      authorities = selectedNode.authoritys.filter((item) => item !== e.node.props.dataRef.id);
+      newAuthorities = selectedNode.authorities.filter((item) => item !== e.node.props.dataRef.id);
     }
 
-    this.changeAuthoritys(authorities);
+    this.changeAuthorities(newAuthorities);
   };
 
   onExpand = (expandedKeys) => {
@@ -279,10 +277,10 @@ export default class extends React.Component {
     return this.state.rightClickNodeTreeItem == null ? '' : menu;
   };
 
-  changeAuthoritys = (descendants) => {
+  changeAuthorities = (descendants) => {
     const { selectedNode } = this.props;
 
-    selectedNode.authoritys = descendants;
+    selectedNode.authorities = descendants;
 
     this.props.dispatch({
       type: `${MODEL_NAME}/set`,
@@ -294,22 +292,22 @@ export default class extends React.Component {
 
   onRightMenuClick = (e, id) => {
     const {
-      authority: { authoritys },
+      authority: { authorities },
     } = this.props;
 
-    const descendants = authoritys
+    const descendants = authorities
       .filter((item) => item.mPath.search(id) >= 0)
       .map((item) => item.id);
 
     switch (e.key) {
       case 'select':
-        this.changeAuthoritys(
-          Array.from(new Set(this.props.selectedNode.authoritys.concat(descendants)))
+        this.changeAuthorities(
+          Array.from(new Set(this.props.selectedNode.authorities.concat(descendants)))
         );
         break;
       case 'unselect':
-        this.changeAuthoritys(
-          this.props.selectedNode.authoritys.filter((item) => !descendants.includes(item))
+        this.changeAuthorities(
+          this.props.selectedNode.authorities.filter((item) => !descendants.includes(item))
         );
         break;
     }
@@ -342,7 +340,7 @@ export default class extends React.Component {
                 checkable
                 checkStrictly
                 onExpand={this.onExpand}
-                checkedKeys={selectedNode.authoritys}
+                checkedKeys={selectedNode.authorities}
                 expandedKeys={this.state.expandedKeys}
                 autoExpandParent={this.state.autoExpandParent}
                 onCheck={this.onCheck}

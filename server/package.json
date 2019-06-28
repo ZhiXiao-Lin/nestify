@@ -5,8 +5,8 @@
     "author": "",
     "license": "MIT",
     "scripts": {
-        "prod": "cross-env NODE_ENV=production pm2 start dist/main.js --name 'nestify:8008'",
-        "stop": "pm2 delete nestify:8008",
+        "prod": "cross-env NODE_ENV=production pm2 start dist/main.js --name 'nestify:8009'",
+        "stop": "pm2 delete nestify:8009",
         "orm": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
         "db:create": "cd ./database && cross-env PGPASSWORD=123456 psql -U postgres -f create-db.sql && cross-env PGPASSWORD=123456 psql -U nestify -d nestify -f create-exts.sql",
         "db:init": "yarn db:drop && yarn db:sync && yarn db:seed",

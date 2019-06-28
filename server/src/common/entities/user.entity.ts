@@ -1,10 +1,12 @@
 import * as bcrypt from 'bcryptjs';
 import { Exclude, Expose, plainToClass } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, BeforeInsert, ManyToMany, ManyToOne, JoinTable } from 'typeorm';
-import { Gender } from '../aspects/enum';
+import { Entity, Column, BeforeInsert, ManyToOne, BeforeUpdate, OneToMany } from 'typeorm';
+import { Gender, VIP } from '../aspects/enum';
 import { Role } from './role.entity';
 import { Organization } from './organization.entity';
+import { getVIP } from '../lib/helper';
+import { Flow } from './flow.entity';
 
 @Entity()
 export class User extends Base {
@@ -27,17 +29,41 @@ export class User extends Base {
     @Column({ comment: '性别', default: Gender.MALE })
     gender: Gender;
 
+    @Column({ comment: '等级', default: VIP.V0 })
+    vip: VIP;
+
+    @Column({ comment: '积分', default: 0 })
+    points: number;
+
+    @Column({ comment: '真实姓名', default: '' })
+    realName: string;
+
+    @Column({ comment: '手机号', default: '' })
+    phone: string;
+
+    @Column({ comment: '身份证号', default: '' })
+    idCard: string;
+
+    @Column({ comment: '联系地址', default: '' })
+    address: string;
+
+    @Column({ comment: '状态', default: '' })
+    status: string;
+
     @Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
     ex_info: any;
 
-    @ManyToMany((type) => Role, (role) => role.users)
-    @JoinTable()
-    roles: Role[];
+    @ManyToOne((type) => Role, (role) => role.users)
+    role: Role;
 
     @ManyToOne((type) => Organization, (org) => org.users)
     org: Organization;
 
-    role: Role;
+    @OneToMany((type) => Flow, (flow) => flow.user)
+    flows: Flow[];
+
+    @OneToMany((type) => Flow, (flow) => flow.operator)
+    operatorFlows: Flow[];
 
     static create(target: Object) {
         return plainToClass(User, target);
@@ -50,13 +76,22 @@ export class User extends Base {
 
     @Expose()
     get isSuperAdmin(): boolean {
-        if (!this.roles || this.roles.length <= 0) return false;
-        return !!this.roles.find((role) => role.token === 'superAdmin');
+        return !!this.role && this.role.token === 'superAdmin';
+    }
+
+    @Expose()
+    get isVolunteer(): boolean {
+        return !!this.role && this.role.token === 'volunteer';
     }
 
     @BeforeInsert()
     async beforeInsert() {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password || '12345678', salt);
+    }
+
+    @BeforeUpdate()
+    async beforeUpdate() {
+        this.vip = getVIP(this.points);
     }
 }

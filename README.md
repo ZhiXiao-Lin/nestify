@@ -18,12 +18,13 @@
 -   Node.js 11.10.0
 -   Redis 5.0.3
 -   PostgreSQL 9.6
+-   Rabbitmq 3.7.7
 
 ## 使用方法
 
 1. git clone 项目到本地
 2. 执行 yarn && yarn:ic
-3. 安装 Node.js、Redis、PostgreSQL
+3. 安装 Node.js、Redis、PostgreSQL、Rabbitmq
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 根目录执行 yarn db:create 用于创建数据库和数据库用户
 6. 执行 yarn db:init 用于创建数据表和导入种子数据
@@ -49,6 +50,7 @@
 -   Redis 高速缓存
 -   Socket.IO 双向通讯
 -   RBAC 权限管理
+-   工作流与有限状态机
 -   日志模块
 -   配置文件
 -   安全保护

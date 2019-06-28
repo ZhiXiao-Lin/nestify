@@ -1,7 +1,11 @@
 import React from 'react';
-import { merge } from 'lodash';
+import { isEmpty, merge } from 'lodash';
 import UUID from 'uuid';
 import { Table, Input, Button, Form, Popconfirm, Select, Icon } from 'antd';
+
+import ImageCropper from '@/components/ImageCropper';
+import { apiUploadOneToQiniu } from '@/utils';
+import { getFullPath } from '@/utils/utils';
 
 const { Option } = Select;
 const EditableContext = React.createContext();
@@ -63,31 +67,47 @@ class EditableCell extends React.Component {
     }
   };
 
+  onUpload = async (file) => {
+    const { record, index, handleSave } = this.props;
+
+    const res = await apiUploadOneToQiniu(file);
+    if (!!res && !!res.path) {
+      handleSave(record, index, { image: res });
+    }
+  };
+
   renderCell = (form) => {
     this.form = form;
-    const { children, dataIndex, record, title, inputType } = this.props;
+    const { children, dataIndex, record, inputType, fieldOptions } = this.props;
     const { editing } = this.state;
-    return editing || inputType === 'select' ? (
-      <Form.Item style={{ margin: 0 }}>
-        {form.getFieldDecorator(dataIndex, {
-          rules: [
-            {
-              required: true,
-              message: `请填写${title}`,
-            },
-          ],
-          initialValue: record[dataIndex],
-        })(this.getInput(inputType))}
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
-      >
-        {children}
-      </div>
-    );
+
+    if (editing || 'select' === inputType || ('text' === inputType && !record[dataIndex])) {
+      fieldOptions.initialValue = fieldOptions.initialValue || record[dataIndex];
+
+      return (
+        <Form.Item style={{ margin: 0 }}>
+          {form.getFieldDecorator(dataIndex, fieldOptions)(this.getInput(inputType))}
+        </Form.Item>
+      );
+    } else if ('image' === inputType) {
+      return (
+        <ImageCropper
+          url={getFullPath(record[dataIndex])}
+          onUpload={this.onUpload}
+          {...fieldOptions}
+        />
+      );
+    } else {
+      return (
+        <div
+          className="editable-cell-value-wrap"
+          style={{ paddingRight: 24 }}
+          onClick={this.toggleEdit}
+        >
+          {children}
+        </div>
+      );
+    }
   };
 
   render() {
@@ -132,17 +152,6 @@ export default class EditableTable extends React.Component {
     }));
   }
 
-  handleSave = (record, index, values) => {
-    const { dataSource } = this.state;
-
-    dataSource[index] = merge(record, values);
-
-    this.setState((state) => ({
-      ...state,
-      dataSource,
-    }));
-  };
-
   handleAdd = () => {
     const { columns, dataSource } = this.state;
 
@@ -150,7 +159,7 @@ export default class EditableTable extends React.Component {
       id: UUID.v4(),
     };
     columns.forEach((item) => {
-      newRow[item.dataIndex] = item.defaultValue;
+      newRow[item.dataIndex] = item.fieldOptions ? item.fieldOptions.initialValue : '';
     });
 
     dataSource.push(newRow);
@@ -167,6 +176,17 @@ export default class EditableTable extends React.Component {
     this.setState((state) => ({
       ...state,
       dataSource: dataSource.filter((item) => item.id !== id),
+    }));
+  };
+
+  handleSave = (record, index, values) => {
+    const { dataSource } = this.state;
+
+    dataSource[index] = merge(record, values);
+
+    this.setState((state) => ({
+      ...state,
+      dataSource,
     }));
   };
 
@@ -190,6 +210,7 @@ export default class EditableTable extends React.Component {
           index,
           editable: col.editable,
           inputType: col.inputType || 'text',
+          fieldOptions: col.fieldOptions || {},
           selectOptions: col.selectOptions,
           dataIndex: col.dataIndex,
           title: col.title,

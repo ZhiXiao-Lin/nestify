@@ -1,61 +1,97 @@
+import { isArray } from 'lodash';
 import { Logger } from './logger';
 import { mq, MQChannel } from './mq';
+import { Flow } from '../entities/flow.entity';
+import { FlowTemplateEnum } from '../aspects/enum';
+import { getRepository } from 'typeorm';
+
+export const OVER = 'OVER';
 
 export interface IFlow {
     id: string;
     State: string;
     ExecutableTasks: string[];
-    execute(name, options);
+}
+
+export enum WFStatus {
+    RUNNING, // 运行中
+    OVER, // 已完成
+    CANCELED // 已取消
+}
+
+export enum WFResult {
+    RUNNING, // 进行中
+    SUCCESS, //成功
+    FAILURE // 失败
 }
 
 export class Engine {
+    static flowTemplates: any = {};
 
-    flows: IFlow[] = [];
+    public static register(template: FlowTemplateEnum, flow: any) {
+        Engine.flowTemplates[template] = flow;
+    }
 
-    async init() {
+    public async init() {
         Logger.trace('Workflow Engine Starting');
 
         await mq.Channel.assertQueue(MQChannel.WF);
-        await this.start();
+        await this.consume();
 
         Logger.trace('Workflow Engine Started');
     }
 
-    getFlows() {
-        return this.flows.map(item => item.id);
+    public async dispatch(id, taskName, options = {}) {
+        Logger.log(`WF:${id} dispatch`, taskName, options);
+
+        return await mq.Channel.sendToQueue(
+            MQChannel.WF,
+            Buffer.from(JSON.stringify({ id, name: taskName, options }))
+        );
     }
 
-    add(flow: IFlow) {
-        if (this.flows.findIndex(item => item.id === flow.id) < 0) {
-            Logger.log(`Flow:${flow.id} add ---> ${flow.id}`);
-            this.flows.push(flow);
-        }
-    }
-
-    over(flow: IFlow) {
-        Logger.log(`Flow:${flow.id} over`);
-        this.flows = this.flows.filter(item => item.id !== flow.id);
-    }
-
-    async dispatch(id, taskName, options = {}) {
-        Logger.log('WF dispatch --->', id, taskName, options);
-        return await mq.Channel.sendToQueue(MQChannel.WF, Buffer.from(JSON.stringify({ id, name: taskName, options })));
-    }
-
-    private async start() {
-
-        await mq.Channel.consume(MQChannel.WF, async msg => {
-
+    private async consume() {
+        await mq.Channel.consume(MQChannel.WF, async (msg) => {
             const task = JSON.parse(msg.content.toString());
 
-            const flow = this.flows.find(item => item.id === task.id);
+            const flow = await getRepository(Flow).findOne({
+                where: { id: task.id },
+                relations: ['user', 'template', 'operator']
+            });
+            Logger.log('WF: flow', flow);
 
             if (!!flow) {
-                Logger.log(`Flow:${flow.id} current state --->`, flow.State);
-                Logger.log(`Flow:${flow.id} executable tasks --->`, flow.ExecutableTasks);
+                Logger.log('WF: current ExecutableTasks', flow.ExecutableTasks);
 
                 if (flow.ExecutableTasks.includes(task.name)) {
-                    await flow.execute(task.name, task.options);
+                    const template = Engine.flowTemplates[flow.template.template];
+                    const res = await template[flow.state][task.name](flow, task.options);
+
+                    Logger.log('WF: next state', flow.state);
+
+                    let nextState = res;
+                    let nextStep = null;
+
+                    if (isArray(res)) {
+                        try {
+                            nextState = res[0];
+                            nextStep = res[1];
+                        } catch (err) {
+                            Logger.error(err);
+                        }
+                    }
+
+                    flow.state = nextState;
+
+                    if (!!nextStep) {
+                        await this.dispatch(
+                            nextStep.id || flow.id,
+                            nextStep.nextStep,
+                            nextStep.options || {}
+                        );
+                    }
+
+                    Logger.log('WF: next ExecutableTasks', flow.ExecutableTasks);
                 }
             }
 

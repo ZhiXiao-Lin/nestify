@@ -309,10 +309,11 @@ export default class extends React.Component {
   };
 
   toSaveLinks = () => {
+    const { selectedNode } = this.props;
+    selectedNode.ex_info.links = this.linksRef.state.dataSource;
+
     this.toSave({
-      ex_info: {
-        links: this.linksRef.state.dataSource,
-      },
+      ex_info: selectedNode.ex_info,
     });
   };
 

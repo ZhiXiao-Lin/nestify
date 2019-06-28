@@ -14,8 +14,8 @@ export enum SMSTemplates {
 export class SMS {
     static templates: object = {
         USER_REGISTER:
-            '【Nestify】尊敬的用户，您的注册验证码是{$var}, {$var}分钟内有效, 打死都不要告诉别人！',
-        PASSWORD_RESET: '【Nestify】尊敬的{$var}，您好，您的密码是：{$var}，{$var}分钟内有效'
+            '【文明实践中心】尊敬的用户，您的注册验证码是{$var}, {$var}分钟内有效, 打死都不要告诉别人！',
+        PASSWORD_RESET: '【文明实践中心】尊敬的{$var}，您好，您的密码是：{$var}，{$var}分钟内有效'
     };
 
     static async sendMessage(phonenumber: string, template: SMSTemplates, parameters: string[]) {

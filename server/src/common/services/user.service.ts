@@ -3,19 +3,25 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository } from 'typeorm';
+import { Repository, Transaction, TransactionRepository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { AuthorityService } from './authority.service';
 import { User } from '../entities/user.entity';
-import { Authority } from '../entities/authority.entity';
+import { PointsActionType, FlowTemplateEnum } from '../aspects/enum';
+import { FlowService } from './flow.service';
+import { wf } from '../lib/wf';
+import { Role } from '../entities/role.entity';
+import { Logger } from '../lib/logger';
 
 @Injectable()
 export class UserService extends BaseService<User> {
     constructor(
         private readonly jwtService: JwtService,
         private readonly authorityService: AuthorityService,
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        private readonly flowService: FlowService,
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(Role) private readonly roleRepository: Repository<Role>
     ) {
         super(userRepository);
     }
@@ -24,8 +30,9 @@ export class UserService extends BaseService<User> {
     async query(payload: any) {
         const qb = this.userRepository.createQueryBuilder('t');
 
-        qb.leftJoinAndSelect('t.roles', 'role');
+        qb.leftJoinAndSelect('t.role', 'role');
         qb.leftJoinAndSelect('t.org', 'organization');
+        qb.leftJoinAndSelect('t.flows', 'flows');
 
         if (!payload.page) {
             payload.page = 0;
@@ -73,38 +80,56 @@ export class UserService extends BaseService<User> {
 
     @TransformClassToPlain()
     async findOneById(id) {
-        return await this.userRepository.findOne({
-            where: { id },
-            relations: ['roles', 'org']
-        });
+        const qb = this.userRepository.createQueryBuilder('t');
+
+        qb.andWhere('t.id = :id', { id });
+
+        qb.leftJoinAndSelect('t.role', 'role');
+        qb.leftJoinAndSelect('t.org', 'organization');
+        qb.leftJoinAndSelect('t.flows', 'flows');
+        qb.leftJoinAndSelect('role.authorities', 'authorities');
+
+        return await qb.getOne();
     }
 
-    @TransformClassToPlain()
-    async findCurrent(id) {
-        const currentUser = await this.findOneById(id);
-        const authorities = await this.authorityService.findByRoles(
-            currentUser.roles.map((item) => `'${item.id}'`)
-        );
+    async findOne(where) {
+        const qb = this.userRepository.createQueryBuilder('t');
 
-        return {
-            ...currentUser,
-            authorities
-        };
+        if (!!where.account) {
+            qb.andWhere('t.account = :account', { account: where.account });
+        }
+
+        qb.leftJoinAndSelect('t.role', 'role');
+        qb.leftJoinAndSelect('t.org', 'organization');
+
+        return await qb.getOne();
     }
 
     async login(account, password) {
-        const user = await this.userRepository.findOne({ account });
+        let user = await this.findOne({ account });
+        Logger.log('Login --->', user);
 
-        if (!user) throw new BadRequestException('用户不存在');
+        if (!user) {
+            const role = await this.roleRepository.findOne({ where: { token: 'user' } });
 
-        if (!(await bcrypt.compare(password, user.password)))
-            throw new BadRequestException('密码错误');
+            user = new User();
+            user.account = account;
+            user.password = password;
+            user.role = role;
 
-        return await this.jwtService.sign(_.toPlainObject(user));
+            // 用户不存在则直接注册
+            user = await this.userRepository.save(user);
+        } else {
+            if (!(await bcrypt.compare(password, user.password)))
+                throw new BadRequestException('密码错误');
+        }
+
+        const token = await this.jwtService.sign(_.toPlainObject(user));
+        return { token };
     }
 
     async changePassword(id, dto) {
-        const user = await this.userRepository.findOne({ where: { id }, relations: ['roles'] });
+        const user = await this.userRepository.findOne({ where: { id }, relations: ['role'] });
 
         if (!(await bcrypt.compare(dto.oldPassword, user.password)))
             throw new BadRequestException('旧密码错误');
@@ -116,14 +141,55 @@ export class UserService extends BaseService<User> {
     }
 
     @TransformClassToPlain()
-    async save(payload: any) {
+    @Transaction()
+    async save(
+        payload: any,
+        @TransactionRepository(User) userRepos?: Repository<User>,
+        @TransactionRepository(Role) rowRepos?: Repository<Role>
+    ) {
         const user = User.create(payload) as User;
 
-        return await this.userRepository.save(user);
+        if (!user.role) {
+            // 添加默认角色
+            const role = await rowRepos.findOne({ where: { token: 'user' } });
+            user.role = role;
+        }
+
+        const { actionType } = payload;
+
+        // 增加积分的逻辑
+        if (!!actionType) {
+            if (PointsActionType.ADD === actionType) {
+                user.points += payload.value || 0;
+            }
+
+            if (PointsActionType.SUB === actionType) {
+                user.points -= payload.value || 0;
+            }
+
+            //TODO: 记录积分明细
+        }
+
+        return await userRepos.save(user);
     }
 
-    // async remove(ids: string[]) {
-    //     // 软删除
-    //     return await this.userRepository.delete(ids);
-    // }
+    async applyVolunteer(payload: any) {
+        const user = await this.findOneById(payload.id);
+        user.realName = payload.realName;
+        user.phone = payload.phone;
+        user.idCard = payload.idCard;
+        user.address = payload.address;
+
+        await this.save(user);
+
+        const isExist = await this.flowService.findOneByUser(user, FlowTemplateEnum.APPLY_VR);
+
+        if (!!isExist && user.status !== '已驳回') {
+            throw new BadRequestException('请勿重复申请');
+        }
+
+        const flow = await this.flowService.create(user, FlowTemplateEnum.APPLY_VR);
+
+        return wf.dispatch(flow.id, '申请');
+    }
 }

@@ -1,6 +1,6 @@
 import { plainToClass, Expose } from 'class-transformer';
 import { Base } from './base';
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { ExcelHandleType } from '../lib/excel';
 import { Authority } from './authority.entity';
 import { User } from './user.entity';
@@ -30,9 +30,9 @@ export class Role extends Base {
 
     @ManyToMany((type) => Authority, (authority) => authority.roles)
     @JoinTable()
-    authoritys: Authority[];
+    authorities: Authority[];
 
-    @ManyToMany((type) => User, (user) => user.roles)
+    @OneToMany((type) => User, (user) => user.role)
     users: User[];
 
     static readonly sheetsMap: object = {

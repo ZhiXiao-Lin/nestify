@@ -7,11 +7,11 @@ import { UserService } from '../../common/services/user.service';
 @Api('login')
 @ApiUseTags('login')
 export class LoginController {
-	constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService) {}
 
-	@Post()
-	@UsePipes(new ValidationPipe())
-	async login(@Body() dto: LoginDto) {
-		return await this.userService.login(dto.account, dto.password);
-	}
+    @Post()
+    @UsePipes(new ValidationPipe())
+    async login(@Body() dto: LoginDto) {
+        return await this.userService.login(dto.account, dto.password);
+    }
 }
