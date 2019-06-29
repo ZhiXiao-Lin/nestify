@@ -249,13 +249,13 @@ import { UserService } from &#x27;../../common/services/user.service&#x27;;
 @Api(&#x27;login&#x27;)
 @ApiUseTags(&#x27;login&#x27;)
 export class LoginController {
-	constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService) {}
 
-	@Post()
-	@UsePipes(new ValidationPipe())
-	async login(@Body() dto: LoginDto) {
-		return await this.userService.login(dto.account, dto.password);
-	}
+    @Post()
+    @UsePipes(new ValidationPipe())
+    async login(@Body() dto: LoginDto) {
+        return await this.userService.login(dto.account, dto.password);
+    }
 }
 </code></pre>
     </div>

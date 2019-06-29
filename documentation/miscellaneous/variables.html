@@ -60,34 +60,52 @@
                             <a href="#cellsMap" title="server/src/common/entities/content.entity.ts"><b>cellsMap</b>&nbsp;&nbsp;&nbsp;(server/.../content.entity.ts)</a>
                         </li>
                         <li>
+                            <a href="#cellsMap" title="server/src/common/entities/service.entity.ts"><b>cellsMap</b>&nbsp;&nbsp;&nbsp;(server/.../service.entity.ts)</a>
+                        </li>
+                        <li>
                             <a href="#config" title="server/src/config/index.ts"><b>config</b>&nbsp;&nbsp;&nbsp;(server/.../index.ts)</a>
                         </li>
                         <li>
                             <a href="#CurrentUser" title="server/src/common/aspects/decorator.ts"><b>CurrentUser</b>&nbsp;&nbsp;&nbsp;(server/.../decorator.ts)</a>
                         </li>
                         <li>
-                            <a href="#es" title="server/src/common/lib/elastic-search.ts"><b>es</b>&nbsp;&nbsp;&nbsp;(server/.../elastic-search.ts)</a>
+                            <a href="#dev" title="server/src/main.ts"><b>dev</b>&nbsp;&nbsp;&nbsp;(server/.../main.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#es" title="server/src/common/lib/es.ts"><b>es</b>&nbsp;&nbsp;&nbsp;(server/.../es.ts)</a>
                         </li>
                         <li>
                             <a href="#handleType" title="server/src/common/entities/content.entity.ts"><b>handleType</b>&nbsp;&nbsp;&nbsp;(server/.../content.entity.ts)</a>
                         </li>
                         <li>
+                            <a href="#handleType" title="server/src/common/entities/service.entity.ts"><b>handleType</b>&nbsp;&nbsp;&nbsp;(server/.../service.entity.ts)</a>
+                        </li>
+                        <li>
                             <a href="#influx" title="server/src/common/lib/influx.ts"><b>influx</b>&nbsp;&nbsp;&nbsp;(server/.../influx.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#io" title="server/src/common/lib/io.ts"><b>io</b>&nbsp;&nbsp;&nbsp;(server/.../io.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IOServer" title="server/src/common/lib/io.ts"><b>IOServer</b>&nbsp;&nbsp;&nbsp;(server/.../io.ts)</a>
                         </li>
                         <li>
                             <a href="#logger" title="server/src/common/lib/logger.ts"><b>logger</b>&nbsp;&nbsp;&nbsp;(server/.../logger.ts)</a>
                         </li>
                         <li>
-                            <a href="#module" title="server/src/main.ts"><b>module</b>&nbsp;&nbsp;&nbsp;(server/.../main.ts)</a>
+                            <a href="#mq" title="server/src/common/lib/mq.ts"><b>mq</b>&nbsp;&nbsp;&nbsp;(server/.../mq.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#OVER" title="server/src/common/lib/wf.ts"><b>OVER</b>&nbsp;&nbsp;&nbsp;(server/.../wf.ts)</a>
                         </li>
                         <li>
                             <a href="#readFileAsync" title="server/src/main.ts"><b>readFileAsync</b>&nbsp;&nbsp;&nbsp;(server/.../main.ts)</a>
                         </li>
                         <li>
-                            <a href="#rowsMap" title="server/src/common/entities/content.entity.ts"><b>rowsMap</b>&nbsp;&nbsp;&nbsp;(server/.../content.entity.ts)</a>
+                            <a href="#redis" title="server/src/common/lib/redis.ts"><b>redis</b>&nbsp;&nbsp;&nbsp;(server/.../redis.ts)</a>
                         </li>
                         <li>
-                            <a href="#toGetMenuIndex" title="server/src/ssr/controllers/index.controller.ts"><b>toGetMenuIndex</b>&nbsp;&nbsp;&nbsp;(server/.../index.controller.ts)</a>
+                            <a href="#wf" title="server/src/common/lib/wf.ts"><b>wf</b>&nbsp;&nbsp;&nbsp;(server/.../wf.ts)</a>
                         </li>
                     </ul>
                 </td>
@@ -156,15 +174,18 @@
 
             </tbody>
         </table>
-        <table class="table table-sm table-bordered">
+</section>
+    <h3>server/src/common/entities/service.entity.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="rowsMap"></a>
+                        <a name="cellsMap"></a>
                         <span class="name">
                             <b>
-                            rowsMap</b>
-                            <a href="#rowsMap"><span class="icon ion-ios-link"></span></a>
+                            cellsMap</b>
+                            <a href="#cellsMap"><span class="icon ion-ios-link"></span></a>
                         </span>
                     </td>
                 </tr>
@@ -177,56 +198,37 @@
                     <tr>
                         <td class="col-md-4">
                             <i>缺省值 : </i><code>{
-    id: {
-        header: &#x27;编号&#x27;
-    },
-    title: {
-        header: &#x27;标题&#x27;
-    },
-    author: {
-        header: &#x27;作者&#x27;
-    },
-    source: {
-        header: &#x27;来源&#x27;
-    },
-    address: {
-        header: &#x27;地址&#x27;
-    },
-    sort: {
-        header: &#x27;排序&#x27;
-    },
-    thumbnailPath: {
-        header: &#x27;图片&#x27;,
-        key: &#x27;thumbnail&#x27;,
-        handler: (val) &#x3D;&gt; Content.getFullPath(val)
-    },
-    videoPath: {
-        header: &#x27;视频&#x27;,
-        key: &#x27;video&#x27;,
-        handler: (val) &#x3D;&gt; Content.getFullPath(val)
-    },
-    summary: {
-        header: &#x27;摘要&#x27;
-    },
-    text: {
-        header: &#x27;正文&#x27;
-    },
-    views: {
-        header: &#x27;浏览量&#x27;
-    },
-    publish_at: {
-        header: &#x27;发布时间&#x27;,
-        handler: (val) &#x3D;&gt; (val ? moment(val).format(&#x27;YYYY-MM-DD HH:mm:ss&#x27;) : &#x27;&#x27;)
-    },
-    update_at: {
-        header: &#x27;修改时间&#x27;,
-        handler: (val) &#x3D;&gt; (val ? moment(val).format(&#x27;YYYY-MM-DD HH:mm:ss&#x27;) : &#x27;&#x27;)
-    },
-    category: {
-        header: &#x27;分类&#x27;,
-        handler: (val) &#x3D;&gt; (val ? val.name : &#x27;&#x27;)
-    }
+    标题: &#x27;title&#x27;,
+    作者: &#x27;author&#x27;,
+    来源: &#x27;source&#x27;,
+    地址: &#x27;address&#x27;,
+    排序: &#x27;sort&#x27;,
+    发布时间: &#x27;publish_at&#x27;,
+    正文: &#x27;text&#x27;,
+    图片: &#x27;thumbnail&#x27;,
+    视频: &#x27;video&#x27;
 }</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="handleType"></a>
+                        <span class="name">
+                            <b>
+                            handleType</b>
+                            <a href="#handleType"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>ExcelHandleType.ARRAY</code>
                         </td>
                     </tr>
 
@@ -261,10 +263,26 @@
     hostName: &#x27;0.0.0.0&#x27;,
     serverUrl: &#x27;http://127.0.0.1:3000&#x27;,
 
+    helmet: { hidePoweredBy: { setTo: &#x27;C++ 12&#x27; } },
+
+    rateLimit: {
+        timeWindow: 1,
+        max: 5
+    },
+
+    fileUpload: {
+        createParentPath: true,
+        limits: { fileSize: 50 * 1024 * 1024 }
+    },
+
     static: {
         root: &#x27;static&#x27;,
         prefix: &#x27;/static/&#x27;,
         uploadPath: &#x27;/uploads&#x27;
+    },
+
+    logger: {
+        level: LoggerLevel.ALL
     },
 
     jwt: {
@@ -325,13 +343,26 @@
         ]
     },
 
-    websocket: {
-        port: 9000
+    qiniu: {
+        accessKey: &#x27;YyxyEPUcKk2vDpjKkCwZQaAC_uaUaxX1eqd26hL6&#x27;,
+        secretKey: &#x27;gCpsZaPRn8YqWbKzMsVgcEBsQk63Aev9qX2VN_eV&#x27;,
+        domain: &#x27;http://img.nestify.cn&#x27;,
+        policy: {
+            scope: &#x27;nestify&#x27;,
+            expires: 7200,
+            returnBody:
+                &#x27;{&quot;key&quot;:&quot;$(key)&quot;,&quot;hash&quot;:&quot;$(etag)&quot;,&quot;fsize&quot;:$(fsize),&quot;bucket&quot;:&quot;$(bucket)&quot;,&quot;name&quot;:&quot;$(x:name)&quot;}&#x27;
+        }
     },
 
     es: {
         host: &#x27;127.0.0.1:9200&#x27;,
         log: &#x27;trace&#x27;
+    },
+
+    mq: {
+        url: &#x27;amqp://localhost&#x27;,
+        options: {}
     }
 }</code>
                         </td>
@@ -367,7 +398,52 @@
             </tbody>
         </table>
 </section>
-    <h3>server/src/common/lib/elastic-search.ts</h3>
+    <h3>server/src/main.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="dev"></a>
+                        <span class="name">
+                            <b>
+                            dev</b>
+                            <a href="#dev"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>process.env.NODE_ENV !&#x3D;&#x3D; &#x27;production&#x27;</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="readFileAsync"></a>
+                        <span class="name">
+                            <b>
+                            readFileAsync</b>
+                            <a href="#readFileAsync"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>util.promisify(fs.readFile)</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>server/src/common/lib/es.ts</h3>
     <section>
     <h3></h3>        <table class="table table-sm table-bordered">
             <tbody>
@@ -418,6 +494,60 @@
             </tbody>
         </table>
 </section>
+    <h3>server/src/common/lib/io.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="io"></a>
+                        <span class="name">
+                            <b>
+                            io</b>
+                            <a href="#io"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>new IO()</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="IOServer"></a>
+                        <span class="name">
+                            <b>
+                            IOServer</b>
+                            <a href="#IOServer"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>{
+    status: io.server.of(&#x27;/status&#x27;),
+    notices: io.server.of(&#x27;/notices&#x27;)
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
     <h3>server/src/common/lib/logger.ts</h3>
     <section>
     <h3></h3>        <table class="table table-sm table-bordered">
@@ -442,24 +572,53 @@
             </tbody>
         </table>
 </section>
-    <h3>server/src/main.ts</h3>
+    <h3>server/src/common/lib/mq.ts</h3>
     <section>
     <h3></h3>        <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="module"></a>
+                        <a name="mq"></a>
                         <span class="name">
                             <b>
-                            module</b>
-                            <a href="#module"><span class="icon ion-ios-link"></span></a>
+                            mq</b>
+                            <a href="#mq"><span class="icon ion-ios-link"></span></a>
                         </span>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>类型 : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <i>缺省值 : </i><code>new MQ()</code>
+                        </td>
+                    </tr>
 
+
+            </tbody>
+        </table>
+</section>
+    <h3>server/src/common/lib/wf.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="OVER"></a>
+                        <span class="name">
+                            <b>
+                            OVER</b>
+                            <a href="#OVER"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>&#x27;OVER&#x27;</code>
                         </td>
                     </tr>
 
@@ -470,17 +629,17 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="readFileAsync"></a>
+                        <a name="wf"></a>
                         <span class="name">
                             <b>
-                            readFileAsync</b>
-                            <a href="#readFileAsync"><span class="icon ion-ios-link"></span></a>
+                            wf</b>
+                            <a href="#wf"><span class="icon ion-ios-link"></span></a>
                         </span>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>缺省值 : </i><code>util.promisify(fs.readFile)</code>
+                            <i>缺省值 : </i><code>new Engine()</code>
                         </td>
                     </tr>
 
@@ -488,41 +647,23 @@
             </tbody>
         </table>
 </section>
-    <h3>server/src/ssr/controllers/index.controller.ts</h3>
+    <h3>server/src/common/lib/redis.ts</h3>
     <section>
     <h3></h3>        <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="toGetMenuIndex"></a>
+                        <a name="redis"></a>
                         <span class="name">
                             <b>
-                            toGetMenuIndex</b>
-                            <a href="#toGetMenuIndex"><span class="icon ion-ios-link"></span></a>
+                            redis</b>
+                            <a href="#redis"><span class="icon ion-ios-link"></span></a>
                         </span>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                            <i>缺省值 : </i><code>(menus, asPath) &#x3D;&gt; {
-	let path &#x3D; asPath.split(&#x27;?&#x27;).shift().split(&#x27;/&#x27;).pop();
-	let index &#x3D; 0;
-	let order &#x3D; 0;
-	menus.forEach((menu, i) &#x3D;&gt; {
-		if (menu.children &amp;&amp; menu.children.length &gt; 0) {
-			menu.children.forEach((item, j) &#x3D;&gt; {
-				if (path &#x3D;&#x3D;&#x3D; item.url.split(&#x27;/&#x27;).pop()) {
-					index &#x3D; i;
-					order &#x3D; j;
-				}
-			})
-		}
-	});
-	return {
-		menu_show: menus[index],
-		order
-	};
-}</code>
+                            <i>缺省值 : </i><code>new Redis({ ...config.redis })</code>
                         </td>
                     </tr>
 

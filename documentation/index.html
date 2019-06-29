@@ -32,26 +32,42 @@
 
 <h1 id="nestify">Nestify</h1>
 <p><a href="https://opensource.org/licenses/mit-license.php"><img src="https://badges.frapsoft.com/os/mit/mit.svg?v=103" alt="MIT Licence" class="img-responsive"></a> <a href="https://gitter.im/nestify-stack/community?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge"><img src="https://badges.gitter.im/nestify-stack/community.svg" alt="Gitter" class="img-responsive"></a> <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" class="img-responsive"></a> <a href="https://github.com/ZhiXiao-Lin/nestify"><img src="http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default" alt="star this repo" class="img-responsive"></a> <a href="https://github.com/ZhiXiao-Lin/nestify/fork"><img src="http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default" alt="fork this repo" class="img-responsive"></a></p>
+<p><a href="http://cms.nestify.cn/"><img src="http://img.nestify.com/Nestify.svg" alt="Nestify" class="img-responsive"></a></p>
 <ul>
-<li>开箱即用的内容管理框架</li>
+<li><p>开箱即用的中后台全栈解决方案</p>
+</li>
+<li><p>正在开发探索中...</p>
+</li>
 </ul>
-<p><img src="/server/static/images/搜索.gif" alt="搜索" class="img-responsive">
-<img src="/server/static/images/导入.gif" alt="导入" class="img-responsive">
-<img src="/server/static/images/新增用户.gif" alt="新增用户" class="img-responsive"></p>
 <h2 id="技术选型">技术选型</h2>
 <ul>
-<li>Nestjs、Nextjs、Fastify、TypeORM、ElasticSearch、Ant Design...</li>
+<li>Nestjs、Nextjs、Fastify、TypeORM、Ant Design...</li>
+</ul>
+<h2 id="开发环境">开发环境</h2>
+<ul>
+<li>macOS Mojave 10.14.5</li>
+<li>Node.js 11.10.0</li>
+<li>Redis 5.0.3</li>
+<li>PostgreSQL 9.6</li>
+<li>Rabbitmq 3.7.7</li>
 </ul>
 <h2 id="使用方法">使用方法</h2>
 <ol>
 <li>git clone 项目到本地</li>
-<li>分别在 根、server、admin 目录中安装依赖</li>
-<li>安装 ElasticSearch、InfluxDB、PostgreSQL、Redis</li>
+<li>执行 yarn &amp;&amp; yarn:ic</li>
+<li>安装 Node.js、Redis、PostgreSQL、Rabbitmq</li>
 <li>修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息</li>
-<li>回到根目录执行 yarn db:create 和 yarn db:init</li>
+<li>根目录执行 yarn db:create 用于创建数据库和数据库用户</li>
+<li>执行 yarn db:init 用于创建数据表和导入种子数据</li>
 <li>开发模式启动前后台执行 yarn dev</li>
 <li>默认账号：SysAdmin 密码：12345678</li>
+<li>在开发模式下修改了实体需要执行 yarn db:init，用于重新构建数据表和导入种子数据</li>
+<li>yarn orm 是 TypeORM CLI 的封装, 例如：执行 yarn orm schema:sync 等同于执行 typeorm schema:sync</li>
+<li>所有被导入种子数据的 excel 文件都存放在 src/seeds 中，可以根据需要进行调整</li>
 </ol>
+<ul>
+<li>注：永远不要在生产环境下使用 yarn db:init</li>
+</ul>
 <h2 id="文档">文档</h2>
 <ul>
 <li><a href="http://docs.nestify.cn/">在线文档</a></li>
@@ -60,39 +76,33 @@
 </ul>
 <h2 id="功能概览">功能概览</h2>
 <ul>
-<li>Fastify 的超强性能</li>
+<li>Fastify 高性能 HTTP 服务</li>
 <li>React 服务端渲染</li>
 <li>React SPA 后台管理系统</li>
-<li>ElasticSearch 全文检索</li>
+<li>Redis 高速缓存</li>
+<li>Socket.IO 双向通讯</li>
 <li>RBAC 权限管理</li>
+<li>工作流与有限状态机</li>
 <li>日志模块</li>
 <li>配置文件</li>
 <li>安全保护</li>
-<li>访问频率</li>
-<li>堆栈跟踪</li>
-<li>定时任务</li>
+<li>访问频率限制</li>
+<li>堆栈跟踪，全局异常捕获</li>
+<li>定时任务、延时任务、间隔任务</li>
 <li>文件上传、监控、搜索、管理</li>
+<li>七牛云存储</li>
 <li>脚本创建、初始化、迁移、回滚数据库</li>
 <li>Excel 导入、导出</li>
 <li>Swagger API 文档</li>
-<li>InfluxDB 时序数据库</li>
-<li>WebSocket</li>
 <li>系统监控</li>
-<li>缓存模块</li>
 <li>短信模块</li>
-</ul>
-<h2 id="正在开发的功能">正在开发的功能</h2>
-<ul>
-<li>容器部署</li>
-<li>K8S</li>
-<li>邮件模块</li>
-<li>消息队列</li>
 <li>单元测试</li>
 <li>持续集成</li>
-<li>工作流引擎</li>
-<li>云存储接入</li>
-<li>即时通讯接入</li>
-<li>...</li>
+<li>持续部署</li>
+</ul>
+<h2 id="其他">其他</h2>
+<ul>
+<li>本项目由开源组织 <a href="https://github.com/nestify-stack">NestifyStack</a> 强力驱动</li>
 </ul>
 <h2 id="协议">协议</h2>
 <p>Nestify is <a href="LICENSE">MIT licensed</a>.</p>

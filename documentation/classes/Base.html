@@ -293,7 +293,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFullPath(path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getFullPath(info: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
 
@@ -321,9 +321,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>path</td>
+                                    <td>info</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
                                     </td>
 
                                     <td>
@@ -338,7 +338,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>返回 : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                     </div>
                     <div class="io-description">
@@ -360,41 +360,47 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, Column } from &#x27;typeorm&#x27;;
 import { config } from &#x27;../../config&#x27;;
-import { RowStatus } from &#x27;../aspects/enum&#x27;;
+import { RowStatus, StorageType } from &#x27;../aspects/enum&#x27;;
 import { Exclude } from &#x27;class-transformer&#x27;;
 
 export abstract class Base {
-	@PrimaryGeneratedColumn(&#x27;uuid&#x27;) id: string;
+    @PrimaryGeneratedColumn(&#x27;uuid&#x27;) id: string;
 
-	@Exclude()
-	@Column({
-		type: &#x27;enum&#x27;,
-		default: RowStatus.NORMAL,
-		enum: RowStatus,
-		comment: &#x27;行状态&#x27;
-	})
-	row_status: RowStatus;
+    @Exclude()
+    @Column({
+        type: &#x27;enum&#x27;,
+        default: RowStatus.NORMAL,
+        enum: RowStatus,
+        comment: &#x27;行状态&#x27;
+    })
+    row_status: RowStatus;
 
-	@CreateDateColumn({
-		comment: &#x27;创建时间&#x27;
-	})
-	create_at: number;
+    @CreateDateColumn({
+        comment: &#x27;创建时间&#x27;
+    })
+    create_at: number;
 
-	@UpdateDateColumn({
-		comment: &#x27;更新时间&#x27;
-	})
-	update_at: number;
+    @UpdateDateColumn({
+        comment: &#x27;更新时间&#x27;
+    })
+    update_at: number;
 
-	static getFullPath(path: string) {
-		const staticRoot &#x3D; &#x60;${config.serverUrl}/${config.static.root}&#x60;;
+    static getFullPath(info: any) {
+        if (!!info) {
+            switch (info.storageType) {
+                case StorageType.LOCAL:
+                    return info.path.startsWith(&#x27;/&#x27;)
+                        ? &#x60;${config.serverUrl}/${config.static.root}${info.path}&#x60;
+                        : info.path;
+                case StorageType.QINIU:
+                    return &#x60;${config.qiniu.domain}/${info.path}&#x60;;
+                default:
+                    return info.path;
+            }
+        }
 
-		if (!!path) {
-			return path.startsWith(&#x27;/&#x27;) ? &#x60;${staticRoot}${path}&#x60; : path;
-		}
-
-		return &#x27;&#x27;;
-	}
-
+        return &#x27;&#x27;;
+    }
 }
 </code></pre>
     </div>

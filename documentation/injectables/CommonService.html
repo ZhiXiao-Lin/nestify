@@ -66,20 +66,6 @@
     <h3 id="index">索引</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>属性列表</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                <a href="#redisClient">redisClient</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -119,12 +105,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(settingService: <a href="../injectables/SettingService.html">SettingService</a>, redisService: RedisService, categoryRepository: <a href="../classes/Category.html">TreeRepository<Category></a>)</code>
+<code>constructor(settingService: <a href="../injectables/SettingService.html">SettingService</a>, categoryRepository: <a href="../classes/Category.html">TreeRepository<Category></a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">被定义在 <a href="" data-line="13" class="link-to-prism">server/src/common/services/common.service.ts:13</a></div>
+                                <div class="io-line">被定义在 <a href="" data-line="11" class="link-to-prism">server/src/common/services/common.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -146,18 +132,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/SettingService.html" target="_self" >SettingService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            否
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>redisService</td>
-                                                  
-                                                        <td>
-                                                                    <code>RedisService</code>
                                                         </td>
                                                   
                                                     <td>
@@ -215,8 +189,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="53"
-                            class="link-to-prism">server/src/common/services/common.service.ts:53</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="48"
+                            class="link-to-prism">server/src/common/services/common.service.ts:48</a></div>
                 </td>
             </tr>
 
@@ -299,8 +273,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="22"
-                            class="link-to-prism">server/src/common/services/common.service.ts:22</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="18"
+                            class="link-to-prism">server/src/common/services/common.service.ts:18</a></div>
                 </td>
             </tr>
 
@@ -340,8 +314,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="31"
-                            class="link-to-prism">server/src/common/services/common.service.ts:31</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="27"
+                            class="link-to-prism">server/src/common/services/common.service.ts:27</a></div>
                 </td>
             </tr>
 
@@ -358,39 +332,6 @@
         </tbody>
     </table>
 </section>
-            <section>
-    
-        <h3 id="inputs">
-            属性列表
-        </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="redisClient"></a>
-                        <span class="name">
-                            <b>
-                            redisClient</b>
-                            <a href="#redisClient"><span class="icon ion-ios-link"></span></a>
-                        </span>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <i>类型 : </i>    <code>Redis</code>
-
-                        </td>
-                    </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                    <div class="io-line">被定义在 <a href="" data-line="13" class="link-to-prism">server/src/common/services/common.service.ts:13</a></div>
-                            </td>
-                        </tr>
-
-
-            </tbody>
-        </table>
-</section>
 
     </div>
 
@@ -398,24 +339,20 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import * as crypto from &#x27;crypto&#x27;;
 import * as svgCaptcha from &#x27;svg-captcha&#x27;;
-import { Redis } from &#x27;ioredis&#x27;;
-import { RedisService } from &#x27;nestjs-redis&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
 import { Category } from &#x27;../entities/category.entity&#x27;;
 import { TreeRepository } from &#x27;typeorm&#x27;;
 import { SettingService } from &#x27;./setting.service&#x27;;
+import { redis } from &#x27;../lib/redis&#x27;;
 
 @Injectable()
 export class CommonService {
-	redisClient: Redis;
+
 	constructor(
 		private readonly settingService: SettingService,
-		private readonly redisService: RedisService,
 		@InjectRepository(Category) private readonly categoryRepository: TreeRepository&lt;Category&gt;
-	) {
-		this.redisClient &#x3D; this.redisService.getClient();
-	}
+	) { }
 
 	async getSiteInfo() {
 		const menus &#x3D; await this.categoryRepository.findTrees();
@@ -435,13 +372,12 @@ export class CommonService {
 			background: &#x27;#cc9966&#x27; // 验证码图片背景颜色
 		});
 		const svg_hash &#x3D; crypto.createHash(&#x27;md5&#x27;).update(data).digest(&#x27;hex&#x27;);
-		
-		this.redisClient.set(
-			svg_hash,
+
+		await redis.set(svg_hash,
 			text,
 			&#x27;EX&#x27;,
-			60*2
-		);
+			60 * 2);
+
 		return {
 			svg_hash,
 			svg_code: data
@@ -449,7 +385,7 @@ export class CommonService {
 	}
 
 	async checkSVGCode(svg_hash: string, svg_text: string) {
-		const svg_text_in_redis &#x3D; await this.redisClient.get(svg_hash);
+		const svg_text_in_redis &#x3D; await redis.get(svg_hash);
 
 		if (svg_text_in_redis &amp;&amp; svg_text_in_redis.toUpperCase() &#x3D;&#x3D;&#x3D; svg_text.toUpperCase()) {
 			return true;

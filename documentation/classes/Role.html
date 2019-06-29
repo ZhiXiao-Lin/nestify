@@ -86,7 +86,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#authoritys">authoritys</a>
+                                <a href="#authorities">authorities</a>
                             </li>
                             <li>
                                 <a href="#desc">desc</a>
@@ -179,11 +179,11 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="authoritys"></a>
+                        <a name="authorities"></a>
                         <span class="name">
                             <b>
-                            authoritys</b>
-                            <a href="#authoritys"><span class="icon ion-ios-link"></span></a>
+                            authorities</b>
+                            <a href="#authorities"><span class="icon ion-ios-link"></span></a>
                         </span>
                     </td>
                 </tr>
@@ -454,7 +454,7 @@
                             <b>装饰器列表 : </b>
                             <br />
                             <code>
-                                @ManyToMany(undefined, undefined)<br />
+                                @OneToMany(undefined, undefined)<br />
                             </code>
                         </td>
                     </tr>
@@ -735,7 +735,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFullPath(path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getFullPath(info: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
 
@@ -769,9 +769,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>path</td>
+                                    <td>info</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
                                     </td>
 
                                     <td>
@@ -786,7 +786,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>返回 : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                     </div>
                     <div class="io-description">
@@ -835,7 +835,7 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { plainToClass, Expose } from &#x27;class-transformer&#x27;;
 import { Base } from &#x27;./base&#x27;;
-import { Entity, Column, ManyToMany, JoinTable } from &#x27;typeorm&#x27;;
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from &#x27;typeorm&#x27;;
 import { ExcelHandleType } from &#x27;../lib/excel&#x27;;
 import { Authority } from &#x27;./authority.entity&#x27;;
 import { User } from &#x27;./user.entity&#x27;;
@@ -865,9 +865,9 @@ export class Role extends Base {
 
     @ManyToMany((type) &#x3D;&gt; Authority, (authority) &#x3D;&gt; authority.roles)
     @JoinTable()
-    authoritys: Authority[];
+    authorities: Authority[];
 
-    @ManyToMany((type) &#x3D;&gt; User, (user) &#x3D;&gt; user.roles)
+    @OneToMany((type) &#x3D;&gt; User, (user) &#x3D;&gt; user.role)
     users: User[];
 
     static readonly sheetsMap: object &#x3D; {

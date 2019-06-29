@@ -92,8 +92,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="29"
-                            class="link-to-prism">server/src/api/api.module.ts:29</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="39"
+                            class="link-to-prism">server/src/api/api.module.ts:39</a></div>
                 </td>
             </tr>
 
@@ -157,6 +157,11 @@ import { OrganizationController } from &#x27;./controllers/organization.controll
 import { RoleController } from &#x27;./controllers/role.controller&#x27;;
 import { AuthorityController } from &#x27;./controllers/authority.controller&#x27;;
 import { SearchController } from &#x27;./controllers/search.controller&#x27;;
+import { ServiceCategoryController } from &#x27;./controllers/service-category.controller&#x27;;
+import { ServiceController } from &#x27;./controllers/service.controller&#x27;;
+import { CarouselController } from &#x27;./controllers/carousel.controller&#x27;;
+import { FlowTemplateController } from &#x27;./controllers/flow-template.controller&#x27;;
+import { FlowController } from &#x27;./controllers/flow.controller&#x27;;
 
 @Module({
     controllers: [
@@ -166,10 +171,15 @@ import { SearchController } from &#x27;./controllers/search.controller&#x27;;
         UserController,
         ContentController,
         CategoryController,
+        CarouselController,
+        ServiceController,
+        ServiceCategoryController,
         OrganizationController,
         AuthorityController,
         RoleController,
-        SearchController
+        SearchController,
+        FlowController,
+        FlowTemplateController
     ]
 })
 export class ApiModule implements NestModule {

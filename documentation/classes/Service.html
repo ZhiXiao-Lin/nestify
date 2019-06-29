@@ -1,0 +1,1359 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Nestify</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">Nestify</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="请输入查询关键字"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>类列表</li>
+  <li>Service</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>文件</h3>
+        </p>
+        <p class="comment">
+            <code>server/src/common/entities/service.entity.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>继承</h3>
+            </p>
+            <p class="comment">
+                        <code><a href="../classes/Base.html" target="_self" >Base</a></code>
+            </p>
+
+
+
+            <section>
+    <h3 id="index">索引</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>属性列表</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#address">address</a>
+                            </li>
+                            <li>
+                                <a href="#author">author</a>
+                            </li>
+                            <li>
+                                <a href="#category">category</a>
+                            </li>
+                            <li>
+                                <a href="#ex_info">ex_info</a>
+                            </li>
+                            <li>
+                                <a href="#publish_at">publish_at</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#sheetsMap">sheetsMap</a>
+                            </li>
+                            <li>
+                                <a href="#sort">sort</a>
+                            </li>
+                            <li>
+                                <a href="#source">source</a>
+                            </li>
+                            <li>
+                                <a href="#summary">summary</a>
+                            </li>
+                            <li>
+                                <a href="#text">text</a>
+                            </li>
+                            <li>
+                                <a href="#thumbnail">thumbnail</a>
+                            </li>
+                            <li>
+                                <a href="#title">title</a>
+                            </li>
+                            <li>
+                                <a href="#video">video</a>
+                            </li>
+                            <li>
+                                <a href="#views">views</a>
+                            </li>
+                            <li>
+                                <a href="#create_at">create_at</a>
+                            </li>
+                            <li>
+                                <a href="#id">id</a>
+                            </li>
+                            <li>
+                                <a href="#row_status">row_status</a>
+                            </li>
+                            <li>
+                                <a href="#update_at">update_at</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>方法</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#beforeInsert">beforeInsert</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#beforeUpdate">beforeUpdate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#create">create</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#getFullPath">getFullPath</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>存取器</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#thumbnailPath">thumbnailPath</a>
+                                </li>
+                                <li>
+                                    <a href="#videoPath">videoPath</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+
+            <section>
+    
+        <h3 id="inputs">
+            属性列表
+        </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="address"></a>
+                        <span class="name">
+                            <b>
+                            address</b>
+                            <a href="#address"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;地址&#x27;, default: &#x27;&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="35" class="link-to-prism">server/src/common/entities/service.entity.ts:35</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="author"></a>
+                        <span class="name">
+                            <b>
+                            author</b>
+                            <a href="#author"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;作者&#x27;, default: &#x27;&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="29" class="link-to-prism">server/src/common/entities/service.entity.ts:29</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="category"></a>
+                        <span class="name">
+                            <b>
+                            category</b>
+                            <a href="#category"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="../classes/ServiceCategory.html" target="_self" >ServiceCategory</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @ManyToOne(undefined, undefined)<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="66" class="link-to-prism">server/src/common/entities/service.entity.ts:66</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ex_info"></a>
+                        <span class="name">
+                            <b>
+                            ex_info</b>
+                            <a href="#ex_info"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({type: &#x27;simple-json&#x27;, default: undefined, comment: &#x27;扩展信息&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="56" class="link-to-prism">server/src/common/entities/service.entity.ts:56</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="publish_at"></a>
+                        <span class="name">
+                            <b>
+                            publish_at</b>
+                            <a href="#publish_at"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({type: &#x27;timestamp&#x27;, default: undefined, comment: &#x27;发布时间&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="63" class="link-to-prism">server/src/common/entities/service.entity.ts:63</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sheetsMap"></a>
+                        <span class="name">
+                            <b>
+                                <span class="modifier">Static</span>
+                                <span class="modifier">Readonly</span>
+                            sheetsMap</b>
+                            <a href="#sheetsMap"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>缺省值 : </i><code>{
+        服务: {
+            handleType,
+            cellsMap
+        }
+    }</code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="68" class="link-to-prism">server/src/common/entities/service.entity.ts:68</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sort"></a>
+                        <span class="name">
+                            <b>
+                            sort</b>
+                            <a href="#sort"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;排序&#x27;, default: 0})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="38" class="link-to-prism">server/src/common/entities/service.entity.ts:38</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="source"></a>
+                        <span class="name">
+                            <b>
+                            source</b>
+                            <a href="#source"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;来源&#x27;, default: &#x27;本站&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="32" class="link-to-prism">server/src/common/entities/service.entity.ts:32</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="summary"></a>
+                        <span class="name">
+                            <b>
+                            summary</b>
+                            <a href="#summary"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;摘要&#x27;, default: &#x27;&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="47" class="link-to-prism">server/src/common/entities/service.entity.ts:47</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="text"></a>
+                        <span class="name">
+                            <b>
+                            text</b>
+                            <a href="#text"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;正文&#x27;, default: &#x27;&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="50" class="link-to-prism">server/src/common/entities/service.entity.ts:50</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="thumbnail"></a>
+                        <span class="name">
+                            <b>
+                            thumbnail</b>
+                            <a href="#thumbnail"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({type: &#x27;simple-json&#x27;, default: undefined, comment: &#x27;图片&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="41" class="link-to-prism">server/src/common/entities/service.entity.ts:41</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="title"></a>
+                        <span class="name">
+                            <b>
+                            title</b>
+                            <a href="#title"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({comment: &#x27;标题&#x27;, default: &#x27;&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="26" class="link-to-prism">server/src/common/entities/service.entity.ts:26</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="video"></a>
+                        <span class="name">
+                            <b>
+                            video</b>
+                            <a href="#video"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({type: &#x27;simple-json&#x27;, default: undefined, comment: &#x27;视频&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="44" class="link-to-prism">server/src/common/entities/service.entity.ts:44</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="views"></a>
+                        <span class="name">
+                            <b>
+                            views</b>
+                            <a href="#views"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Column({type: &#x27;bigint&#x27;, comment: &#x27;浏览量&#x27;, default: 0})<br />
+                            </code>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="53" class="link-to-prism">server/src/common/entities/service.entity.ts:53</a></div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="create_at"></a>
+                        <span class="name">
+                            <b>
+                            create_at</b>
+                            <a href="#create_at"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @CreateDateColumn({comment: &#x27;创建时间&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">继承自         <code><a href="../classes/Base.html" target="_self" >Base</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在         <code><a href="../classes/Base.html#source" target="_self" >Base:21</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="id"></a>
+                        <span class="name">
+                            <b>
+                            id</b>
+                            <a href="#id"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @PrimaryGeneratedColumn(&#x27;uuid&#x27;)<br />
+                            </code>
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">继承自         <code><a href="../classes/Base.html" target="_self" >Base</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在         <code><a href="../classes/Base.html#source" target="_self" >Base:7</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="row_status"></a>
+                        <span class="name">
+                            <b>
+                            row_status</b>
+                            <a href="#row_status"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="../miscellaneous/enumerations.html#RowStatus" target="_self" >RowStatus</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @Exclude()<br />@Column({type: &#x27;enum&#x27;, default: undefined, enum: RowStatus, comment: &#x27;行状态&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">继承自         <code><a href="../classes/Base.html" target="_self" >Base</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在         <code><a href="../classes/Base.html#source" target="_self" >Base:16</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="update_at"></a>
+                        <span class="name">
+                            <b>
+                            update_at</b>
+                            <a href="#update_at"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>类型 : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <b>装饰器列表 : </b>
+                            <br />
+                            <code>
+                                @UpdateDateColumn({comment: &#x27;更新时间&#x27;})<br />
+                            </code>
+                        </td>
+                    </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">继承自         <code><a href="../classes/Base.html" target="_self" >Base</a></code>
+</div>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                    <div class="io-line">被定义在         <code><a href="../classes/Base.html#source" target="_self" >Base:26</a></code>
+</div>
+                            </td>
+                        </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        方法
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="beforeInsert"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            beforeInsert
+                        </b>
+                        <a href="#beforeInsert"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>beforeInsert()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>装饰器列表 : </b>
+                    <br />
+                    <code>@BeforeInsert()<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="90"
+                            class="link-to-prism">server/src/common/entities/service.entity.ts:90</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="beforeUpdate"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            beforeUpdate
+                        </b>
+                        <a href="#beforeUpdate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>beforeUpdate()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>装饰器列表 : </b>
+                    <br />
+                    <code>@BeforeUpdate()<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="99"
+                            class="link-to-prism">server/src/common/entities/service.entity.ts:99</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="create"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Static</span>
+                            create
+                        </b>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>create(target: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank">object</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="75"
+                            class="link-to-prism">server/src/common/entities/service.entity.ts:75</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>target</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="../classes/Service.html" target="_self" >Service | []</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFullPath"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Static</span>
+                            getFullPath
+                        </b>
+                        <a href="#getFullPath"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFullPath(info: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">继承自         <code><a href="../classes/Base.html" target="_self" >Base</a></code>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-line">被定义在         <code><a href="../classes/Base.html#source" target="_self" >Base:28</a></code>
+</div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>info</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+            <section>
+    <h3 id="accessors">
+        存取器
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="thumbnailPath"></a>
+                        <span class="name"><b>thumbnailPath</b><a href="#thumbnailPath"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>thumbnailPath()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="80" class="link-to-prism">server/src/common/entities/service.entity.ts:80</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="videoPath"></a>
+                        <span class="name"><b>videoPath</b><a href="#videoPath"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>videoPath()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">被定义在 <a href="" data-line="85" class="link-to-prism">server/src/common/entities/service.entity.ts:85</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import * as _ from &#x27;lodash&#x27;;
+import * as moment from &#x27;moment&#x27;;
+import { Entity, Column, ManyToOne, BeforeInsert, BeforeUpdate } from &#x27;typeorm&#x27;;
+import { plainToClass, Expose } from &#x27;class-transformer&#x27;;
+import { Base } from &#x27;./base&#x27;;
+import { ExcelHandleType } from &#x27;../lib/excel&#x27;;
+import { textInterception, extractionTextInHtml } from &#x27;../lib/helper&#x27;;
+import { ServiceCategory } from &#x27;./service-category.entity&#x27;;
+
+const handleType &#x3D; ExcelHandleType.ARRAY;
+const cellsMap &#x3D; {
+    标题: &#x27;title&#x27;,
+    作者: &#x27;author&#x27;,
+    来源: &#x27;source&#x27;,
+    地址: &#x27;address&#x27;,
+    排序: &#x27;sort&#x27;,
+    发布时间: &#x27;publish_at&#x27;,
+    正文: &#x27;text&#x27;,
+    图片: &#x27;thumbnail&#x27;,
+    视频: &#x27;video&#x27;
+};
+
+@Entity()
+export class Service extends Base {
+    @Column({ comment: &#x27;标题&#x27;, default: &#x27;&#x27; })
+    title: string;
+
+    @Column({ comment: &#x27;作者&#x27;, default: &#x27;&#x27; })
+    author: string;
+
+    @Column({ comment: &#x27;来源&#x27;, default: &#x27;本站&#x27; })
+    source: string;
+
+    @Column({ comment: &#x27;地址&#x27;, default: &#x27;&#x27; })
+    address: string;
+
+    @Column({ comment: &#x27;排序&#x27;, default: 0 })
+    sort: number;
+
+    @Column({ type: &#x27;simple-json&#x27;, default: null, comment: &#x27;图片&#x27; })
+    thumbnail: any;
+
+    @Column({ type: &#x27;simple-json&#x27;, default: null, comment: &#x27;视频&#x27; })
+    video: any;
+
+    @Column({ comment: &#x27;摘要&#x27;, default: &#x27;&#x27; })
+    summary: string;
+
+    @Column({ comment: &#x27;正文&#x27;, default: &#x27;&#x27; })
+    text: string;
+
+    @Column({ type: &#x27;bigint&#x27;, comment: &#x27;浏览量&#x27;, default: 0 })
+    views: number;
+
+    @Column({ type: &#x27;simple-json&#x27;, default: {}, comment: &#x27;扩展信息&#x27; })
+    ex_info: any;
+
+    @Column({
+        type: &#x27;timestamp&#x27;,
+        default: null,
+        comment: &#x27;发布时间&#x27;
+    })
+    publish_at: string;
+
+    @ManyToOne((type) &#x3D;&gt; ServiceCategory, (category) &#x3D;&gt; category.services)
+    category: ServiceCategory;
+
+    static readonly sheetsMap: object &#x3D; {
+        服务: {
+            handleType,
+            cellsMap
+        }
+    };
+
+    static create(target: object): Service | Service[] {
+        return plainToClass(Service, target);
+    }
+
+    @Expose()
+    get thumbnailPath(): string {
+        return Base.getFullPath(this.thumbnail);
+    }
+
+    @Expose()
+    get videoPath(): string {
+        return Base.getFullPath(this.video);
+    }
+
+    @BeforeInsert()
+    async beforeInsert() {
+        if (_.isEmpty(this.publish_at)) {
+            this.publish_at &#x3D; moment().format(&#x27;YYYY-MM-DD HH:mm:ss&#x27;);
+        }
+        const text &#x3D; extractionTextInHtml(this.text);
+        this.summary &#x3D; textInterception(text, 120);
+    }
+
+    @BeforeUpdate()
+    async beforeUpdate() {
+        const text &#x3D; extractionTextInHtml(this.text);
+        this.summary &#x3D; textInterception(text, 120);
+    }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">无匹配的结果 "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'Service.html';
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

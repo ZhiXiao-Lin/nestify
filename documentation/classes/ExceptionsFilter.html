@@ -69,7 +69,7 @@
                 <h3>实现</h3>
             </p>
             <p class="comment">
-                        <code>ExceptionFilter</code>
+                            <code><a href="../miscellaneous/variables.html#io" target="_self" >ExceptionFilter</a></code>
             </p>
 
 
@@ -206,53 +206,62 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import * as Youch from &#x27;youch&#x27;;
 import * as moment from &#x27;moment&#x27;;
 import { Catch, ArgumentsHost, HttpException, ExceptionFilter, HttpStatus } from &#x27;@nestjs/common&#x27;;
-import { Logger } from &#x27;../lib/logger&#x27;
+import { Logger } from &#x27;../lib/logger&#x27;;
 
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {
-	async catch(exception: unknown, host: ArgumentsHost) {
-		const ctx &#x3D; host.switchToHttp();
-		const response &#x3D; ctx.getResponse();
-		const request &#x3D; ctx.getRequest();
+    async catch(exception: unknown, host: ArgumentsHost) {
+        const ctx &#x3D; host.switchToHttp();
+        const response &#x3D; ctx.getResponse();
+        const request &#x3D; ctx.getRequest();
 
-		Logger.error(&#x27;exception&#x27;, exception);
-		Logger.error(request.headers.xhr);
+        Logger.error(&#x27;exception&#x27;, exception);
+        Logger.error(request.headers.xhr);
 
-		const timestamp &#x3D; moment().format(&#x27;YYYY-MM-DD HH:mm:ss&#x27;);
+        const timestamp &#x3D; moment().format(&#x27;YYYY-MM-DD HH:mm:ss&#x27;);
 
-		if (exception instanceof HttpException) {
-			const status &#x3D; exception.getStatus();
-			Logger.error(&#x60;Catch http exception at ${request.raw.method} ${request.raw.url} ${status}&#x60;);
+        if (exception instanceof HttpException) {
+            const status &#x3D; exception.getStatus();
+            Logger.error(
+                &#x60;Catch http exception at ${request.raw.method} ${request.raw.url} ${status}&#x60;
+            );
 
-			response.code(status).header(&#x27;Content-Type&#x27;, &#x27;application/json; charset&#x3D;utf-8&#x27;).send({
-				...exception,
-				timestamp,
-				path: request.url
-			});
-		} else {
-			if (process.env.NODE_ENV !&#x3D;&#x3D; &#x27;production&#x27; &amp;&amp; !request.headers.xhr) {
-				const youch &#x3D; new Youch(exception, request.raw);
+            response
+                .code(status)
+                .header(&#x27;Content-Type&#x27;, &#x27;application/json; charset&#x3D;utf-8&#x27;)
+                .send({
+                    ...exception,
+                    timestamp,
+                    path: request.url
+                });
+        } else {
+            if (process.env.NODE_ENV !&#x3D;&#x3D; &#x27;production&#x27; &amp;&amp; !request.headers.xhr) {
+                Logger.error(&#x27;INTERNAL_SERVER_ERROR ---&gt;&#x27;);
+                const youch &#x3D; new Youch(exception, request.raw);
 
-				const html &#x3D; await youch
-					.addLink(({ message }) &#x3D;&gt; {
-						const url &#x3D; &#x60;https://cn.bing.com/search?q&#x3D;${encodeURIComponent(&#x60;[adonis.js] ${message}&#x60;)}&#x60;;
-						return &#x60;&lt;a href&#x3D;&quot;${url}&quot; target&#x3D;&quot;_blank&quot; title&#x3D;&quot;Search on bing&quot;&gt;Search Bing&lt;/a&gt;&#x60;;
-					})
-					.toHTML();
+                const html &#x3D; await youch
+                    .addLink(({ message }) &#x3D;&gt; {
+                        const url &#x3D; &#x60;https://cn.bing.com/search?q&#x3D;${encodeURIComponent(
+                            &#x60;[adonis.js] ${message}&#x60;
+                        )}&#x60;;
+                        return &#x60;&lt;a href&#x3D;&quot;${url}&quot; target&#x3D;&quot;_blank&quot; title&#x3D;&quot;Search on bing&quot;&gt;Search Bing&lt;/a&gt;&#x60;;
+                    })
+                    .toHTML();
 
-				response.type(&#x27;text/html&#x27;);
-				response.code(HttpStatus.INTERNAL_SERVER_ERROR).send(html);
-
-			} else {
-				response.code(HttpStatus.INTERNAL_SERVER_ERROR).header(&#x27;Content-Type&#x27;, &#x27;application/json; charset&#x3D;utf-8&#x27;).send({
-					...exception,
-					timestamp,
-					path: request.url
-				});
-			}
-		}
-
-	}
+                response.type(&#x27;text/html&#x27;);
+                response.code(HttpStatus.INTERNAL_SERVER_ERROR).send(html);
+            } else {
+                response
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .header(&#x27;Content-Type&#x27;, &#x27;application/json; charset&#x3D;utf-8&#x27;)
+                    .send({
+                        ...exception,
+                        timestamp,
+                        path: request.url
+                    });
+            }
+        }
+    }
 }
 </code></pre>
     </div>

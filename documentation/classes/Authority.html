@@ -427,7 +427,7 @@
                         <td class="col-md-4">
                             <i>缺省值 : </i><code>{
         权限: {
-            map: &#x27;authoritys&#x27;,
+            map: &#x27;authorities&#x27;,
             handleType: ExcelHandleType.ARRAY,
             cellsMap: {
                 ID: &#x27;id&#x27;,
@@ -790,7 +790,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFullPath(path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getFullPath(info: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
                 </td>
             </tr>
 
@@ -824,9 +824,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>path</td>
+                                    <td>info</td>
                                     <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
                                     </td>
 
                                     <td>
@@ -841,7 +841,7 @@
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>返回 : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <b>返回 : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                     </div>
                     <div class="io-description">
@@ -988,7 +988,7 @@ export class Authority extends Base {
 
     @TreeParent() parent: Authority;
 
-    @ManyToMany((type) &#x3D;&gt; Role, (role) &#x3D;&gt; role.authoritys)
+    @ManyToMany((type) &#x3D;&gt; Role, (role) &#x3D;&gt; role.authorities)
     roles: Role[];
 
     @Expose()
@@ -1013,7 +1013,7 @@ export class Authority extends Base {
 
     static readonly sheetsMap: object &#x3D; {
         权限: {
-            map: &#x27;authoritys&#x27;,
+            map: &#x27;authorities&#x27;,
             handleType: ExcelHandleType.ARRAY,
             cellsMap: {
                 ID: &#x27;id&#x27;,

@@ -199,8 +199,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="19"
-                            class="link-to-prism">server/src/common/services/organization.service.ts:19</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="21"
+                            class="link-to-prism">server/src/common/services/organization.service.ts:21</a></div>
                 </td>
             </tr>
 
@@ -271,8 +271,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="33"
-                            class="link-to-prism">server/src/common/services/organization.service.ts:33</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="35"
+                            class="link-to-prism">server/src/common/services/organization.service.ts:35</a></div>
                 </td>
             </tr>
 
@@ -343,8 +343,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="14"
-                            class="link-to-prism">server/src/common/services/organization.service.ts:14</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="17"
+                            class="link-to-prism">server/src/common/services/organization.service.ts:17</a></div>
                 </td>
             </tr>
 
@@ -415,8 +415,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="40"
-                            class="link-to-prism">server/src/common/services/organization.service.ts:40</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="42"
+                            class="link-to-prism">server/src/common/services/organization.service.ts:42</a></div>
                 </td>
             </tr>
 
@@ -487,8 +487,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="23"
-                            class="link-to-prism">server/src/common/services/organization.service.ts:23</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="25"
+                            class="link-to-prism">server/src/common/services/organization.service.ts:25</a></div>
                 </td>
             </tr>
 
@@ -706,46 +706,49 @@ import { Organization } from &#x27;../entities/organization.entity&#x27;;
 
 @Injectable()
 export class OrganizationService extends BaseService&lt;Organization&gt; {
-	constructor(@InjectRepository(Organization) private readonly organizationRepository: TreeRepository&lt;Organization&gt;) {
-		super(organizationRepository);
-	}
+    constructor(
+        @InjectRepository(Organization)
+        private readonly organizationRepository: TreeRepository&lt;Organization&gt;
+    ) {
+        super(organizationRepository);
+    }
 
-	async query(payload: any) {
+    async query(payload: any) {
+        return await this.organizationRepository.findTrees();
+    }
 
-		return await this.organizationRepository.findTrees();
-	}
+    async findOneByName(name: string) {
+        return await this.organizationRepository.findOne({ name });
+    }
 
-	async findOneByName(name: string) {
-		return await this.organizationRepository.findOne({ name });
-	}
+    async save(payload: any) {
+        const organization &#x3D; Organization.create(payload) as Organization;
 
-	async save(payload: any) {
-		const organization &#x3D; Organization.create(payload) as Organization;
+        if (!!payload.parentId) {
+            organization.parent &#x3D; await this.organizationRepository.findOne(payload.parentId);
+        }
 
-		if (!!payload.parentId) {
-			organization.parent &#x3D; await this.organizationRepository.findOne(payload.parentId);
-		}
+        return await this.organizationRepository.save(organization);
+    }
 
-		return await this.organizationRepository.save(organization);
-	}
+    async parent(payload: any) {
+        const target &#x3D; await this.organizationRepository.findOne(payload.id);
+        target.parent &#x3D; await this.organizationRepository.findOne(payload.parentId);
 
-	async parent(payload: any) {
-		const target &#x3D; await this.organizationRepository.findOne(payload.id);
-		target.parent &#x3D; await this.organizationRepository.findOne(payload.parentId);
+        return await this.organizationRepository.save(target);
+    }
 
-		return await this.organizationRepository.save(target);
-	}
+    async remove(ids: string[]) {
+        const roots &#x3D; await this.organizationRepository.findRoots();
 
-	async remove(ids: string[]) {
+        roots.forEach((root) &#x3D;&gt; {
+            if (ids.includes(root.id)) throw new BadRequestException(&#x27;不能删除根节点&#x27;);
+        });
 
-		const roots &#x3D; await this.organizationRepository.findRoots();
-
-		roots.forEach(root &#x3D;&gt; {
-			if (ids.includes(root.id)) throw new BadRequestException(&#x27;不能删除根节点&#x27;);
-		});
-
-		return await this.organizationRepository.delete(ids);
-	}
+        return await this.organizationRepository.remove(
+            await this.organizationRepository.findByIds(ids)
+        );
+    }
 }
 </code></pre>
     </div>

@@ -82,6 +82,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#apply">apply</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#changePassword">changePassword</a>
                             </li>
                             <li>
@@ -179,6 +183,85 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="apply"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            apply
+                        </b>
+                        <a href="#apply"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>apply(dto: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>装饰器列表 : </b>
+                    <br />
+                    <code>@Post(&#x27;apply&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="46"
+                            class="link-to-prism">server/src/api/controllers/user.controller.ts:46</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dto</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="changePassword"></a>
                     <span class="name">
                         <b>
@@ -206,8 +289,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="47"
-                            class="link-to-prism">server/src/api/controllers/user.controller.ts:47</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="52"
+                            class="link-to-prism">server/src/api/controllers/user.controller.ts:52</a></div>
                 </td>
             </tr>
 
@@ -296,8 +379,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="52"
-                            class="link-to-prism">server/src/api/controllers/user.controller.ts:52</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="57"
+                            class="link-to-prism">server/src/api/controllers/user.controller.ts:57</a></div>
                 </td>
             </tr>
 
@@ -600,8 +683,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="62"
-                            class="link-to-prism">server/src/api/controllers/user.controller.ts:62</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="67"
+                            class="link-to-prism">server/src/api/controllers/user.controller.ts:67</a></div>
                 </td>
             </tr>
 
@@ -675,8 +758,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="57"
-                            class="link-to-prism">server/src/api/controllers/user.controller.ts:57</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="62"
+                            class="link-to-prism">server/src/api/controllers/user.controller.ts:62</a></div>
                 </td>
             </tr>
 
@@ -774,7 +857,12 @@ export class UserController {
     @Get(&#x27;current&#x27;)
     @UseInterceptors(ClassSerializerInterceptor)
     async current(@CurrentUser() user) {
-        return await this.userService.findCurrent(user.id);
+        return await this.userService.findOneById(user.id);
+    }
+
+    @Post(&#x27;apply&#x27;)
+    async apply(@Body() dto: any) {
+        return await this.userService.applyVolunteer(dto);
     }
 
     @Put(&#x27;password&#x27;)

@@ -83,11 +83,15 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#applyVolunteer">applyVolunteer</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#changePassword">changePassword</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findCurrent">findCurrent</a>
+                                <a href="#findOne">findOne</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -131,12 +135,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(jwtService: JwtService, authorityService: <a href="../injectables/AuthorityService.html">AuthorityService</a>, userRepository: <a href="../classes/User.html">Repository<User></a>)</code>
+<code>constructor(jwtService: <a href="../classes/Service.html">JwtService</a>, authorityService: <a href="../injectables/AuthorityService.html">AuthorityService</a>, flowService: <a href="../injectables/FlowService.html">FlowService</a>, userRepository: <a href="../classes/User.html">Repository<User></a>, roleRepository: <a href="../classes/Role.html">Repository<Role></a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">被定义在 <a href="" data-line="14" class="link-to-prism">server/src/common/services/user.service.ts:14</a></div>
+                                <div class="io-line">被定义在 <a href="" data-line="18" class="link-to-prism">server/src/common/services/user.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -157,7 +161,7 @@
                                                         <td>jwtService</td>
                                                   
                                                         <td>
-                                                                    <code>JwtService</code>
+                                                                        <code><a href="../classes/Service.html" target="_self" >JwtService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -178,10 +182,34 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>flowService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FlowService.html" target="_self" >FlowService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>userRepository</td>
                                                   
                                                         <td>
                                                                         <code><a href="../classes/User.html" target="_self" >Repository&lt;User&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            否
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>roleRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/Role.html" target="_self" >Repository&lt;Role&gt;</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -207,6 +235,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="applyVolunteer"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            applyVolunteer
+                        </b>
+                        <a href="#applyVolunteer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>applyVolunteer(payload: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="176"
+                            class="link-to-prism">server/src/common/services/user.service.ts:176</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>payload</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="changePassword"></a>
                     <span class="name">
                         <b>
@@ -227,8 +327,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="106"
-                            class="link-to-prism">server/src/common/services/user.service.ts:106</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="131"
+                            class="link-to-prism">server/src/common/services/user.service.ts:131</a></div>
                 </td>
             </tr>
 
@@ -284,35 +384,28 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findCurrent"></a>
+                    <a name="findOne"></a>
                     <span class="name">
                         <b>
                             <span class="modifier">Async</span>
-                            findCurrent
+                            findOne
                         </b>
-                        <a href="#findCurrent"><span class="icon ion-ios-link"></span></a>
+                        <a href="#findOne"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findCurrent(id)</code>
+                    <code>findOne(where)</code>
                 </td>
             </tr>
 
-            <tr>
-                <td class="col-md-4">
-                    <b>装饰器列表 : </b>
-                    <br />
-                    <code>@TransformClassToPlain()<br /></code>
-                </td>
-            </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="83"
-                            class="link-to-prism">server/src/common/services/user.service.ts:83</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="95"
+                            class="link-to-prism">server/src/common/services/user.service.ts:95</a></div>
                 </td>
             </tr>
 
@@ -331,7 +424,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>id</td>
+                                    <td>where</td>
 
                                     <td>
                                         否
@@ -386,8 +479,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="75"
-                            class="link-to-prism">server/src/common/services/user.service.ts:75</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="82"
+                            class="link-to-prism">server/src/common/services/user.service.ts:82</a></div>
                 </td>
             </tr>
 
@@ -454,8 +547,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="95"
-                            class="link-to-prism">server/src/common/services/user.service.ts:95</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="108"
+                            class="link-to-prism">server/src/common/services/user.service.ts:108</a></div>
                 </td>
             </tr>
 
@@ -538,8 +631,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="24"
-                            class="link-to-prism">server/src/common/services/user.service.ts:24</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="30"
+                            class="link-to-prism">server/src/common/services/user.service.ts:30</a></div>
                 </td>
             </tr>
 
@@ -603,7 +696,7 @@
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>save(payload: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                    <code>save(payload: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>, userRepos?: <a href="../classes/User.html">Repository<User></a>, rowRepos?: <a href="../classes/Role.html">Repository<Role></a>)</code>
                 </td>
             </tr>
 
@@ -611,14 +704,14 @@
                 <td class="col-md-4">
                     <b>装饰器列表 : </b>
                     <br />
-                    <code>@TransformClassToPlain()<br /></code>
+                    <code>@TransformClassToPlain()<br />@Transaction()<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="119"
-                            class="link-to-prism">server/src/common/services/user.service.ts:119</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="145"
+                            class="link-to-prism">server/src/common/services/user.service.ts:145</a></div>
                 </td>
             </tr>
 
@@ -645,6 +738,30 @@
 
                                     <td>
                                         否
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>userRepos</td>
+                                    <td>
+                                                <code><a href="../classes/User.html" target="_self" >Repository&lt;User&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        是
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>rowRepos</td>
+                                    <td>
+                                                <code><a href="../classes/Role.html" target="_self" >Repository&lt;Role&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        是
                                     </td>
 
 
@@ -832,19 +949,25 @@ import * as bcrypt from &#x27;bcryptjs&#x27;;
 import { JwtService } from &#x27;@nestjs/jwt&#x27;;
 import { Injectable, BadRequestException } from &#x27;@nestjs/common&#x27;;
 import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
-import { Repository, TreeRepository } from &#x27;typeorm&#x27;;
+import { Repository, Transaction, TransactionRepository } from &#x27;typeorm&#x27;;
 import { TransformClassToPlain } from &#x27;class-transformer&#x27;;
 import { BaseService } from &#x27;./base.service&#x27;;
 import { AuthorityService } from &#x27;./authority.service&#x27;;
 import { User } from &#x27;../entities/user.entity&#x27;;
-import { Authority } from &#x27;../entities/authority.entity&#x27;;
+import { PointsActionType, FlowTemplateEnum } from &#x27;../aspects/enum&#x27;;
+import { FlowService } from &#x27;./flow.service&#x27;;
+import { wf } from &#x27;../lib/wf&#x27;;
+import { Role } from &#x27;../entities/role.entity&#x27;;
+import { Logger } from &#x27;../lib/logger&#x27;;
 
 @Injectable()
 export class UserService extends BaseService&lt;User&gt; {
     constructor(
         private readonly jwtService: JwtService,
         private readonly authorityService: AuthorityService,
-        @InjectRepository(User) private readonly userRepository: Repository&lt;User&gt;
+        private readonly flowService: FlowService,
+        @InjectRepository(User) private readonly userRepository: Repository&lt;User&gt;,
+        @InjectRepository(Role) private readonly roleRepository: Repository&lt;Role&gt;
     ) {
         super(userRepository);
     }
@@ -853,8 +976,9 @@ export class UserService extends BaseService&lt;User&gt; {
     async query(payload: any) {
         const qb &#x3D; this.userRepository.createQueryBuilder(&#x27;t&#x27;);
 
-        qb.leftJoinAndSelect(&#x27;t.roles&#x27;, &#x27;role&#x27;);
+        qb.leftJoinAndSelect(&#x27;t.role&#x27;, &#x27;role&#x27;);
         qb.leftJoinAndSelect(&#x27;t.org&#x27;, &#x27;organization&#x27;);
+        qb.leftJoinAndSelect(&#x27;t.flows&#x27;, &#x27;flows&#x27;);
 
         if (!payload.page) {
             payload.page &#x3D; 0;
@@ -902,38 +1026,56 @@ export class UserService extends BaseService&lt;User&gt; {
 
     @TransformClassToPlain()
     async findOneById(id) {
-        return await this.userRepository.findOne({
-            where: { id },
-            relations: [&#x27;roles&#x27;, &#x27;org&#x27;]
-        });
+        const qb &#x3D; this.userRepository.createQueryBuilder(&#x27;t&#x27;);
+
+        qb.andWhere(&#x27;t.id &#x3D; :id&#x27;, { id });
+
+        qb.leftJoinAndSelect(&#x27;t.role&#x27;, &#x27;role&#x27;);
+        qb.leftJoinAndSelect(&#x27;t.org&#x27;, &#x27;organization&#x27;);
+        qb.leftJoinAndSelect(&#x27;t.flows&#x27;, &#x27;flows&#x27;);
+        qb.leftJoinAndSelect(&#x27;role.authorities&#x27;, &#x27;authorities&#x27;);
+
+        return await qb.getOne();
     }
 
-    @TransformClassToPlain()
-    async findCurrent(id) {
-        const currentUser &#x3D; await this.findOneById(id);
-        const authorities &#x3D; await this.authorityService.findByRoles(
-            currentUser.roles.map((item) &#x3D;&gt; &#x60;&#x27;${item.id}&#x27;&#x60;)
-        );
+    async findOne(where) {
+        const qb &#x3D; this.userRepository.createQueryBuilder(&#x27;t&#x27;);
 
-        return {
-            ...currentUser,
-            authorities
-        };
+        if (!!where.account) {
+            qb.andWhere(&#x27;t.account &#x3D; :account&#x27;, { account: where.account });
+        }
+
+        qb.leftJoinAndSelect(&#x27;t.role&#x27;, &#x27;role&#x27;);
+        qb.leftJoinAndSelect(&#x27;t.org&#x27;, &#x27;organization&#x27;);
+
+        return await qb.getOne();
     }
 
     async login(account, password) {
-        const user &#x3D; await this.userRepository.findOne({ account });
+        let user &#x3D; await this.findOne({ account });
+        Logger.log(&#x27;Login ---&gt;&#x27;, user);
 
-        if (!user) throw new BadRequestException(&#x27;用户不存在&#x27;);
+        if (!user) {
+            const role &#x3D; await this.roleRepository.findOne({ where: { token: &#x27;user&#x27; } });
 
-        if (!(await bcrypt.compare(password, user.password)))
-            throw new BadRequestException(&#x27;密码错误&#x27;);
+            user &#x3D; new User();
+            user.account &#x3D; account;
+            user.password &#x3D; password;
+            user.role &#x3D; role;
 
-        return await this.jwtService.sign(_.toPlainObject(user));
+            // 用户不存在则直接注册
+            user &#x3D; await this.userRepository.save(user);
+        } else {
+            if (!(await bcrypt.compare(password, user.password)))
+                throw new BadRequestException(&#x27;密码错误&#x27;);
+        }
+
+        const token &#x3D; await this.jwtService.sign(_.toPlainObject(user));
+        return { token };
     }
 
     async changePassword(id, dto) {
-        const user &#x3D; await this.userRepository.findOne({ where: { id }, relations: [&#x27;roles&#x27;] });
+        const user &#x3D; await this.userRepository.findOne({ where: { id }, relations: [&#x27;role&#x27;] });
 
         if (!(await bcrypt.compare(dto.oldPassword, user.password)))
             throw new BadRequestException(&#x27;旧密码错误&#x27;);
@@ -945,16 +1087,57 @@ export class UserService extends BaseService&lt;User&gt; {
     }
 
     @TransformClassToPlain()
-    async save(payload: any) {
+    @Transaction()
+    async save(
+        payload: any,
+        @TransactionRepository(User) userRepos?: Repository&lt;User&gt;,
+        @TransactionRepository(Role) rowRepos?: Repository&lt;Role&gt;
+    ) {
         const user &#x3D; User.create(payload) as User;
 
-        return await this.userRepository.save(user);
+        if (!user.role) {
+            // 添加默认角色
+            const role &#x3D; await rowRepos.findOne({ where: { token: &#x27;user&#x27; } });
+            user.role &#x3D; role;
+        }
+
+        const { actionType } &#x3D; payload;
+
+        // 增加积分的逻辑
+        if (!!actionType) {
+            if (PointsActionType.ADD &#x3D;&#x3D;&#x3D; actionType) {
+                user.points +&#x3D; payload.value || 0;
+            }
+
+            if (PointsActionType.SUB &#x3D;&#x3D;&#x3D; actionType) {
+                user.points -&#x3D; payload.value || 0;
+            }
+
+            //TODO: 记录积分明细
+        }
+
+        return await userRepos.save(user);
     }
 
-    // async remove(ids: string[]) {
-    //     // 软删除
-    //     return await this.userRepository.delete(ids);
-    // }
+    async applyVolunteer(payload: any) {
+        const user &#x3D; await this.findOneById(payload.id);
+        user.realName &#x3D; payload.realName;
+        user.phone &#x3D; payload.phone;
+        user.idCard &#x3D; payload.idCard;
+        user.address &#x3D; payload.address;
+
+        await this.save(user);
+
+        const isExist &#x3D; await this.flowService.findOneByUser(user, FlowTemplateEnum.APPLY_VR);
+
+        if (!!isExist &amp;&amp; user.status !&#x3D;&#x3D; &#x27;已驳回&#x27;) {
+            throw new BadRequestException(&#x27;请勿重复申请&#x27;);
+        }
+
+        const flow &#x3D; await this.flowService.create(user, FlowTemplateEnum.APPLY_VR);
+
+        return wf.dispatch(flow.id, &#x27;申请&#x27;);
+    }
 }
 </code></pre>
     </div>

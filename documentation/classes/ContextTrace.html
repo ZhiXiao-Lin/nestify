@@ -362,7 +362,7 @@ export class ContextTrace {
         public readonly path?: string,
         public readonly lineNumber?: number,
         public readonly columnNumber?: number
-    ) {}
+    ) { }
 }
 
 Log4js.addLayout(&#x27;Nestify&#x27;, (logConfig: any) &#x3D;&gt; {
@@ -437,7 +437,7 @@ Log4js.configure({
 });
 
 const logger &#x3D; Log4js.getLogger();
-logger.level &#x3D; &#x27;debug&#x27;;
+logger.level &#x3D; LoggerLevel.TRACE;
 
 export class Logger {
     static trace(...args) {

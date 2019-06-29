@@ -648,13 +648,13 @@ export class CategoryService extends BaseService&lt;Category&gt; {
 	}
 
 	async save(payload: any) {
-		const category &#x3D; Category.create(payload) as Category;
+		const target &#x3D; Category.create(payload) as Category;
 
-		// if (!_.isEmpty(payload.category) &amp;&amp; _.isString(content.category)) {
-		// 	content.category &#x3D; await this.categoryRepository.findOneById(category.parent);
-		// }
+		if (!!payload.parentId) {
+			target.parent &#x3D; await this.categoryRepository.findOne(payload.parentId);
+		}
 
-		return await this.categoryRepository.save(category);
+		return await this.categoryRepository.save(target);
 	}
 }
 </code></pre>

@@ -84,6 +84,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#upload">upload</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#uploadToken">uploadToken</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -107,7 +111,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">被定义在 <a href="" data-line="17" class="link-to-prism">server/src/api/controllers/storage.controller.ts:17</a></div>
+                                <div class="io-line">被定义在 <a href="" data-line="18" class="link-to-prism">server/src/api/controllers/storage.controller.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -182,8 +186,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="23"
-                            class="link-to-prism">server/src/api/controllers/storage.controller.ts:23</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="24"
+                            class="link-to-prism">server/src/api/controllers/storage.controller.ts:24</a></div>
                 </td>
             </tr>
 
@@ -235,6 +239,54 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="uploadToken"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            uploadToken
+                        </b>
+                        <a href="#uploadToken"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>uploadToken()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>装饰器列表 : </b>
+                    <br />
+                    <code>@Get(&#x27;qiniu/uploadToken&#x27;)<br /></code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="73"
+                            class="link-to-prism">server/src/api/controllers/storage.controller.ts:73</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>{}</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -249,13 +301,14 @@
 import * as moment from &#x27;moment&#x27;;
 import { ApiUseTags, ApiConsumes, ApiImplicitFile, ApiBearerAuth } from &#x27;@nestjs/swagger&#x27;;
 import { AuthGuard } from &#x27;@nestjs/passport&#x27;;
-import { Post, Req, Res, BadRequestException, InternalServerErrorException, UseGuards } from &#x27;@nestjs/common&#x27;;
+import { Post, Req, Res, BadRequestException, InternalServerErrorException, UseGuards, Get } from &#x27;@nestjs/common&#x27;;
 import { config } from &#x27;../../config&#x27;;
 import { Api } from &#x27;../../common/aspects/decorator&#x27;;
 import { resolve } from &#x27;path&#x27;;
-import { UploadActionType } from &#x27;../../common/aspects/enum&#x27;;
+import { UploadActionType, StorageType } from &#x27;../../common/aspects/enum&#x27;;
 import { ImportService } from &#x27;../../common/services/import.service&#x27;;
 import { Logger } from &#x27;../../common/lib/logger&#x27;;
+import { Qiniu } from &#x27;../../common/lib/qiniu&#x27;;
 
 @Api(&#x27;storage&#x27;)
 @ApiUseTags(&#x27;storage&#x27;)
@@ -302,6 +355,7 @@ export class StorageController {
 					if (err) throw new InternalServerErrorException(&#x27;文件移动失败&#x27;, err);
 
 					res.send({
+						storageType: StorageType.LOCAL,
 						path: &#x60;${config.static.uploadPath}/${path}&#x60;,
 						filePath,
 						name: file.name,
@@ -312,6 +366,11 @@ export class StorageController {
 				});
 				break;
 		}
+	}
+
+	@Get(&#x27;qiniu/uploadToken&#x27;)
+	async uploadToken() {
+		return await Qiniu.createUploadToken();
 	}
 }
 </code></pre>

@@ -575,14 +575,14 @@ export class RoleService extends BaseService&lt;Role&gt; {
 
     @TransformClassToPlain()
     async findOneAndRelations(id: string) {
-        return await this.roleRepository.findOne({ where: { id }, relations: [&#x27;authoritys&#x27;] });
+        return await this.roleRepository.findOne({ where: { id }, relations: [&#x27;authorities&#x27;] });
     }
 
     @TransformClassToPlain()
     async query(payload: any) {
         const qb &#x3D; this.roleRepository.createQueryBuilder(&#x27;t&#x27;);
 
-        qb.leftJoinAndSelect(&#x27;t.authoritys&#x27;, &#x27;authority&#x27;);
+        qb.leftJoinAndSelect(&#x27;t.authorities&#x27;, &#x27;authorities&#x27;);
 
         if (!!payload.keyword) {
             qb.andWhere(&#x60;t.name LIKE &#x27;%${payload.keyword}%&#x27;&#x60;);

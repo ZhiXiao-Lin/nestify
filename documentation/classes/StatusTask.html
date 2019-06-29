@@ -102,10 +102,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#intervalJob">intervalJob</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
                                 <a href="#pushStatus">pushStatus</a>
                             </li>
                             <li>
@@ -124,24 +120,6 @@
     </table>
 </section>
 
-            <section>
-    <h3 id="constructor">构造方法</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor()</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">被定义在 <a href="" data-line="14" class="link-to-prism">server/src/common/tasks/status.task.ts:14</a></div>
-                            </td>
-                        </tr>
-
-            </tbody>
-        </table>
-</section>
 
             <section>
     
@@ -168,16 +146,12 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                            <b>装饰器列表 : </b>
-                            <br />
-                            <code>
-                                @WebSocketServer()<br />
-                            </code>
+                            <i>缺省值 : </i><code>IOServer.status</code>
                         </td>
                     </tr>
                         <tr>
                             <td class="col-md-4">
-                                    <div class="io-line">被定义在 <a href="" data-line="14" class="link-to-prism">server/src/common/tasks/status.task.ts:14</a></div>
+                                    <div class="io-line">被定义在 <a href="" data-line="13" class="link-to-prism">server/src/common/tasks/status.task.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -191,54 +165,6 @@
     <h3 id="methods">
         方法
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="intervalJob"></a>
-                    <span class="name">
-                        <b>
-                            <span class="modifier">Async</span>
-                            intervalJob
-                        </b>
-                        <a href="#intervalJob"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                    <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>intervalJob()</code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <b>装饰器列表 : </b>
-                    <br />
-                    <code>@Interval(3000)<br /></code>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="129"
-                            class="link-to-prism">server/src/common/tasks/status.task.ts:129</a></div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                    <div class="io-description">
-                        <b>返回 : </b>    <code>{}</code>
-
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -264,14 +190,14 @@
                 <td class="col-md-4">
                     <b>装饰器列表 : </b>
                     <br />
-                    <code>@Interval(3000)<br /></code>
+                    <code>@Interval(2000)<br /></code>
                 </td>
             </tr>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="119"
-                            class="link-to-prism">server/src/common/tasks/status.task.ts:119</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="109"
+                            class="link-to-prism">server/src/common/tasks/status.task.ts:109</a></div>
                 </td>
             </tr>
 
@@ -311,8 +237,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="45"
-                            class="link-to-prism">server/src/common/tasks/status.task.ts:45</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="38"
+                            class="link-to-prism">server/src/common/tasks/status.task.ts:38</a></div>
                 </td>
             </tr>
 
@@ -342,22 +268,15 @@
 import { resolve, basename, dirname, extname } from &#x27;path&#x27;;
 import * as pidusage from &#x27;pidusage&#x27;;
 import * as chokidar from &#x27;chokidar&#x27;;
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from &#x27;@nestjs/websockets&#x27;;
+import * as moment from &#x27;moment&#x27;;
 import { Cron, Interval, Timeout, NestSchedule } from &#x27;nest-schedule&#x27;;
-import { influx } from &#x27;../lib/influx&#x27;;
 import { Logger } from &#x27;../lib/logger&#x27;;
-import { es } from &#x27;../lib/elastic-search&#x27;;
-import { config } from &#x27;../../config&#x27;;
+import { redis } from &#x27;../lib/redis&#x27;;
+import { es } from &#x27;../lib/es&#x27;;
+import { IOServer } from &#x27;../lib/io&#x27;;
 
-@WebSocketGateway(config.websocket.port, { namespace: &#x27;status&#x27; })
 export class StatusTask extends NestSchedule {
-    @WebSocketServer() server: any;
-
-    constructor() {
-        super();
-
-        this.watchFiles();
-    }
+    server: any &#x3D; IOServer.status;
 
     // # ┌────────────── second (optional)
     // # │ ┌──────────── minute
@@ -387,9 +306,6 @@ export class StatusTask extends NestSchedule {
         Logger.log(&#x60;watching ${uploadDirPath}&#x60;);
 
         chokidar.watch(uploadDirPath, { ignored: /(^|[\/\\])\../ }).on(&#x27;all&#x27;, (event, path) &#x3D;&gt; {
-            // if (!!this.server) {
-            //     this.server.emit(&#x27;fileChange&#x27;, { event, path, date });
-            // }
             stat(path, (err, stats) &#x3D;&gt; {
                 Logger.log(event, path, stats);
 
@@ -455,28 +371,28 @@ export class StatusTask extends NestSchedule {
         });
     }
 
-    @Interval(3000)
+    @Interval(2000)
     async pushStatus() {
-        if (!this.server) return false;
-
-        const status &#x3D; await influx.query(
-            &#x60;select * from system_status order by time desc limit 30&#x60;
-        );
-        this.server.emit(&#x27;status&#x27;, status);
-    }
-
-    @Interval(3000)
-    async intervalJob() {
         const status &#x3D; await pidusage(process.pid);
 
-        await influx.writePoints([
-            {
-                measurement: &#x27;system_status&#x27;,
-                tags: { status: &#x27;status&#x27; },
-                fields: status,
-                timestamp: new Date()
-            }
-        ]);
+        const statusJson &#x3D; await redis.get(&#x27;system_status&#x27;);
+
+        let statusArr &#x3D; [];
+
+        if (!!statusJson) {
+            statusArr &#x3D; JSON.parse(statusJson);
+        }
+
+        status.time &#x3D; moment().valueOf();
+        statusArr.unshift(status);
+
+        if (statusArr.length &gt; 30) {
+            statusArr &#x3D; statusArr.splice(0, 30);
+        }
+
+        await redis.set(&#x27;system_status&#x27;, JSON.stringify(statusArr));
+
+        this.server.emit(&#x27;status&#x27;, statusArr);
 
         return false;
     }

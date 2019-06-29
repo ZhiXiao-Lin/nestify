@@ -87,6 +87,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByRoleId">findByRoleId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByRoles">findByRoles</a>
                             </li>
                             <li>
@@ -203,8 +207,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="49"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:49</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="57"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:57</a></div>
                 </td>
             </tr>
 
@@ -227,6 +231,78 @@
                                     <td>ids</td>
                                     <td>
                                             <code>string[]</code>
+                                    </td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>返回 : </b>    <code>{}</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByRoleId"></a>
+                    <span class="name">
+                        <b>
+                            <span class="modifier">Async</span>
+                            findByRoleId
+                        </b>
+                        <a href="#findByRoleId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByRoleId(roleId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">被定义在 <a href="" data-line="28"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:28</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>roleId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                     </td>
 
                                     <td>
@@ -347,8 +423,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="28"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:28</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="36"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:36</a></div>
                 </td>
             </tr>
 
@@ -419,8 +495,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="42"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:42</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="50"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:50</a></div>
                 </td>
             </tr>
 
@@ -563,8 +639,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="32"
-                            class="link-to-prism">server/src/common/services/authority.service.ts:32</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="40"
+                            class="link-to-prism">server/src/common/services/authority.service.ts:40</a></div>
                 </td>
             </tr>
 
@@ -797,6 +873,14 @@ export class AuthorityService extends BaseService&lt;Authority&gt; {
             .createQueryBuilder(&#x27;t&#x27;)
             .leftJoin(&#x27;t.roles&#x27;, &#x27;role&#x27;)
             .where(&#x60;role.id IN(${roles.join(&#x27;,&#x27;)})&#x60;)
+            .getMany();
+    }
+
+    async findByRoleId(roleId: string) {
+        return await this.authorityRepository
+            .createQueryBuilder(&#x27;t&#x27;)
+            .leftJoin(&#x27;t.roles&#x27;, &#x27;role&#x27;)
+            .where(&#x27;role.id &#x3D;:roleId&#x27;, { roleId })
             .getMany();
     }
 

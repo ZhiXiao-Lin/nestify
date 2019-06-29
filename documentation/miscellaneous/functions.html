@@ -66,6 +66,18 @@
                             <a href="#extractionTextInHtml" title="server/src/common/lib/helper.ts"><b>extractionTextInHtml</b>&nbsp;&nbsp;&nbsp;(server/.../helper.ts)</a>
                         </li>
                         <li>
+                            <a href="#getVIP" title="server/src/common/lib/helper.ts"><b>getVIP</b>&nbsp;&nbsp;&nbsp;(server/.../helper.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#initFastify" title="server/src/main.ts"><b>initFastify</b>&nbsp;&nbsp;&nbsp;(server/.../main.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#initScripts" title="server/src/main.ts"><b>initScripts</b>&nbsp;&nbsp;&nbsp;(server/.../main.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#initSwagger" title="server/src/main.ts"><b>initSwagger</b>&nbsp;&nbsp;&nbsp;(server/.../main.ts)</a>
+                        </li>
+                        <li>
                             <a href="#logger" title="server/src/common/aspects/middlewares.ts"><b>logger</b>&nbsp;&nbsp;&nbsp;(server/.../middlewares.ts)</a>
                         </li>
                         <li>
@@ -166,6 +178,165 @@
 
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initFastify"></a>
+                    <span class="name">
+                        <b>
+                            initFastify
+                        </b>
+                        <a href="#initFastify"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initFastify(nextjs)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>nextjs</td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initScripts"></a>
+                    <span class="name">
+                        <b>
+                            initScripts
+                        </b>
+                        <a href="#initScripts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initScripts(app)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>app</td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initSwagger"></a>
+                    <span class="name">
+                        <b>
+                            initSwagger
+                        </b>
+                        <a href="#initSwagger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>initSwagger(app)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>app</td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    <h3>server/src/common/lib/helper.ts</h3>
     <section>
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -225,18 +396,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="textInterception"></a>
+                    <a name="getVIP"></a>
                     <span class="name">
                         <b>
-                            textInterception
+                            getVIP
                         </b>
-                        <a href="#textInterception"><span class="icon ion-ios-link"></span></a>
+                        <a href="#getVIP"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>textInterception(text, length: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>getVIP(points)</code>
                 </td>
             </tr>
 
@@ -252,15 +423,65 @@
                             <thead>
                                 <tr>
                                     <td>名称</td>
-                                    <td>类型</td>
+                                    <td>可选的</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>points</td>
+
+                                    <td>
+                                        否
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="textInterception"></a>
+                    <span class="name">
+                        <b>
+                            textInterception
+                        </b>
+                        <a href="#textInterception"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>textInterception(text, length)</code>
+                </td>
+            </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>参数列表 :</b>
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>名称</td>
                                     <td>可选的</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>text</td>
-                                    <td>
-                                    </td>
 
                                     <td>
                                         否
@@ -270,9 +491,6 @@
                                 </tr>
                                 <tr>
                                     <td>length</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                    </td>
 
                                     <td>
                                         否

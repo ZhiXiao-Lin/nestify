@@ -144,8 +144,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">被定义在 <a href="" data-line="102"
-                            class="link-to-prism">server/src/common/lib/excel.ts:102</a></div>
+                    <div class="io-line">被定义在 <a href="" data-line="100"
+                            class="link-to-prism">server/src/common/lib/excel.ts:100</a></div>
                 </td>
             </tr>
 
@@ -454,143 +454,144 @@
 import * as Excel from &#x27;exceljs&#x27;;
 
 export enum ExcelHandleType {
-	KV,
-	ARRAY
+    KV,
+    ARRAY
 }
 
 export class ExcelHelper {
-	static async loadFromFile(filePath, sheetsMap) {
-		const workbook &#x3D; new Excel.Workbook();
-		await workbook.xlsx.readFile(filePath);
+    static async loadFromFile(filePath, sheetsMap) {
+        const workbook &#x3D; new Excel.Workbook();
+        await workbook.xlsx.readFile(filePath);
 
-		return await ExcelHelper.load(workbook, sheetsMap);
-	}
+        return await ExcelHelper.load(workbook, sheetsMap);
+    }
 
-	static async loadFromBuffer(buffer, sheetsMap) {
-		const workbook &#x3D; new Excel.Workbook();
-		await workbook.xlsx.load(buffer);
+    static async loadFromBuffer(buffer, sheetsMap) {
+        const workbook &#x3D; new Excel.Workbook();
+        await workbook.xlsx.load(buffer);
 
-		return await ExcelHelper.load(workbook, sheetsMap);
-	}
+        return await ExcelHelper.load(workbook, sheetsMap);
+    }
 
-	static async load(workbook, sheetsMap) {
-		const info &#x3D; {};
+    static async load(workbook, sheetsMap) {
+        const info &#x3D; {};
 
-		workbook.eachSheet((worksheet) &#x3D;&gt; {
-			const sheetMap &#x3D; sheetsMap[worksheet.name];
-			if (!sheetMap) {
-				console.error(&#x60;${worksheet.name} 工作表映射加载失败！&#x60;)
-				return;
-			}
+        workbook.eachSheet((worksheet) &#x3D;&gt; {
+            const sheetMap &#x3D; sheetsMap[worksheet.name];
+            if (!sheetMap) {
+                console.error(&#x60;${worksheet.name} 工作表映射加载失败！&#x60;);
+                return;
+            }
 
-			let item &#x3D; null;
+            let item &#x3D; null;
 
-			switch (sheetMap.handleType) {
-				case ExcelHandleType.KV:
-					const rowsMap &#x3D; sheetMap.rowsMap;
-					if (!rowsMap) throw new Error(&#x60;${worksheet.name} 行映射加载失败！&#x60;);
+            switch (sheetMap.handleType) {
+                case ExcelHandleType.KV:
+                    const rowsMap &#x3D; sheetMap.rowsMap;
+                    if (!rowsMap) throw new Error(&#x60;${worksheet.name} 行映射加载失败！&#x60;);
 
-					item &#x3D; {};
-					worksheet.eachRow((row, rowNumber) &#x3D;&gt; {
-						const cellKey &#x3D; row.getCell(1);
-						if (!cellKey) return false;
+                    item &#x3D; {};
+                    worksheet.eachRow((row, rowNumber) &#x3D;&gt; {
+                        const cellKey &#x3D; row.getCell(1);
+                        if (!cellKey) return false;
 
-						const mapKey &#x3D; rowsMap[cellKey.value.toString()];
-						if (!mapKey) throw new Error(&#x60;${worksheet.name} [row:${rowNumber}] 列映射加载失败！&#x60;);
+                        const mapKey &#x3D; rowsMap[cellKey.value.toString()];
+                        if (!mapKey)
+                            throw new Error(
+                                &#x60;${worksheet.name} [row:${rowNumber}] 列映射加载失败！&#x60;
+                            );
 
-						item[mapKey] &#x3D; row.getCell(2).value;
-					});
+                        item[mapKey] &#x3D; row.getCell(2).value;
+                    });
 
-					break;
-				case ExcelHandleType.ARRAY:
-					const cellsMap &#x3D; sheetMap.cellsMap;
-					if (!cellsMap) throw new Error(&#x60;${worksheet.name} 表头映射加载失败！&#x60;);
+                    break;
+                case ExcelHandleType.ARRAY:
+                    const cellsMap &#x3D; sheetMap.cellsMap;
+                    if (!cellsMap) throw new Error(&#x60;${worksheet.name} 表头映射加载失败！&#x60;);
 
-					const titleArr &#x3D; [];
+                    const titleArr &#x3D; [];
 
-					item &#x3D; [];
-					worksheet.getRow(1).eachCell((cell, cellNumber) &#x3D;&gt; {
-						const mapKey &#x3D; cellsMap[cell.value.toString()];
-						if (!mapKey) throw new Error(&#x60;${worksheet.name} 表头列映射加载失败！&#x60;);
+                    item &#x3D; [];
+                    worksheet.getRow(1).eachCell((cell, cellNumber) &#x3D;&gt; {
+                        const mapKey &#x3D; cellsMap[cell.value.toString()];
+                        if (!mapKey) throw new Error(&#x60;${worksheet.name} 表头列映射加载失败！&#x60;);
 
-						titleArr[cellNumber] &#x3D; mapKey;
-					});
+                        titleArr[cellNumber] &#x3D; mapKey;
+                    });
 
-					worksheet.eachRow((row, rowNumber) &#x3D;&gt; {
-						if (rowNumber &lt;&#x3D; 1) return false;
+                    worksheet.eachRow((row, rowNumber) &#x3D;&gt; {
+                        if (rowNumber &lt;&#x3D; 1) return false;
 
-						const cellObj &#x3D; {};
-						row.eachCell((cell, cellNumber) &#x3D;&gt; {
+                        const cellObj &#x3D; {};
+                        row.eachCell((cell, cellNumber) &#x3D;&gt; {
+                            const obj &#x3D; titleArr[cellNumber].split(&#x27;.&#x27;);
 
-							const obj &#x3D; titleArr[cellNumber].split(&#x27;.&#x27;);
+                            if (_.isArray(obj) &amp;&amp; obj.length &gt;&#x3D; 2) {
+                                if (!cellObj[obj[0]]) {
+                                    cellObj[obj[0]] &#x3D; {};
+                                }
 
-							if (_.isArray(obj) &amp;&amp; obj.length &gt;&#x3D; 2) {
-								if (!cellObj[obj[0]]) {
-									cellObj[obj[0]] &#x3D; {};
-								}
+                                cellObj[obj[0]][obj[1]] &#x3D; cell.value;
+                            } else {
+                                cellObj[titleArr[cellNumber]] &#x3D; cell.value;
+                            }
+                        });
 
-								cellObj[obj[0]][obj[1]] &#x3D; cell.value;
+                        item.push(cellObj);
+                    });
+                default:
+                    break;
+            }
 
-							} else {
-								cellObj[titleArr[cellNumber]] &#x3D; cell.value;
-							}
+            info[sheetMap.map || worksheet.name] &#x3D; item;
+        });
 
-						});
+        return info;
+    }
 
-						item.push(cellObj);
+    static async export(dataSource, sheetsMap, fields) {
+        const workbook &#x3D; new Excel.Workbook();
+        const sheet &#x3D; workbook.addWorksheet(sheetsMap.map);
+        const rowsMap &#x3D; sheetsMap.rowsMap;
 
-					});
-				default:
-					break;
-			}
+        const columns &#x3D; fields
+            .map((item) &#x3D;&gt; {
+                if (!!rowsMap[item]) {
+                    rowsMap[item].key &#x3D; rowsMap[item].key ? rowsMap[item].key : item;
+                    return rowsMap[item];
+                }
+            })
+            .filter((item) &#x3D;&gt; !!item);
 
-			info[sheetMap.map || worksheet.name] &#x3D; item;
+        const rows &#x3D; dataSource.map((item) &#x3D;&gt; {
+            const row &#x3D; {};
 
-		});
+            Object.keys(rowsMap).forEach((key) &#x3D;&gt; {
+                if (fields.includes(key)) {
+                    const handler &#x3D; rowsMap[key].handler || ((val) &#x3D;&gt; val);
+                    const headerKey &#x3D; rowsMap[key].key || key;
 
-		return info;
-	}
+                    const obj &#x3D; key.split(&#x27;.&#x27;);
 
-	static async export(dataSource, sheetsMap, fields) {
-		const workbook &#x3D; new Excel.Workbook();
-		const sheet &#x3D; workbook.addWorksheet(sheetsMap.map);
-		const rowsMap &#x3D; sheetsMap.rowsMap;
+                    if (_.isArray(obj) &amp;&amp; obj.length &gt;&#x3D; 2) {
+                        row[key] &#x3D; handler(item[obj[0]]);
+                    } else {
+                        row[headerKey] &#x3D; handler(item[headerKey]);
+                    }
+                }
+            });
 
-		const columns &#x3D; fields.map(item &#x3D;&gt; {
-			if (!!rowsMap[item]) {
-				rowsMap[item].key &#x3D; rowsMap[item].key ? rowsMap[item].key : item;
-				return rowsMap[item];
-			}
-		}).filter(item &#x3D;&gt; !!item);
+            return row;
+        });
 
-		const rows &#x3D; dataSource.map(item &#x3D;&gt; {
-			const row &#x3D; {};
+        sheet.columns &#x3D; columns;
+        sheet.addRows(rows);
 
-			Object.keys(rowsMap).forEach(key &#x3D;&gt; {
-
-				if (fields.includes(key)) {
-					const handler &#x3D; rowsMap[key].handler || (val &#x3D;&gt; val);
-					const headerKey &#x3D; rowsMap[key].key || key;
-
-					const obj &#x3D; key.split(&#x27;.&#x27;);
-
-					if (_.isArray(obj) &amp;&amp; obj.length &gt;&#x3D; 2) {
-						row[key] &#x3D; handler(item[obj[0]]);
-					} else {
-						row[headerKey] &#x3D; handler(item[headerKey]);
-					}
-				}
-			});
-
-			return row;
-		});
-
-		sheet.columns &#x3D; columns;
-		sheet.addRows(rows);
-
-		return await workbook.xlsx.writeBuffer();
-	}
+        return await workbook.xlsx.writeBuffer();
+    }
 }
+
+export default ExcelHelper;
 </code></pre>
     </div>
 </div>
