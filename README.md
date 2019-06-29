@@ -24,7 +24,7 @@
 
 1. git clone 项目到本地
 2. 执行 yarn && yarn:ic
-3. 安装 Node.js、Redis、PostgreSQL、Rabbitmq
+3. 安装 Node.js、Redis、PostgreSQL、Rabbitmq 或使用 Docker Compose
 4. 修改 server/package.json 以及 server/database/ 中 sql 文件的账户信息
 5. 根目录执行 yarn db:create 用于创建数据库和数据库用户
 6. 执行 yarn db:init 用于创建数据表和导入种子数据
