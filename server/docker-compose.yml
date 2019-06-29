@@ -30,23 +30,29 @@ services:
         networks:
             - app
 
-    elasticsearch:
-        image: elasticsearch:5.6
+    rabbitmq:
+        image: rabbitmq:management-alpine
         restart: always
         ports:
-            - '9200'
-            - '9300'
-        networks:
-            - app
+            - '15672:15672'
+            - '5672:5672'
 
-    influxdb:
-        image: influxdb
-        restart: always
-        ports:
-            - '8086'
-            - '8083'
-        networks:
-            - app
+    # elasticsearch:
+    #     image: elasticsearch:5.6
+    #     restart: always
+    #     ports:
+    #         - '9200'
+    #         - '9300'
+    #     networks:
+    #         - app
+    # influxdb:
+    #     image: influxdb
+    #     restart: always
+    #     ports:
+    #         - '8086'
+    #         - '8083'
+    #     networks:
+    #         - app
 
 networks:
     app:
