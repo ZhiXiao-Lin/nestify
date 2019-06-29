@@ -34,6 +34,9 @@
 10. yarn orm 是 TypeORM CLI 的封装, 例如：执行 yarn orm schema:sync 等同于执行 typeorm schema:sync
 11. 所有被导入种子数据的 excel 文件都存放在 src/seeds 中，可以根据需要进行调整
 
+-   注：如果使用 docker compose 则需要手动初始化数据库
+    1. docker exec -it 容器 ID psql -U postgres -f /database/create-db.sql
+    2. docker exec -it 容器 ID psql -U nestify -d nestify -f /database/create-exts.sql
 -   注：永远不要在生产环境下使用 yarn db:init
 
 ## 文档

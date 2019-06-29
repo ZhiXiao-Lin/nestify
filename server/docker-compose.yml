@@ -16,6 +16,7 @@ services:
             POSTGRES_PASSWORD: 123456
         volumes:
             - db-data:/var/lib/postgresql/data
+            - ./database:/database
         networks:
             - app
 
