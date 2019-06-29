@@ -36,6 +36,8 @@ services:
         ports:
             - '15672:15672'
             - '5672:5672'
+        networks:
+            - app
 
     # elasticsearch:
     #     image: elasticsearch:5.6
