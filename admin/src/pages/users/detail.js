@@ -216,7 +216,7 @@ export default class extends React.Component {
 
   onRolesCheck = (role) => {
     const { dispatch, selectedNode } = this.props;
-    selectedNode.role = { id: role };
+    selectedNode.role = role;
 
     dispatch({
       type: `${MODEL_NAME}/set`,

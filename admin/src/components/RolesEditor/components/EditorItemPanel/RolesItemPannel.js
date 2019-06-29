@@ -19,7 +19,7 @@ export default class extends Component {
   };
 
   onRolesCheck = (e) => {
-    this.props.onRolesCheck(e.target.value);
+    this.props.onRolesCheck(this.props.roles.find((item) => item.id === e.target.value));
   };
 
   render() {

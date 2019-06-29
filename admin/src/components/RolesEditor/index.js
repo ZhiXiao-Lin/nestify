@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Tree, Divider } from 'antd';
 import { uniqBy } from 'lodash';
-import GGEditor, { Mind } from 'gg-editor';
-import AuthorityNode from './components/nodes/AuthorityNode';
-import EditorMinimap from './components/EditorMinimap';
 import { RolesItemPannel } from './components/EditorItemPanel';
-import { RolesContextMenu } from './components/EditorContextMenu';
-import { MindToolbar } from './components/EditorToolbar';
-import { RolesDetailPanel } from './components/EditorDetailPanel';
 import styles from './index.less';
 
 const { TreeNode } = Tree;
@@ -35,11 +29,8 @@ export default class extends Component {
   }
 
   getUserAuthorities = () => {
-    const { user, roles } = this.props;
-
-    const userAuthorities = uniqBy(roles.find((item) => item.id === user.role.id), 'id').map(
-      (item) => item.id
-    );
+    const { user } = this.props;
+    const userAuthorities = user.role ? user.role.authorities.map((item) => item.id) : [];
 
     this.setState({
       userAuthorities,
