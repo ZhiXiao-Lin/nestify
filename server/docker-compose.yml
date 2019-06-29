@@ -1,22 +1,11 @@
 version: '3'
 
 services:
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - '3000'
-        volumes:
-            - .:/code
-        networks:
-            - app
-
     redis:
         image: 'redis:alpine'
         restart: always
         ports:
-            - '6379'
+            - '6379:6379'
         networks:
             - app
 
@@ -55,6 +44,17 @@ services:
     #         - '8083'
     #     networks:
     #         - app
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '3000'
+        volumes:
+            - .:/code
+        networks:
+            - app
 
 networks:
     app:
