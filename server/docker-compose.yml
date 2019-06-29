@@ -44,17 +44,16 @@ services:
     #         - '8083'
     #     networks:
     #         - app
-
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - '3000'
-        volumes:
-            - .:/code
-        networks:
-            - app
+    # app:
+    #     build:
+    #         context: .
+    #         dockerfile: Dockerfile
+    #     ports:
+    #         - '3000'
+    #     volumes:
+    #         - .:/code
+    #     networks:
+    #         - app
 
 networks:
     app:
