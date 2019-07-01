@@ -67,13 +67,14 @@ export class ImportService {
 		const res = await ExcelHelper.loadFromBuffer(file.data, Service.sheetsMap);
 
 		Object.keys(res).forEach(async (key) => {
-			const parentCategory = await this.serviceCategoryService.findOneByName(key);
-			if (!parentCategory) return false;
 
 			res[key].map(async item => {
 
 				item = Service.create(item) as Service;
-				item.category = parentCategory;
+
+				if (!!item.category) {
+					item.category = await this.serviceCategoryService.findOneByName(item.category);
+				}
 
 				if (!!item.cover) {
 					item.cover = { storageType: StorageType.LOCAL, path: item.cover };
