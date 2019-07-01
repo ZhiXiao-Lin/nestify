@@ -5,6 +5,8 @@ import { Organization } from '../entities/organization.entity';
 import { CategoryService } from './category.service';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { Logger } from '../lib/logger';
+import { StorageType } from '../aspects/enum';
 
 
 @Injectable()
@@ -29,17 +31,28 @@ export class ImportService {
 		const res = await ExcelHelper.loadFromBuffer(file.data, Content.sheetsMap);
 
 		Object.keys(res).forEach(async (key) => {
-			const category = await this.categoryService.findOneByName(key);
+			const parentCategory = await this.categoryService.findOneByName(key);
+			if (!parentCategory) return false;
 
-			if (!category) return false;
+			Logger.log('Import parent category', parentCategory);
 
-			const news = Content.create(res[key]) as Content[];
-			const list = news.map((item) => {
-				item.category = category;
-				return item;
+			res[key].map(async item => {
+
+				item = Content.create(item) as Content;
+
+				if (!!item.category) {
+					item.category = await this.categoryService.findOneByName(item.category, parentCategory);
+				} else {
+					item.category = parentCategory;
+				}
+
+				if (!!item.thumbnail) {
+					item.thumbnail = { storageType: StorageType.LOCAL, path: item.thumbnail };
+				}
+
+				await this.connection.getRepository(Content).save(item);
 			});
 
-			await this.connection.getRepository(Content).save(list);
 		});
 
 		return true;
