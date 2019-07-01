@@ -6,7 +6,6 @@ import { connect } from 'dva';
 import {
   Upload,
   Input,
-  DatePicker,
   Popconfirm,
   Table,
   Tooltip,
@@ -31,7 +30,6 @@ const { Content } = Layout;
 const ButtonGroup = Button.Group;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
-const { RangePicker } = DatePicker;
 
 const MODEL_NAME = 'service';
 const DETAIL_URL = '/studio/service/detail';
@@ -57,14 +55,9 @@ export default class extends React.Component {
         render: (val) => <a onClick={this.toDetail(val)}>详情</a>,
       },
       {
-        title: '图片',
-        dataIndex: 'thumbnailPath',
+        title: '封面',
+        dataIndex: 'coverPath',
         render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />),
-      },
-      {
-        title: '视频',
-        dataIndex: 'videoPath',
-        render: (val) => val,
       },
       {
         title: '标题',
@@ -78,24 +71,20 @@ export default class extends React.Component {
 
           return !!keyword
             ? val
-                .toString()
-                .split(reg)
-                .map((text, i) =>
-                  i > 0
-                    ? [
-                        <span key={i} col={i} style={{ color: 'red' }}>
-                          <b>{val.toString().match(reg)[0]}</b>
-                        </span>,
-                        text,
-                      ]
-                    : text
-                )
+              .toString()
+              .split(reg)
+              .map((text, i) =>
+                i > 0
+                  ? [
+                    <span key={i} col={i} style={{ color: 'red' }}>
+                      <b>{val.toString().match(reg)[0]}</b>
+                    </span>,
+                    text,
+                  ]
+                  : text
+              )
             : val;
         },
-      },
-      {
-        title: '作者',
-        dataIndex: 'author',
       },
       {
         title: '分类',
@@ -103,32 +92,9 @@ export default class extends React.Component {
         render: (val) => val.name,
       },
       {
-        title: '来源',
-        dataIndex: 'source',
-      },
-      {
-        title: '摘要',
-        dataIndex: 'summary',
-      },
-      {
-        title: '地址',
-        dataIndex: 'address',
-      },
-      {
         title: '排序',
         dataIndex: 'sort',
         sorter: true,
-      },
-      {
-        title: '浏览量',
-        dataIndex: 'views',
-        sorter: true,
-      },
-      {
-        title: '发布时间',
-        dataIndex: 'publish_at',
-        sorter: true,
-        render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '修改时间',
@@ -143,22 +109,23 @@ export default class extends React.Component {
         render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
-        title: '正文',
-        dataIndex: 'text',
+        title: '详情',
+        dataIndex: 'decs',
+        render: (val) => '略',
+      },
+      {
+        title: '须知',
+        dataIndex: 'notice',
         render: (val) => '略',
       },
     ];
 
     const fields = [
       'id',
-      'thumbnailPath',
+      'coverPath',
       'title',
       'category',
-      'author',
-      'source',
       'sort',
-      'views',
-      'publish_at',
       'update_at',
     ];
 
@@ -352,12 +319,6 @@ export default class extends React.Component {
                   <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="标题">
                     {getFieldDecorator('keyword')(<Input placeholder="请输入搜索关键词" />)}
                   </Form.Item>
-
-                  <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="发布时间">
-                    {getFieldDecorator('publish_at')(
-                      <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-                    )}
-                  </Form.Item>
                   <Form.Item labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} label="分类">
                     {getFieldDecorator('category')(
                       <TreeSelect
@@ -385,8 +346,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>
@@ -405,12 +366,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                  <Tooltip placement="bottom" title="删除">
-                    <Button disabled={true}>
-                      <Icon type="delete" />
-                    </Button>
-                  </Tooltip>
-                )}
+                    <Tooltip placement="bottom" title="删除">
+                      <Button disabled={true}>
+                        <Icon type="delete" />
+                      </Button>
+                    </Tooltip>
+                  )}
                 <Tooltip placement="bottom" title="新增">
                   <Button onClick={this.toCreate}>
                     <Icon type="file-add" />
@@ -428,11 +389,6 @@ export default class extends React.Component {
                     </Button>
                   </Tooltip>
                 </Upload>
-                <Tooltip placement="bottom" title="导出">
-                  <Button onClick={this.toExport}>
-                    <Icon type="export" />
-                  </Button>
-                </Tooltip>
               </ButtonGroup>
             </Col>
             <Col className="gutter-row" span={10} offset={4}>

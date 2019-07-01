@@ -7,7 +7,7 @@ import { Service } from './service.entity';
 @Entity()
 @Tree('materialized-path')
 export class ServiceCategory extends Base {
-    @Column({ comment: '名称' })
+    @Column({ comment: '名称', unique: true })
     name: string;
 
     @Column({ comment: '排序', default: 0 })

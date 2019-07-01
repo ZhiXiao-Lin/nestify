@@ -5,14 +5,11 @@ import { Repository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { Service } from '../entities/service.entity';
-import { ServiceCategory } from '../entities/service-category.entity';
 
 @Injectable()
 export class ServiceService extends BaseService<Service> {
     constructor(
-        @InjectRepository(Service) private readonly serviceRepository: Repository<Service>,
-        @InjectRepository(ServiceCategory)
-        private readonly categoryRepository: Repository<ServiceCategory>
+        @InjectRepository(Service) private readonly serviceRepository: Repository<Service>
     ) {
         super(serviceRepository);
     }
@@ -39,19 +36,11 @@ export class ServiceService extends BaseService<Service> {
             qb.andWhere(`t.title LIKE '%${payload.keyword}%'`);
         }
 
-        if (!!payload.publish_at) {
-            payload.publish_at = payload.publish_at.split(',');
-            qb.andWhere(
-                `t.publish_at BETWEEN '${payload.publish_at.shift()}' AND '${payload.publish_at.pop()}'`
-            );
-        }
-
         if (!!payload.sort && !!payload.order) {
             qb.addOrderBy(`t.${payload.sort}`, payload.order);
         } else {
             // 默认排序规则
-            qb.addOrderBy('t.sort', 'DESC');
-            qb.addOrderBy('t.publish_at', 'DESC');
+            qb.addOrderBy('t.create_at', 'DESC');
         }
 
         if (!!payload.isExport) {

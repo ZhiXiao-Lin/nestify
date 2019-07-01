@@ -61,113 +61,6 @@ export default class extends React.Component {
     this.setState({ tabKey });
   };
 
-  init = (channel) => {
-    let columns = [];
-    let fields = [];
-    let showQueryCondition = false;
-
-    switch (channel) {
-      default:
-        columns = [
-          {
-            title: '详情',
-            dataIndex: 'id',
-          },
-          {
-            title: '图片',
-            dataIndex: 'thumbnailPath',
-            render: (val) => (!val ? null : <img style={{ width: '60px' }} src={val} />),
-          },
-          {
-            title: '视频',
-            dataIndex: 'videoPath',
-            render: (val) => val,
-          },
-          {
-            title: '标题',
-            dataIndex: 'title',
-          },
-          {
-            title: '作者',
-            dataIndex: 'author',
-          },
-          {
-            title: '分类',
-            dataIndex: 'category',
-            render: (val) => val.name,
-          },
-          {
-            title: '来源',
-            dataIndex: 'source',
-          },
-          {
-            title: '摘要',
-            dataIndex: 'summary',
-          },
-          {
-            title: '地址',
-            dataIndex: 'address',
-          },
-          {
-            title: '排序',
-            dataIndex: 'sort',
-            sorter: true,
-          },
-          {
-            title: '浏览量',
-            dataIndex: 'views',
-            sorter: true,
-          },
-          {
-            title: '发布时间',
-            dataIndex: 'publish_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '修改时间',
-            dataIndex: 'update_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '创建时间',
-            dataIndex: 'create_at',
-            sorter: true,
-            render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
-          },
-          {
-            title: '正文',
-            dataIndex: 'text',
-            render: (val) => '...',
-          },
-        ];
-
-        fields = [
-          'id',
-          'thumbnailPath',
-          'title',
-          'author',
-          'source',
-          'sort',
-          'views',
-          'publish_at',
-          'update_at',
-        ];
-        showQueryCondition = true;
-        break;
-    }
-
-    this.props.dispatch({
-      type: `${MODEL_NAME}/set`,
-      payload: {
-        columns,
-        fields,
-        showQueryCondition,
-      },
-    });
-  };
-
   loadData = (id) => {
     const {
       dispatch,
@@ -210,8 +103,6 @@ export default class extends React.Component {
         return;
       }
 
-      values['publish_at'] = moment(values['publish_at']).format('YYYY-MM-DD HH:mm:ss');
-
       dispatch({
         type: `${MODEL_NAME}/save`,
         payload: values,
@@ -219,17 +110,10 @@ export default class extends React.Component {
     });
   };
 
-  onThumbnailUpload = async (file) => {
+  onCoverUpload = async (file) => {
     const res = await apiUploadOneToQiniu(file);
     if (!!res && !!res.path) {
-      this.toSave({ thumbnail: res });
-    }
-  };
-
-  onVideoUpload = async (file) => {
-    const res = await apiUploadOneToQiniu(file);
-    if (!!res && !!res.path) {
-      this.toSave({ video: res });
+      this.toSave({ cover: res });
     }
   };
 
@@ -265,24 +149,13 @@ export default class extends React.Component {
             ],
           })(<Input {...formItemStyle} type="text" placeholder="请填写标题" />)}
         </Form.Item>
-        <Form.Item {...formItemLayout} label="发布时间">
-          {getFieldDecorator('publish_at', {
-            initialValue: !selectedNode['publish_at'] ? null : moment(selectedNode['publish_at']),
-            rules: [
-              {
-                required: true,
-                message: '发布时间不能为空',
-              },
-            ],
-          })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" placeholder="请选择发布日期时间" />)}
-        </Form.Item>
         <Form.Item {...formItemLayout} label="分类">
           {getFieldDecorator('category', {
             initialValue: !selectedNode
               ? null
               : !selectedNode['category']
-              ? null
-              : selectedNode['category']['id'],
+                ? null
+                : selectedNode['category']['id'],
             rules: [
               {
                 required: true,
@@ -298,26 +171,23 @@ export default class extends React.Component {
             />
           )}
         </Form.Item>
-        <Form.Item {...formItemLayout} label="作者">
-          {getFieldDecorator('author', {
-            initialValue: !selectedNode ? null : selectedNode['author'],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写作者" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="来源">
-          {getFieldDecorator('source', {
-            initialValue: !selectedNode ? null : selectedNode['source'],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写来源" />)}
-        </Form.Item>
-        <Form.Item {...formItemLayout} label="原文地址">
-          {getFieldDecorator('address', {
-            initialValue: !selectedNode ? null : selectedNode['address'],
-          })(<Input {...formItemStyle} type="text" placeholder="请填写原文地址" />)}
+        <Form.Item {...formItemLayout} label="详情">
+          {getFieldDecorator('desc', {
+            initialValue: !selectedNode ? 0 : selectedNode['desc'],
+            rules: [
+              {
+                required: true,
+                message: '请填写详情',
+              },
+            ],
+          })(<Input.TextArea {...formItemStyle} placeholder="请填写详情" />)}
         </Form.Item>
         <Form.Item {...formItemLayout} label="排序">
           {getFieldDecorator('sort', {
             initialValue: !selectedNode ? 0 : selectedNode['sort'],
           })(<InputNumber min={0} {...formItemStyle} placeholder="请填写排序" />)}
         </Form.Item>
+
         <Form.Item {...tailFormItemLayout}>
           <Row>
             <Col span={3}>
@@ -334,8 +204,8 @@ export default class extends React.Component {
     );
   };
 
-  toSaveRichText = (text) => {
-    this.toSave({ text });
+  toSaveRichText = (notice) => {
+    this.toSave({ notice });
   };
 
   toSave = (payload) => {
@@ -361,26 +231,21 @@ export default class extends React.Component {
             {this.renderBasicForm()}
           </Tabs.TabPane>
           {selectedNode.id ? (
-            <Tabs.TabPane key="image" tab="图片">
+            <Tabs.TabPane key="image" tab="封面">
               <ImageCropper
                 url={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
-                onUpload={this.onThumbnailUpload}
+                onUpload={this.onCoverUpload}
               />
             </Tabs.TabPane>
           ) : null}
           {selectedNode.id ? (
-            <Tabs.TabPane key="video" tab="视频">
-              <VideoEditor
-                url={!selectedNode.video ? '' : selectedNode.videoPath}
-                onUpload={this.onVideoUpload}
-              />
-            </Tabs.TabPane>
-          ) : null}
+            <Tabs.TabPane key="album" tab="相册"></Tabs.TabPane>) : null
+          }
           {selectedNode.id ? (
-            <Tabs.TabPane key="richtext" tab="正文">
+            <Tabs.TabPane key="richtext" tab="须知">
               <RichText
                 onSave={this.toSaveRichText}
-                html={selectedNode.text}
+                html={selectedNode.notice}
                 contentId={selectedNode.id}
                 onMediaUpload={this.onMediaUpload}
               />
