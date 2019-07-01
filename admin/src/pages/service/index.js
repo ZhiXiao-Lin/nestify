@@ -263,7 +263,6 @@ export default class extends React.Component {
 
     const uploadOneProps = {
       name: 'file',
-      action: null,
       accept:
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
       showUploadList: false,

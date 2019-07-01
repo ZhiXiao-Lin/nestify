@@ -78,18 +78,18 @@ export default class extends React.Component {
 
           return !!keyword
             ? val
-                .toString()
-                .split(reg)
-                .map((text, i) =>
-                  i > 0
-                    ? [
-                        <span key={i} col={i} style={{ color: 'red' }}>
-                          <b>{val.toString().match(reg)[0]}</b>
-                        </span>,
-                        text,
-                      ]
-                    : text
-                )
+              .toString()
+              .split(reg)
+              .map((text, i) =>
+                i > 0
+                  ? [
+                    <span key={i} col={i} style={{ color: 'red' }}>
+                      <b>{val.toString().match(reg)[0]}</b>
+                    </span>,
+                    text,
+                  ]
+                  : text
+              )
             : val;
         },
       },
@@ -296,7 +296,6 @@ export default class extends React.Component {
 
     const uploadOneProps = {
       name: 'file',
-      action: null,
       accept:
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
       showUploadList: false,
@@ -385,8 +384,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>
@@ -405,12 +404,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                  <Tooltip placement="bottom" title="删除">
-                    <Button disabled={true}>
-                      <Icon type="delete" />
-                    </Button>
-                  </Tooltip>
-                )}
+                    <Tooltip placement="bottom" title="删除">
+                      <Button disabled={true}>
+                        <Icon type="delete" />
+                      </Button>
+                    </Tooltip>
+                  )}
                 <Tooltip placement="bottom" title="新增">
                   <Button onClick={this.toCreate}>
                     <Icon type="file-add" />
