@@ -22,13 +22,19 @@ import { ServiceCategoryService } from '../../common/services/service-category.s
 @UseGuards(AuthGuard())
 @UseInterceptors(ClassSerializerInterceptor)
 export class ServiceCategoryController {
-    constructor(private readonly categoryService: ServiceCategoryService) {}
+    constructor(private readonly categoryService: ServiceCategoryService) { }
 
     @Get(':id')
     async findOne(@Param('id') id) {
         if (!id) throw new BadRequestException('参数 id 错误');
 
         return await this.categoryService.findOneById(id);
+    }
+
+    @Get(':parentName/children')
+    async findByParent(@Param('parentName') parentName) {
+
+        return await this.categoryService.findOneByName(parentName);
     }
 
     @Get('list')
