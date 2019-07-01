@@ -36,6 +36,8 @@ import { ApplyVolunteerFlow } from './flows/apply-volunteer.flow';
 import { FlowTemplate } from './entities/flow-template.entity';
 import { FlowTemplateService } from './services/flow-template.service';
 import { Notice } from './entities/notice.entity';
+import { Feedback } from './entities/feedback.entity';
+import { FeedbackService } from './services/feedback.service';
 
 @Global()
 @Module({
@@ -57,7 +59,8 @@ import { Notice } from './entities/notice.entity';
             Authority,
             Service,
             ServiceCategory,
-            Notice
+            Notice,
+            Feedback
         ])
     ],
     providers: [
@@ -77,9 +80,10 @@ import { Notice } from './entities/notice.entity';
         RoleService,
         SearchService,
         FlowTemplateService,
+        FeedbackService,
         StatusTask,
         WorkOrderFlow,
-        ApplyVolunteerFlow
+        ApplyVolunteerFlow,
     ],
     exports: [
         ImportService,
@@ -96,7 +100,8 @@ import { Notice } from './entities/notice.entity';
         AuthorityService,
         RoleService,
         SearchService,
-        FlowTemplateService
+        FlowTemplateService,
+        FeedbackService,
     ]
 })
 export class CommonModule {}

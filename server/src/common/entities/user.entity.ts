@@ -7,6 +7,7 @@ import { Role } from './role.entity';
 import { Organization } from './organization.entity';
 import { getVIP } from '../lib/helper';
 import { Flow } from './flow.entity';
+import { Feedback } from './feedback.entity';
 
 @Entity()
 export class User extends Base {
@@ -58,6 +59,9 @@ export class User extends Base {
 
     @ManyToOne((type) => Organization, (org) => org.users)
     org: Organization;
+
+    @OneToMany((type) => Feedback, (feedback) => feedback.user)
+    feedbacks: Feedback[];
 
     @OneToMany((type) => Flow, (flow) => flow.user)
     flows: Flow[];

@@ -126,6 +126,21 @@ export default [
         ],
       },
       {
+        name: '意见反馈',
+        icon: 'question-circle',
+        path: '/studio/feedback',
+
+        Routes: ['src/pages/Authorized'],
+        routes: [
+          { name: '意见反馈', component: './feedback', path: '/studio/feedback' },
+          {
+            name_noshow: '意见详情',
+            path: '/studio/feedback/detail/:id?',
+            component: './feedback/detail',
+          },
+        ],
+      },
+      {
         name: '站点设置',
         icon: 'setting',
         path: '/studio/setting',

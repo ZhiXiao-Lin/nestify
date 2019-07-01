@@ -4,6 +4,7 @@ import { Logger } from './logger';
 
 export enum MQChannel {
     WF = 'WF',
+    NOTICE = 'NOTICE'
 }
 
 export class MQ {

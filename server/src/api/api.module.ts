@@ -15,6 +15,7 @@ import { ServiceController } from './controllers/service.controller';
 import { CarouselController } from './controllers/carousel.controller';
 import { FlowTemplateController } from './controllers/flow-template.controller';
 import { FlowController } from './controllers/flow.controller';
+import { FeedbackController } from './controllers/feedback.controller';
 
 @Module({
     controllers: [
@@ -32,7 +33,8 @@ import { FlowController } from './controllers/flow.controller';
         RoleController,
         SearchController,
         FlowController,
-        FlowTemplateController
+        FlowTemplateController,
+        FeedbackController
     ]
 })
 export class ApiModule implements NestModule {
