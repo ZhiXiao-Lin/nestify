@@ -31,10 +31,10 @@ export class ServiceCategoryController {
         return await this.categoryService.findOneById(id);
     }
 
-    @Get(':parentName/children')
-    async findByParent(@Param('parentName') parentName) {
+    @Get(':parentId/children')
+    async findByParent(@Param('parentId') parentId) {
 
-        return await this.categoryService.findChildrenTree(parentName);
+        return await this.categoryService.findChildrenTree(parentId);
     }
 
     @Get('list')

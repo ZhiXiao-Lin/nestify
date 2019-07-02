@@ -32,8 +32,8 @@ export class ServiceCategoryService extends BaseService<ServiceCategory> {
         return await this.categoryRepository.findAncestorsTree(category);
     }
 
-    async findChildrenTree(name: string) {
-        const parent = await this.categoryRepository.findOne({ where: { name } });
+    async findChildrenTree(parentId: string) {
+        const parent = await this.categoryRepository.findOne(parentId);
 
         return await this.categoryRepository.findDescendantsTree(parent);
     }
