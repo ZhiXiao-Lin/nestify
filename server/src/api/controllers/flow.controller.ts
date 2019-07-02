@@ -12,7 +12,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Api } from '../../common/aspects/decorator';
+import { Api, CurrentUser } from '../../common/aspects/decorator';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { FlowService } from '../../common/services/flow.service';
 
@@ -22,7 +22,7 @@ import { FlowService } from '../../common/services/flow.service';
 @UseGuards(AuthGuard())
 @UseInterceptors(ClassSerializerInterceptor)
 export class FlowController {
-    constructor(private readonly flowService: FlowService) {}
+    constructor(private readonly flowService: FlowService) { }
 
     @Get(':id')
     async findOne(@Param('id') id) {
@@ -34,6 +34,22 @@ export class FlowController {
     @Get('list')
     async list(@Query() payload) {
         return await this.flowService.query(payload);
+    }
+
+    @Get('requirement')
+    async requirement(@Query() payload, @CurrentUser() user) {
+
+        payload.userId = user.id;
+
+        return await this.flowService.requirement(payload);
+    }
+
+    @Get('task')
+    async task(@Query() payload, @CurrentUser() user) {
+
+        payload.userId = user.id;
+
+        return await this.flowService.task(payload);
     }
 
     @Post('dispatch')

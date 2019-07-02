@@ -66,6 +66,86 @@ export class FlowService extends BaseService<Flow> {
             qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
         }
 
+        if (!!payload.state) {
+            qb.andWhere('t.state =:state', { state: payload.state });
+        }
+
+        if (!!payload.sort && !!payload.order) {
+            qb.addOrderBy(`t.${payload.sort}`, payload.order);
+        } else {
+            qb.addOrderBy('t.create_at', 'DESC');
+        }
+
+        qb.skip(payload.page * payload.pageSize);
+        qb.take(payload.pageSize);
+
+        return await qb.getManyAndCount();
+    }
+
+    @TransformClassToPlain()
+    async requirement(payload: any) {
+        const qb = this.flowRepository.createQueryBuilder('t');
+
+        qb.leftJoinAndSelect('t.template', 'template');
+        qb.leftJoinAndSelect('t.user', 'user');
+        qb.leftJoinAndSelect('t.operator', 'operator');
+        qb.leftJoinAndSelect('t.executor', 'executor');
+
+        if (!payload.page) {
+            payload.page = 0;
+        }
+
+        if (!payload.pageSize) {
+            payload.pageSize = 10;
+        }
+
+        qb.andWhere('user.id =:id', { id: payload.userId });
+        qb.andWhere('t.template =:template', { template: FlowTemplateEnum.WORK_OR });
+
+        if (!!payload.keyword) {
+            qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
+        }
+
+        if (!!payload.state) {
+            qb.andWhere('t.state =:state', { state: payload.state });
+        }
+
+        if (!!payload.sort && !!payload.order) {
+            qb.addOrderBy(`t.${payload.sort}`, payload.order);
+        } else {
+            qb.addOrderBy('t.create_at', 'DESC');
+        }
+
+        qb.skip(payload.page * payload.pageSize);
+        qb.take(payload.pageSize);
+
+        return await qb.getManyAndCount();
+    }
+
+    @TransformClassToPlain()
+    async task(payload: any) {
+        const qb = this.flowRepository.createQueryBuilder('t');
+
+        qb.leftJoinAndSelect('t.template', 'template');
+        qb.leftJoinAndSelect('t.user', 'user');
+        qb.leftJoinAndSelect('t.operator', 'operator');
+        qb.leftJoinAndSelect('t.executor', 'executor');
+
+        if (!payload.page) {
+            payload.page = 0;
+        }
+
+        if (!payload.pageSize) {
+            payload.pageSize = 10;
+        }
+
+        qb.andWhere('executor.id =:id', { id: payload.userId });
+        qb.andWhere('t.template =:template', { template: FlowTemplateEnum.WORK_OR });
+
+        if (!!payload.keyword) {
+            qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
+        }
+
         if (!!payload.sort && !!payload.order) {
             qb.addOrderBy(`t.${payload.sort}`, payload.order);
         } else {
