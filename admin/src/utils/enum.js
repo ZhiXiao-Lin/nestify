@@ -9,3 +9,8 @@ export const WFResult = {
   SUCCESS: 1, //成功
   FAILURE: 2, // 失败
 };
+
+export const FlowOperationsEnum = {
+  ALLOCATION: 'ALLOCATION',  // 分配用户或角色
+  REMARKS: 'REMARKS'         // 备注信息
+}

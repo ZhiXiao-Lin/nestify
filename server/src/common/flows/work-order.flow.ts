@@ -2,7 +2,7 @@ import { Repository, Transaction, TransactionRepository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Logger } from '../lib/logger';
 import { BaseFlow } from './base.flow';
-import { FlowTemplateEnum } from '../aspects/enum';
+import { FlowTemplateEnum, FlowOperationsEnum } from '../aspects/enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FlowTemplate } from '../entities/flow-template.entity';
 import { User } from '../entities/user.entity';
@@ -13,17 +13,25 @@ import { WFResult, WFStatus, OVER } from '../lib/wf';
 export class WorkOrderFlow extends BaseFlow {
     protected readonly name: string = '服务工单';
     protected readonly template: FlowTemplateEnum = FlowTemplateEnum.WORK_OR;
+    protected readonly operations: any = {
+        待派单: {
+            派单: FlowOperationsEnum.ALLOCATION,
+            作废: FlowOperationsEnum.REMARKS
+        },
+        已拒绝: {
+            重新派单: FlowOperationsEnum.ALLOCATION,
+            作废: FlowOperationsEnum.REMARKS
+        },
+        待接单: {
+            拒绝: FlowOperationsEnum.REMARKS
+        },
+        待结单: {
+            作废: FlowOperationsEnum.REMARKS
+        }
+    };
     protected readonly flow: any = {
         待申请: {
             申请: this.apply
-        },
-        待审核: {
-            审核: this.verify,
-            驳回: this.reject,
-        },
-        已驳回: {
-            重新申请: this.apply,
-            取消: this.cancel
         },
         待派单: {
             派单: this.allocation,
@@ -38,7 +46,8 @@ export class WorkOrderFlow extends BaseFlow {
             拒绝: this.refuse
         },
         待结单: {
-            结单: this.statement
+            结单: this.statement,
+            作废: this.cancel
         }
     };
 
@@ -55,7 +64,7 @@ export class WorkOrderFlow extends BaseFlow {
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '待审核';
+        const nextState = '待派单';
 
         flow = Flow.create(flow) as Flow;
         flow.wfResult = WFResult.RUNNING;
@@ -66,21 +75,6 @@ export class WorkOrderFlow extends BaseFlow {
         return nextState;
     }
 
-    @Transaction()
-    async verify(
-        flow,
-        options,
-        @TransactionRepository(Flow) flowRepos?: Repository<Flow>
-    ) {
-        const nextState = '待派单';
-
-        flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
-        flow.operator = User.create(options.operator) as User;
-
-        await flowRepos.save(flow);
-        return nextState;
-    }
 
     @Transaction()
     async allocation(
@@ -98,21 +92,6 @@ export class WorkOrderFlow extends BaseFlow {
         return nextState;
     }
 
-    @Transaction()
-    async reject(
-        flow,
-        options,
-        @TransactionRepository(Flow) flowRepos?: Repository<Flow>
-    ) {
-        const nextState = '已驳回';
-
-        flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
-        flow.operator = User.create(options.operator) as User;
-
-        await flowRepos.save(flow);
-        return nextState;
-    }
 
     @Transaction()
     async refuse(
@@ -169,11 +148,18 @@ export class WorkOrderFlow extends BaseFlow {
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
+
         flow = Flow.create(flow) as Flow;
         flow.state = '已作废';
         flow.wfResult = WFResult.FAILURE;
         flow.wfStatus = WFStatus.CANCELED;
         flow.operator = User.create(options.operator) as User;
+
+        if (!!options.remarks) {
+            const remarks = flow.ex_info.remarks || [];
+            remarks.push(options.remarks);
+            flow.ex_info.remarks = remarks;
+        }
 
         await flowRepos.save(flow);
         return OVER;

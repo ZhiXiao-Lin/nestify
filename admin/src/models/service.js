@@ -124,28 +124,33 @@ export default {
       payload.callback && payload.callback();
     },
     *export({ payload }, { call, select }) {
-      message.loading('正在执行导出', 0);
+      try {
+        message.loading('正在执行导出', 0);
 
-      const { queryParams, columns, fields } = yield select((state) => state.service);
+        const { queryParams, columns, fields } = yield select((state) => state.service);
 
-      const res = yield call(apiGet, API_URL + '/export', {
-        params: {
-          isExport: true,
-          ...payload,
-          ...queryParams,
-        },
-      });
+        const res = yield call(apiGet, API_URL + '/export', {
+          params: {
+            isExport: true,
+            ...payload,
+            ...queryParams,
+          },
+        });
 
-      yield call(
-        ExcelHelper.export,
-        queryParams.category + '-' + moment().format('YYYY-MM-DD-HH-mm-ss'),
-        res,
-        columns,
-        fields
-      );
+        yield call(
+          ExcelHelper.export,
+          queryParams.category + '-' + moment().format('YYYY-MM-DD-HH-mm-ss'),
+          res,
+          columns,
+          fields
+        );
 
-      message.destroy();
+      } finally {
+        message.destroy();
+      }
+
       message.success('导出成功');
+
     },
   },
 

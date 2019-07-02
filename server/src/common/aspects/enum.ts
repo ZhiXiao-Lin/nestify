@@ -26,6 +26,7 @@ export enum VIP {
     V4,
     V5
 }
+
 export enum PointsActionType {
     ADD = 'add',
     SUB = 'sub'
@@ -35,6 +36,12 @@ export enum FlowTemplateEnum {
     WORK_OR = 'WORK_OR',
     APPLY_VR = 'APPLY_VR'
 }
+
+export enum FlowOperationsEnum {
+    ALLOCATION = 'ALLOCATION',  // 分配用户或角色
+    REMARKS = 'REMARKS'         // 备注信息
+}
+
 export enum NoticeType {
     NOTIFICATION = 'notification',
     MESSAGE = 'message',

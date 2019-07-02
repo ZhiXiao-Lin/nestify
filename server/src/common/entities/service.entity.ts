@@ -11,6 +11,7 @@ const cellsMap = {
     积分: 'points',
     排序: 'sort',
     详情: 'desc',
+    须知: 'notice',
     分类: 'category'
 };
 

@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 export abstract class BaseFlow implements OnModuleInit {
     protected readonly name: string;
     protected readonly template: FlowTemplateEnum;
+    protected readonly operations: any;
     protected readonly flow: any;
 
     constructor(
@@ -41,6 +42,7 @@ export abstract class BaseFlow implements OnModuleInit {
 
         target.name = this.name;
         target.template = this.template;
+        target.operations = this.operations;
 
         Logger.log(`Register flow ${this.template}`);
 

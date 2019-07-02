@@ -18,6 +18,9 @@ export class FlowTemplate extends Base {
     })
     template: FlowTemplateEnum;
 
+    @Column({ type: 'simple-json', default: {}, comment: '操作映射' })
+    operations: any;
+
     @Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
     ex_info: any;
 

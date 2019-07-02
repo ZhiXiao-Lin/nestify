@@ -52,6 +52,7 @@ export class FlowService extends BaseService<Flow> {
         qb.leftJoinAndSelect('t.template', 'template');
         qb.leftJoinAndSelect('t.user', 'user');
         qb.leftJoinAndSelect('t.operator', 'operator');
+        qb.leftJoinAndSelect('t.executor', 'executor');
 
         if (!payload.page) {
             payload.page = 0;

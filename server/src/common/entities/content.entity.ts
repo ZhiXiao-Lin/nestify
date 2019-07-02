@@ -80,7 +80,19 @@ export class Content extends Base {
         通知: {
             handleType,
             cellsMap
-        }
+        },
+        频道: {
+            handleType,
+            cellsMap
+        },
+        活动: {
+            handleType,
+            cellsMap
+        },
+        培训: {
+            handleType,
+            cellsMap
+        },
     };
 
     static readonly esIndex: IndicesCreateParams = {

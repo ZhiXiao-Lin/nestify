@@ -18,11 +18,13 @@ import {
   Badge,
   Popconfirm,
   Collapse,
+  Modal,
 } from 'antd';
 
 import styles from './index.css';
 
-import { WFStatus, WFResult } from '@/utils/enum';
+import UserSelector from '@/components/UserSelector';
+import { WFStatus, WFResult, FlowOperationsEnum } from '@/utils/enum';
 
 const { Content } = Layout;
 const ButtonGroup = Button.Group;
@@ -39,6 +41,17 @@ const DETAIL_URL = '/studio/flow/detail';
 }))
 @Form.create()
 export default class extends React.Component {
+
+  state = {
+    remarksModalTitle: '请输入理由',
+    remarksVisible: false,
+    remarks: '',
+    currentNode: null,
+    currentAction: null,
+
+    selectionDrawerVisible: false,
+  }
+
   componentDidMount() {
     this.init();
     this.onReset();
@@ -63,24 +76,20 @@ export default class extends React.Component {
 
           return !!keyword
             ? val
-                .toString()
-                .split(reg)
-                .map((text, i) =>
-                  i > 0
-                    ? [
-                        <span key={i} col={i} style={{ color: 'red' }}>
-                          <b>{val.toString().match(reg)[0]}</b>
-                        </span>,
-                        text,
-                      ]
-                    : text
-                )
+              .toString()
+              .split(reg)
+              .map((text, i) =>
+                i > 0
+                  ? [
+                    <span key={i} col={i} style={{ color: 'red' }}>
+                      <b>{val.toString().match(reg)[0]}</b>
+                    </span>,
+                    text,
+                  ]
+                  : text
+              )
             : val;
         },
-      },
-      {
-        title: '申请人',
-        dataIndex: 'user.account',
       },
       {
         title: '任务状态',
@@ -95,6 +104,14 @@ export default class extends React.Component {
         title: '结果',
         dataIndex: 'wfResult',
         render: (val) => this.renderWFResult(val),
+      },
+      {
+        title: '申请人',
+        dataIndex: 'user.account',
+      },
+      {
+        title: '执行人',
+        dataIndex: 'executor.account',
       },
       {
         title: '操作人',
@@ -122,10 +139,11 @@ export default class extends React.Component {
     const fields = [
       'id',
       'template.name',
-      'user.account',
       'state',
       'wfStatus',
       'wfResult',
+      'user.account',
+      'executor.account',
       'operator.account',
       'update_at',
       'ExecutableTasks',
@@ -229,7 +247,7 @@ export default class extends React.Component {
     });
   };
 
-  onAction = (action, flow, options = {}) => {
+  onAction = (action, flow, options = {}, callback = () => this.refresh()) => {
     options.operator = this.props.currentUser;
 
     this.props.dispatch({
@@ -238,7 +256,7 @@ export default class extends React.Component {
         action,
         flow,
         options,
-        callback: () => this.refresh(),
+        callback
       },
     });
   };
@@ -269,11 +287,66 @@ export default class extends React.Component {
     }
   };
 
-  renderAction = (action, row) => {
+  renderOperations = () => {
+    return <Fragment>
+      <Modal
+        title={this.state.remarksModalTitle}
+        visible={this.state.remarksVisible}
+        footer={null}
+        onCancel={() => this.setState(state => ({ ...state, remarksVisible: false }))}
+      >
+        <p>
+          <Input
+            value={this.state.remarks}
+            onChange={e => { e.persist(); this.setState(state => ({ ...state, remarks: !!e.target ? e.target.value : '' })) }}
+            placeholder={this.state.remarksModalTitle} />
+        </p>
+        <p style={{ textAlign: 'right' }}>
+          <Button
+            type="primary"
+            disabled={!this.state.remarks}
+            onClick={
+              () => this.onAction(this.state.currentAction, this.state.currentNode, { remarks: this.state.remarks }, () => {
+                this.setState(state => ({ ...state, remarksVisible: false }));
+                this.refresh();
+              })
+            }>
+            {this.state.currentAction}
+          </Button>
+        </p>
+      </Modal>
+      <UserSelector
+        visible={this.state.selectionDrawerVisible}
+        onClose={() => this.setState(state => ({ ...state, selectionDrawerVisible: false }))} />
+    </Fragment>
+  }
+
+  renderAction = (index, action, row) => {
     if (WFResult.RUNNING !== row.wfResult) return '';
+    const operations = row.template.operations[row.state];
+
+    if (!!operations) {
+      switch (operations[action]) {
+        case FlowOperationsEnum.REMARKS:
+          return <Button key={index} type="primary" ghost onClick={() =>
+            this.setState(state => ({
+              ...state, remarksVisible: true, currentNode: row, currentAction: action, remarks: ''
+            }))}>
+            {action}
+          </Button>
+        case FlowOperationsEnum.ALLOCATION:
+          return <Button key={index} type="primary" ghost onClick={() =>
+            this.setState(state => ({
+              ...state, selectionDrawerVisible: true, currentNode: row, currentAction: action
+            }))}>
+            {action}
+          </Button>
+      }
+    }
 
     return (
       <Popconfirm
+        key={index}
         title={`确认要执行${action}吗？`}
         okText="是"
         cancelText="否"
@@ -287,7 +360,7 @@ export default class extends React.Component {
   };
 
   renderActions = (actions, row) => {
-    return <Button.Group>{actions.map((action) => this.renderAction(action, row))}</Button.Group>;
+    return <Button.Group>{actions.map((action, index) => this.renderAction(index, action, row))}</Button.Group>;
   };
 
   render() {
@@ -332,6 +405,7 @@ export default class extends React.Component {
     return (
       <Layout>
         <Content className={styles.normal}>
+          {this.renderOperations()}
           {showQueryCondition ? (
             <Collapse defaultActiveKey={['1']}>
               <Panel header="工作流 | 查询条件" key="1">
@@ -362,8 +436,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>

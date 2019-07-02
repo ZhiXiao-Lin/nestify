@@ -179,7 +179,7 @@ export default class extends React.Component {
                 message: '请填写详情',
               },
             ],
-          })(<Input.TextArea {...formItemStyle} placeholder="请填写详情" />)}
+          })(<Input.TextArea rows={10} {...formItemStyle} placeholder="请填写详情" />)}
         </Form.Item>
         <Form.Item {...formItemLayout} label="积分">
           {getFieldDecorator('points', {
