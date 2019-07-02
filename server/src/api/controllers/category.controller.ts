@@ -36,10 +36,11 @@ export class CategoryController {
 		return await this.categoryService.query(payload);
 	}
 
-	// @Get('export')
-	// async export(@Query() payload) {
-	// 	return await this.categoryService.query(payload);
-	// }
+	@Get(':parentName/children')
+	async findByParent(@Param('parentName') parentName) {
+
+		return await this.categoryService.findChildrenTree(parentName);
+	}
 
 	@Post()
 	async create(@Body() dto: any) {
