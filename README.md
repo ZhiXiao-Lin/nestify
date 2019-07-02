@@ -73,7 +73,7 @@
 
 ## 赞助
 
-[![Reward](http://img.nestify.cn/reward.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/240)](http://cms.nestify.cn/)
+[![Reward](http://img.nestify.cn/reward.png?imageMogr2/auto-orient/strip%7CimageView2/5/w/270)](http://cms.nestify.cn/)
 
 ## 其他
 
