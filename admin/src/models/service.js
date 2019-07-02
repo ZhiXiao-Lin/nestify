@@ -28,6 +28,18 @@ export default {
   },
 
   effects: {
+    *apply({ payload }, { call, put, select }) {
+      const { callback } = payload;
+      !!callback && delete payload.callback;
+
+      const res = yield call(apiPost, API_URL + '/apply', payload);
+
+      if (!!res) {
+        message.success('已提交申请');
+      }
+
+      !!callback && callback(res);
+    },
     *fetch({ payload }, { call, put, select }) {
       payload.page = !!payload.page ? payload.page - 1 : 0;
       payload.pageSize = config.pagination.size;

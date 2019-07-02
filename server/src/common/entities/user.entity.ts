@@ -67,7 +67,10 @@ export class User extends Base {
     flows: Flow[];
 
     @OneToMany((type) => Flow, (flow) => flow.operator)
-    operatorFlows: Flow[];
+    operateFlows: Flow[];
+
+    @OneToMany((type) => Flow, (flow) => flow.executor)
+    executeFlows: Flow[];
 
     static create(target: Object) {
         return plainToClass(User, target);

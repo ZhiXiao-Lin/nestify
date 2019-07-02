@@ -5,10 +5,16 @@ import { Repository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
 import { Service } from '../entities/service.entity';
+import { FlowService } from './flow.service';
+import wf from '../lib/wf';
+import { FlowTemplateEnum } from '../aspects/enum';
+import { User } from '../entities/user.entity';
+
 
 @Injectable()
 export class ServiceService extends BaseService<Service> {
     constructor(
+        private readonly flowService: FlowService,
         @InjectRepository(Service) private readonly serviceRepository: Repository<Service>
     ) {
         super(serviceRepository);
@@ -67,5 +73,12 @@ export class ServiceService extends BaseService<Service> {
         const target = Service.create(payload) as Service;
 
         return await this.serviceRepository.save(target);
+    }
+
+    async apply(user: User, payload: any) {
+
+        const flow = await this.flowService.create(user, payload, FlowTemplateEnum.WORK_OR);
+
+        return wf.dispatch(flow.id, '申请');
     }
 }

@@ -7,6 +7,10 @@ import { User } from './user.entity';
 
 @Entity()
 export class Flow extends Base implements IFlow {
+
+    @Column({ comment: '目标', nullable: true })
+    target: string;
+
     @Column({
         comment: '任务状态'
     })
@@ -31,8 +35,11 @@ export class Flow extends Base implements IFlow {
     @ManyToOne((type) => User, (user) => user.flows)
     user: User;
 
-    @ManyToOne((type) => User, (operator) => operator.operatorFlows)
+    @ManyToOne((type) => User, (operator) => operator.operateFlows)
     operator: User;
+
+    @ManyToOne((type) => User, (executor) => executor.executeFlows)
+    executor: User;
 
     static create(target: Object) {
         return plainToClass(Flow, target);

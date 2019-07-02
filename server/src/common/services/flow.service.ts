@@ -20,7 +20,7 @@ export class FlowService extends BaseService<Flow> {
         super(flowRepository);
     }
 
-    async create(user: User, template: FlowTemplateEnum, initState?: string) {
+    async create(user: User, payload: any, template: FlowTemplateEnum, initState?: string) {
         const flow = new Flow();
 
         flow.state = initState || Object.keys(Engine.flowTemplates[template])[0];
@@ -30,6 +30,11 @@ export class FlowService extends BaseService<Flow> {
 
         flow.template = await this.flowTemplateRepository.findOne({ where: { template } });
         flow.user = user;
+        flow.ex_info = payload;
+
+        if (!!payload.id) {
+            flow.target = payload.id;
+        }
 
         return await this.flowRepository.save(flow);
     }

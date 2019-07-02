@@ -118,6 +118,13 @@ export default class extends React.Component {
         dataIndex: 'notice',
         render: (val) => '略',
       },
+      {
+        title: '操作',
+        dataIndex: 'id',
+        render: (val, row) => <Button type="primary" onClick={() => this.toApply(val)}>
+          申请
+      </Button>
+      },
     ];
 
     const fields = [
@@ -180,6 +187,14 @@ export default class extends React.Component {
       },
     });
   };
+
+  toApply = (id) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: `${MODEL_NAME}/apply`,
+      payload: { id, realName: '测试', phone: '18770220000', address: 'address' }
+    });
+  }
 
   toExport = () => {
     const { dispatch } = this.props;

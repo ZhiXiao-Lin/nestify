@@ -12,9 +12,10 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Api } from '../../common/aspects/decorator';
+import { Api, CurrentUser } from '../../common/aspects/decorator';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ServiceService } from '../../common/services/service.service';
+import { ApplyServiceDto } from '../../common/dtos/apply-service.dto';
 
 @Api('service')
 @ApiUseTags('service')
@@ -22,7 +23,7 @@ import { ServiceService } from '../../common/services/service.service';
 @UseGuards(AuthGuard())
 @UseInterceptors(ClassSerializerInterceptor)
 export class ServiceController {
-    constructor(private readonly serviceService: ServiceService) {}
+    constructor(private readonly serviceService: ServiceService) { }
 
     @Get(':id')
     async findOne(@Param('id') id) {
@@ -44,6 +45,12 @@ export class ServiceController {
     @Post()
     async create(@Body() dto: any) {
         return await this.serviceService.save(dto);
+    }
+
+    @Post('apply')
+    async apply(@CurrentUser() user, @Body() dto: ApplyServiceDto) {
+
+        return await this.serviceService.apply(user, dto);
     }
 
     @Put()

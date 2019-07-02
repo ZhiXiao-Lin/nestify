@@ -7,20 +7,20 @@ import { Engine } from '../lib/wf';
 import { Repository } from 'typeorm';
 
 export abstract class BaseFlow implements OnModuleInit {
-    flow: any;
+    protected readonly name: string;
+    protected readonly template: FlowTemplateEnum;
+    protected readonly flow: any;
 
     constructor(
-        protected readonly name: string,
-        protected readonly template: FlowTemplateEnum,
         protected readonly flowTemplateRepository: Repository<FlowTemplate>
-    ) {}
+    ) { }
 
     async onModuleInit() {
         await this.register();
     }
 
     async register() {
-        Engine.register(FlowTemplateEnum.APPLY_VR, this.flow);
+        Engine.register(this.template, this.flow);
 
         let target = await this.flowTemplateRepository.findOne({
             where: { template: this.template }
@@ -28,16 +28,16 @@ export abstract class BaseFlow implements OnModuleInit {
 
         if (!target) {
             target = new FlowTemplate();
-
-            const flowSteps = Object.keys(this.flow).map((item) => {
-                return {
-                    name: item,
-                    steps: Object.keys(this.flow[item]).map((action) => ({ name: action }))
-                };
-            });
-
-            target.ex_info = { flowSteps };
         }
+
+        const flowSteps = Object.keys(this.flow).map((item) => {
+            return {
+                name: item,
+                steps: Object.keys(this.flow[item]).map((action) => ({ name: action }))
+            };
+        });
+
+        target.ex_info = { flowSteps };
 
         target.name = this.name;
         target.template = this.template;

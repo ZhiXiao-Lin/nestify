@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Transaction, TransactionRepository } from 'typeorm';
 import { TransformClassToPlain } from 'class-transformer';
 import { BaseService } from './base.service';
-import { AuthorityService } from './authority.service';
 import { User } from '../entities/user.entity';
 import { PointsActionType, FlowTemplateEnum } from '../aspects/enum';
 import { FlowService } from './flow.service';
@@ -18,7 +17,6 @@ import { Logger } from '../lib/logger';
 export class UserService extends BaseService<User> {
     constructor(
         private readonly jwtService: JwtService,
-        private readonly authorityService: AuthorityService,
         private readonly flowService: FlowService,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Role) private readonly roleRepository: Repository<Role>
@@ -188,7 +186,7 @@ export class UserService extends BaseService<User> {
             throw new BadRequestException('请勿重复申请');
         }
 
-        const flow = await this.flowService.create(user, FlowTemplateEnum.APPLY_VR);
+        const flow = await this.flowService.create(user, payload, FlowTemplateEnum.APPLY_VR);
 
         return wf.dispatch(flow.id, '申请');
     }

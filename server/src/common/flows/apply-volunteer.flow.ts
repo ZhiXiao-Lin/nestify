@@ -11,14 +11,16 @@ import { Role } from '../entities/role.entity';
 
 @Injectable()
 export class ApplyVolunteerFlow extends BaseFlow {
-    flow: any = {
+    protected readonly name: string = '志愿者申请';
+    protected readonly template: FlowTemplateEnum = FlowTemplateEnum.APPLY_VR;
+
+    protected readonly flow: any = {
         未审核: {
             申请: this.apply
         },
         待审核: {
             审核: this.verify,
             驳回: this.reject,
-            取消: this.cancel
         },
         已驳回: {
             重新申请: this.apply,
@@ -33,7 +35,7 @@ export class ApplyVolunteerFlow extends BaseFlow {
         @InjectRepository(FlowTemplate)
         protected readonly flowTemplateRepository: Repository<FlowTemplate>
     ) {
-        super('志愿者申请', FlowTemplateEnum.APPLY_VR, flowTemplateRepository);
+        super(flowTemplateRepository);
     }
 
     @Transaction()
@@ -109,12 +111,9 @@ export class ApplyVolunteerFlow extends BaseFlow {
 
     @Transaction()
     async complete(flow, options, @TransactionRepository(Flow) flowRepos?: Repository<Flow>) {
-        flow = Flow.create(flow) as Flow;
-        flow.wfResult = WFResult.SUCCESS;
-        flow.wfStatus = WFStatus.OVER;
-        flow.operator = User.create(options.operator) as User;
 
         await flowRepos.delete(flow.id);
+
         return OVER;
     }
 
