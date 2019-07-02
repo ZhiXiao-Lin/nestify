@@ -8,6 +8,7 @@ const handleType = ExcelHandleType.ARRAY;
 const cellsMap = {
     标题: 'title',
     封面: 'cover',
+    积分: 'points',
     排序: 'sort',
     详情: 'desc',
     分类: 'category'
@@ -17,6 +18,9 @@ const cellsMap = {
 export class Service extends Base {
     @Column({ comment: '标题' })
     title: string;
+
+    @Column({ comment: '积分', default: 0 })
+    points: number;
 
     @Column({ comment: '排序', default: 0 })
     sort: number;

@@ -181,6 +181,17 @@ export default class extends React.Component {
             ],
           })(<Input.TextArea {...formItemStyle} placeholder="请填写详情" />)}
         </Form.Item>
+        <Form.Item {...formItemLayout} label="积分">
+          {getFieldDecorator('points', {
+            initialValue: !selectedNode ? 0 : selectedNode['points'],
+            rules: [
+              {
+                required: true,
+                message: '请填写积分',
+              },
+            ],
+          })(<InputNumber min={0} {...formItemStyle} placeholder="请填写积分" />)}
+        </Form.Item>
         <Form.Item {...formItemLayout} label="排序">
           {getFieldDecorator('sort', {
             initialValue: !selectedNode ? 0 : selectedNode['sort'],

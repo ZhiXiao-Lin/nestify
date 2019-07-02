@@ -92,6 +92,11 @@ export default class extends React.Component {
         render: (val) => val.name,
       },
       {
+        title: '积分',
+        dataIndex: 'points',
+        sorter: true,
+      },
+      {
         title: '排序',
         dataIndex: 'sort',
         sorter: true,
@@ -132,6 +137,7 @@ export default class extends React.Component {
       'coverPath',
       'title',
       'category',
+      'points',
       'sort',
       'update_at',
     ];
