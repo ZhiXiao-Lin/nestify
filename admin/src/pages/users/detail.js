@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Tabs, Form, Input, Row, Col, Icon, Button, Skeleton, Radio, TreeSelect } from 'antd';
 
-import { apiUploadOneToQiniu } from '@/utils';
+import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
 import RolesEditor from '@/components/RolesEditor';
@@ -92,7 +92,7 @@ export default class extends React.Component {
   onThumbnailUpload = async (file) => {
     const { dispatch } = this.props;
 
-    const res = await apiUploadOneToQiniu(file);
+    const res = await apiUploadOne(file);
 
     if (!!res && !!res.path) {
       dispatch({

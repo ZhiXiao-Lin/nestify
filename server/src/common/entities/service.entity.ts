@@ -54,4 +54,15 @@ export class Service extends Base {
     get coverPath(): string {
         return Base.getFullPath(this.cover);
     }
+
+    @Expose()
+    get albumList() {
+        return !this.album
+            ? []
+            : this.album.map((item) => {
+                const newItem = { ...item };
+                newItem.url = Base.getFullPath(item);
+                return newItem;
+            });
+    }
 }

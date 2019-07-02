@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
 import {
@@ -10,17 +9,16 @@ import {
   Col,
   Icon,
   Tabs,
-  DatePicker,
   Button,
   Skeleton,
   TreeSelect,
 } from 'antd';
 
 import ImageCropper from '@/components/ImageCropper';
-import VideoEditor from '@/components/VideoEditor';
+import Album from '@/components/Album';
 import RichText from '@/components/RichText';
 import config from '@/config';
-import { apiUploadOneToQiniu } from '@/utils';
+import { apiUploadOne } from '@/utils';
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -111,7 +109,8 @@ export default class extends React.Component {
   };
 
   onCoverUpload = async (file) => {
-    const res = await apiUploadOneToQiniu(file);
+    console.log(file)
+    const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       this.toSave({ cover: res });
     }
@@ -120,7 +119,7 @@ export default class extends React.Component {
   onMediaUpload = async (context) => {
     if (!context || !context.file) return;
 
-    const res = await apiUploadOneToQiniu(context.file);
+    const res = await apiUploadOne(context.file);
     if (!res) {
       context.error({ error: '上传失败' });
     } else {
@@ -208,6 +207,10 @@ export default class extends React.Component {
     this.toSave({ notice });
   };
 
+  toSaveAlbum = (album) => {
+    this.toSave({ album });
+  };
+
   toSave = (payload) => {
     this.props.dispatch({
       type: `${MODEL_NAME}/save`,
@@ -233,13 +236,13 @@ export default class extends React.Component {
           {selectedNode.id ? (
             <Tabs.TabPane key="image" tab="封面">
               <ImageCropper
-                url={!selectedNode.thumbnail ? '' : selectedNode.thumbnailPath}
+                url={!selectedNode.cover ? '' : selectedNode.coverPath}
                 onUpload={this.onCoverUpload}
               />
             </Tabs.TabPane>
           ) : null}
           {selectedNode.id ? (
-            <Tabs.TabPane key="album" tab="相册"></Tabs.TabPane>) : null
+            <Tabs.TabPane key="album" tab="相册"><Album initialValue={selectedNode.album || []} onSave={this.toSaveAlbum} /></Tabs.TabPane>) : null
           }
           {selectedNode.id ? (
             <Tabs.TabPane key="richtext" tab="须知">

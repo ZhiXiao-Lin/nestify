@@ -71,6 +71,10 @@
 -   持续集成
 -   持续部署
 
+## 赞助
+
+[![Reward](http://img.nestify.cn/reward.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/240)](http://cms.nestify.cn/)
+
 ## 其他
 
 -   本项目由开源组织 [NestifyStack](https://github.com/nestify-stack) 强力驱动

@@ -80,13 +80,11 @@ export default class ImageCropper extends React.Component {
 		}));
 	}
 
-	setEditorRef = (editor) => {
-		if (editor) this.editor = editor;
-	};
 	beforeUpload = (imageFile) => {
 		this.setState({ imageFile });
 		return false;
 	};
+
 	toUpload = () => {
 		const { onUpload } = this.props;
 		const { imageFile } = this.state;
@@ -177,7 +175,7 @@ export default class ImageCropper extends React.Component {
 						border={2}
 						color={[72, 118, 255, 1]}
 						style={gEditorStyle}
-						ref={this.setEditorRef}
+						ref={(e) => this.editor = e}
 						image={imageFile}
 						scale={scale}
 						width={width}

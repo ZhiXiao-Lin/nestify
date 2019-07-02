@@ -5,7 +5,7 @@ import { Icon, Button, Upload } from 'antd';
 const UploadButton = ({ mode, limit, length }) => {
     // console.log({ mode, limit, length });
     if (mode !== 'edit') return null;
-    else if ( (!!limit) && (length >= limit) ) return null;
+    else if ((!!limit) && (length >= limit)) return null;
     else return (
         <div>
             <Icon type="plus" />
@@ -16,12 +16,12 @@ const UploadButton = ({ mode, limit, length }) => {
 
 export function transformFileObj(f) {
     return {
-        uid         : f.uid || null,
-        name        : f.name || null,
-        preUrl      : f.preUrl || null,
-        key         : f.key || null,
-        type        : f.type || null,
-        url         : f.url || null,
+        uid: f.uid || null,
+        name: f.name || null,
+        preUrl: f.preUrl || null,
+        key: f.key || null,
+        type: f.type || null,
+        url: f.url || null,
     };
 }
 
@@ -33,9 +33,9 @@ export default class ImageGallery extends React.PureComponent {
             imageFiles: [],
         }
     }
-    initialState = (props)=>{ this.setState({ imageFiles: props.initialValue || [] }) }
-    componentWillReceiveProps(nextProps) { 
-        this.initialState(nextProps); 
+    initialState = (props) => { this.setState({ imageFiles: props.initialValue || [] }) }
+    componentWillReceiveProps(nextProps) {
+        this.initialState(nextProps);
     }
     componentDidMount() {
         const { ref } = this.props;
@@ -44,9 +44,9 @@ export default class ImageGallery extends React.PureComponent {
     }
 
     // upload step 1:
-    beforeUpload = (file) => { 
+    beforeUpload = (file) => {
         // console.log('beforupload');
-        return true; 
+        return true;
     }
     // upload step 2:
     customUpload = async (context) => {
@@ -65,10 +65,10 @@ export default class ImageGallery extends React.PureComponent {
             // console.log({'customUpload response': response});
             if (response instanceof Error) throw response;
 
-            onSuccess( response, file );
+            onSuccess(response, file);
 
         } catch (err) {
-            onError( { error: err }, file );
+            onError({ error: err }, file);
         }
     }
     // upload step 3:
@@ -78,16 +78,16 @@ export default class ImageGallery extends React.PureComponent {
         // fileList.forEach((f, i) => {
         //     console.log(`[${i}] ${f.name} (${f.status}) @ ${f.percent}%`);
         // })
-        const f = _.find(fileList, {uid: file.uid});
+        const f = _.find(fileList, { uid: file.uid });
         if (!f) {
             console.log('###### file no found (removed) ');
         }
-        else if (!!f.response && !!f.response.result && !!f.response.preUrl) { 
-            f.url       = f.response.preUrl + f.response.result.slice(1); 
-            f.preUrl    = f.response.preUrl; 
-            f.key       = f.response.result; 
+        else if (!!f.response && !!f.response.result && !!f.response.preUrl) {
+            f.url = f.response.preUrl + f.response.result.slice(1);
+            f.preUrl = f.response.preUrl;
+            f.key = f.response.result;
         }
-        this.setState( { imageFiles: [...fileList] } );
+        this.setState({ imageFiles: [...fileList] });
     }
     beforeRemove = async (file) => {
         // console.log({'beforeRemove': file});
@@ -96,7 +96,7 @@ export default class ImageGallery extends React.PureComponent {
 
         const { onDelete } = this.props;
 
-        const result  = await onDelete(file);
+        const result = await onDelete(file);
         // console.log({'result': result});
         if (result instanceof Error) {
             return false;
@@ -114,9 +114,9 @@ export default class ImageGallery extends React.PureComponent {
         return (
             <Fragment>
                 <div>
-                {   !onSave ? null : 
-                    <Button type='primary' onClick={onSave} >保存</Button> 
-                }
+                    {!onSave ? null :
+                        <Button type='primary' onClick={onSave} >保存</Button>
+                    }
                 </div>
                 <div>
                     <Upload action={null} accept="image/*" listType="picture-card"
@@ -127,10 +127,11 @@ export default class ImageGallery extends React.PureComponent {
                         onChange={this.toHandleChange}
                         onPreview={this.toShowPreview}
                     >
-                        { UploadButton({mode, limit, length}) /** DON'T USE <UploadButton {...{mode, limit, length}} /> !!! */ }
+                        {UploadButton({ mode, limit, length }) /** DON'T USE <UploadButton {...{mode, limit, length}} /> !!! */}
                     </Upload>
                 </div>
             </Fragment>
         );
     }
 }
+

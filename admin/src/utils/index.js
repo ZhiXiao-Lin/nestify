@@ -6,6 +6,8 @@ import moment from 'moment';
 import UUID from 'uuid';
 import config from '@/config';
 
+const STORAGE_TYPE = 'local';
+
 const instance = axios.create({
   baseURL: config.apiRoot,
   timeout: 150000,
@@ -101,23 +103,31 @@ export async function apiUploadOne(
   params = { action: UploadActionType.UPLOAD, fileSizeLimit: 15 * 1024 * 1024 },
   options = {}
 ) {
-  if (file.size > params.fileSizeLimit) {
-    message.error(`请上传小于${(params.fileSizeLimit / 1024 / 1024).toFixed(0)}M的文件`);
-    return false;
+
+  if ('local' === STORAGE_TYPE) {
+    if (file.size > params.fileSizeLimit) {
+      message.error(`请上传小于${(params.fileSizeLimit / 1024 / 1024).toFixed(0)}M的文件`);
+      return false;
+    }
+
+    const param = new FormData();
+    param.append('file', file, file.name);
+
+    Object.keys(params).forEach((item) => param.append(item, params[item]));
+
+    const res = await apiPost(`${config.apiRoot}/storage`, param, options);
+
+    if (_.isObject(res)) {
+      res.storageType = 'local';
+    }
+
+    return res;
   }
 
-  const param = new FormData();
-  param.append('file', file, file.name);
-
-  Object.keys(params).forEach((item) => param.append(item, params[item]));
-
-  const res = await apiPost(`${config.apiRoot}/storage`, param, options);
-
-  if (_.isObject(res)) {
-    res.storageType = 'local';
+  if ('qiniu' === STORAGE_TYPE) {
+    return await apiUploadOneToQiniu(file, params, options);
   }
 
-  return res;
 }
 
 export async function apiUploadOneToQiniu(
@@ -145,8 +155,6 @@ export async function apiUploadOneToQiniu(
   res.path = res.key;
   return res;
 }
-
-
 
 export function apiGet(url, options) {
   return instance.get(url, options);

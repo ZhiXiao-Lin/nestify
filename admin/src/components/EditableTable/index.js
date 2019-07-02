@@ -4,7 +4,7 @@ import UUID from 'uuid';
 import { Table, Input, Button, Form, Popconfirm, Select, Icon } from 'antd';
 
 import ImageCropper from '@/components/ImageCropper';
-import { apiUploadOneToQiniu } from '@/utils';
+import { apiUploadOne } from '@/utils';
 import { getFullPath } from '@/utils/utils';
 
 const { Option } = Select;
@@ -70,7 +70,7 @@ class EditableCell extends React.Component {
   onUpload = async (file) => {
     const { record, index, handleSave } = this.props;
 
-    const res = await apiUploadOneToQiniu(file);
+    const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       handleSave(record, index, { image: res });
     }
@@ -126,8 +126,8 @@ class EditableCell extends React.Component {
         {editable ? (
           <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>
         ) : (
-          children
-        )}
+            children
+          )}
       </td>
     );
   }

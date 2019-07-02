@@ -20,7 +20,7 @@ import ImageCropper from '@/components/ImageCropper';
 import VideoEditor from '@/components/VideoEditor';
 import RichText from '@/components/RichText';
 import config from '@/config';
-import { apiUploadOneToQiniu } from '@/utils';
+import { apiUploadOne } from '@/utils';
 
 const formItemStyle = { style: { width: '80%', marginRight: 8 } };
 const formItemLayout = {
@@ -220,14 +220,14 @@ export default class extends React.Component {
   };
 
   onThumbnailUpload = async (file) => {
-    const res = await apiUploadOneToQiniu(file);
+    const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       this.toSave({ thumbnail: res });
     }
   };
 
   onVideoUpload = async (file) => {
-    const res = await apiUploadOneToQiniu(file);
+    const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       this.toSave({ video: res });
     }
@@ -236,7 +236,7 @@ export default class extends React.Component {
   onMediaUpload = async (context) => {
     if (!context || !context.file) return;
 
-    const res = await apiUploadOneToQiniu(context.file);
+    const res = await apiUploadOne(context.file);
     if (!res) {
       context.error({ error: '上传失败' });
     } else {

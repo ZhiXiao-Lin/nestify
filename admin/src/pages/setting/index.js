@@ -4,7 +4,7 @@ import moment from 'moment';
 import { connect } from 'dva';
 import { Tabs, Form, Input, Row, Col, Button, Skeleton } from 'antd';
 
-import { apiUploadOneToQiniu } from '@/utils';
+import { apiUploadOne } from '@/utils';
 
 import ImageCropper from '@/components/ImageCropper';
 import EditableTable from '@/components/EditableTable';
@@ -47,7 +47,7 @@ export default class extends React.Component {
   };
 
   onLogoLightUpload = async (file) => {
-    const res = await apiUploadOneToQiniu(file);
+    const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       this.toSave({
         ex_info: {
@@ -60,7 +60,7 @@ export default class extends React.Component {
   };
 
   onLogoDarkUpload = async (file) => {
-    const res = await apiUploadOneToQiniu(file);
+    const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       this.toSave({
         ex_info: {
