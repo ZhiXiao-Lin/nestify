@@ -192,15 +192,18 @@ export class UserService extends BaseService<User> {
             user.role = role;
         }
 
-        // 记录积分明细
-        const detail = new Detail();
-        detail.title = payload.title;
-        detail.user = user;
+
 
         const { actionType } = payload;
 
         // 增加积分的逻辑
         if (!!actionType) {
+
+            // 记录积分明细
+            const detail = new Detail();
+            detail.title = payload.title;
+            detail.user = user;
+
             if (PointsActionType.ADD === actionType) {
                 user.points += payload.value || 0;
                 detail.value = payload.value;
@@ -210,9 +213,11 @@ export class UserService extends BaseService<User> {
                 user.points -= payload.value || 0;
                 detail.value = -payload.value;
             }
+
+            await detailRepos.save(detail);
         }
 
-        await detailRepos.save(detail);
+
         return await userRepos.save(user);
     }
 

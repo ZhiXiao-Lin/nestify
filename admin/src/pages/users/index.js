@@ -46,6 +46,7 @@ export default class extends React.Component {
     currentNode: null,
     actionType: 'add',
     value: 10,
+    title: ''
   };
 
   componentDidMount() {
@@ -84,18 +85,18 @@ export default class extends React.Component {
 
               return !!keyword
                 ? val
-                    .toString()
-                    .split(reg)
-                    .map((text, i) =>
-                      i > 0
-                        ? [
-                            <span key={i} col={i} style={{ color: 'red' }}>
-                              <b>{val.toString().match(reg)[0]}</b>
-                            </span>,
-                            text,
-                          ]
-                        : text
-                    )
+                  .toString()
+                  .split(reg)
+                  .map((text, i) =>
+                    i > 0
+                      ? [
+                        <span key={i} col={i} style={{ color: 'red' }}>
+                          <b>{val.toString().match(reg)[0]}</b>
+                        </span>,
+                        text,
+                      ]
+                      : text
+                  )
                 : val;
             },
           },
@@ -296,6 +297,8 @@ export default class extends React.Component {
       this.setState((state) => ({
         ...state,
         currentNode,
+        value: 10,
+        title: ''
       }));
       this.refresh();
     };
@@ -327,8 +330,8 @@ export default class extends React.Component {
             操作
           </Button>
         ) : (
-          ''
-        )}
+            ''
+          )}
         {!user.isSuperAdmin && !!currentUser.isSuperAdmin && !user.isVolunteer ? (
           <Fragment>
             {' '}
@@ -337,14 +340,14 @@ export default class extends React.Component {
             </Button>
           </Fragment>
         ) : (
-          ''
-        )}
+            ''
+          )}
       </Fragment>
     );
   };
 
   render() {
-    const { currentNode, actionType, value } = this.state;
+    const { currentNode, actionType, value, title } = this.state;
     const {
       dispatch,
       data,
@@ -403,6 +406,13 @@ export default class extends React.Component {
                   {actionType === 'add' ? currentNode.points + value : currentNode.points - value}
                 </p>
                 <p>
+                  说明:{' '}
+                  <Input value={title} onChange={(e) => {
+                    e.persist();
+                    this.setState(state => ({ ...state, title: e.target.value }))
+                  }} />
+                </p>
+                <p>
                   修改积分:{' '}
                   <Select
                     value={actionType}
@@ -419,8 +429,8 @@ export default class extends React.Component {
                   />{' '}
                   <Button
                     type="primary"
-                    disabled={actionType === 'sub' && currentNode.points - value < 0}
-                    onClick={() => this.toSave({ ...currentNode, actionType, value })}
+                    disabled={actionType === 'sub' && currentNode.points - value < 0 || !title}
+                    onClick={() => this.toSave({ ...currentNode, actionType, value, title })}
                   >
                     保存
                   </Button>
@@ -474,8 +484,8 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>
@@ -494,12 +504,12 @@ export default class extends React.Component {
                     </Tooltip>
                   </Popconfirm>
                 ) : (
-                  <Tooltip placement="bottom" title="删除">
-                    <Button disabled={true}>
-                      <Icon type="delete" />
-                    </Button>
-                  </Tooltip>
-                )}
+                    <Tooltip placement="bottom" title="删除">
+                      <Button disabled={true}>
+                        <Icon type="delete" />
+                      </Button>
+                    </Tooltip>
+                  )}
                 <Tooltip placement="bottom" title="新增">
                   <Button onClick={this.toCreate}>
                     <Icon type="file-add" />

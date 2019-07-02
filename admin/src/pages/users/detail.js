@@ -132,7 +132,6 @@ export default class extends React.Component {
     const {
       selectedNode,
       organization,
-      columns,
       form: { getFieldDecorator },
     } = this.props;
 
@@ -177,8 +176,8 @@ export default class extends React.Component {
             initialValue: !selectedNode
               ? null
               : !selectedNode['org']
-              ? null
-              : selectedNode['org']['id'],
+                ? null
+                : selectedNode['org']['id'],
           })(
             <TreeSelect
               treeNodeFilterProp="title"
