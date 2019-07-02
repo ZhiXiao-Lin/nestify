@@ -38,6 +38,7 @@ import { FlowTemplateService } from './services/flow-template.service';
 import { Notice } from './entities/notice.entity';
 import { Feedback } from './entities/feedback.entity';
 import { FeedbackService } from './services/feedback.service';
+import { Detail } from './entities/detail.entity';
 
 @Global()
 @Module({
@@ -60,7 +61,8 @@ import { FeedbackService } from './services/feedback.service';
             Service,
             ServiceCategory,
             Notice,
-            Feedback
+            Feedback,
+            Detail
         ])
     ],
     providers: [
@@ -104,4 +106,4 @@ import { FeedbackService } from './services/feedback.service';
         FeedbackService,
     ]
 })
-export class CommonModule {}
+export class CommonModule { }

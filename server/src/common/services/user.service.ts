@@ -12,6 +12,7 @@ import { FlowService } from './flow.service';
 import { wf } from '../lib/wf';
 import { Role } from '../entities/role.entity';
 import { Logger } from '../lib/logger';
+import { Detail } from '../entities/detail.entity';
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -19,6 +20,7 @@ export class UserService extends BaseService<User> {
         private readonly jwtService: JwtService,
         private readonly flowService: FlowService,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        @InjectRepository(Detail) private readonly detailRepository: Repository<Detail>,
         @InjectRepository(Role) private readonly roleRepository: Repository<Role>
     ) {
         super(userRepository);
@@ -72,6 +74,42 @@ export class UserService extends BaseService<User> {
             qb.skip(payload.page * payload.pageSize);
             qb.take(payload.pageSize);
         }
+
+        return await qb.getManyAndCount();
+    }
+
+    @TransformClassToPlain()
+    async details(payload: any) {
+        const qb = this.detailRepository.createQueryBuilder('t');
+
+        qb.leftJoinAndSelect('t.user', 'user');
+
+        if (!payload.page) {
+            payload.page = 0;
+        }
+
+        if (!payload.pageSize) {
+            payload.pageSize = 10;
+        }
+
+        qb.andWhere('user.id =:id', { id: payload.userId });
+
+        if (!!payload.create_at) {
+            payload.create_at = payload.create_at.split(',');
+            qb.andWhere(
+                `t.create_at BETWEEN '${payload.create_at.shift()}' AND '${payload.create_at.pop()}'`
+            );
+        }
+
+        if (!!payload.sort && !!payload.order) {
+            qb.addOrderBy(`t.${payload.sort}`, payload.order);
+        } else {
+            qb.addOrderBy('t.create_at', 'DESC');
+        }
+
+        qb.skip(payload.page * payload.pageSize);
+        qb.take(payload.pageSize);
+
 
         return await qb.getManyAndCount();
     }
@@ -143,6 +181,7 @@ export class UserService extends BaseService<User> {
     async save(
         payload: any,
         @TransactionRepository(User) userRepos?: Repository<User>,
+        @TransactionRepository(Detail) detailRepos?: Repository<Detail>,
         @TransactionRepository(Role) rowRepos?: Repository<Role>
     ) {
         const user = User.create(payload) as User;
@@ -153,21 +192,27 @@ export class UserService extends BaseService<User> {
             user.role = role;
         }
 
+        // 记录积分明细
+        const detail = new Detail();
+        detail.title = payload.title;
+        detail.user = user;
+
         const { actionType } = payload;
 
         // 增加积分的逻辑
         if (!!actionType) {
             if (PointsActionType.ADD === actionType) {
                 user.points += payload.value || 0;
+                detail.value = payload.value;
             }
 
             if (PointsActionType.SUB === actionType) {
                 user.points -= payload.value || 0;
+                detail.value = -payload.value;
             }
-
-            //TODO: 记录积分明细
         }
 
+        await detailRepos.save(detail);
         return await userRepos.save(user);
     }
 

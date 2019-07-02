@@ -23,7 +23,7 @@ import { PasswordDto } from '../../common/dtos/password.dto';
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) { }
 
     @Get(':id')
     @UseInterceptors(ClassSerializerInterceptor)
@@ -34,6 +34,14 @@ export class UserController {
     @Get('list')
     async list(@Query() payload) {
         return await this.userService.query(payload);
+    }
+
+    @Get('details')
+    async details(@Query() payload, @CurrentUser() user) {
+
+        payload.userId = user.id;
+
+        return await this.userService.details(payload);
     }
 
     @Get('current')

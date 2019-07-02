@@ -8,6 +8,7 @@ import { Organization } from './organization.entity';
 import { getVIP } from '../lib/helper';
 import { Flow } from './flow.entity';
 import { Feedback } from './feedback.entity';
+import { Detail } from './detail.entity';
 
 @Entity()
 export class User extends Base {
@@ -71,6 +72,9 @@ export class User extends Base {
 
     @OneToMany((type) => Flow, (flow) => flow.executor)
     executeFlows: Flow[];
+
+    @OneToMany((type) => Detail, (detail) => detail.user)
+    details: Detail[];
 
     static create(target: Object) {
         return plainToClass(User, target);

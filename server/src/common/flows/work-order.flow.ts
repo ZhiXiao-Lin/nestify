@@ -9,6 +9,7 @@ import { User } from '../entities/user.entity';
 import { Flow } from '../entities/flow.entity';
 import { WFResult, WFStatus, OVER } from '../lib/wf';
 import { Service } from '../entities/service.entity';
+import { Detail } from '../entities/detail.entity';
 
 @Injectable()
 export class WorkOrderFlow extends BaseFlow {
@@ -153,6 +154,7 @@ export class WorkOrderFlow extends BaseFlow {
         options,
         @TransactionRepository(Service) serviceRepos?: Repository<Service>,
         @TransactionRepository(User) userRepos?: Repository<User>,
+        @TransactionRepository(Detail) detailRepos?: Repository<Detail>,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
 
@@ -169,11 +171,14 @@ export class WorkOrderFlow extends BaseFlow {
         // 给用户增加积分
         const user = await userRepos.findOne(flow.executor.id);
         user.points += service.points;
-
         await userRepos.save(user);
 
-        // TODO: 增加积分明细
-
+        // 增加积分明细
+        const detail = new Detail();
+        detail.title = '完成任务加积分';
+        detail.value = service.points;
+        detail.user = user;
+        await detailRepos.save(detail);
 
         return OVER;
     }
