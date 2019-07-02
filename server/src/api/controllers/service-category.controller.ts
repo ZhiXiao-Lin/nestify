@@ -34,7 +34,7 @@ export class ServiceCategoryController {
     @Get(':parentName/children')
     async findByParent(@Param('parentName') parentName) {
 
-        return await this.categoryService.findOneByName(parentName);
+        return await this.categoryService.findChildrenTree(parentName);
     }
 
     @Get('list')
