@@ -8,6 +8,7 @@ import { FlowTemplate } from '../entities/flow-template.entity';
 import { User } from '../entities/user.entity';
 import { Flow } from '../entities/flow.entity';
 import { WFResult, WFStatus, OVER } from '../lib/wf';
+import { Service } from '../entities/service.entity';
 
 @Injectable()
 export class WorkOrderFlow extends BaseFlow {
@@ -44,6 +45,9 @@ export class WorkOrderFlow extends BaseFlow {
         待接单: {
             接单: this.receipt,
             拒绝: this.refuse
+        },
+        待执行: {
+            完成: this.complete
         },
         待结单: {
             结单: this.statement,
@@ -87,6 +91,7 @@ export class WorkOrderFlow extends BaseFlow {
         flow = Flow.create(flow) as Flow;
         flow.state = nextState;
         flow.operator = User.create(options.operator) as User;
+        flow.executor = User.create(options.executor) as User;
 
         await flowRepos.save(flow);
         return nextState;
@@ -104,6 +109,7 @@ export class WorkOrderFlow extends BaseFlow {
         flow = Flow.create(flow) as Flow;
         flow.state = nextState;
         flow.operator = User.create(options.operator) as User;
+        flow.executor = null;
 
         await flowRepos.save(flow);
         return nextState;
@@ -111,6 +117,22 @@ export class WorkOrderFlow extends BaseFlow {
 
     @Transaction()
     async receipt(
+        flow,
+        options,
+        @TransactionRepository(Flow) flowRepos?: Repository<Flow>
+    ) {
+        const nextState = '待执行';
+
+        flow = Flow.create(flow) as Flow;
+        flow.state = nextState;
+        flow.operator = User.create(options.operator) as User;
+
+        await flowRepos.save(flow);
+        return nextState;
+    }
+
+    @Transaction()
+    async complete(
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
@@ -129,16 +151,30 @@ export class WorkOrderFlow extends BaseFlow {
     async statement(
         flow,
         options,
+        @TransactionRepository(Service) serviceRepos?: Repository<Service>,
+        @TransactionRepository(User) userRepos?: Repository<User>,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
 
-        flow = Flow.create(flow) as Flow;
+        flow = await flowRepos.findOne({ where: { id: flow.id }, relations: ['user', 'operator', 'executor'] })
         flow.state = '已结单';
         flow.wfResult = WFResult.SUCCESS;
         flow.wfStatus = WFStatus.OVER;
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
+
+        const service = await serviceRepos.findOne(flow.target);
+
+        // 给用户增加积分
+        const user = await userRepos.findOne(flow.executor.id);
+        user.points += service.points;
+
+        await userRepos.save(user);
+
+        // TODO: 增加积分明细
+
+
         return OVER;
     }
 

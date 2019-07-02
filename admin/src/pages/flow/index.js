@@ -19,6 +19,7 @@ import {
   Popconfirm,
   Collapse,
   Modal,
+  message,
 } from 'antd';
 
 import styles from './index.css';
@@ -49,7 +50,7 @@ export default class extends React.Component {
     currentNode: null,
     currentAction: null,
 
-    selectionDrawerVisible: false,
+    userSelectorVisible: false,
   }
 
   componentDidMount() {
@@ -261,6 +262,18 @@ export default class extends React.Component {
     });
   };
 
+  onSelectUser = (executor) => {
+    if (!executor.isVolunteer) {
+      message.error('请选择一位志愿者');
+      return false;
+    }
+
+    this.onAction(this.state.currentAction, this.state.currentNode, { executor }, () => {
+      this.setState(state => ({ ...state, userSelectorVisible: false }));
+      this.refresh();
+    })
+  }
+
   renderWFStatus = (status) => {
     switch (status) {
       case WFStatus.RUNNING:
@@ -316,8 +329,9 @@ export default class extends React.Component {
         </p>
       </Modal>
       <UserSelector
-        visible={this.state.selectionDrawerVisible}
-        onClose={() => this.setState(state => ({ ...state, selectionDrawerVisible: false }))} />
+        visible={this.state.userSelectorVisible}
+        onSelect={this.onSelectUser}
+        onClose={() => this.setState(state => ({ ...state, userSelectorVisible: false }))} />
     </Fragment>
   }
 
@@ -337,7 +351,7 @@ export default class extends React.Component {
         case FlowOperationsEnum.ALLOCATION:
           return <Button key={index} type="primary" ghost onClick={() =>
             this.setState(state => ({
-              ...state, selectionDrawerVisible: true, currentNode: row, currentAction: action
+              ...state, userSelectorVisible: true, currentNode: row, currentAction: action
             }))}>
             {action}
           </Button>
