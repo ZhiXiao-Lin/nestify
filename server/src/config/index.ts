@@ -109,6 +109,10 @@ let config = {
     mq: {
         url: 'amqp://localhost',
         options: {}
+    },
+
+    wechat: {
+        token: 'nestify',
     }
 };
 
