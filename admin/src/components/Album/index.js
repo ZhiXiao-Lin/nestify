@@ -118,7 +118,6 @@ export default class extends React.Component {
 
             const res = await apiUploadOne(fakefile);
             res.uid = UUID.v4();
-            res.url = config.staticRoot + res.path;
 
             fileList.push(res);
         }

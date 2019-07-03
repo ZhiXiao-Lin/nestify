@@ -427,11 +427,11 @@ export default class extends React.Component {
                     </Button>
                   </Tooltip>
                 </Upload>
-                <Tooltip placement="bottom" title="导出">
+                {/* <Tooltip placement="bottom" title="导出">
                   <Button onClick={this.toExport}>
                     <Icon type="export" />
                   </Button>
-                </Tooltip>
+                </Tooltip> */}
               </ButtonGroup>
             </Col>
             <Col className="gutter-row" span={10} offset={4}>

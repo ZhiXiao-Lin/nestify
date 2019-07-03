@@ -109,7 +109,6 @@ export default class extends React.Component {
   };
 
   onCoverUpload = async (file) => {
-    console.log(file)
     const res = await apiUploadOne(file);
     if (!!res && !!res.path) {
       this.toSave({ cover: res });
@@ -124,7 +123,7 @@ export default class extends React.Component {
       context.error({ error: '上传失败' });
     } else {
       context.progress(101);
-      context.success({ url: `${config.qiniu.domain}/${res.path}` });
+      context.success({ url: res.url });
     }
   };
 

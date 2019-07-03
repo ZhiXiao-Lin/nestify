@@ -6,8 +6,6 @@ import moment from 'moment';
 import UUID from 'uuid';
 import config from '@/config';
 
-const STORAGE_TYPE = 'local';
-
 const instance = axios.create({
   baseURL: config.apiRoot,
   timeout: 150000,
@@ -104,7 +102,7 @@ export async function apiUploadOne(
   options = {}
 ) {
 
-  if ('local' === STORAGE_TYPE) {
+  if ('local' === config.storageType) {
     if (file.size > params.fileSizeLimit) {
       message.error(`请上传小于${(params.fileSizeLimit / 1024 / 1024).toFixed(0)}M的文件`);
       return false;
@@ -121,10 +119,12 @@ export async function apiUploadOne(
       res.storageType = 'local';
     }
 
+    res.url = config.staticRoot + res.path;
+
     return res;
   }
 
-  if ('qiniu' === STORAGE_TYPE) {
+  if ('qiniu' === config.storageType) {
     return await apiUploadOneToQiniu(file, params, options);
   }
 
@@ -153,6 +153,9 @@ export async function apiUploadOneToQiniu(
   const res = await apiPost(`${config.qiniu.uploadUrl}`, param, options);
   res.storageType = 'qiniu';
   res.path = res.key;
+
+  res.url = config.qiniu.domain + res.path;
+
   return res;
 }
 

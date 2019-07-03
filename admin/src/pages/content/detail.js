@@ -241,7 +241,7 @@ export default class extends React.Component {
       context.error({ error: '上传失败' });
     } else {
       context.progress(101);
-      context.success({ url: `${config.qiniu.domain}/${res.path}` });
+      context.success({ url: res.url });
     }
   };
 
@@ -281,8 +281,8 @@ export default class extends React.Component {
             initialValue: !selectedNode
               ? null
               : !selectedNode['category']
-              ? null
-              : selectedNode['category']['id'],
+                ? null
+                : selectedNode['category']['id'],
             rules: [
               {
                 required: true,
