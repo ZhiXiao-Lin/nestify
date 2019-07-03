@@ -281,7 +281,7 @@ export default class extends React.Component {
           <Row className="filter-row" gutter={6}>
             <Col className="gutter-row" span={10}>
               <ButtonGroup>
-                {selectedRows.length > 0 ? (
+                {/* {selectedRows.length > 0 ? (
                   <Popconfirm
                     title={`是否确认要删除选中的 ${selectedRows.length} 条记录？`}
                     okText="是"
@@ -300,7 +300,7 @@ export default class extends React.Component {
                         <Icon type="delete" />
                       </Button>
                     </Tooltip>
-                  )}
+                  )} */}
                 <Tooltip placement="bottom" title="新增">
                   <Button onClick={this.toCreate}>
                     <Icon type="file-add" />

@@ -14,10 +14,11 @@ import { Authority } from '../common/entities/authority.entity';
 import { Content } from '../common/entities/content.entity';
 import { StorageType } from '../common/aspects/enum';
 import { ServiceCategory } from '../common/entities/service-category.entity';
+import { Carousel } from '../common/entities/carousel.entity';
 
 @Injectable()
 export class Seed {
-    constructor(@InjectConnection() private readonly connection: Connection) {}
+    constructor(@InjectConnection() private readonly connection: Connection) { }
 
     async start() {
         Logger.log('seed start');
@@ -188,5 +189,19 @@ export class Seed {
         }
 
         await this.connection.getRepository(Role).save(rolesArr);
+    }
+    async importCarousels() {
+        const carouselsResult = await ExcelHelper.loadFromFile(
+            resolve('./seeds/carousels.xlsx'),
+            Carousel.sheetsMap
+        );
+        const carousels = carouselsResult['carousels'];
+        const carouselsArr = [];
+
+        for (let item of carousels) {
+            carouselsArr.push(Role.create(item));
+        }
+
+        await this.connection.getRepository(Carousel).save(carouselsArr);
     }
 }
