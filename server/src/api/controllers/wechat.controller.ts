@@ -10,6 +10,7 @@ import config from '../../config';
 import { User } from '../../common/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from '../../common/entities/role.entity';
+import { Gender } from '../../common/aspects/enum';
 
 
 @Api('wechat')
@@ -68,17 +69,19 @@ export class WechatController {
             user.wechatOpenid = userInfo.openid;
             user.wechatUnionid = userInfo.unionid;
             user.nickname = userInfo.nickname;
-            user.gender = userInfo.sex <= 0 ? 1 : userInfo.sex - 1;
+            user.gender = (userInfo.sex <= 0 ? 1 : userInfo.sex - 1) as Gender;
             user.avatar = { storageType: "local", path: userInfo.headimgurl };
             user.role = role;
 
             await this.userService.save(user);
+
+            Logger.log('wechat auto register', user.account);
         }
 
         const token = await this.userService.getToken(user);
         const redirectUrl = `${config.serverUrl}${config.appUrl}?token=${token}`;
 
-        Logger.log('wechat login', user.account, redirectUrl);
+        Logger.log('wechat auto login', user.account);
 
         return res.code(HttpStatus.FOUND).redirect(redirectUrl);
     }
