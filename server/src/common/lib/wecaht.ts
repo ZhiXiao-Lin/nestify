@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import * as SuperAgent from 'superagent';
 import config from '../../config';
+import { Logger } from './logger';
 
 export class Wechat {
 
@@ -32,9 +33,8 @@ export class Wechat {
                         &
                         grant_type=authorization_code`);
 
-
+            Logger.log(res);
             return res.body;
-
         } catch (err) {
             return null;
         }
@@ -63,6 +63,7 @@ export class Wechat {
                         &
                         lang=zh_CN`);
 
+            Logger.log(res.body);
             return res.body;
         } catch (err) {
             return null;
