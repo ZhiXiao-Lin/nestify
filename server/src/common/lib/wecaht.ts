@@ -22,16 +22,22 @@ export class Wechat {
         //     "openid":"OPENID",
         //     "scope":"SCOPE" 
         // }
-        const res = await SuperAgent.get(`https://api.weixin.qq.com/sns/oauth2/access_token?
-            appid=${config.wechat.appid}
-            &
-            secret=${config.wechat.secret}
-            &
-            code=${code}
-            &
-            grant_type=authorization_code`);
+        try {
+            const res = await SuperAgent.get('https://api.weixin.qq.com/sns/oauth2/access_token')
+                .query(`appid=${config.wechat.appid}
+                        &
+                        secret=${config.wechat.secret}
+                        &
+                        code=${code}
+                        &
+                        grant_type=authorization_code`);
 
-        return res.body;
+
+            return res.body;
+
+        } catch (err) {
+            return null;
+        }
     }
 
     // 拉取用户信息(需scope为 snsapi_userinfo)
@@ -49,13 +55,17 @@ export class Wechat {
         //     "privilege":[ "PRIVILEGE1" "PRIVILEGE2"     ],
         //     "unionid": "o6_bmasdasdsad6_2sgVt7hMZOPfL"
         // }
-        const res = await SuperAgent.get(`https://api.weixin.qq.com/sns/userinfo?
-            access_token=${accessToken}
-            &
-            openid=${openid}
-            &
-            lang=zh_CN`);
+        try {
+            const res = await SuperAgent.get('https://api.weixin.qq.com/sns/userinfo')
+                .query(`access_token=${accessToken}
+                        &
+                        openid=${openid}
+                        &
+                        lang=zh_CN`);
 
-        return res.body;
+            return res.body;
+        } catch (err) {
+            return null;
+        }
     }
 }
