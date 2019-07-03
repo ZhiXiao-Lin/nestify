@@ -1,10 +1,11 @@
 import { isEmpty } from 'lodash';
-import { Get, Query, UnauthorizedException } from '@nestjs/common';
+import { Get, Query, UnauthorizedException, Res } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
 import { Api } from '../../common/aspects/decorator';
 import { UserService } from '../../common/services/user.service';
 import { Logger } from '../../common/lib/logger';
 import { Wechat } from '../../common/lib/wecaht';
+import config from '../../config';
 
 @Api('wechat')
 @ApiUseTags('wechat')
@@ -21,12 +22,21 @@ export class WechatController {
     }
 
     @Get('login')
-    async login(@Query() payload) {
-        // https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2e0e0c1fb73f8dbc&redirect_uri=http://atlantis.yg-net.com/api/wechat/login&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+    async login(@Res() res) {
+        // 重定向到微信
+        const redirectUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.appid}&redirect_uri=${config.serverUrl}/api/wechat/callback&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`;
+
+        Logger.log('wechat redirectUrl', redirectUrl);
+
+        return res.redirect(redirectUrl);
+    }
+
+    @Get('callback')
+    async callback(@Query() payload) {
 
         Logger.log('wechat code callback', payload);
 
-        if (!payload.code) throw new UnauthorizedException('无法获取授权信息');
+        if (isEmpty(payload.code)) throw new UnauthorizedException('获取 code 错误');
 
         const accessInfo = await Wechat.getAccessToken(payload.code);
 
