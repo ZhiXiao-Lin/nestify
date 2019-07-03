@@ -5,8 +5,8 @@ import { UserService } from '../../common/services/user.service';
 import { Logger } from '../../common/lib/logger';
 import { Wechat } from '../../common/lib/wecaht';
 
-@Api('wecaht')
-@ApiUseTags('wecaht')
+@Api('wechat')
+@ApiUseTags('wechat')
 export class WechatController {
     constructor(private readonly userService: UserService) { }
 
