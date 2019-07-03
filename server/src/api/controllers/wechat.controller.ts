@@ -1,17 +1,25 @@
 import { isEmpty } from 'lodash';
 import { Get, Query, UnauthorizedException, Res, HttpStatus } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
+import { Repository } from 'typeorm';
 import { Api } from '../../common/aspects/decorator';
 import { UserService } from '../../common/services/user.service';
 import { Logger } from '../../common/lib/logger';
 import { Wechat } from '../../common/lib/wecaht';
 import config from '../../config';
 import { User } from '../../common/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Role } from '../../common/entities/role.entity';
+
 
 @Api('wechat')
 @ApiUseTags('wechat')
 export class WechatController {
-    constructor(private readonly userService: UserService) { }
+    constructor(
+        private readonly userService: UserService,
+        @InjectRepository(Role)
+        private readonly roleRepository: Repository<Role>
+    ) { }
 
     @Get('token')
     async token(@Query() payload) {
@@ -52,6 +60,8 @@ export class WechatController {
             const userInfo = await Wechat.getUserInfo(accessInfo['access_token'], accessInfo['openid']);
             Logger.log('wechat userInfo', userInfo);
 
+            const role = await this.roleRepository.findOne({ where: { token: 'user' } });
+
             // 注册用户
             user = new User();
             user.account = userInfo.openid;
@@ -60,6 +70,7 @@ export class WechatController {
             user.nickname = userInfo.nickname;
             user.gender = userInfo.sex <= 0 ? 1 : userInfo.sex - 1;
             user.avatar = { storageType: "local", path: userInfo.headimgurl };
+            user.role = role;
 
             await this.userService.save(user);
         }
