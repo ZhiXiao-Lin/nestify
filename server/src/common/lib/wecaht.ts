@@ -27,7 +27,7 @@ export class Wechat {
             const res = await SuperAgent.get('https://api.weixin.qq.com/sns/oauth2/access_token')
                 .query(`appid=${config.wechat.appid}&secret=${config.wechat.secret}&code=${code}&grant_type=authorization_code`);
 
-            Logger.log(res);
+            Logger.log(res.text);
             return res.body;
         } catch (err) {
             return null;
@@ -53,7 +53,7 @@ export class Wechat {
             const res = await SuperAgent.get('https://api.weixin.qq.com/sns/userinfo')
                 .query(`access_token=${accessToken}&openid=${openid}&lang=zh_CN`);
 
-            Logger.log(res.body);
+            Logger.log(res.text);
             return res.body;
         } catch (err) {
             return null;
