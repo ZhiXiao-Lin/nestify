@@ -47,7 +47,7 @@ export class UserService extends BaseService<User> {
         }
 
         if (!!payload.roleToken) {
-            qb.andWhere('role.token =: role', { role: payload.roleToken });
+            qb.andWhere('role.token = :role', { role: payload.roleToken });
         }
 
         if (!!payload.org) {
