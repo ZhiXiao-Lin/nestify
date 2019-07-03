@@ -22,6 +22,8 @@ export class WechatController {
 
     @Get('login')
     async login(@Query() payload) {
+        // https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2e0e0c1fb73f8dbc&redirect_uri=http://atlantis.yg-net.com/api/wechat/login&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
+
         Logger.log('wechat code callback', payload);
 
         if (!payload.code) throw new UnauthorizedException('无法获取授权信息');

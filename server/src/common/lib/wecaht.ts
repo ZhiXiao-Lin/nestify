@@ -22,7 +22,7 @@ export class Wechat {
         //     "openid":"OPENID",
         //     "scope":"SCOPE" 
         // }
-        return await SuperAgent.get(`https://api.weixin.qq.com/sns/oauth2/access_token?
+        const res = await SuperAgent.get(`https://api.weixin.qq.com/sns/oauth2/access_token?
             appid=${config.wechat.appid}
             &
             secret=${config.wechat.secret}
@@ -30,6 +30,8 @@ export class Wechat {
             code=${code}
             &
             grant_type=authorization_code`);
+
+        return res.body;
     }
 
     // 拉取用户信息(需scope为 snsapi_userinfo)
@@ -47,11 +49,13 @@ export class Wechat {
         //     "privilege":[ "PRIVILEGE1" "PRIVILEGE2"     ],
         //     "unionid": "o6_bmasdasdsad6_2sgVt7hMZOPfL"
         // }
-        return await SuperAgent.get(`https://api.weixin.qq.com/sns/userinfo?
+        const res = await SuperAgent.get(`https://api.weixin.qq.com/sns/userinfo?
             access_token=${accessToken}
             &
             openid=${openid}
             &
             lang=zh_CN`);
+
+        return res.body;
     }
 }
