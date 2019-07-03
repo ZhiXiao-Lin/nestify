@@ -135,6 +135,10 @@ export class UserService extends BaseService<User> {
             qb.andWhere('t.account = :account', { account: where.account });
         }
 
+        if (!!where.wechatOpenid) {
+            qb.andWhere('t.wechatOpenid = :wechatOpenid', { wechatOpenid: where.wechatOpenid });
+        }
+
         qb.leftJoinAndSelect('t.role', 'role');
         qb.leftJoinAndSelect('t.org', 'organization');
 
