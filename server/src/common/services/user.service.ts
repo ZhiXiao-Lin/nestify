@@ -46,6 +46,10 @@ export class UserService extends BaseService<User> {
             qb.andWhere(`t.nickname LIKE '%${payload.keyword}%'`);
         }
 
+        if (!!payload.roleToken) {
+            qb.andWhere('role.token =: role', { role: payload.roleToken });
+        }
+
         if (!!payload.org) {
             qb.andWhere('organization.id = :org', { org: payload.org });
         }

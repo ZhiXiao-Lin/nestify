@@ -24,8 +24,9 @@ const { RangePicker } = DatePicker;
 
 const MODEL_NAME = 'users';
 
-@connect(({ users, organization, loading }) => ({
+@connect(({ users, user, organization, loading }) => ({
     ...users,
+    currentUser: user.currentUser,
     organization,
     loading: loading.models.users,
 }))
@@ -77,10 +78,6 @@ export default class extends Component {
                                     )
                                 : val;
                         },
-                    },
-                    {
-                        title: '账号',
-                        dataIndex: 'account',
                     },
                     {
                         title: '姓名',
@@ -141,7 +138,6 @@ export default class extends Component {
                     'org',
                     'points',
                     'vip',
-                    'account',
                     'realName',
                     'gender',
                     'role.name',
@@ -164,6 +160,8 @@ export default class extends Component {
 
     loadData = (payload) => {
         const { dispatch } = this.props;
+
+        payload.roleToken = 'volunteer';
 
         dispatch({
             type: `${MODEL_NAME}/fetch`,
@@ -287,7 +285,7 @@ export default class extends Component {
                 <Content>
                     {showQueryCondition ? (
                         <Collapse defaultActiveKey={['1']}>
-                            <Panel header="用户管理 | 查询条件" key="1">
+                            <Panel header="志愿者列表 | 查询条件" key="1">
                                 <Form
                                     onSubmit={this.onSubmit}
                                     style={{

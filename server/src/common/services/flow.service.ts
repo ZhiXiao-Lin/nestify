@@ -100,7 +100,7 @@ export class FlowService extends BaseService<Flow> {
         }
 
         qb.andWhere('user.id =:id', { id: payload.userId });
-        qb.andWhere('t.template =:template', { template: FlowTemplateEnum.WORK_OR });
+        qb.andWhere('template.template =:template', { template: FlowTemplateEnum.WORK_OR });
 
         if (!!payload.keyword) {
             qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
@@ -140,7 +140,7 @@ export class FlowService extends BaseService<Flow> {
         }
 
         qb.andWhere('executor.id =:id', { id: payload.userId });
-        qb.andWhere('t.template =:template', { template: FlowTemplateEnum.WORK_OR });
+        qb.andWhere('template.template =:template', { template: FlowTemplateEnum.WORK_OR });
 
         if (!!payload.keyword) {
             qb.andWhere(`t.name LIKE '%${payload.keyword}%'`);
