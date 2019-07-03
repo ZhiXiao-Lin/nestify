@@ -6,7 +6,7 @@ import { ExcelHandleType } from '../lib/excel';
 
 @Entity()
 export class Carousel extends Base {
-    @Column({ comment: '标题', unique: true })
+    @Column({ comment: '标识', unique: true })
     token: string;
 
     @Column({ type: 'simple-json', default: {}, comment: '扩展信息' })
@@ -16,9 +16,7 @@ export class Carousel extends Base {
         轮播: {
             map: 'carousels',
             handleType: ExcelHandleType.ARRAY,
-            cellsMap: {
-                标识: 'token',
-            }
+            cellsMap: { 标识: 'token' }
         }
     };
 

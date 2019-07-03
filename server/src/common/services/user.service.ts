@@ -244,7 +244,7 @@ export class UserService extends BaseService<User> {
 
         const isExist = await this.flowService.findOneByUser(user, FlowTemplateEnum.APPLY_VR);
 
-        if (!!isExist && user.status !== '已驳回') {
+        if (!!isExist || (!!user.status && user.status !== '已驳回')) {
             throw new BadRequestException('请勿重复申请');
         }
 

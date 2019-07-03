@@ -38,6 +38,7 @@ export class Seed {
         await this.importOrganizations();
         await this.importAuthorities();
         await this.importRoles();
+        await this.importCarousels();
 
         const roleAdmin = await this.connection
             .getRepository(Role)
@@ -199,7 +200,7 @@ export class Seed {
         const carouselsArr = [];
 
         for (let item of carousels) {
-            carouselsArr.push(Role.create(item));
+            carouselsArr.push(Carousel.create(item));
         }
 
         await this.connection.getRepository(Carousel).save(carouselsArr);
