@@ -79,10 +79,19 @@ async function initFastify(nextjs) {
 
     fastify.use('/static', ServeStatic(resolve('static')));
     fastify.use('/admin', ServeStatic(resolve('../admin/dist')));
+    fastify.use('/app/volunteer', ServeStatic(resolve('../volunteer')));
 
     fastify.get('/_next/*', async (req, reply) => await nextjs.handleRequest(req.req, reply.res));
     fastify.get('/admin/*', async (req, reply) => {
         const content = await readFileAsync(resolve('../admin/dist/index.html'));
+        reply
+            .code(200)
+            .type('text/html')
+            .send(content);
+    });
+
+    fastify.get('/app/volunteer/*', async (req, reply) => {
+        const content = await readFileAsync(resolve('../volunteer/index.html'));
         reply
             .code(200)
             .type('text/html')

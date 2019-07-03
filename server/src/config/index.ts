@@ -112,7 +112,7 @@ let config = {
     },
 
     wechat: {
-        token: 'nestify',
+        token: 'wechattoken',
     }
 };
 
