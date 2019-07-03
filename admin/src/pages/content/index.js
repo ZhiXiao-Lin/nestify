@@ -100,7 +100,7 @@ export default class extends React.Component {
       {
         title: '分类',
         dataIndex: 'category',
-        render: (val) => val.name,
+        render: (val) => !!val ? val.name : '',
       },
       {
         title: '来源',
