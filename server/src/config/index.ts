@@ -8,6 +8,7 @@ let config = {
     port: 3000,
     hostName: '0.0.0.0',
     serverUrl: 'http://127.0.0.1:3000',
+    appUrl: '/app/volunteer',
 
     helmet: { hidePoweredBy: { setTo: 'C++ 12' } },
 

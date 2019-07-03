@@ -1,11 +1,12 @@
 import { isEmpty } from 'lodash';
-import { Get, Query, UnauthorizedException, Res } from '@nestjs/common';
+import { Get, Query, UnauthorizedException, Res, HttpStatus } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
 import { Api } from '../../common/aspects/decorator';
 import { UserService } from '../../common/services/user.service';
 import { Logger } from '../../common/lib/logger';
 import { Wechat } from '../../common/lib/wecaht';
 import config from '../../config';
+import { User } from '../../common/entities/user.entity';
 
 @Api('wechat')
 @ApiUseTags('wechat')
@@ -28,11 +29,11 @@ export class WechatController {
 
         Logger.log('wechat redirectUrl', redirectUrl);
 
-        return res.redirect(redirectUrl);
+        return res.code(HttpStatus.FOUND).redirect(redirectUrl);
     }
 
     @Get('callback')
-    async callback(@Query() payload) {
+    async callback(@Query() payload, @Res() res) {
 
         Logger.log('wechat code callback', payload);
 
@@ -44,14 +45,30 @@ export class WechatController {
 
         if (isEmpty(accessInfo)) throw new UnauthorizedException('访问令牌错误');
 
-        // TODO: 通过 openid 查询用户是否存在，存在则直接登陆
+        // 通过 openid 查询用户是否存在，存在则直接登陆
+        let user = await this.userService.findOne({ wechatOpenid: accessInfo['openid'] });
 
-        const userInfo = await Wechat.getUserInfo(accessInfo['access_token'], accessInfo['openid']);
+        if (!user) {
+            const userInfo = await Wechat.getUserInfo(accessInfo['access_token'], accessInfo['openid']);
+            Logger.log('wechat userInfo', userInfo);
 
-        Logger.log('wechat userInfo', userInfo);
+            // 注册用户
+            user = new User();
+            user.account = userInfo.openid;
+            user.wechatOpenid = userInfo.openid;
+            user.wechatUnionid = userInfo.unionid;
+            user.nickname = userInfo.nickname;
+            user.gender = userInfo.sex <= 0 ? 1 : userInfo.sex - 1;
+            user.avatar = { storageType: "local", path: userInfo.headimgurl };
 
-        // TODO: 注册用户
+            await this.userService.save(user);
+        }
 
-        return userInfo;
+        const token = await this.userService.getToken(user);
+        const redirectUrl = `${config.serverUrl}${config.appUrl}?token=${token}`;
+
+        Logger.log('wechat login', user.account, redirectUrl);
+
+        return res.code(HttpStatus.FOUND).redirect(redirectUrl);
     }
 }

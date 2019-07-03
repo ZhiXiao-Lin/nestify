@@ -25,6 +25,12 @@ export class User extends Base {
     @Column({ comment: '昵称', default: '' })
     nickname: string;
 
+    @Column({ comment: '微信 openid', default: '' })
+    wechatOpenid: string;
+
+    @Column({ comment: '微信 unionid', default: '' })
+    wechatUnionid: string;
+
     @Column({ type: 'simple-json', default: null, comment: '头像' })
     avatar: any;
 

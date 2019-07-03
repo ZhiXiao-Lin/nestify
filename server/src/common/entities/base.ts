@@ -26,7 +26,7 @@ export abstract class Base {
     update_at: number;
 
     static getFullPath(info: any) {
-        if (!!info) {
+        if (!!info && !!info.storageType && !!info.path) {
             switch (info.storageType) {
                 case StorageType.LOCAL:
                     return info.path.startsWith('/')

@@ -160,8 +160,12 @@ export class UserService extends BaseService<User> {
                 throw new BadRequestException('密码错误');
         }
 
-        const token = await this.jwtService.sign(_.toPlainObject(user));
+        const token = await this.getToken(user);
         return { token };
+    }
+
+    async getToken(user: User) {
+        return await this.jwtService.sign(_.toPlainObject(user));
     }
 
     async changePassword(id, dto) {

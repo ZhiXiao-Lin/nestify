@@ -1,4 +1,4 @@
-import { Controller, Res, Get } from '@nestjs/common';
+import { Controller, Res, Get, HttpStatus } from '@nestjs/common';
 import { CommonService } from '../../common/services/common.service';
 
 @Controller()
@@ -7,10 +7,12 @@ export class IndexController {
 
     @Get()
     async index(@Res() res) {
-        const siteInfo = await this.commonService.getSiteInfo();
+        // const siteInfo = await this.commonService.getSiteInfo();
 
-        return res.render('/', {
-            siteInfo
-        });
+        // return res.render('/', {
+        //     siteInfo
+        // });
+
+        return res.code(HttpStatus.FOUND).redirect('/api/wechat/login');
     }
 }
