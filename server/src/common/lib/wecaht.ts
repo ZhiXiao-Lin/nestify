@@ -28,7 +28,7 @@ export class Wechat {
                 .query(`appid=${config.wechat.appid}&secret=${config.wechat.secret}&code=${code}&grant_type=authorization_code`);
 
             Logger.log(res.text);
-            return res.body;
+            return JSON.parse(res.text);
         } catch (err) {
             return null;
         }
@@ -54,7 +54,7 @@ export class Wechat {
                 .query(`access_token=${accessToken}&openid=${openid}&lang=zh_CN`);
 
             Logger.log(res.text);
-            return res.body;
+            return JSON.parse(res.text);
         } catch (err) {
             return null;
         }
