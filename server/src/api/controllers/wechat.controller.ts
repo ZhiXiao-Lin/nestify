@@ -57,7 +57,9 @@ export class WechatController {
         // 通过 openid 查询用户是否存在，存在则直接登陆
         let user = await this.userService.findOne({ wechatOpenid: accessInfo['openid'] });
 
-        if (!user) {
+        Logger.log('find user', user);
+
+        if (isEmpty(user)) {
             const userInfo = await Wechat.getUserInfo(accessInfo['access_token'], accessInfo['openid']);
             Logger.log('wechat userInfo', userInfo);
 
