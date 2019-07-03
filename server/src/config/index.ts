@@ -113,6 +113,8 @@ let config = {
 
     wechat: {
         token: 'wechattoken',
+        appid: '',
+        secret: ''
     }
 };
 

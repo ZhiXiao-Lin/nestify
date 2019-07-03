@@ -3,6 +3,7 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 export class ApplyServiceDto {
 
+    @ApiModelProperty()
     @IsUUID('4', {
         message: '服务编号不正确'
     })
