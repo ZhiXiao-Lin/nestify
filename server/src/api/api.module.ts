@@ -16,6 +16,7 @@ import { CarouselController } from './controllers/carousel.controller';
 import { FlowTemplateController } from './controllers/flow-template.controller';
 import { FlowController } from './controllers/flow.controller';
 import { FeedbackController } from './controllers/feedback.controller';
+import { WechatController } from './controllers/wechat.controller';
 
 @Module({
     controllers: [
@@ -34,7 +35,8 @@ import { FeedbackController } from './controllers/feedback.controller';
         SearchController,
         FlowController,
         FlowTemplateController,
-        FeedbackController
+        FeedbackController,
+        WechatController
     ]
 })
 export class ApiModule implements NestModule {
