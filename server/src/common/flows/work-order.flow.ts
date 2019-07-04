@@ -15,44 +15,28 @@ import { Detail } from '../entities/detail.entity';
 export class WorkOrderFlow extends BaseFlow {
     protected readonly name: string = '服务工单';
     protected readonly template: FlowTemplateEnum = FlowTemplateEnum.WORK_OR;
-    protected readonly operations: any = {
-        待派单: {
-            派单: FlowOperationsEnum.ALLOCATION,
-            作废: FlowOperationsEnum.REMARKS
-        },
-        已拒绝: {
-            重新派单: FlowOperationsEnum.ALLOCATION,
-            作废: FlowOperationsEnum.REMARKS
-        },
-        待接单: {
-            拒绝: FlowOperationsEnum.REMARKS
-        },
-        待结单: {
-            作废: FlowOperationsEnum.REMARKS
-        }
-    };
     protected readonly flow: any = {
         待申请: {
-            申请: this.apply
+            申请: { name: '申请', nextState: '待派单', task: this.apply }
         },
         待派单: {
-            派单: this.allocation,
-            作废: this.cancel
+            派单: { name: '派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
+            作废: { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
         },
         已拒绝: {
-            重新派单: this.allocation,
-            作废: this.cancel
+            重新派单: { name: '重新派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
+            作废: { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
         },
         待接单: {
-            接单: this.receipt,
-            拒绝: this.refuse
+            接单: { name: '接单', nextState: '待执行', task: this.receipt },
+            拒绝: { name: '拒绝', nextState: '已拒绝', task: this.refuse, operation: FlowOperationsEnum.REMARKS }
         },
         待执行: {
-            完成: this.complete
+            完成: { name: '完成', nextState: '待结单', task: this.complete }
         },
         待结单: {
-            结单: this.statement,
-            作废: this.cancel
+            结单: { name: '结单', nextState: '已结单', task: this.statement },
+            作废: { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
         },
         已结单: {
 
@@ -71,91 +55,87 @@ export class WorkOrderFlow extends BaseFlow {
 
     @Transaction()
     async apply(
+        step,
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '待派单';
 
         flow = Flow.create(flow) as Flow;
         flow.wfResult = WFResult.RUNNING;
         flow.wfStatus = WFStatus.RUNNING;
-        flow.state = nextState;
+        flow.state = step.nextState;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
 
     @Transaction()
     async allocation(
+        step,
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '待接单';
 
         flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
+        flow.state = step.nextState;
         flow.operator = User.create(options.operator) as User;
         flow.executor = User.create(options.executor) as User;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
 
     @Transaction()
     async refuse(
+        step,
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '已拒绝';
 
         flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
+        flow.state = step.nextState;
         flow.operator = User.create(options.operator) as User;
         flow.executor = null;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
     @Transaction()
     async receipt(
+        step,
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '待执行';
 
         flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
+        flow.state = step.nextState;
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
     @Transaction()
     async complete(
+        step,
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '待结单';
 
         flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
+        flow.state = step.nextState;
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
     @Transaction()
     async statement(
+        step,
         flow,
         options,
         @TransactionRepository(Service) serviceRepos?: Repository<Service>,
@@ -165,7 +145,7 @@ export class WorkOrderFlow extends BaseFlow {
     ) {
 
         flow = await flowRepos.findOne({ where: { id: flow.id }, relations: ['user', 'operator', 'executor'] })
-        flow.state = '已结单';
+        flow.state = step.nextState;
         flow.wfResult = WFResult.SUCCESS;
         flow.wfStatus = WFStatus.OVER;
         flow.operator = User.create(options.operator) as User;
@@ -185,19 +165,18 @@ export class WorkOrderFlow extends BaseFlow {
         detail.value = service.points;
         detail.user = user;
         await detailRepos.save(detail);
-
-        return OVER;
     }
 
     @Transaction()
     async cancel(
+        step,
         flow,
         options,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
 
         flow = Flow.create(flow) as Flow;
-        flow.state = '已作废';
+        flow.state = step.nextState;
         flow.wfResult = WFResult.FAILURE;
         flow.wfStatus = WFStatus.CANCELED;
         flow.operator = User.create(options.operator) as User;
@@ -209,7 +188,6 @@ export class WorkOrderFlow extends BaseFlow {
         }
 
         await flowRepos.save(flow);
-        return OVER;
     }
 
 }

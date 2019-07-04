@@ -328,24 +328,30 @@ export default class extends React.Component {
 
   renderAction = (index, action, row) => {
     if (WFResult.RUNNING !== row.wfResult) return '';
-    const operations = row.template.operations[row.state];
 
-    if (!!operations) {
-      switch (operations[action]) {
-        case FlowOperationsEnum.REMARKS:
-          return <Button key={index} type="primary" ghost onClick={() =>
-            this.setState(state => ({
-              ...state, remarksVisible: true, currentNode: row, currentAction: action, remarks: ''
-            }))}>
-            {action}
-          </Button>
-        case FlowOperationsEnum.ALLOCATION:
-          return <Button key={index} type="primary" ghost onClick={() =>
-            this.setState(state => ({
-              ...state, userSelectorVisible: true, currentNode: row, currentAction: action
-            }))}>
-            {action}
-          </Button>
+    const flowStep = row.template.ex_info.flowSteps.find(item => item.name === row.state);
+
+    if (!!flowStep) {
+      const step = flowStep.steps.find(item => item.name === action);
+      const operation = step.operation;
+
+      if (!!operation) {
+        switch (operation) {
+          case FlowOperationsEnum.REMARKS:
+            return <Button key={index} type="primary" ghost onClick={() =>
+              this.setState(state => ({
+                ...state, remarksVisible: true, currentNode: row, currentAction: action, remarks: ''
+              }))}>
+              {action}
+            </Button>
+          case FlowOperationsEnum.ALLOCATION:
+            return <Button key={index} type="primary" ghost onClick={() =>
+              this.setState(state => ({
+                ...state, userSelectorVisible: true, currentNode: row, currentAction: action
+              }))}>
+              {action}
+            </Button>
+        }
       }
     }
 

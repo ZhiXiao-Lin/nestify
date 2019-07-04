@@ -13,21 +13,20 @@ import { Role } from '../entities/role.entity';
 export class ApplyVolunteerFlow extends BaseFlow {
     protected readonly name: string = '志愿者申请';
     protected readonly template: FlowTemplateEnum = FlowTemplateEnum.APPLY_VR;
-
     protected readonly flow: any = {
         未审核: {
-            申请: this.apply
+            申请: { name: '申请', nextState: '待审核', task: this.apply }
         },
         待审核: {
-            审核: this.verify,
-            驳回: this.reject,
+            审核: { name: '审核', nextState: '已审核', task: this.verify },
+            驳回: { name: '驳回', nextState: '已驳回', task: this.reject },
         },
         已驳回: {
-            重新申请: this.apply,
-            取消: this.cancel
+            重新申请: { name: '重新申请', nextState: '待审核', task: this.apply },
+            取消: { name: '取消', nextState: OVER, task: this.cancel }
         },
         已审核: {
-            完成: this.complete
+            完成: { name: '完成', nextState: OVER, task: this.complete }
         }
     };
 
@@ -40,85 +39,83 @@ export class ApplyVolunteerFlow extends BaseFlow {
 
     @Transaction()
     async apply(
+        step,
         flow,
         options,
         @TransactionRepository(User) userRepos?: Repository<User>,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '待审核';
 
         const user = flow.user;
-        user.status = nextState;
+        user.status = step.nextState;
         await userRepos.save(user);
 
         flow = Flow.create(flow) as Flow;
         flow.wfResult = WFResult.RUNNING;
         flow.wfStatus = WFStatus.RUNNING;
-        flow.state = nextState;
+        flow.state = step.nextState;
 
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
     @Transaction()
     async verify(
+        step,
         flow,
         options,
         @TransactionRepository(User) userRepos?: Repository<User>,
         @TransactionRepository(Role) roleRepos?: Repository<Role>,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '已审核';
 
         const role = await roleRepos.findOne({ where: { token: 'volunteer' } });
 
         const user = await userRepos.findOne({ where: { id: flow.user.id }, relations: ['role'] });
-        user.status = nextState;
+        user.status = step.nextState;
         user.role = role;
 
         await userRepos.save(user);
 
         flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
+        flow.state = step.nextState;
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
-        return [nextState, { nextStep: '完成' }];
+        return { name: '完成' };
     }
 
     @Transaction()
     async reject(
+        step,
         flow,
         options,
         @TransactionRepository(User) userRepos?: Repository<User>,
         @TransactionRepository(Flow) flowRepos?: Repository<Flow>
     ) {
-        const nextState = '已驳回';
+
         const user = flow.user;
-        user.status = nextState;
+        user.status = step.nextState;
 
         await userRepos.save(user);
 
         flow = Flow.create(flow) as Flow;
-        flow.state = nextState;
+        flow.state = step.nextState;
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
-        return nextState;
     }
 
     @Transaction()
-    async complete(flow, options, @TransactionRepository(Flow) flowRepos?: Repository<Flow>) {
+    async complete(step, flow, options, @TransactionRepository(Flow) flowRepos?: Repository<Flow>) {
 
         await flowRepos.delete(flow.id);
-
-        return OVER;
     }
 
     @Transaction()
     async cancel(
+        step,
         flow,
         options,
         @TransactionRepository(User) userRepos?: Repository<User>,
@@ -129,12 +126,13 @@ export class ApplyVolunteerFlow extends BaseFlow {
         await userRepos.save(user);
 
         flow = Flow.create(flow) as Flow;
-        flow.state = '已取消';
+        flow.state = step.nextState;
         flow.wfResult = WFResult.FAILURE;
         flow.wfStatus = WFStatus.CANCELED;
         flow.operator = User.create(options.operator) as User;
 
         await flowRepos.save(flow);
-        return [OVER, { nextStep: '完成' }];
+
+        return { name: '完成' };
     }
 }

@@ -85,7 +85,7 @@ export class Content extends Base {
             handleType,
             cellsMap
         },
-        活动: {
+        实践中心: {
             handleType,
             cellsMap
         },

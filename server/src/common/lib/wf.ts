@@ -65,28 +65,17 @@ export class Engine {
 
                 if (flow.ExecutableTasks.includes(task.name)) {
                     const template = Engine.flowTemplates[flow.template.template];
-                    const res = await template[flow.state][task.name](flow, task.options);
+                    const currentStep = template[flow.state][task.name]
+                    const nextStep = await currentStep.task(currentStep, flow, task.options);
 
                     Logger.log('WF: next state', flow.state);
 
-                    let nextState = res;
-                    let nextStep = null;
-
-                    if (isArray(res)) {
-                        try {
-                            nextState = res[0];
-                            nextStep = res[1];
-                        } catch (err) {
-                            Logger.error(err);
-                        }
-                    }
-
-                    flow.state = nextState;
+                    flow.state = currentStep.nextState;
 
                     if (!!nextStep) {
                         await this.dispatch(
                             nextStep.id || flow.id,
-                            nextStep.nextStep,
+                            nextStep.name,
                             nextStep.options || {}
                         );
                     }
