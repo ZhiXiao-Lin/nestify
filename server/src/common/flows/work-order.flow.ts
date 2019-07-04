@@ -18,38 +18,38 @@ export class WorkOrderFlow extends BaseFlow {
     protected readonly flowSteps: any = [
         {
             name: '待申请',
-            steps: [{ name: '申请', nextState: '待派单', task: this.apply }]
+            steps: [{ name: '申请', nextState: '待派单', task: this.apply, roles: ['self'] }]
         },
         {
             name: '待派单',
             steps: [
-                { name: '派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
-                { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+                { name: '派单', nextState: '待接单', task: this.allocation, roles: ['admin'], operation: FlowOperationsEnum.ALLOCATION },
+                { name: '作废', nextState: '已作废', task: this.cancel, roles: ['self', 'admin'], operation: FlowOperationsEnum.REMARKS }
             ]
         },
         {
             name: '已拒绝',
             steps: [
-                { name: '重新派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
-                { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+                { name: '重新派单', nextState: '待接单', roles: ['admin'], task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
+                { name: '作废', nextState: '已作废', roles: ['self', 'admin'], task: this.cancel, operation: FlowOperationsEnum.REMARKS }
             ]
         },
         {
             name: '待接单',
             steps: [
-                { name: '接单', nextState: '待执行', task: this.receipt },
-                { name: '拒绝', nextState: '已拒绝', task: this.refuse, operation: FlowOperationsEnum.REMARKS }
+                { name: '接单', nextState: '待执行', roles: ['executor'], task: this.receipt },
+                { name: '拒绝', nextState: '已拒绝', roles: ['executor'], task: this.refuse, operation: FlowOperationsEnum.REMARKS }
             ]
         },
         {
             name: '待执行',
-            steps: [{ name: '完成', nextState: '待结单', task: this.complete }]
+            steps: [{ name: '完成', nextState: '待结单', roles: ['executor'], task: this.complete }]
         },
         {
             name: '待结单',
             steps: [
-                { name: '结单', nextState: '已结单', task: this.statement },
-                { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+                { name: '结单', nextState: '已结单', roles: ['admin'], task: this.statement },
+                { name: '作废', nextState: '已作废', roles: ['admin'], task: this.cancel, operation: FlowOperationsEnum.REMARKS }
             ]
         },
         {

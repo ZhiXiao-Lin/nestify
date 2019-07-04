@@ -32,8 +32,8 @@ export class FlowController {
     }
 
     @Get('list')
-    async list(@Query() payload) {
-        return await this.flowService.query(payload);
+    async list(@Query() payload, @CurrentUser() user) {
+        return await this.flowService.query(payload, user);
     }
 
     @Get('requirement')
@@ -41,15 +41,15 @@ export class FlowController {
 
         payload.userId = user.id;
 
-        return await this.flowService.requirement(payload);
+        return await this.flowService.requirement(payload, user);
     }
 
     @Get('task')
     async task(@Query() payload, @CurrentUser() user) {
 
-        payload.userId = user.id;
+        payload.executorId = user.id;
 
-        return await this.flowService.task(payload);
+        return await this.flowService.task(payload, user);
     }
 
     @Post('dispatch')
@@ -58,8 +58,8 @@ export class FlowController {
     }
 
     @Get('export')
-    async export(@Query() payload) {
-        return await this.flowService.query(payload);
+    async export(@Query() payload, @CurrentUser() user) {
+        return await this.flowService.query(payload, user);
     }
 
     @Post()

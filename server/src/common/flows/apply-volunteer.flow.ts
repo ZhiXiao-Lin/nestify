@@ -16,20 +16,20 @@ export class ApplyVolunteerFlow extends BaseFlow {
     protected readonly flowSteps: any = [
         {
             name: '未审核',
-            steps: [{ name: '申请', nextState: '待审核', task: this.apply }]
+            steps: [{ name: '申请', nextState: '待审核', task: this.apply, roles: ['self'] }]
         },
         {
             name: '待审核',
             steps: [
-                { name: '审核', nextState: '已审核', task: this.verify },
-                { name: '驳回', nextState: '已驳回', task: this.reject }
+                { name: '审核', nextState: '已审核', task: this.verify, roles: ['admin'] },
+                { name: '驳回', nextState: '已驳回', task: this.reject, roles: ['admin'] }
             ],
         },
         {
             name: '已驳回',
             steps: [
-                { name: '重新申请', nextState: '待审核', task: this.apply },
-                { name: '取消', nextState: OVER, task: this.cancel }
+                { name: '重新申请', nextState: '待审核', task: this.apply, roles: ['self'] },
+                { name: '取消', nextState: OVER, task: this.cancel, roles: ['self'] }
             ]
         },
         {
