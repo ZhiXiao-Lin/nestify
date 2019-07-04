@@ -19,13 +19,14 @@ import {
   Popconfirm,
   Collapse,
   Modal,
+  Descriptions,
   message,
 } from 'antd';
 
 import styles from './index.css';
 
 import UserSelector from '@/components/UserSelector';
-import { WFStatus, WFResult, FlowOperationsEnum } from '@/utils/enum';
+import { WFStatus, WFResult, FlowOperationsEnum, FlowTemplateEnum } from '@/utils/enum';
 
 const { Content } = Layout;
 const ButtonGroup = Button.Group;
@@ -107,16 +108,8 @@ export default class extends React.Component {
         render: (val) => this.renderWFResult(val),
       },
       {
-        title: '申请人',
+        title: '申请者',
         dataIndex: 'user.account',
-      },
-      {
-        title: '执行人',
-        dataIndex: 'executor.account',
-      },
-      {
-        title: '操作人',
-        dataIndex: 'operator.account',
       },
       {
         title: '操作时间',
@@ -144,8 +137,6 @@ export default class extends React.Component {
       'wfStatus',
       'wfResult',
       'user.account',
-      'executor.account',
-      'operator.account',
       'update_at',
       'ExecutableTasks',
     ];
@@ -377,6 +368,55 @@ export default class extends React.Component {
     return <Button.Group>{actions.map((action, index) => this.renderAction(index, action, row))}</Button.Group>;
   };
 
+  renderExpandedRow = (row) => {
+    console.log(row);
+
+    return (
+      <Fragment>
+        <Descriptions title="[工单信息]">
+          <Descriptions.Item label="流程类型">{row.template.name}</Descriptions.Item>
+          <Descriptions.Item label="当前状态">{row.state}</Descriptions.Item>
+          <Descriptions.Item label="申请者账户">{row.user.account}</Descriptions.Item>
+          <Descriptions.Item label="下单时间">{moment(row.create_at).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
+        </Descriptions>
+        {row.template.template === FlowTemplateEnum.APPLY_VR ?
+          <Descriptions title="[申请者]">
+            <Descriptions.Item label="申请者姓名">{row.user.realName}</Descriptions.Item>
+            <Descriptions.Item label="申请者联系电话">{row.user.phone}</Descriptions.Item>
+            <Descriptions.Item label="申请者身份证号">{row.user.idCard}</Descriptions.Item>
+            <Descriptions.Item label="申请者联系地址">{row.user.address}</Descriptions.Item>
+          </Descriptions> : ''}
+        {row.template.template === FlowTemplateEnum.WORK_OR ?
+          <Descriptions title="[服务信息]">
+            <Descriptions.Item label="服务标题">{row.ex_info.service.title}</Descriptions.Item>
+            <Descriptions.Item label="服务类型">{row.ex_info.service.category.name}</Descriptions.Item>
+            <Descriptions.Item label="申请者姓名">{row.ex_info.realName}</Descriptions.Item>
+            <Descriptions.Item label="申请者联系电话">{row.ex_info.phone}</Descriptions.Item>
+            <Descriptions.Item label="申请者联系地址">{row.ex_info.address}</Descriptions.Item>
+            <Descriptions.Item label="要求服务时间">{row.ex_info.date ? moment(row.ex_info.date).format('YYYY-MM-DD HH:mm:ss') : ''}</Descriptions.Item>
+            <Descriptions.Item label="特殊要求">{row.ex_info.other}</Descriptions.Item>
+          </Descriptions> : ''}
+        {!!row.executor ?
+          <Descriptions title="[执行者]">
+            <Descriptions.Item label="账户">{row.executor.account}</Descriptions.Item>
+            <Descriptions.Item label="昵称">{row.executor.nickname}</Descriptions.Item>
+            <Descriptions.Item label="姓名">{row.executor.realName}</Descriptions.Item>
+            <Descriptions.Item label="联系电话">{row.executor.phone}</Descriptions.Item>
+            <Descriptions.Item label="联系地址">{row.executor.address}</Descriptions.Item>
+            <Descriptions.Item label="等级">V{row.executor.vip}</Descriptions.Item>
+            <Descriptions.Item label="积分">{row.executor.points}</Descriptions.Item>
+          </Descriptions> : ''}
+        {!!row.operator ?
+          <Descriptions title="[最后操作者]">
+            <Descriptions.Item label="账户">{row.operator.account}</Descriptions.Item>
+            <Descriptions.Item label="昵称">{row.operator.nickname}</Descriptions.Item>
+            <Descriptions.Item label="姓名">{row.operator.realName}</Descriptions.Item>
+            <Descriptions.Item label="最后操作时间">{moment(row.update_at).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
+          </Descriptions> : ''}
+      </Fragment>
+    );
+  }
+
   render() {
     const {
       dispatch,
@@ -490,6 +530,7 @@ export default class extends React.Component {
                 rowSelection={rowSelection}
                 pagination={pagination}
                 dataSource={list}
+                expandedRowRender={this.renderExpandedRow}
               />
             </Col>
           </Row>

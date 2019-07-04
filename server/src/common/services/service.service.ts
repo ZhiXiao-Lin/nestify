@@ -77,6 +77,8 @@ export class ServiceService extends BaseService<Service> {
 
     async apply(user: User, payload: any) {
 
+        payload.service = await this.findOneById(payload.id);
+
         const flow = await this.flowService.create(user, payload, FlowTemplateEnum.WORK_OR);
 
         return wf.dispatch(flow.id, '申请');

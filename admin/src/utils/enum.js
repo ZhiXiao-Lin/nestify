@@ -10,6 +10,11 @@ export const WFResult = {
   FAILURE: 2, // 失败
 };
 
+export const FlowTemplateEnum = {
+  WORK_OR: 'WORK_OR',
+  APPLY_VR: 'APPLY_VR'
+}
+
 export const FlowOperationsEnum = {
   ALLOCATION: 'ALLOCATION',  // 分配用户或角色
   REMARKS: 'REMARKS'         // 备注信息
