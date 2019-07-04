@@ -42,7 +42,7 @@ export class FlowService extends BaseService<Flow> {
     async dispatch(payload: any) {
         const { flow, action, options } = payload;
 
-        return wf.dispatch(flow.id, action, options);
+        return wf.dispatch(_.isString(flow) ? flow : flow.id, action, options);
     }
 
     @TransformClassToPlain()
