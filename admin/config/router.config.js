@@ -74,12 +74,12 @@ export default [
         path: '/studio/flow',
         Routes: ['src/pages/Authorized'],
         routes: [
-          { name: '流程模板', path: '/studio/flow/template', component: './flow/template' },
-          {
-            name_noshow: '流程模板详情',
-            path: '/studio/flow/template/detail/:id?',
-            component: './flow/template/detail',
-          },
+          // { name: '流程模板', path: '/studio/flow/template', component: './flow/template' },
+          // {
+          //   name_noshow: '流程模板详情',
+          //   path: '/studio/flow/template/detail/:id?',
+          //   component: './flow/template/detail',
+          // },
           { name: '流程管理', path: '/studio/flow', component: './flow' },
           {
             name_noshow: '流程详情',

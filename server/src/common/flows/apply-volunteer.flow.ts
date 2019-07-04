@@ -13,22 +13,30 @@ import { Role } from '../entities/role.entity';
 export class ApplyVolunteerFlow extends BaseFlow {
     protected readonly name: string = '志愿者申请';
     protected readonly template: FlowTemplateEnum = FlowTemplateEnum.APPLY_VR;
-    protected readonly flow: any = {
-        未审核: {
-            申请: { name: '申请', nextState: '待审核', task: this.apply }
+    protected readonly flowSteps: any = [
+        {
+            name: '未审核',
+            steps: [{ name: '申请', nextState: '待审核', task: this.apply }]
         },
-        待审核: {
-            审核: { name: '审核', nextState: '已审核', task: this.verify },
-            驳回: { name: '驳回', nextState: '已驳回', task: this.reject },
+        {
+            name: '待审核',
+            steps: [
+                { name: '审核', nextState: '已审核', task: this.verify },
+                { name: '驳回', nextState: '已驳回', task: this.reject }
+            ],
         },
-        已驳回: {
-            重新申请: { name: '重新申请', nextState: '待审核', task: this.apply },
-            取消: { name: '取消', nextState: OVER, task: this.cancel }
+        {
+            name: '已驳回',
+            steps: [
+                { name: '重新申请', nextState: '待审核', task: this.apply },
+                { name: '取消', nextState: OVER, task: this.cancel }
+            ]
         },
-        已审核: {
-            完成: { name: '完成', nextState: OVER, task: this.complete }
+        {
+            name: '已审核',
+            steps: [{ name: '完成', nextState: OVER, task: this.complete }]
         }
-    };
+    ];
 
     constructor(
         @InjectRepository(FlowTemplate)

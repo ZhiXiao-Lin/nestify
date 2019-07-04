@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 export abstract class BaseFlow implements OnModuleInit {
     protected readonly name: string;
     protected readonly template: FlowTemplateEnum;
-    protected readonly flow: any;
+    protected readonly flowSteps: any;
 
     constructor(
         protected readonly flowTemplateRepository: Repository<FlowTemplate>
@@ -20,7 +20,7 @@ export abstract class BaseFlow implements OnModuleInit {
     }
 
     async register() {
-        Engine.register(this.template, this.flow);
+        Engine.register(this.template, this.flowSteps);
 
         let target = await this.flowTemplateRepository.findOne({
             where: { template: this.template }
@@ -30,14 +30,7 @@ export abstract class BaseFlow implements OnModuleInit {
             target = new FlowTemplate();
         }
 
-        const flowSteps = Object.keys(this.flow).map((item) => {
-            return {
-                name: item,
-                steps: Object.keys(this.flow[item]).map(action => this.flow[item][action])
-            };
-        });
-
-        target.ex_info = { flowSteps };
+        target.ex_info = { flowSteps: this.flowSteps };
 
         target.name = this.name;
         target.template = this.template;

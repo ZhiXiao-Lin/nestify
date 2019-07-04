@@ -23,7 +23,7 @@ export class FlowService extends BaseService<Flow> {
     async create(user: User, payload: any, template: FlowTemplateEnum, initState?: string) {
         const flow = new Flow();
 
-        flow.state = initState || Object.keys(Engine.flowTemplates[template])[0];
+        flow.state = initState || Engine.flowTemplates[template][0]['name'];
 
         flow.wfStatus = WFStatus.RUNNING;
         flow.wfResult = WFResult.RUNNING;

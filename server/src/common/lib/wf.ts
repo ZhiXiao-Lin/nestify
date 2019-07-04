@@ -65,7 +65,8 @@ export class Engine {
 
                 if (flow.ExecutableTasks.includes(task.name)) {
                     const template = Engine.flowTemplates[flow.template.template];
-                    const currentStep = template[flow.state][task.name]
+                    const currentFlow = template.find(item => item.name === flow.state);
+                    const currentStep = currentFlow.steps.find(item => item.name === task.name);
                     const nextStep = await currentStep.task(currentStep, flow, task.options);
 
                     Logger.log('WF: next state', flow.state);

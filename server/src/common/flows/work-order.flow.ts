@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FlowTemplate } from '../entities/flow-template.entity';
 import { User } from '../entities/user.entity';
 import { Flow } from '../entities/flow.entity';
-import { WFResult, WFStatus, OVER } from '../lib/wf';
+import { WFResult, WFStatus } from '../lib/wf';
 import { Service } from '../entities/service.entity';
 import { Detail } from '../entities/detail.entity';
 
@@ -15,36 +15,52 @@ import { Detail } from '../entities/detail.entity';
 export class WorkOrderFlow extends BaseFlow {
     protected readonly name: string = '服务工单';
     protected readonly template: FlowTemplateEnum = FlowTemplateEnum.WORK_OR;
-    protected readonly flow: any = {
-        待申请: {
-            申请: { name: '申请', nextState: '待派单', task: this.apply }
+    protected readonly flowSteps: any = [
+        {
+            name: '待申请',
+            steps: [{ name: '申请', nextState: '待派单', task: this.apply }]
         },
-        待派单: {
-            派单: { name: '派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
-            作废: { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+        {
+            name: '待派单',
+            steps: [
+                { name: '派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
+                { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+            ]
         },
-        已拒绝: {
-            重新派单: { name: '重新派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
-            作废: { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+        {
+            name: '已拒绝',
+            steps: [
+                { name: '重新派单', nextState: '待接单', task: this.allocation, operation: FlowOperationsEnum.ALLOCATION },
+                { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+            ]
         },
-        待接单: {
-            接单: { name: '接单', nextState: '待执行', task: this.receipt },
-            拒绝: { name: '拒绝', nextState: '已拒绝', task: this.refuse, operation: FlowOperationsEnum.REMARKS }
+        {
+            name: '待接单',
+            steps: [
+                { name: '接单', nextState: '待执行', task: this.receipt },
+                { name: '拒绝', nextState: '已拒绝', task: this.refuse, operation: FlowOperationsEnum.REMARKS }
+            ]
         },
-        待执行: {
-            完成: { name: '完成', nextState: '待结单', task: this.complete }
+        {
+            name: '待执行',
+            steps: [{ name: '完成', nextState: '待结单', task: this.complete }]
         },
-        待结单: {
-            结单: { name: '结单', nextState: '已结单', task: this.statement },
-            作废: { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+        {
+            name: '待结单',
+            steps: [
+                { name: '结单', nextState: '已结单', task: this.statement },
+                { name: '作废', nextState: '已作废', task: this.cancel, operation: FlowOperationsEnum.REMARKS }
+            ]
         },
-        已结单: {
-
+        {
+            name: '已结单',
+            steps: []
         },
-        已作废: {
-
+        {
+            name: '已作废',
+            steps: []
         }
-    };
+    ];
 
     constructor(
         @InjectRepository(FlowTemplate)
