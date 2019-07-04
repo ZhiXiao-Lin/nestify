@@ -20,8 +20,7 @@
         "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator",
         "ic": "run-s ic:**",
         "ic:server": "cd server && yarn",
-        "ic:admin": "cd admin && yarn",
-        "ic:db": "yarn db:create && yarn db:init"
+        "ic:admin": "cd admin && yarn"
     },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.9",

@@ -3,8 +3,8 @@ import pageRoutes from './router.config';
 export default {
   routes: pageRoutes,
   outputPath: './dist',
-  // base: '/admin/',
-  // publicPath: '/admin/',
+  base: '/admin/',
+  publicPath: '/admin/',
   plugins: [
     [
       'umi-plugin-react',
