@@ -53,6 +53,12 @@ export class WorkOrderFlow extends BaseFlow {
         待结单: {
             结单: this.statement,
             作废: this.cancel
+        },
+        已结单: {
+
+        },
+        已作废: {
+
         }
     };
 

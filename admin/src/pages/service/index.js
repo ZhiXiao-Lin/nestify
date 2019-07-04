@@ -291,11 +291,9 @@ export default class extends React.Component {
         message.loading('正在执行导入', 0);
         await apiUploadOne(file, { action: UploadActionType.IMPORT, target: 'services' });
 
-        setTimeout(() => {
-          message.destroy();
-          message.success('导入成功');
-          this.refresh();
-        }, 3000);
+        message.destroy();
+        message.success('导入成功');
+        this.refresh();
 
         return false;
       },

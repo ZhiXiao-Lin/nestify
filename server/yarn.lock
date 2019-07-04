@@ -780,6 +780,15 @@
     cli-color "1.4.0"
     uuid "3.3.2"
 
+"@nestjs/common@^6.0.4":
+  version "6.4.0"
+  resolved "https://registry.npm.taobao.org/@nestjs/common/download/@nestjs/common-6.4.0.tgz#d8460d107309a34f57868470248fceeb69aac75a"
+  integrity sha1-2EYNEHMJo09XhoRwJI/O62mqx1o=
+  dependencies:
+    axios "0.19.0"
+    cli-color "1.4.0"
+    uuid "3.3.2"
+
 "@nestjs/core@^6.0.0":
   version "6.1.1"
   resolved "https://registry.npm.taobao.org/@nestjs/core/download/@nestjs/core-6.1.1.tgz#10494e8e1a4bcf55059fd114c0934186c2130930"
@@ -788,6 +797,18 @@
     "@nuxtjs/opencollective" "0.2.1"
     fast-safe-stringify "2.0.6"
     iterare "1.1.2"
+    object-hash "1.3.1"
+    optional "0.1.4"
+    uuid "3.3.2"
+
+"@nestjs/core@^6.0.4":
+  version "6.4.0"
+  resolved "https://registry.npm.taobao.org/@nestjs/core/download/@nestjs/core-6.4.0.tgz#e24d6f266034f528eb5ceb216d314dd989aea0f4"
+  integrity sha1-4k1vJmA09SjrXOshbTFN2YmuoPQ=
+  dependencies:
+    "@nuxtjs/opencollective" "0.2.2"
+    fast-safe-stringify "2.0.6"
+    iterare "1.2.0"
     object-hash "1.3.1"
     optional "0.1.4"
     uuid "3.3.2"
@@ -804,6 +825,16 @@
   version "6.0.0"
   resolved "https://registry.npm.taobao.org/@nestjs/passport/download/@nestjs/passport-6.0.0.tgz#b92fdf90e055eece02c0378fce98e6f60a864c54"
   integrity sha1-uS/fkOBV7s4CwDePzpjm9gqGTFQ=
+
+"@nestjs/platform-fastify@^6.0.4":
+  version "6.4.0"
+  resolved "https://registry.npm.taobao.org/@nestjs/platform-fastify/download/@nestjs/platform-fastify-6.4.0.tgz#726663267d3ed31d28c0b8700435e5485ff153d4"
+  integrity sha1-cmZjJn0+0x0owLhwBDXlSF/xU9Q=
+  dependencies:
+    fastify "2.6.0"
+    fastify-cors "2.1.3"
+    fastify-formbody "3.1.0"
+    path-to-regexp "3.0.0"
 
 "@nestjs/platform-fastify@^6.1.1":
   version "6.1.1"
@@ -855,6 +886,15 @@
   version "0.2.1"
   resolved "https://registry.npm.taobao.org/@nuxtjs/opencollective/download/@nuxtjs/opencollective-0.2.1.tgz#ddf3e6a22990997322bc2b82e2455a7fbffc518d"
   integrity sha1-3fPmoimQmXMivCuC4kVaf7/8UY0=
+  dependencies:
+    chalk "^2.4.1"
+    consola "^2.3.0"
+    node-fetch "^2.3.0"
+
+"@nuxtjs/opencollective@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.npm.taobao.org/@nuxtjs/opencollective/download/@nuxtjs/opencollective-0.2.2.tgz#26a761ebf588cc92a422d7cee996a66bd6e2761e"
+  integrity sha1-Jqdh6/WIzJKkItfO6Zama9bidh4=
   dependencies:
     chalk "^2.4.1"
     consola "^2.3.0"
@@ -1957,6 +1997,14 @@ axios@0.18.0:
   dependencies:
     follow-redirects "^1.3.0"
     is-buffer "^1.1.5"
+
+axios@0.19.0:
+  version "0.19.0"
+  resolved "https://registry.npm.taobao.org/axios/download/axios-0.19.0.tgz#8e09bff3d9122e133f7b8101c8fbdd00ed3d2ab8"
+  integrity sha1-jgm/89kSLhM/e4EByPvdAO09Krg=
+  dependencies:
+    follow-redirects "1.5.10"
+    is-buffer "^2.0.2"
 
 babel-code-frame@^6.26.0:
   version "6.26.0"
@@ -3357,6 +3405,13 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.8, debug@^2.6.
   dependencies:
     ms "2.0.0"
 
+debug@=3.1.0, debug@~3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
+  integrity sha1-W7WgZyYotkFJVmuhaBnmFRjGcmE=
+  dependencies:
+    ms "2.0.0"
+
 debug@^3.1.0, debug@^3.2.6:
   version "3.2.6"
   resolved "https://registry.npm.taobao.org/debug/download/debug-3.2.6.tgz#e83d17de16d8a7efb7717edbe5fb10135eee629b"
@@ -3370,13 +3425,6 @@ debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@~4.1.0:
   integrity sha1-O3ImAlUQnGtYnO4FDx1RYTlmR5E=
   dependencies:
     ms "^2.1.1"
-
-debug@~3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
-  integrity sha1-W7WgZyYotkFJVmuhaBnmFRjGcmE=
-  dependencies:
-    ms "2.0.0"
 
 decamelize@^1.1.1, decamelize@^1.1.2, decamelize@^1.2.0:
   version "1.2.0"
@@ -4204,6 +4252,14 @@ fast-json-stringify@^1.11.2, fast-json-stringify@^1.9.2:
     ajv "^6.8.1"
     deepmerge "^3.0.0"
 
+fast-json-stringify@^1.15.0:
+  version "1.15.3"
+  resolved "https://registry.npm.taobao.org/fast-json-stringify/download/fast-json-stringify-1.15.3.tgz#09258f2e5cb67cadd2e1cfd0baecf5b808294643"
+  integrity sha1-CSWPLly2fK3S4c/Quuz1uAgpRkM=
+  dependencies:
+    ajv "^6.8.1"
+    deepmerge "^3.0.0"
+
 fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.npm.taobao.org/fast-levenshtein/download/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
@@ -4231,6 +4287,14 @@ fastify-cors@2.1.2:
   version "2.1.2"
   resolved "https://registry.npm.taobao.org/fastify-cors/download/fastify-cors-2.1.2.tgz#5cafc79b974a73f61136f1871bf59208af06b7b0"
   integrity sha1-XK/Hm5dKc/YRNvGHG/WSCK8Gt7A=
+  dependencies:
+    fastify-plugin "^1.5.0"
+    vary "^1.1.2"
+
+fastify-cors@2.1.3:
+  version "2.1.3"
+  resolved "https://registry.npm.taobao.org/fastify-cors/download/fastify-cors-2.1.3.tgz#5ae8fcc620a47270cd68d46acc3b8dd7919b538b"
+  integrity sha1-Wuj8xiCkcnDNaNRqzDuN15GbU4s=
   dependencies:
     fastify-plugin "^1.5.0"
     vary "^1.1.2"
@@ -4350,6 +4414,26 @@ fastify@2.2.0:
     proxy-addr "^2.0.4"
     readable-stream "^3.1.1"
     rfdc "^1.1.2"
+    tiny-lru "^6.0.1"
+
+fastify@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.npm.taobao.org/fastify/download/fastify-2.6.0.tgz#45397b760f75278633fe0dcb30fcb4a26d1f66f6"
+  integrity sha1-RTl7dg91J4Yz/g3LMPy0om0fZvY=
+  dependencies:
+    abstract-logging "^1.0.0"
+    ajv "^6.9.2"
+    avvio "^6.1.1"
+    fast-json-stringify "^1.15.0"
+    find-my-way "^2.0.0"
+    flatstr "^1.0.12"
+    light-my-request "^3.2.0"
+    middie "^4.0.1"
+    pino "^5.11.1"
+    proxy-addr "^2.0.4"
+    readable-stream "^3.1.1"
+    rfdc "^1.1.2"
+    secure-json-parse "^1.0.0"
     tiny-lru "^6.0.1"
 
 fastparse@^1.1.1:
@@ -4499,6 +4583,11 @@ findup-sync@^2.0.0:
     micromatch "^3.0.4"
     resolve-dir "^1.0.1"
 
+flatstr@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.npm.taobao.org/flatstr/download/flatstr-1.0.12.tgz#c2ba6a08173edbb6c9640e3055b95e287ceb5931"
+  integrity sha1-wrpqCBc+27bJZA4wVbleKHzrWTE=
+
 flatstr@^1.0.9:
   version "1.0.11"
   resolved "https://registry.npm.taobao.org/flatstr/download/flatstr-1.0.11.tgz#e4215663ccb8a135a549a1d29c543f05e928e785"
@@ -4516,6 +4605,13 @@ flush-write-stream@^1.0.0:
   dependencies:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
+
+follow-redirects@1.5.10:
+  version "1.5.10"
+  resolved "https://registry.npm.taobao.org/follow-redirects/download/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
+  integrity sha1-e3qfmuov3/NnhqlP9kPtB/T/Xio=
+  dependencies:
+    debug "=3.1.0"
 
 follow-redirects@^1.3.0:
   version "1.7.0"
@@ -5383,6 +5479,11 @@ is-buffer@^1.0.2, is-buffer@^1.1.5:
   resolved "https://registry.npm.taobao.org/is-buffer/download/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha1-76ouqdqg16suoTqXsritUf776L4=
 
+is-buffer@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.npm.taobao.org/is-buffer/download/is-buffer-2.0.3.tgz#4ecf3fcf749cbd1e472689e109ac66261a25e725"
+  integrity sha1-Ts8/z3ScvR5HJonhCaxmJhol5yU=
+
 is-callable@^1.1.4:
   version "1.1.4"
   resolved "https://registry.npm.taobao.org/is-callable/download/is-callable-1.1.4.tgz#1e1adf219e1eeb684d691f9d6a05ff0d30a24d75"
@@ -5786,6 +5887,11 @@ iterare@1.1.2:
   version "1.1.2"
   resolved "https://registry.npm.taobao.org/iterare/download/iterare-1.1.2.tgz#32e65fe03c72f727b1ae5fd002ed6a215f523ae8"
   integrity sha1-MuZf4Dxy9yexrl/QAu1qIV9SOug=
+
+iterare@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npm.taobao.org/iterare/download/iterare-1.2.0.tgz#7427f5ed45986e4b73e2fea903579f1117f3dd15"
+  integrity sha1-dCf17UWYbktz4v6pA1efERfz3RU=
 
 jest-changed-files@^23.4.2:
   version "23.4.2"
@@ -7219,6 +7325,17 @@ neo-async@^2.5.0, neo-async@^2.6.0:
   resolved "https://registry.npm.taobao.org/neo-async/download/neo-async-2.6.0.tgz#b9d15e4d71c6762908654b5183ed38b753340835"
   integrity sha1-udFeTXHGdikIZUtRg+04t1M0CDU=
 
+nest-next@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.npm.taobao.org/nest-next/download/nest-next-0.7.0.tgz#49c8f0e3dd347e36b134286aa12a472418c5ed83"
+  integrity sha1-Scjw4900fjaxNChqoSpHJBjF7YM=
+  dependencies:
+    "@nestjs/common" "^6.0.4"
+    "@nestjs/core" "^6.0.4"
+    "@nestjs/platform-fastify" "^6.0.4"
+    next "^8.0.3"
+    rxjs "^6.4.0"
+
 nest-schedule@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/nest-schedule/-/nest-schedule-0.6.0.tgz#ba19da540bd2049754354987829d570ddf032409"
@@ -7250,7 +7367,7 @@ next-tick@1, next-tick@^1.0.0:
   resolved "https://registry.npm.taobao.org/next-tick/download/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
   integrity sha1-yobR/ogoFpsBICCOPchCS524NCw=
 
-next@^8.1.0:
+next@^8.0.3, next@^8.1.0:
   version "8.1.0"
   resolved "https://registry.npm.taobao.org/next/download/next-8.1.0.tgz#2a996dcd611f9e16920841c615e8bd6e5ada6e1c"
   integrity sha1-KpltzWEfnhaSCEHGFei9blrabhw=
@@ -9547,6 +9664,13 @@ rxjs@^6.3.3:
   dependencies:
     tslib "^1.9.0"
 
+rxjs@^6.4.0:
+  version "6.5.2"
+  resolved "https://registry.npm.taobao.org/rxjs/download/rxjs-6.5.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Frxjs%2Fdownload%2Frxjs-6.5.2.tgz#2e35ce815cd46d84d02a209fb4e5921e051dbec7"
+  integrity sha1-LjXOgVzUbYTQKiCftOWSHgUdvsc=
+  dependencies:
+    tslib "^1.9.0"
+
 safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1, safe-buffer@~5.1.2:
   version "5.1.2"
   resolved "https://registry.npm.taobao.org/safe-buffer/download/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
@@ -9645,6 +9769,11 @@ scss-tokenizer@^0.2.3:
   dependencies:
     js-base64 "^2.1.8"
     source-map "^0.4.2"
+
+secure-json-parse@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/secure-json-parse/download/secure-json-parse-1.0.0.tgz#fa32c6778166b783cf6315db967944e63f7747d0"
+  integrity sha1-+jLGd4Fmt4PPYxXblnlE5j93R9A=
 
 semver-diff@^2.0.0:
   version "2.1.0"

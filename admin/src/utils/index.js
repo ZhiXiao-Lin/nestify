@@ -102,7 +102,7 @@ export async function apiUploadOne(
   options = {}
 ) {
 
-  if ('local' === config.storageType) {
+  if ('local' === config.storageType || param.action === UploadActionType.IMPORT) {
     if (file.size > params.fileSizeLimit) {
       message.error(`请上传小于${(params.fileSizeLimit / 1024 / 1024).toFixed(0)}M的文件`);
       return false;
@@ -115,11 +115,10 @@ export async function apiUploadOne(
 
     const res = await apiPost(`${config.apiRoot}/storage`, param, options);
 
-    if (_.isObject(res)) {
+    if (_.isObject(res) && param.action !== UploadActionType.IMPORT) {
       res.storageType = 'local';
+      res.url = config.staticRoot + res.path;
     }
-
-    res.url = config.staticRoot + res.path;
 
     return res;
   }
