@@ -80,18 +80,18 @@ export default class extends React.Component {
 
               return !!keyword
                 ? val
-                    .toString()
-                    .split(reg)
-                    .map((text, i) =>
-                      i > 0
-                        ? [
-                            <span key={i} col={i} style={{ color: 'red' }}>
-                              <b>{val.toString().match(reg)[0]}</b>
-                            </span>,
-                            text,
-                          ]
-                        : text
-                    )
+                  .toString()
+                  .split(reg)
+                  .map((text, i) =>
+                    i > 0
+                      ? [
+                        <span key={i} col={i} style={{ color: 'red' }}>
+                          <b>{val.toString().match(reg)[0]}</b>
+                        </span>,
+                        text,
+                      ]
+                      : text
+                  )
                 : val;
             },
           },
@@ -323,15 +323,15 @@ export default class extends React.Component {
               </Panel>
             </Collapse>
           ) : (
-            ''
-          )}
+              ''
+            )}
           <Divider orientation="left" />
           <Row>
             <Col className="gutter-row" span={24}>
               <Row className="filter-row" gutter={6}>
                 <Col className="gutter-row" span={10}>
                   <ButtonGroup>
-                    {selectedRows.length > 0 ? (
+                    {/* {selectedRows.length > 0 ? (
                       <Popconfirm
                         title={`是否确认要删除选中的 ${selectedRows.length} 条记录？`}
                         okText="是"
@@ -340,7 +340,7 @@ export default class extends React.Component {
                       >
                         <Tooltip placement="bottom" title="删除">
                           <Button>
-                            <Icon type="delete" />
+                            <Icon type="delete" /> 
                           </Button>
                         </Tooltip>
                       </Popconfirm>
@@ -350,7 +350,7 @@ export default class extends React.Component {
                           <Icon type="delete" />
                         </Button>
                       </Tooltip>
-                    )}
+                    )} */}
                     <Tooltip placement="bottom" title="新增">
                       <Button onClick={this.toCreate}>
                         <Icon type="file-add" />

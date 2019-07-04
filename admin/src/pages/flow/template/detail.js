@@ -158,7 +158,8 @@ export default class extends React.Component {
     if (!selectedNode) return <Skeleton active loading />;
 
     const flowSteps = selectedNode.ex_info.flowSteps || [];
-    const roles = role.data.list || [];
+    let roles = [{ token: 'self', name: '申请者' }, { token: 'executor', name: '执行者' }];
+    roles = roles.concat(role.data.list);
 
     return (
       <Fragment>
@@ -189,7 +190,7 @@ export default class extends React.Component {
                       {
                         title: '角色要求',
                         editable: true,
-                        dataIndex: 'role',
+                        dataIndex: 'roles',
                         inputType: 'treeSelect',
                         options: {
                           props: {
@@ -201,8 +202,8 @@ export default class extends React.Component {
                             showSearch: true,
                             treeDefaultExpandAll: true,
                             treeData: roles.map((item) => ({
-                              key: item.id,
-                              value: item.id,
+                              key: item.token,
+                              value: item.token,
                               title: item.name,
                             })),
                           },

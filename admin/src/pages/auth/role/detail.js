@@ -202,7 +202,7 @@ export default class extends React.Component {
             ],
           })(
             <Input
-              disabled={selectedNode.isSuperAdmin}
+              disabled={true}
               {...formItemStyle}
               placeholder="请填写标识"
             />
