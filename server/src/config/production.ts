@@ -3,6 +3,7 @@ import { LoggerLevel } from '../common/lib/logger';
 
 export default {
 	port: 8008,
+	serverUrl: 'http://wwww.nestify.cn',
 
 	logger: {
 		level: LoggerLevel.INFO
