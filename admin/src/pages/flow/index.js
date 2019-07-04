@@ -369,8 +369,6 @@ export default class extends React.Component {
   };
 
   renderExpandedRow = (row) => {
-    console.log(row);
-
     return (
       <Fragment>
         <Descriptions title="[工单信息]">

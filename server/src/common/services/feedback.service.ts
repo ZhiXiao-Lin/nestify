@@ -29,7 +29,9 @@ export class FeedbackService extends BaseService<Feedback> {
             qb.andWhere(`t.title LIKE '%${payload.keyword}%'`);
         }
 
-       
+        if (!!payload.userId) {
+            qb.andWhere('user.id = :userId', { userId: payload.userId });
+        }
 
         if (!!payload.sort && !!payload.order) {
             qb.addOrderBy(`t.${payload.sort}`, payload.order);
