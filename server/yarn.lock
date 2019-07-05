@@ -977,6 +977,13 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
+"@types/ioredis@^4.0.12":
+  version "4.0.12"
+  resolved "https://registry.npm.taobao.org/@types/ioredis/download/@types/ioredis-4.0.12.tgz#f0d1a723a7ec2ba3d22aabe5a808e6e4548281ed"
+  integrity sha1-8NGnI6fsK6PSKqvlqAjm5FSCge0=
+  dependencies:
+    "@types/node" "*"
+
 "@types/jest@^23.3.13":
   version "23.3.14"
   resolved "https://registry.npm.taobao.org/@types/jest/download/@types/jest-23.3.14.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fjest%2Fdownload%2F%40types%2Fjest-23.3.14.tgz#37daaf78069e7948520474c87b80092ea912520a"

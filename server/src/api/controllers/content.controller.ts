@@ -9,7 +9,8 @@ import {
 	Post,
 	Put,
 	Body,
-	UseInterceptors
+	UseInterceptors,
+	Req
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Api } from '../../common/aspects/decorator';
@@ -25,8 +26,11 @@ export class ContentController {
 	constructor(private readonly contentService: ContentService) { }
 
 	@Get(':id')
-	async findOne(@Param('id') id) {
+	async findOne(@Param('id') id, @Req() req) {
 		if (!id) throw new BadRequestException('参数 id 错误');
+
+		// 文章访问量统计
+		await this.contentService.updateViews(id, req.ip);
 
 		return await this.contentService.findOneById(id);
 	}

@@ -38,7 +38,8 @@ export class WorkOrderFlow extends BaseFlow {
             name: '待接单',
             steps: [
                 { name: '接单', nextState: '待执行', roles: ['executor'], task: this.receipt },
-                { name: '拒绝', nextState: '已拒绝', roles: ['executor'], task: this.refuse, operation: FlowOperationsEnum.REMARKS }
+                { name: '拒绝', nextState: '已拒绝', roles: ['executor'], task: this.refuse, operation: FlowOperationsEnum.REMARKS },
+                { name: '作废', nextState: '已作废', task: this.cancel, roles: ['self', 'admin'], operation: FlowOperationsEnum.REMARKS }
             ]
         },
         {
