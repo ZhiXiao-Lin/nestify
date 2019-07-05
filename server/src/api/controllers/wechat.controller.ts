@@ -34,7 +34,7 @@ export class WechatController {
     @Get('login')
     async login(@Res() res, @Query() query) {
         // 重定向到微信
-        const redirectUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.appid}&redirect_uri=${config.serverUrl}/api/wechat/callback?appUrl=${query.appUrl}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`;
+        const redirectUrl = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wechat.appid}&redirect_uri=${config.serverUrl}/api/wechat/callback?appUrl=${query.appUrl || config.appUrl}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`;
 
         Logger.log('wechat redirectUrl', redirectUrl);
 
