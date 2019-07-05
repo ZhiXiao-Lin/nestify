@@ -89,8 +89,19 @@ async function initFastify(nextjs) {
     fastify.get('/app/volunteer*', async (req, reply) => {
 
         if (!req.query.token) {
-            return reply.code(HttpStatus.FOUND).
-                redirect(`/api/wechat/login?appUrl=${req.raw.url.split('?').pop()}`);
+
+            const url = req.raw.url;
+
+            if (
+                url === '/app/volunteer'
+                ||
+                url.startsWith('/app/volunteer/mainpage/mine')
+                ||
+                url.startsWith(' /app/volunteer/mainpage/attention')
+            ) {
+                return reply.code(HttpStatus.FOUND).
+                    redirect(`/api/wechat/login?appUrl=${url.split('?').pop()}`);
+            }
         }
 
         const content = await readFileAsync(resolve('../volunteer/index.html'));
