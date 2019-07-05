@@ -21,6 +21,7 @@ import { io } from './common/lib/io';
 import { mq } from './common/lib/mq';
 import { wf } from './common/lib/wf';
 import { Logger } from './common/lib/logger';
+import { HttpStatus } from '@nestjs/common';
 
 const readFileAsync = util.promisify(fs.readFile);
 const dev = process.env.NODE_ENV !== 'production';
@@ -78,24 +79,22 @@ async function initFastify(nextjs) {
     });
 
     fastify.use('/static', ServeStatic(resolve('static')));
-    fastify.use('/admin', ServeStatic(resolve('../admin/dist')));
-    fastify.use('/app/volunteer', ServeStatic(resolve('../volunteer')));
 
     fastify.get('/_next/*', async (req, reply) => await nextjs.handleRequest(req.req, reply.res));
-    fastify.get('/admin/*', async (req, reply) => {
+    fastify.get('/admin*', async (req, reply) => {
         const content = await readFileAsync(resolve('../admin/dist/index.html'));
-        reply
-            .code(200)
-            .type('text/html')
-            .send(content);
+        return reply.code(HttpStatus.OK).type('text/html').send(content);
     });
 
-    fastify.get('/app/volunteer/*', async (req, reply) => {
+    fastify.get('/app/volunteer*', async (req, reply) => {
+
+        if (!req.query.token) {
+            return reply.code(HttpStatus.FOUND).
+                redirect(`/api/wechat/login?appUrl=${req.raw.url.split('?').pop()}`);
+        }
+
         const content = await readFileAsync(resolve('../volunteer/index.html'));
-        reply
-            .code(200)
-            .type('text/html')
-            .send(content);
+        return reply.code(HttpStatus.OK).type('text/html').send(content);
     });
 
     return fastify;

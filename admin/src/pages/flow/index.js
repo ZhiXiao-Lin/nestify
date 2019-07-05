@@ -109,7 +109,7 @@ export default class extends React.Component {
       },
       {
         title: '申请者',
-        dataIndex: 'user.account',
+        dataIndex: 'user.nickname',
       },
       {
         title: '操作时间',
@@ -131,12 +131,11 @@ export default class extends React.Component {
     ];
 
     const fields = [
-      'id',
       'template.name',
       'state',
       'wfStatus',
       'wfResult',
-      'user.account',
+      'user.nickname',
       'update_at',
       'ExecutableTasks',
     ];

@@ -8,4 +8,4 @@ import { SSRModule } from './ssr/ssr.module';
     imports: [CommonModule, ApiModule, SSRModule],
     providers: [Seed]
 })
-export class AppModule {}
+export class AppModule { }

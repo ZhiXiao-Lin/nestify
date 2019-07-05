@@ -63,7 +63,11 @@ export class ContentService extends BaseService<Content> {
             qb.take(payload.pageSize);
         }
 
-        return await qb.getManyAndCount();
+        const [list, count] = await qb.getManyAndCount();
+
+        Promise.all(list.map(item => this.saveViewsFromCache(item.id)));
+
+        return [list, count];
     }
 
     @TransformClassToPlain()
@@ -74,25 +78,23 @@ export class ContentService extends BaseService<Content> {
         });
     }
 
-    async updateViews(id: string, ip: string) {
-
-        // 当前时间
+    async saveViewsFromCache(id) {
         const currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
-        Logger.log('currentTime', currentTime);
+        Logger.debug('currentTime', currentTime);
 
         // 文章最后访问时间
         const lastTime = await redis.hget('content_lastTime', `${id}`);
-        Logger.log('lastTime', lastTime);
+        Logger.debug('lastTime', lastTime);
 
         if (!!lastTime) {
-            Logger.log('当前时间减去 5 分钟', moment(currentTime).subtract(5, 'minute').format('YYYY-MM-DD HH:mm:ss'));
+            Logger.debug('当前时间减去 5 分钟', moment(currentTime).subtract(5, 'minute').format('YYYY-MM-DD HH:mm:ss'));
             // 当前时间减去 5 分钟，是否在最后访问时间之后
             if (moment(currentTime).subtract(5, 'minute').isAfter(lastTime)) {
                 // 将缓存中的访问量存入数据库
-                Logger.log('将缓存中的访问量存入数据库');
+                Logger.debug('将缓存中的访问量存入数据库');
 
                 const views = await redis.hget('content_views', `${id}`);
-                Logger.log('当前问量', views);
+                Logger.debug('当前问量', views);
 
                 await Promise.all([
                     this.contentRepository.increment({ id }, 'views', views || 0),
@@ -103,16 +105,23 @@ export class ContentService extends BaseService<Content> {
         } else {
             await redis.hset('content_lastTime', `${id}`, currentTime);
         }
+    }
+
+    async updateViews(id: string, ip: string) {
+
+        // 当前时间
+        const currentTime = moment().format('YYYY-MM-DD HH:mm:ss');
+        Logger.debug('currentTime', currentTime);
 
         // ip 最后访问时间
         const accessTime = await redis.hget('content_accessTime', `${id}${ip}`);
-        Logger.log('accessTime', accessTime);
+        Logger.debug('accessTime', accessTime);
 
         if (!!accessTime) {
-            Logger.log('当前时间减去 1 小时', moment(currentTime).subtract(1, 'hour').format('YYYY-MM-DD HH:mm:ss'));
+            Logger.debug('当前时间减去 1 小时', moment(currentTime).subtract(1, 'hour').format('YYYY-MM-DD HH:mm:ss'));
             // 当前时间减去 1 小时，是否在当前 ip 最后访问时间之后
             if (moment(currentTime).subtract(1, 'hour').isAfter(accessTime)) {
-                Logger.log('在当前 ip 最后访问时间之后');
+                Logger.debug('在当前 ip 最后访问时间之后');
 
                 await Promise.all([
                     redis.hset('content_accessTime', `${id}${ip}`, currentTime),

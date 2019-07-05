@@ -28,10 +28,11 @@ export class ContentController {
 	@Get(':id')
 	async findOne(@Param('id') id, @Req() req) {
 		if (!id) throw new BadRequestException('参数 id 错误');
-
 		// 文章访问量统计
-		await this.contentService.updateViews(id, req.ip);
-
+		await Promise.all([
+			this.contentService.saveViewsFromCache(id),
+			this.contentService.updateViews(id, req.ip),
+		]);
 		return await this.contentService.findOneById(id);
 	}
 
