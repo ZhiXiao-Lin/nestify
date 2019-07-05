@@ -51,7 +51,8 @@ export class UserController {
     }
 
     @Post('apply')
-    async apply(@Body() dto: any) {
+    async apply(@Body() dto: any, @CurrentUser() user) {
+        if (!dto.id) dto.id = user.id;
         return await this.userService.applyVolunteer(dto);
     }
 
