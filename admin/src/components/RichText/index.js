@@ -41,14 +41,14 @@ export default class extends Component {
   };
 
   render() {
-    const { html, contentId, onSave, onMediaUpload } = this.props;
+    const { html, contentId, onMediaUpload } = this.props;
 
     const editorProps = {
       placeholder: '请输入内容',
       contentFormat: 'html',
       value: BraftEditor.createEditorState(html),
       contentId,
-      onSave,
+      onSave: this.toSave,
       media: {
         uploadFn: onMediaUpload,
       },
