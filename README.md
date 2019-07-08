@@ -1,4 +1,4 @@
-# Nestify
+# Nestify 
 
 [![Build Status](https://www.travis-ci.org/ZhiXiao-Lin/nestify.svg?branch=master)](https://www.travis-ci.org/ZhiXiao-Lin/nestify) [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php) [![Gitter](https://badges.gitter.im/nestify-stack/community.svg)](https://gitter.im/nestify-stack/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
@@ -39,11 +39,10 @@
     2. docker exec -it 容器 ID psql -U nestify -d nestify -f /database/create-exts.sql
 -   注：永远不要在生产环境下使用 yarn db:init
 
-## 文档
+## 学习交流
 
--   [在线文档](http://docs.nestify.cn/)
--   启动项目后访问 http://127.0.0.0:3000/docs/ 查看接口文档
--   执行 yarn doc 然后访问 http://127.0.0.0:8080/ 查看项目文档
+-   [文档](http://docs.nestify.cn/)
+-   [社区](https://spectrum.chat/nestify)
 
 ## 功能概览
 
