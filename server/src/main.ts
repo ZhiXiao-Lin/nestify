@@ -83,7 +83,7 @@ async function initFastify(nextjs) {
     fastify.use('/app/volunteer', ServeStatic(resolve('../volunteer')));
 
     fastify.get('/_next/*', async (req, reply) => await nextjs.handleRequest(req.req, reply.res));
-    fastify.get('/admin/', async (req, reply) => {
+    fastify.get('/admin*', async (req, reply) => {
         const content = await readFileAsync(resolve('../admin/dist/index.html'));
         return reply.code(HttpStatus.OK).type('text/html').send(content);
     });
