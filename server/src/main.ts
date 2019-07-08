@@ -97,6 +97,8 @@ async function initFastify(nextjs) {
             if (
                 url === '/app/volunteer'
                 ||
+                url === '/app/volunteer/mainpage/home'
+                ||
                 url.startsWith('/app/volunteer/mainpage/mine')
                 ||
                 url.startsWith(' /app/volunteer/mainpage/attention')
