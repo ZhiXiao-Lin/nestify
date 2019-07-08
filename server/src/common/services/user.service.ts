@@ -13,6 +13,7 @@ import { wf } from '../lib/wf';
 import { Role } from '../entities/role.entity';
 import { Logger } from '../lib/logger';
 import { Detail } from '../entities/detail.entity';
+import { Organization } from '../entities/organization.entity';
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -21,7 +22,8 @@ export class UserService extends BaseService<User> {
         private readonly flowService: FlowService,
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         @InjectRepository(Detail) private readonly detailRepository: Repository<Detail>,
-        @InjectRepository(Role) private readonly roleRepository: Repository<Role>
+        @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+        @InjectRepository(Organization) private readonly organizationRepository: Repository<Organization>,
     ) {
         super(userRepository);
     }
@@ -239,6 +241,7 @@ export class UserService extends BaseService<User> {
         user.phone = payload.phone;
         user.idCard = payload.idCard;
         user.address = payload.address;
+        user.org = await this.organizationRepository.findOne(payload.org);
 
         await this.save(user);
 
