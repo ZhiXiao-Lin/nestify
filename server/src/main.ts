@@ -88,8 +88,7 @@ async function initFastify(nextjs) {
         return reply.code(HttpStatus.OK).type('text/html').send(content);
     });
 
-    fastify.get('/app/volunteer/', async (req, reply) => {
-
+    fastify.get('/app/volunteer*', async (req, reply) => {
         if (!req.query.token) {
 
             const url = req.raw.url;
