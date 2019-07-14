@@ -397,7 +397,8 @@ export default class extends React.Component {
             <Descriptions.Item label="申请者联系电话">{row.ex_info.phone}</Descriptions.Item>
             <Descriptions.Item label="申请者联系地址">{row.ex_info.address}</Descriptions.Item>
             <Descriptions.Item label="要求服务时间">{row.ex_info.date ? moment(row.ex_info.date).format('YYYY-MM-DD HH:mm:ss') : ''}</Descriptions.Item>
-            <Descriptions.Item label="特殊要求">{row.ex_info.other}</Descriptions.Item>
+            <Descriptions.Item label="其它要求">{row.ex_info.other}</Descriptions.Item>
+            <Descriptions.Item label="投诉内容">{row.ex_info.complaint || '无'}</Descriptions.Item>
           </Descriptions> : ''}
         {!!row.executor ?
           <Descriptions title="[执行者]">

@@ -44,7 +44,7 @@ export default [
             path: '/studio/content/carousel/detail/:id?',
             component: './content/carousel/detail',
           },
-          { name: '文章管理', path: '/studio/content', component: './content' },
+          { name: '文章管理', path: '/studio/content/list', component: './content' },
           { name: '文章分类', path: '/studio/content/category', component: './content/category' },
           {
             name_noshow: '文章详情',
@@ -59,7 +59,7 @@ export default [
         path: '/studio/service',
         Routes: ['src/pages/Authorized'],
         routes: [
-          { name: '服务管理', path: '/studio/service', component: './service' },
+          { name: '服务列表', path: '/studio/service/list', component: './service' },
           { name: '服务分类', path: '/studio/service/category', component: './service/category' },
           {
             name_noshow: '服务详情',
@@ -80,7 +80,7 @@ export default [
             path: '/studio/flow/template/detail/:id?',
             component: './flow/template/detail',
           },
-          { name: '流程管理', path: '/studio/flow', component: './flow' },
+          { name: '流程审批', path: '/studio/flow/list', component: './flow' },
           {
             name_noshow: '流程详情',
             path: '/studio/flow/detail/:id?',
@@ -101,7 +101,7 @@ export default [
         path: '/studio/users',
         Routes: ['src/pages/Authorized'],
         routes: [
-          { name: '用户列表', component: './users', path: '/studio/users' },
+          { name: '用户列表', component: './users', path: '/studio/users/list' },
           {
             name_noshow: '用户详情',
             path: '/studio/users/detail/:id?',
@@ -132,7 +132,7 @@ export default [
 
         Routes: ['src/pages/Authorized'],
         routes: [
-          { name: '意见反馈', component: './feedback', path: '/studio/feedback' },
+          { name: '意见反馈列表', component: './feedback', path: '/studio/feedback/list' },
           {
             name_noshow: '意见详情',
             path: '/studio/feedback/detail/:id?',
