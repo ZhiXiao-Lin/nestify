@@ -5,7 +5,10 @@
 [![Nestify](http://img.nestify.cn/Nestify.svg)](http://cms.nestify.cn/)
 
 * 开箱即用的中后台全栈解决方案
-* 正在开发探索中...
+
+## GraphQL 版本
+
+[rant](https://github.com/rantstack/rant)
 
 ## 技术选型
 
