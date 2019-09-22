@@ -20,7 +20,8 @@
         "doc": "npx compodoc -p ./server/tsconfig.json -n Nestify -s --language zh-CN --hideGenerator",
         "ic": "run-s ic:**",
         "ic:server": "cd server && yarn",
-        "ic:admin": "cd admin && yarn"
+        "ic:admin": "cd admin && yarn",
+        "postinstall": "opencollective-postinstall || true"
     },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.9",
@@ -33,5 +34,11 @@
             "path": "./node_modules/cz-conventional-changelog"
         }
     },
-    "dependencies": {}
+    "dependencies": {
+        "opencollective-postinstall": "^2.0.2"
+    },
+    "collective": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/nestify"
+    }
 }
