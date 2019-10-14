@@ -6,7 +6,7 @@
 
 * 开箱即用的中后台全栈解决方案
 
-## GraphQL 版本
+## Better version
 
 [rant](https://github.com/rantstack/rant)
 
