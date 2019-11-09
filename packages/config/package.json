@@ -6,6 +6,9 @@
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
   "license": "MIT",
   "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "directories": {
     "dist": "dist"
   },
@@ -53,5 +56,5 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
   },
-  "gitHead": "9dc599af3e0e354e71ae9a02b510ead187843650"
+  "gitHead": "d06c5d1a150c2a1457b425803bdffde1c70ed094"
 }
