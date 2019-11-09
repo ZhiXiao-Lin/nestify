@@ -6,9 +6,11 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    ConfigModule.register(path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
+    ConfigModule.register(
+      path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}'),
+    ),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
