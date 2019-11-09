@@ -11,7 +11,8 @@
   "devDependencies": {
     "cz-conventional-changelog": "^3.0.2",
     "lerna": "^3.15.0",
-    "lerna-wizard": "^1.1.1"
+    "lerna-wizard": "^1.1.1",
+    "typescript": "^3.7.2"
   },
   "config": {
     "commitizen": {

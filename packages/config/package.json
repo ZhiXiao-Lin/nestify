@@ -1,0 +1,56 @@
+{
+  "name": "@nestify/config",
+  "version": "0.0.0",
+  "description": "A nest.js config module",
+  "author": "roylin <1002591652@qq.com>",
+  "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "directories": {
+    "dist": "dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZhiXiao-Lin/nestify.git"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "test": "jest"
+  },
+  "bugs": {
+    "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^6.9.0",
+    "@nestjs/core": "^6.9.0",
+    "@nestjs/testing": "^6.9.0",
+    "@types/jest": "^24.0.22",
+    "jest": "^24.9.0",
+    "rimraf": "^3.0.0",
+    "rxjs": "^6.0.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.7.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  }
+}
