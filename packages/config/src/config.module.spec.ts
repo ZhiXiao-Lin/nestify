@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from './index';
 describe('Config Nest Module', () => {
 
     beforeEach(() => {
-        ConfigModule.initEnvironment();
+        ConfigModule.initEnvironment(__dirname + '/env');
     });
 
     it('Will boot nest-config module succesfully', async () => {

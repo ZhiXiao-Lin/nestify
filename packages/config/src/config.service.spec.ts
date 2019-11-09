@@ -6,7 +6,7 @@ describe('Config Service', () => {
     describe('Will load configurations from given a glob', () => {
         let configService: ConfigService;
         beforeEach(async () => {
-            ConfigModule.initEnvironment();
+            ConfigModule.initEnvironment(__dirname + '/env');
             configService = await ConfigService.load(
                 path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}'),
                 false,

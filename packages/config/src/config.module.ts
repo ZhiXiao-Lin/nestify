@@ -9,8 +9,8 @@ import { ConfigOptions, ConfigService } from './config.service';
     exports: [ConfigService]
 })
 export class ConfigModule {
-    static initEnvironment(env: string = process.env.NODE_ENV || 'development') {
-        const envPath = path.resolve(__dirname, 'env', !env ? '.env' : `.env.${env}`);
+    static initEnvironment(rootPath: string, env: string = process.env.NODE_ENV || 'development') {
+        const envPath = path.resolve(rootPath, !env ? '.env' : `.env.${env}`);
         dotenv({ path: envPath });
 
         Logger.log(`Loading environment variables from ${envPath}`, ConfigModule.name);
