@@ -14,6 +14,11 @@ module.exports = {
   organizationName: 'Nestify', // Usually your GitHub org/user name.
   projectName: 'Nestify', // Usually your repo name.
   themeConfig: {
+    algolia: {
+      apiKey: 'f7b4357852a31c3bb77a522eb85b395e',
+      indexName: 'nestify',
+      algoliaOptions: {}, // Optional, if provided by Algolia
+    },
     navbar: {
       title: 'Nestify',
       logo: {
@@ -21,8 +26,8 @@ module.exports = {
         src: 'img/logo.svg',
       },
       links: [
-        { to: 'docs/doc1', label: '文档', position: 'left' },
-        { to: 'blog', label: '博客', position: 'left' },
+        { to: 'docs/doc1', label: '文档', position: 'right' },
+        { to: 'blog', label: '博客', position: 'right' },
         {
           href: 'https://github.com/ZhiXiao-Lin/nestify',
           label: 'GitHub',
@@ -33,30 +38,43 @@ module.exports = {
     footer: {
       style: 'dark',
       links: [
-        // {
-        //   title: '文档',
-        //   items: [
-        //     {
-        //       label: '文档',
-        //       to: 'docs',
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: '动态',
-        //   items: [
-        //     {
-        //       label: '博客',
-        //       to: 'blog',
-        //     },
-        //   ],
-        // },
+        {
+          title: '社区交流',
+          items: [
+            {
+              label: '在线讨论',
+              to: 'https://gitter.im/nestify-stack/community',
+            },
+            {
+              label: '常见问题',
+              to: 'https://github.com/ZhiXiao-Lin/nestify/issues',
+            },
+          ],
+        },
+        {
+          title: '赞助',
+          items: [
+            {
+              label: '开源基金会',
+              to: 'https://opencollective.com/nestifystack',
+            },
+          ],
+        },
+        {
+          title: '友情链接',
+          items: [
+            {
+              label: 'Nest.js - 渐进式Node.js框架',
+              to: 'https://nestjs.com/',
+            },
+          ],
+        },
       ],
       logo: {
         alt: 'Nestify Logo',
         src: 'img/logo-h.png',
       },
-      copyright: `Copyright © ${new Date().getFullYear()} Nestify Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} NestifyStack Built with Docusaurus.`,
     },
   },
   presets: [
