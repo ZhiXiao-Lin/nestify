@@ -1,23 +1,30 @@
 {
-  "name": "docz-example-basic",
+  "name": "docs",
+  "version": "0.0.0",
   "private": true,
-  "version": "2.0.0-rc.41",
-  "license": "MIT",
-  "files": [
-    "src/",
-    "doczrc.js",
-    "package.json"
-  ],
   "scripts": {
-    "dev": "docz dev",
-    "build": "docz build",
-    "serve": "docz serve"
+    "start": "docusaurus start --hot-only",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy"
   },
   "dependencies": {
-    "docz": "next",
-    "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "scheduler": "^0.15.0"
+    "@docusaurus/core": "^2.0.0-alpha.33",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.33",
+    "classnames": "^2.2.6",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
