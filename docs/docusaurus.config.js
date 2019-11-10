@@ -65,7 +65,7 @@ module.exports = {
           title: '友情链接',
           items: [
             {
-              label: 'Nest.js - 渐进式Node.js框架',
+              label: 'Nest.js - 渐进式 Node.js 框架',
               to: 'https://nestjs.com/',
             },
           ],

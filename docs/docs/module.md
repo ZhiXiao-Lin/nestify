@@ -6,9 +6,11 @@ sidebar_label: 模块规范
 
 ### Nestify 模块规范
 
-Nestify 需要提供统一的注册接口
+在[此处](https://docs.nestjs.com/fundamentals/dynamic-modules)了解如何编写 NestJS 动态模块
 
-同步注册方法签名
+Nestify 要求 NestJS 模块提供统一的注册方法
+
+同步注册的方法签名
 
 ``` typescript
 
@@ -16,7 +18,7 @@ Nestify 需要提供统一的注册接口
 
 ```
 
-异步注册方法签名
+异步注册的方法签名
 
 ``` typescript
 
