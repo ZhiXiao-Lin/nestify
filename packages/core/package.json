@@ -6,9 +6,7 @@
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
   "license": "MIT",
   "main": "dist/index.js",
-  "publishConfig": {
-    "registry": "https://registry.npm.taobao.org/"
-  },
+  "private": "false",
   "directories": {
     "dist": "dist"
   },
@@ -27,5 +25,6 @@
   },
   "dependencies": {
     "@nestjs/common": "^6.9.0"
-  }
+  },
+  "gitHead": "b83e168909d59b707a3236307c8b0023b6c6ebe1"
 }
