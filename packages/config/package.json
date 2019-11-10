@@ -6,7 +6,9 @@
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
   "license": "MIT",
   "main": "dist/index.js",
-  "private": "false",
+  "publishConfig": {
+    "access": "public"
+  },
   "directories": {
     "dist": "dist"
   },
