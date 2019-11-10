@@ -55,7 +55,7 @@ function Home() {
   const { siteConfig = {} } = context;
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
+      title={`${siteConfig.title} - Nest.js 开源生态系统`}
       description="Description will go into a meta tag in <head />">
       <header className={classnames('hero hero--primary', styles.heroBanner)}>
         <div className="container">

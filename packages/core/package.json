@@ -1,0 +1,31 @@
+{
+  "name": "@nestify/core",
+  "version": "0.0.1",
+  "description": "> TODO: description",
+  "author": "roylin <1002591652@qq.com>",
+  "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "publishConfig": {
+    "registry": "https://registry.npm.taobao.org/"
+  },
+  "directories": {
+    "dist": "dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZhiXiao-Lin/nestify.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+  },
+  "dependencies": {
+    "@nestjs/common": "^6.9.0"
+  }
+}
