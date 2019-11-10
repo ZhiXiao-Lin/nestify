@@ -14,6 +14,7 @@ module.exports = {
   organizationName: 'Nestify', // Usually your GitHub org/user name.
   projectName: 'Nestify', // Usually your repo name.
   themeConfig: {
+    image: 'img/logo.png',
     algolia: {
       apiKey: 'f7b4357852a31c3bb77a522eb85b395e',
       indexName: 'nestify',
@@ -26,7 +27,7 @@ module.exports = {
         src: 'img/logo.svg',
       },
       links: [
-        { to: 'docs/doc1', label: '文档', position: 'right' },
+        { to: 'docs/introduction', label: '文档', position: 'right' },
         { to: 'blog', label: '博客', position: 'right' },
         {
           href: 'https://github.com/ZhiXiao-Lin/nestify',
@@ -89,5 +90,5 @@ module.exports = {
         },
       },
     ],
-  ],
+  ]
 };
