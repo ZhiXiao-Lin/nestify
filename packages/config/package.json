@@ -18,7 +18,7 @@
     "url": "git+https://github.com/ZhiXiao-Lin/nestify.git"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prepublish": "rimraf dist && npm run build",
     "build": "nest build",
     "test": "jest"
   },

@@ -18,13 +18,21 @@
     "url": "git+https://github.com/ZhiXiao-Lin/nestify.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "prepublish": "rimraf dist && npm run build",
+    "build": "nest build",
+    "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
   },
-  "dependencies": {
-    "@nestjs/common": "^6.9.0"
+  "gitHead": "b83e168909d59b707a3236307c8b0023b6c6ebe1",
+  "devDependencies": {
+    "@nestjs/common": "^6.9.0",
+    "rimraf": "^3.0.0",
+    "rxjs": "^6.5.3",
+    "typescript": "^3.7.2"
   },
-  "gitHead": "b83e168909d59b707a3236307c8b0023b6c6ebe1"
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  }
 }
