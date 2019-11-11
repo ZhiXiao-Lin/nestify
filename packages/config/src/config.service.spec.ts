@@ -7,10 +7,7 @@ describe('Config Service', () => {
         let configService: ConfigService;
         beforeEach(async () => {
             ConfigModule.initEnvironment(__dirname + '/env');
-            configService = await ConfigService.load(
-                path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}'),
-                false,
-            );
+            configService = await ConfigService.load(path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}'), false);
         });
         it('Will return the value from a previously loaded config', () => {
             expect(configService.get(['app', 'port'])).toEqual('7777');
