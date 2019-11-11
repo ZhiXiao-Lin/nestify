@@ -1,12 +1,20 @@
+English | [中文文档](https://docs.nestify.cn/)
+
 # Nestify
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
 [![Nestify](http://img.nestify.cn/Nestify.svg)](http://cms.nestify.cn/)
 
 ### What is Nestify?
-Nest.js open source ecosystem
+Nestify aims to provide [NestJS](https://www.nestjs.com/) community, with a series of standard modules out of the box.
 
-### Features & Roadmap
+All modules included by nestify have the following features:
+
+* Unified module registration interface
+* Complete unit test
+* Clear use of documents
+* In line with community best practices
+* Permanent open source free
 
 ### Stay in touch
 * Author - [Roy Lin](https://github.com/ZhiXiao-Lin)
@@ -15,10 +23,6 @@ Nest.js open source ecosystem
 ### License
 
 Nestify is [MIT licensed](https://github.com/ZhiXiao-Lin/nestify/tree/c25b47543f09dc142f7ba7a44078da8d13f9bed0/LICENSE/README.md).
-
-### Sponsor
-
-[![Reward](http://img.nestify.cn/reward.png?imageMogr2/auto-orient/strip%7CimageView2/5/w/270)](http://cms.nestify.cn/)
 
 ## Contributors
 
