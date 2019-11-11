@@ -1,7 +1,7 @@
 {
   "name": "@nestify/logger",
   "version": "0.0.9",
-  "description": "> TODO: description",
+  "description": "A nest.js logger module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
   "license": "MIT",
