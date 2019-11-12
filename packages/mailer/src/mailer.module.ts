@@ -12,6 +12,10 @@ export class MailerModule {
     public static register(options: MailerModuleOptions): DynamicModule {
         const providers = [
             {
+                provide: MAILER_MODULE_OPTIONS,
+                useValue: options
+            },
+            {
                 provide: MAILER_TRANSPORTER,
                 useValue: mailer.createTransport(options.transport, options.defaults)
             }

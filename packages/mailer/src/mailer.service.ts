@@ -12,7 +12,6 @@ export class MailerService {
         @InjectMailerTransporter()
         private readonly transporter: Mail
     ) {
-
         const templateAdapter: TemplateAdapter = this.options.transport ? this.options.template.adapter : null;
 
         if (!!templateAdapter) {

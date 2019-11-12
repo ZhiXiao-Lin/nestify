@@ -45,7 +45,7 @@ export interface ArtTemplateDefaults {
     /**
      * sub template compilation adapter
      */
-    include: any,
+    include: any;
 
     /**
      *  HTML minifier. Work only in NodeJS environment
@@ -56,27 +56,27 @@ export interface ArtTemplateDefaults {
      * HTML minifier configuration. Refer to: https://github.com/kangax/html-minifier
      */
     htmlMinifierOptions: {
-        collapseWhitespace: boolean,
-        minifyCSS: boolean,
-        minifyJS: boolean,
+        collapseWhitespace: boolean;
+        minifyCSS: boolean;
+        minifyJS: boolean;
         // automatically merged at runtime: rules.map(rule => rule.test)
-        ignoreCustomFragments: any[]
+        ignoreCustomFragments: any[];
     };
 
     /**
      * error events. Work only if bail is false
      */
-    onerror: any,
+    onerror: any;
 
     /**
      * template file loader
      */
-    loader: any,
+    loader: any;
 
     /**
      * cache center adapter (depend on filename field)
      */
-    caches: any,
+    caches: any;
 
     /**
      * root directory of template. If filename field is not a local path, template will be found in root directory
@@ -88,15 +88,15 @@ export interface ArtTemplateDefaults {
      * @default '.art'
      * default extension. If no extensions, extname will be automatically added
      */
-    extname: string,
+    extname: string;
 
     /**
      * ignored variables. An array of template variables ignored by template compiler
      */
-    ignore: any[],
+    ignore: any[];
 
     // imported template variables
-    imports: { [key: string]: Function }
+    imports: { [key: string]: Function };
 }
 
 export class ArtAdapter implements TemplateAdapter {

@@ -6,9 +6,7 @@ import { MailerModule } from './mailer.module';
 import { MailerService } from './mailer.service';
 
 describe('Mailer Module', () => {
-
     it('Will boot mailer module succesfully', async () => {
-
         const options: MailerModuleOptions = {
             transport: {
                 host: 'smtp.qq.com',
@@ -20,14 +18,14 @@ describe('Mailer Module', () => {
                 },
                 tls: {
                     rejectUnauthorized: false
-                },
+                }
             },
             template: {
                 adapter: new ArtAdapter({
                     debug: true,
                     extname: '.html'
                 })
-            },
+            }
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -42,7 +40,6 @@ describe('Mailer Module', () => {
     });
 
     it('Will boot mailer module succesfully async', async () => {
-
         const options: MailerModuleAsyncOptions = {
             useFactory: async () => {
                 return {
@@ -56,15 +53,15 @@ describe('Mailer Module', () => {
                         },
                         tls: {
                             rejectUnauthorized: false
-                        },
+                        }
                     },
                     template: {
                         adapter: new ArtAdapter({
                             debug: true,
                             extname: '.html'
                         })
-                    },
-                }
+                    }
+                };
             }
         };
 

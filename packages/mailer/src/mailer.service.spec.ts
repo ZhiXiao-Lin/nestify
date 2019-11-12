@@ -7,11 +7,9 @@ import { MailerService } from './mailer.service';
 dotenv.config();
 
 describe('Mailer Service', () => {
-
     let service: MailerService;
 
     beforeEach(async () => {
-
         const options: MailerModuleOptions = {
             transport: {
                 host: 'smtp.qq.com',
@@ -23,14 +21,14 @@ describe('Mailer Service', () => {
                 },
                 tls: {
                     rejectUnauthorized: false
-                },
+                }
             },
             template: {
                 adapter: new ArtAdapter({
                     debug: true,
                     extname: '.html'
                 })
-            },
+            }
         };
 
         const transporter = mailer.createTransport(options.transport, options.defaults);
@@ -43,7 +41,6 @@ describe('Mailer Service', () => {
     });
 
     it('Will return sent message id', async () => {
-
         const options: ISendMailOptions = {
             from: '1002591652@qq.com', // sender address
             to: 'linzhixiao1996@gmail.com', // list of receivers
@@ -55,8 +52,6 @@ describe('Mailer Service', () => {
         };
 
         const res: mailer.SentMessageInfo = await service.send(options);
-
-        console.log(res);
 
         expect(res.messageId).toBeTruthy();
     });

@@ -8,8 +8,8 @@ export interface ISendMailOptions extends SendMailOptions {
     subject?: string;
     text?: string;
     html?: string;
-    template?: string,
-    context?: { [name: string]: any; }
+    template?: string;
+    context?: { [name: string]: any };
 }
 
 export interface TemplateAdapter {
@@ -21,7 +21,7 @@ export interface MailerModuleOptions {
     transport?: SMTPTransport | SMTPTransport.Options | string;
     template?: {
         adapter?: TemplateAdapter;
-        options?: { [name: string]: any; };
+        options?: { [name: string]: any };
     };
 }
 
