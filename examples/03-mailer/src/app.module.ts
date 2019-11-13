@@ -14,21 +14,21 @@ dotenv.config();
         secure: true, // true for 465, false for other ports
         auth: {
           user: process.env.AUTH_USER,
-          pass: process.env.AUTH_PASS
+          pass: process.env.AUTH_PASS,
         },
         tls: {
-          rejectUnauthorized: false
-        }
+          rejectUnauthorized: false,
+        },
       },
       template: {
         adapter: new ArtAdapter({
           debug: true,
-          extname: '.html'
-        })
-      }
-    })
+          extname: '.html',
+        }),
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

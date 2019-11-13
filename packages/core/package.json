@@ -21,17 +21,36 @@
   },
   "scripts": {
     "prepublish": "rimraf dist && npm run build",
-    "build": "nest build",
+    "build": "tsc",
     "test": "jest"
   },
   "bugs": {
     "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  },
   "gitHead": "b83e168909d59b707a3236307c8b0023b6c6ebe1",
   "devDependencies": {
     "@nestjs/common": "^6.9.0",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.7",
+    "jest": "^24.9.0",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.1",
     "typescript": "^3.7.2"
   },
   "dependencies": {
