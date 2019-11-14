@@ -9,7 +9,7 @@ function isPromise(x) {
     return x && typeof x.then === 'function';
 }
 
-describe('Koa Compose', function() {
+describe('EventBus Compose', function () {
     it('should work', async () => {
         const arr = [];
         const stack = [];
@@ -84,7 +84,7 @@ describe('Koa Compose', function() {
             });
     });
 
-    it('should create next functions that return a Promise', function() {
+    it('should create next functions that return a Promise', function () {
         const stack = [];
         const arr = [];
         for (let i = 0; i < 5; i++) {
@@ -100,7 +100,7 @@ describe('Koa Compose', function() {
         }
     });
 
-    it('should work with 0 middleware', function() {
+    it('should work with 0 middleware', function () {
         return compose([])({});
     });
 
@@ -135,10 +135,10 @@ describe('Koa Compose', function() {
         });
 
         return compose(stack)({})
-            .then(function() {
+            .then(function () {
                 throw new Error('promise was not rejected');
             })
-            .catch(function(e) {
+            .catch(function (e) {
                 expect(e).toBeInstanceOf(Error);
             });
     });
@@ -206,7 +206,7 @@ describe('Koa Compose', function() {
 
         return compose([])({}, async () => {
             called = true;
-        }).then(function() {
+        }).then(function () {
             assert(called);
         });
     });
@@ -214,15 +214,15 @@ describe('Koa Compose', function() {
     it('should handle errors in wrapped non-async functions', () => {
         const stack = [];
 
-        stack.push(function() {
+        stack.push(function () {
             throw new Error();
         });
 
         return compose(stack)({})
-            .then(function() {
+            .then(function () {
                 throw new Error('promise was not rejected');
             })
-            .catch(function(e) {
+            .catch(function (e) {
                 expect(e).toBeInstanceOf(Error);
             });
     });
@@ -282,7 +282,7 @@ describe('Koa Compose', function() {
                 val++;
                 return next();
             }
-        ])({}).then(function() {
+        ])({}).then(function () {
             expect(val).toEqual(3);
         });
     });
@@ -303,7 +303,7 @@ describe('Koa Compose', function() {
         });
 
         const next = () => 0;
-        return compose(stack)({}, next).then(function(val) {
+        return compose(stack)({}, next).then(function (val) {
             expect(val).toEqual(1);
         });
     });

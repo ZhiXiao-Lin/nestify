@@ -6,6 +6,7 @@ import { EVENT_BUS_ERROR } from './event-bus.constants';
 import { InjectEventBusModuleOptions } from './event-bus.decorators';
 import { EventBusExplorer } from './event-bus.explorer';
 import { Callback, EventBusModuleOptions, ListenerDecoratorOptions } from './event-bus.interfaces';
+import { compose } from './utils/compose';
 
 @Injectable()
 export class EventBusService {
@@ -14,7 +15,10 @@ export class EventBusService {
 
     private middleware: Callback[] = [];
 
-    private fnMiddleware: Callback = (data) => new Promise((resolve, reject) => resolve(data));
+    private fnMiddleware: Callback = async (data, next) => {
+        await next();
+        return data;
+    };
 
     constructor(
         @InjectEventBusModuleOptions()
@@ -27,8 +31,9 @@ export class EventBusService {
 
         if (!!this.options) {
             if (!!this.options.middleware) {
+                this.use(this.fnMiddleware);
                 this.options.middleware.forEach((fn) => this.use(fn));
-                // this.fnMiddleware = compose(this.middleware);
+                this.fnMiddleware = compose(this.middleware);
             }
         }
     }
@@ -39,7 +44,6 @@ export class EventBusService {
     }
 
     public emit(eventName: string | symbol, data?: any) {
-        // console.log('fnMiddleware', this.fnMiddleware);
 
         if (this.fnMiddleware.length <= 0) {
             return this.event.emit(eventName, data);
