@@ -6,7 +6,7 @@ import { EVENT_BUS_ERROR } from './event-bus.constants';
 import { InjectEventBusModuleOptions } from './event-bus.decorators';
 import { EventBusExplorer } from './event-bus.explorer';
 import { Callback, EventBusModuleOptions, ListenerDecoratorOptions } from './event-bus.interfaces';
-import { compose } from './utils/compose';
+// import { compose } from './utils/compose';
 
 @Injectable()
 export class EventBusService {
@@ -33,7 +33,7 @@ export class EventBusService {
             if (!!this.options.middleware) {
                 this.use(this.fnMiddleware);
                 this.options.middleware.forEach((fn) => this.use(fn));
-                this.fnMiddleware = compose(this.middleware);
+                // this.fnMiddleware = compose(this.middleware);
             }
         }
     }
