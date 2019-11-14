@@ -54,5 +54,6 @@
     "@nestjs/common": "^6.9.0",
     "@nestjs/core": "^6.9.0",
     "reflect-metadata": "^0.1.13"
-  }
+  },
+  "gitHead": "7764fb66e4dd8479bf39a6ab39230aca13b4fb85"
 }

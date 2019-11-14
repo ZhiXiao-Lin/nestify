@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import * as EventEmitter from 'events';
@@ -60,8 +60,7 @@ export class EventBusService {
         return this;
     }
 
-    private async handleListener({ instance, name }: InstanceWrapper, key: string, options: ListenerDecoratorOptions) {
+    private async handleListener({ instance }: InstanceWrapper, key: string, options: ListenerDecoratorOptions) {
         await this.on(options.event, instance[key].bind(instance));
-        Logger.log(`Event ${options.event} is listened to by ${name}:${key}`, EventBusService.name);
     }
 }
