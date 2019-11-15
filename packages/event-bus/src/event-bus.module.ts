@@ -12,7 +12,7 @@ export class EventBusModule {
         const providers = [
             {
                 provide: EVENT_BUS_OPTIONS,
-                useValue: options
+                useValue: options || {}
             }
         ];
 

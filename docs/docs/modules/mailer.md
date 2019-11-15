@@ -115,4 +115,4 @@ await mailer.send({
 
 ### 例子
 
-完成的例子请查看[此处](https://github.com/ZhiXiao-Lin/nestify/tree/master/examples/03-mailer)
+完整的例子请查看[此处](https://github.com/ZhiXiao-Lin/nestify/tree/master/examples/03-mailer)
