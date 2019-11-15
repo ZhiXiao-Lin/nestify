@@ -12,7 +12,7 @@ Nestify 核心模块包含许多重要的基础功能
 
 ``` shell
 
-$ npm install @nestify/core
+$ npm install @nestify/core --save
 
 ```
 
@@ -24,7 +24,7 @@ $ yarn add @nestify/core
 
 ```
 
-### 特征（Trait）
+### 特性（Trait）
 
 实现类似于 PHP 中的 trait 功能，可以简单的理解为多继承。
 

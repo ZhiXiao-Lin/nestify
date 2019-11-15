@@ -13,7 +13,7 @@ Nestify 邮件模块基于 [nodemailer](https://github.com/nodemailer/nodemailer
 
 ``` shell
 
-$ npm install @nestify/mailer
+$ npm install @nestify/mailer --save
 
 ```
 

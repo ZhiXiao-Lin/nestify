@@ -13,7 +13,7 @@ winston 是一个优秀的 node.js 日志模块，支持多种日志级别、传
 
 ``` shell
 
-$ npm install @nestify/logger
+$ npm install @nestify/logger --save
 
 ```
 
