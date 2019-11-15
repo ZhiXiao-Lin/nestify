@@ -4,7 +4,7 @@ hide_title: true
 sidebar_label: 事件总线
 ---
 
-### 邮件模块
+### 事件总线
 
 Nestify 事件总线基于 Node.js 原生的 events 模块实现，
 使用事件总线可以让程序高度解耦。
