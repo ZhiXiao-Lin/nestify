@@ -3,8 +3,7 @@ import { EventBusService } from '@nestify/event-bus';
 
 @Injectable()
 export class AppService {
-
-  constructor(private readonly event: EventBusService) { }
+  constructor(private readonly event: EventBusService) {}
 
   async getHello() {
     const msg = 'Hello World!';

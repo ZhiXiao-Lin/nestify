@@ -8,14 +8,11 @@ import { AppSubscriber } from './app.subscriber';
   imports: [
     EventBusModule.registerAsync({
       useFactory: async () => {
-        return {}
-      }
-    })
+        return {};
+      },
+    }),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    AppSubscriber
-  ],
+  providers: [AppService, AppSubscriber],
 })
-export class AppModule { }
+export class AppModule {}
