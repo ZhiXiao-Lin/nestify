@@ -4,7 +4,7 @@ import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import * as EventEmitter from 'events';
 import { InjectEventBusModuleOptions } from './event-bus.decorators';
 import { EventBusExplorer } from './event-bus.explorer';
-import { EventBusModuleOptions, ListenerDecoratorOptions } from './event-bus.interfaces';
+import { Callback, EventBusModuleOptions, ListenerDecoratorOptions } from './event-bus.interfaces';
 
 @Injectable()
 export class EventBusService {
