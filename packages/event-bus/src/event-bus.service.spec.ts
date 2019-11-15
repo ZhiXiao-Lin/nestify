@@ -17,27 +17,7 @@ describe('EventBus Service', () => {
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
-            imports: [EventBusModule.register({
-                middleware: [
-                    async (data, next) => {
-                        data.value = 1;
-
-                        await next();
-
-                        data.value = 5;
-                    },
-                    async (data, next) => {
-                        data.value = 2;
-
-                        await next();
-
-                        data.value = 4;
-                    },
-                    async (data, next) => {
-                        data.value = 3;
-                    },
-                ]
-            })],
+            imports: [EventBusModule.register()],
             providers: [MySubscriber]
         }).compile();
 
