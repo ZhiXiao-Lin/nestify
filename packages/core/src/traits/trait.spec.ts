@@ -9,7 +9,6 @@ abstract class FrequenciesTrait extends Trait {
     }
 
     public everyMinute() {
-        console.log('FrequenciesTrait: everyMinute');
         return this.cron('* 1 * * *');
     }
 }
@@ -18,7 +17,6 @@ abstract class QueueTrait extends Trait {
     private job: any;
 
     public async push(options: any) {
-        console.log('QueueTrait.push', options);
         return await this.job();
     }
 }

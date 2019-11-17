@@ -45,6 +45,7 @@
   "devDependencies": {
     "@nestjs/common": "^6.9.0",
     "@types/jest": "^24.0.23",
+    "@types/luxon": "^1.21.0",
     "@types/node": "^12.12.7",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
@@ -54,6 +55,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "luxon": "^1.21.1",
     "reflect-metadata": "^0.1.13"
   }
 }

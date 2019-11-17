@@ -1,6 +1,6 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 
-export interface SubscriberDecoratorOptions { }
+export interface SubscriberDecoratorOptions {}
 
 export interface ListenerDecoratorOptions {
     event: string | symbol;
@@ -8,8 +8,7 @@ export interface ListenerDecoratorOptions {
 
 export type Callback = (...args: any[]) => Promise<any>;
 
-export interface EventBusModuleOptions {
-}
+export interface EventBusModuleOptions {}
 
 export interface EventBusModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
     useFactory: (...args: any[]) => Promise<EventBusModuleOptions> | EventBusModuleOptions;
