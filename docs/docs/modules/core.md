@@ -4,11 +4,11 @@ hide_title: true
 sidebar_label: 核心模块
 ---
 
-### 核心模块
+# 核心模块
 
 Nestify 核心模块包含许多重要的基础功能
 
-### 安装
+## 安装
 
 ``` shell
 
@@ -24,7 +24,7 @@ $ yarn add @nestify/core
 
 ```
 
-### 特性（Trait）
+## 特性（Trait）
 
 实现类似于 PHP 中的 trait 功能，可以简单的理解为多继承。
 
@@ -85,3 +85,54 @@ class Schedule {
 })();
 
 ```
+## 内置特性
+
+### FrequenciesTrait
+
+该特性提供一系列便捷方法用于设置 Cron 计划任务表达式
+
+| 方法                              | 描述
+| :---                              | :---     
+| cron('* * * * *');                | 自定义 Cron 计划执行任务
+| everyMinute();                    | 每分钟执行一次任务
+| everyFiveMinutes();               | 每五分钟执行一次任务
+| everyTenMinutes();                | 每十分钟执行一次任务
+| everyFifteenMinutes();            | 每十五分钟执行一次任务
+| everyThirtyMinutes();             | 每三十分钟执行一次任务
+| hourly();                         | 每小时执行一次任务
+| hourlyAt(17);                     | 每小时第 17 分钟执行一次任务
+| daily();                          | 每天零点执行一次任务
+| dailyAt('13:00');                 | 每天 13 点执行一次任务
+| twiceDaily(1, 13);                | 每天 1 点及 13 点各执行一次任务
+| weekly();                         | 每周执行一次任务
+| weeklyOn(1, '8:00');              | 每周一的 8 点执行一次任务
+| monthly();                        | 每月执行一次任务
+| monthlyOn(4, '15:00');            | 每月 4 号的 15 点 执行一次任务
+| quarterly();                      | 每季度执行一次任务
+| yearly();                         | 每年执行一次任务
+| timezone('America/New_York');     | 设置时区
+
+结合额外的限制条件，我们可以生成在一周中的特定时间运行的计划任务。例如，在每周一执行命令：
+
+``` typescript
+// 每周一 13:00 执行
+schedule.weekly().mondays().at('13:00').run();
+
+// 工作日（周一至周五） 8:00 和 15:00 各执行一次
+schedule.weekdays()
+        .twiceDaily(8, 15)
+        .run();
+```
+
+| 方法              | 描述
+| :---              | :--- 
+| weekdays();       | 限制任务在工作日执行
+| weekends();       | 限制任务在周末执行
+| sundays();        | 限制任务在周日执行
+| mondays();        | 限制任务在周一执行
+| tuesdays();       | 限制任务在周二执行
+| wednesdays();     | 限制任务在周三执行
+| thursdays();      | 限制任务在周四执行
+| fridays();        | 限制任务在周五执行
+| saturdays();      | 限制任务在周六执行
+| days();           | 限制任务在一周中的哪几天运行

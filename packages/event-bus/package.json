@@ -55,5 +55,5 @@
     "@nestjs/core": "^6.9.0",
     "reflect-metadata": "^0.1.13"
   },
-  "gitHead": "e007457f3904a57feabe0a3933e688ee4a4b4402"
+  "gitHead": "d31063baea3f008002467f7e82ca7b3ad0804df8"
 }

@@ -4,12 +4,12 @@ hide_title: true
 sidebar_label: 日志模块
 ---
 
-### 日志模块
+# 日志模块
 
 Nestify 日志模块基于 [winston](https://github.com/winstonjs/winston) 实现，
 winston 是一个优秀的 node.js 日志模块，支持多种日志级别、传输方式以及自定义日志格式。
 
-### 安装
+## 安装
 
 ``` shell
 
@@ -25,7 +25,7 @@ $ yarn add @nestify/logger
 
 ```
 
-### 使用
+## 使用
 
 同步注册 LoggerModule
 
@@ -104,6 +104,6 @@ bootstrap();
 
 ```
 
-### 例子
+## 例子
 
 完整的例子请查看[此处](https://github.com/ZhiXiao-Lin/nestify/tree/master/examples/02-logger)

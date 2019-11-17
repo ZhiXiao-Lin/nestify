@@ -4,7 +4,7 @@ hide_title: true
 sidebar_label: 模块规范
 ---
 
-### Nestify 模块规范
+# Nestify 模块规范
 
 在[此处](https://docs.nestjs.com/fundamentals/dynamic-modules)了解如何编写 NestJS 动态模块
 

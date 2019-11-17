@@ -4,14 +4,14 @@ hide_title: true
 sidebar_label: 事件总线
 ---
 
-### 事件总线
+# 事件总线
 
 Nestify 事件总线基于 Node.js 原生的 events 模块实现，
 使用事件总线可以让程序高度解耦。
 
 我们可以将任务都发送给事件总线，然后事件总线分发给不同的订阅者，订阅者根据自己的业务逻辑选择将耗时任务发送到哪一个任务队列。
 
-### 安装
+## 安装
 
 ``` shell
 
@@ -27,7 +27,7 @@ $ yarn add @nestify/event-bus
 
 ```
 
-### 使用
+## 使用
 
 定义一个 Subscriber
 
@@ -81,6 +81,6 @@ export class AppService {
 
 ```
 
-### 例子
+## 例子
 
 完整的例子请查看[此处](https://github.com/ZhiXiao-Lin/nestify/tree/master/examples/04-event-bus)

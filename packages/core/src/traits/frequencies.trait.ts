@@ -26,10 +26,6 @@ export abstract class FrequenciesTrait extends Trait {
         return this;
     }
 
-    public getCronExpression() {
-        return this.that.expression;
-    }
-
     public everyMinute() {
         return this.spliceIntoPosition(CronPositionEnum.MINUTE);
     }

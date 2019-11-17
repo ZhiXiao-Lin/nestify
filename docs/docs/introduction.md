@@ -4,7 +4,7 @@ hide_title: true
 sidebar_label: 简介
 ---
 
-### Nestify 是什么？
+# Nestify 是什么？
 
 ![avatar](/img/logo.svg)
 
@@ -17,7 +17,7 @@ Nestify 旨在为 [NestJS —— 一个渐进式Node.js服务端框架](https:/
 * 符合社区最佳实践
 * 永久开源免费
 
-### 联系作者
+## 联系作者
 
 GitHub: [https://github.com/ZhiXiao-Lin/](https://github.com/ZhiXiao-Lin/) 
 

@@ -41,7 +41,7 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
   },
-  "gitHead": "b83e168909d59b707a3236307c8b0023b6c6ebe1",
+  "gitHead": "d31063baea3f008002467f7e82ca7b3ad0804df8",
   "devDependencies": {
     "@nestjs/common": "^6.9.0",
     "@types/jest": "^24.0.23",

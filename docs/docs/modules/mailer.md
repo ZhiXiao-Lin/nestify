@@ -4,12 +4,12 @@ hide_title: true
 sidebar_label: 邮件模块
 ---
 
-### 邮件模块
+# 邮件模块
 
 Nestify 邮件模块基于 [nodemailer](https://github.com/nodemailer/nodemailer) 实现，
 采用适配器模式，支持自定义邮件模版引擎。
 
-### 安装
+## 安装
 
 ``` shell
 
@@ -25,12 +25,12 @@ $ yarn add @nestify/mailer
 
 ```
 
-### 模板引擎
+## 模板引擎
 目前支持的邮件模板引擎
 
 * [art-template](http://aui.github.io/art-template/zh-cn/index.html)
 
-### 使用
+## 使用
 
 同步注册 MailerModule
 
@@ -113,6 +113,6 @@ await mailer.send({
 
 ```
 
-### 例子
+## 例子
 
 完整的例子请查看[此处](https://github.com/ZhiXiao-Lin/nestify/tree/master/examples/03-mailer)
