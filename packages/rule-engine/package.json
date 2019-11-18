@@ -1,7 +1,7 @@
 {
-  "name": "@nestify/event-bus",
+  "name": "@nestify/rule-engine",
   "version": "0.1.14",
-  "description": "A nest.js event bus module",
+  "description": "A nest.js rule engine module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
   "license": "MIT",
@@ -54,6 +54,5 @@
     "@nestjs/common": "^6.9.0",
     "@nestjs/core": "^6.9.0",
     "reflect-metadata": "^0.1.13"
-  },
-  "gitHead": "1130e2db90b62b97beab1fb834110d53229e6506"
+  }
 }
