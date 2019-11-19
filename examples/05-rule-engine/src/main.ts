@@ -5,6 +5,7 @@ import {
   Rule,
   Condition,
   Action,
+  RuleBuilder,
 } from '@nestify/rule-engine';
 
 @Rule({ name: 'test', description: 'A test rule' })
@@ -33,6 +34,14 @@ async function bootstrap() {
 
   const rules = [];
   rules.push(ruleEngine.register(TestRule));
+
+  rules.push(new RuleBuilder()
+    .name('test2')
+    .priority(1)
+    .when(async () => true)
+    .then(async () => console.log('test2 action'))
+    .build()
+  );
 
   await ruleEngine.fire(rules, { value: 'test' });
 
