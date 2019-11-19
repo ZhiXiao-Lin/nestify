@@ -1,8 +1,8 @@
-import { Rule } from './rule';
+import { DefaultRule } from './rule';
 import { RuleBuilder } from './rule-builder';
 
 describe('RuleBuilder', () => {
-    let rule: Rule;
+    let rule: DefaultRule;
 
     beforeAll(async () => {
         rule = new RuleBuilder()
@@ -12,7 +12,7 @@ describe('RuleBuilder', () => {
             .when(async (facts) => 'test' === facts['value'])
             .then(async (facts) => console.log('action 1'))
             .then(async (facts) => console.log('action 2'))
-            .build() as Rule;
+            .build() as DefaultRule;
     });
 
     it('name should be correctly', async () => {

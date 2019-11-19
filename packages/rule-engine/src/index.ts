@@ -4,3 +4,4 @@ export * from './rule-engine.interfaces';
 export * from './rule-engine.module';
 export * from './rule-engine.service';
 export * from './types';
+export * from './core';

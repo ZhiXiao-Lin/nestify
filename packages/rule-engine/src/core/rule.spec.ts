@@ -1,8 +1,8 @@
 import { Fact } from '../types';
-import { Rule } from './rule';
+import { DefaultRule } from './rule';
 
 describe('Rule', () => {
-    let rule: Rule;
+    let rule: DefaultRule;
 
     beforeAll(async () => {
         const condition = async (facts: Fact) => {
@@ -13,7 +13,7 @@ describe('Rule', () => {
             console.log('action', facts);
         };
 
-        rule = new Rule(condition, [action], 'test rule', 'A test rule', 1);
+        rule = new DefaultRule(condition, [action], 'test rule', 'A test rule', 1);
     });
 
     it('evaluate should correctly', async () => {

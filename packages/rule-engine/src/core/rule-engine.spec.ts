@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { EventEmitter } from 'events';
 import { IRule } from '../interfaces';
 import { Fact } from '../types';
-import { Rule } from './rule';
+import { DefaultRule } from './rule';
 import { RuleEngine } from './rule-engine';
 
 describe('RuleEngine', () => {
@@ -57,7 +57,7 @@ describe('RuleEngine', () => {
 
         re = new RuleEngine('rule-engine', event, new Logger(RuleEngine.name));
 
-        rules.push(new Rule(condition, [action], ruleName, 'A test rule', 1));
+        rules.push(new DefaultRule(condition, [action], ruleName, 'A test rule', 1));
 
         facts = { value: 'test' };
 

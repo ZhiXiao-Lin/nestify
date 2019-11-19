@@ -2,7 +2,7 @@ import { IRule } from '../interfaces';
 import { RULE_CONSTANTS } from '../rule-engine.constants';
 import { Fact, IAction, ICondition } from '../types';
 
-export class Rule implements IRule {
+export class DefaultRule implements IRule {
     public readonly _name: string;
     public readonly _description: string;
     public readonly _priority: number;

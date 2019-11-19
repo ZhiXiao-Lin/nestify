@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { MetadataScanner } from '@nestjs/core/metadata-scanner';
-import { Rule, RuleEngine } from './core';
+import { DefaultRule, RuleEngine } from './core';
 import { IRule } from './interfaces';
 import { RULE_CONSTANTS, RULE_ENGINE_ACTION, RULE_ENGINE_CONDITION, RULE_ENGINE_RULE } from './rule-engine.constants';
 import { InjectRuleEngineModuleOptions } from './rule-engine.decorators';
@@ -41,7 +41,7 @@ export class RuleEngineService {
             }
         });
 
-        return new Rule(
+        return new DefaultRule(
             condition,
             actions,
             ruleInfo.name || RULE_CONSTANTS.NAME,

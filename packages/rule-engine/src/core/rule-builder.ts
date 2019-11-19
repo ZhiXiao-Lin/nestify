@@ -1,7 +1,7 @@
 import { IRule } from '../interfaces';
 import { RULE_CONSTANTS } from '../rule-engine.constants';
 import { IAction, ICondition } from '../types';
-import { Rule } from './rule';
+import { DefaultRule } from './rule';
 
 export class RuleBuilder {
     private _name: string = RULE_CONSTANTS.NAME;
@@ -37,6 +37,6 @@ export class RuleBuilder {
     }
 
     public build(): IRule {
-        return new Rule(this._condition, this._actions, this._name, this._description, this._priority);
+        return new DefaultRule(this._condition, this._actions, this._name, this._description, this._priority);
     }
 }
