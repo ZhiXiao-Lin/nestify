@@ -1,8 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { RULE_ENGINE_OPTIONS } from './rule-engine.constants';
 import { RuleEngineModuleAsyncOptions, RuleEngineModuleOptions } from './rule-engine.interfaces';
 import { RuleEngineService } from './rule-engine.service';
 
+@Global()
 @Module({
     providers: [RuleEngineService],
     exports: [RuleEngineService]

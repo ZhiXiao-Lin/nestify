@@ -6,7 +6,7 @@ import { IRule } from './interfaces';
 import { RULE_CONSTANTS, RULE_ENGINE_ACTION, RULE_ENGINE_CONDITION, RULE_ENGINE_RULE } from './rule-engine.constants';
 import { InjectRuleEngineModuleOptions } from './rule-engine.decorators';
 import { RuleEngineModuleOptions } from './rule-engine.interfaces';
-import { Action, Condition, Fact } from './types';
+import { IAction, ICondition, Fact } from './types';
 
 @Injectable()
 export class RuleEngineService {
@@ -27,8 +27,8 @@ export class RuleEngineService {
     public register(obj: any): IRule {
         const ruleInfo = this.reflector.get(RULE_ENGINE_RULE, obj) || {};
 
-        let condition: Condition;
-        let actions: Action[] = [];
+        let condition: ICondition;
+        let actions: IAction[] = [];
 
         const instance = new obj();
 

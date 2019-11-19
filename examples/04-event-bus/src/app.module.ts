@@ -1,9 +1,10 @@
 import { EventBusModule } from '@nestify/event-bus';
-import { Module } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppSubscriber } from './app.subscriber';
 
+@Global()
 @Module({
   imports: [
     EventBusModule.registerAsync({

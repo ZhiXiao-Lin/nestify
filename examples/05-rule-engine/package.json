@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestify/event-bus": "^0.1.17",
     "@nestify/rule-engine": "^0.1.15",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",

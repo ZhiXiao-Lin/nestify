@@ -1,6 +1,6 @@
 import { IRule } from '../interfaces';
 import { RULE_CONSTANTS } from '../rule-engine.constants';
-import { Action, Condition } from '../types';
+import { IAction, ICondition } from '../types';
 import { Rule } from './rule';
 
 export class RuleBuilder {
@@ -8,8 +8,8 @@ export class RuleBuilder {
     private _description: string = RULE_CONSTANTS.DESCRIPTION;
     private _priority: number = RULE_CONSTANTS.PRIORITY;
 
-    private _condition: Condition;
-    private _actions: Action[] = [];
+    private _condition: ICondition;
+    private _actions: IAction[] = [];
 
     public name(name: string) {
         this._name = name;
@@ -26,12 +26,12 @@ export class RuleBuilder {
         return this;
     }
 
-    public when(condition: Condition) {
+    public when(condition: ICondition) {
         this._condition = condition;
         return this;
     }
 
-    public then(action: Action) {
+    public then(action: IAction) {
         this._actions.push(action);
         return this;
     }
