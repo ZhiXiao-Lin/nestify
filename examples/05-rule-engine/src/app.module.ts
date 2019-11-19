@@ -4,10 +4,8 @@ import { AppService } from './app.service';
 import { RuleEngineModule } from '@nestify/rule-engine';
 
 @Module({
-  imports: [
-    RuleEngineModule.register({})
-  ],
+  imports: [RuleEngineModule.register({})],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
