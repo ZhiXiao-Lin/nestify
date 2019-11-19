@@ -3,15 +3,15 @@ import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { EventEmitter } from 'events';
 
 export interface RuleDecoratorOptions {
-    name: string | symbol;
-    description: string;
-    priority: number;
+    name?: string;
+    description?: string;
+    priority?: number;
 }
 
 export interface ConditionDecoratorOptions {}
 
 export interface ActionDecoratorOptions {
-    order: number;
+    order?: number;
 }
 
 export interface FactDecoratorOptions {}

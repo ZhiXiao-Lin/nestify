@@ -14,6 +14,8 @@ describe('RuleEngine', () => {
     let actionFlag: boolean;
     let eventFlags = {};
 
+    const ruleName = 'test rule';
+
     beforeAll(async () => {
         event = new EventEmitter();
 
@@ -21,27 +23,27 @@ describe('RuleEngine', () => {
             eventFlags['before'] = true;
         });
 
-        event.on('rule-engine:beforeEvaluate', (rule: IRule, facts: Fact) => {
-            eventFlags[`beforeEvaluate:${rule._name}`] = true;
+        event.on(`rule-engine:${ruleName}:beforeEvaluate`, (rule: IRule, facts: Fact) => {
+            eventFlags[`beforeEvaluate:${ruleName}`] = true;
         });
 
-        event.on('rule-engine:beforeExecute', (rule: IRule, facts: Fact) => {
+        event.on(`rule-engine:${ruleName}:beforeExecute`, (rule: IRule, facts: Fact) => {
             eventFlags[`beforeExecute:${rule._name}`] = true;
         });
 
-        event.on('rule-engine:onSuccess', (rule: IRule, facts: Fact) => {
+        event.on(`rule-engine:${ruleName}:onSuccess`, (rule: IRule, facts: Fact) => {
             eventFlags[`onSuccess:${rule._name}`] = true;
         });
 
-        event.on('rule-engine:onFailure', (rule: IRule, facts: Fact, err: Error) => {
+        event.on(`rule-engine:${ruleName}:onFailure`, (rule: IRule, facts: Fact, err: Error) => {
             eventFlags[`onFailure:${rule._name}`] = true;
         });
 
-        event.on('rule-engine:afterEvaluate', (rule: IRule, facts: Fact, err: Error) => {
+        event.on(`rule-engine:${ruleName}:afterEvaluate`, (rule: IRule, facts: Fact, err: Error) => {
             eventFlags[`afterEvaluate:${rule._name}`] = true;
         });
 
-        event.on('rule-engine:after', (rules: IRule[], facts: Fact) => {
+        event.on(`rule-engine:after`, (rules: IRule[], facts: Fact) => {
             eventFlags['after'] = true;
         });
 
@@ -55,7 +57,7 @@ describe('RuleEngine', () => {
 
         re = new RuleEngine('rule-engine', event, new Logger(RuleEngine.name));
 
-        rules.push(new Rule(condition, [action], 'test', 'A test rule', 1));
+        rules.push(new Rule(condition, [action], ruleName, 'A test rule', 1));
 
         facts = { value: 'test' };
 
@@ -74,23 +76,23 @@ describe('RuleEngine', () => {
         expect(eventFlags['after']).toEqual(true);
     });
 
-    it(`The event of beforeEvaluate:test rule should be triggered`, () => {
-        expect(eventFlags['beforeEvaluate:test']).toEqual(true);
+    it(`The event of beforeEvaluate:${ruleName} rule should be triggered`, () => {
+        expect(eventFlags[`beforeEvaluate:${ruleName}`]).toEqual(true);
     });
 
-    it(`The event of beforeExecute:test rule should be triggered`, () => {
-        expect(eventFlags['beforeExecute:test']).toEqual(true);
+    it(`The event of beforeExecute:${ruleName} rule should be triggered`, () => {
+        expect(eventFlags[`beforeExecute:${ruleName}`]).toEqual(true);
     });
 
-    it(`The event of onFailure:test rule should be triggered`, () => {
-        expect(eventFlags['onFailure:test']).toBeUndefined();
+    it(`The event of onSuccess:${ruleName} rule should be triggered`, () => {
+        expect(eventFlags[`onSuccess:${ruleName}`]).toEqual(true);
     });
 
-    it(`The event of afterEvaluate:test rule should be triggered`, () => {
-        expect(eventFlags['afterEvaluate:test']).toBeUndefined();
+    it(`The event of onFailure:${ruleName} rule should be triggered`, () => {
+        expect(eventFlags[`onFailure:${ruleName}`]).toBeUndefined();
     });
 
-    it(`The event of after:test rule should be triggered`, () => {
-        expect(eventFlags['after:test']).toBeUndefined();
+    it(`The event of afterEvaluate:${ruleName} rule should be triggered`, () => {
+        expect(eventFlags[`afterEvaluate:${ruleName}`]).toBeUndefined();
     });
 });

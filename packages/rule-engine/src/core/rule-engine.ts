@@ -26,26 +26,26 @@ export class RuleEngine {
 
         try {
             for (let rule of ruleList) {
-                this.event.emit(`${this.eventPrefix}:beforeEvaluate`, rule, facts);
+                this.event.emit(`${this.eventPrefix}:${rule._name}:beforeEvaluate`, rule, facts);
 
                 const evaluationResult = await rule.evaluate(facts);
                 if (evaluationResult) {
                     this.logger.debug(`Rule '${rule._name}' triggered`);
                     try {
-                        this.event.emit(`${this.eventPrefix}:beforeExecute`, rule, facts);
+                        this.event.emit(`${this.eventPrefix}:${rule._name}:beforeExecute`, rule, facts);
 
                         await rule.execute(facts);
 
                         this.logger.debug(`Rule '${rule._name}' performed successfully`);
 
-                        this.event.emit(`${this.eventPrefix}:onSuccess`, rule, facts);
+                        this.event.emit(`${this.eventPrefix}:${rule._name}:onSuccess`, rule, facts);
                     } catch (err) {
                         this.logger.error(`Rule '${rule._name}' performed with error`, err);
-                        this.event.emit(`${this.eventPrefix}:onFailure`, rule, facts, err);
+                        this.event.emit(`${this.eventPrefix}:${rule._name}:onFailure`, rule, facts, err);
                     }
                 } else {
                     this.logger.debug(`Rule '${rule._name}' has been evaluated to false, it has not been executed`);
-                    this.event.emit(`${this.eventPrefix}:afterEvaluate`, rule, facts, evaluationResult);
+                    this.event.emit(`${this.eventPrefix}:${rule._name}:afterEvaluate`, rule, facts, evaluationResult);
                 }
             }
         } finally {
