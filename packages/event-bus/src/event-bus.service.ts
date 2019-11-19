@@ -21,6 +21,10 @@ export class EventBusService {
         this.explorer.explore();
     }
 
+    public get Emitter() {
+        return this.event;
+    }
+
     public emit(eventName: string | symbol, data?: any) {
         return this.event.emit(eventName, data);
     }
