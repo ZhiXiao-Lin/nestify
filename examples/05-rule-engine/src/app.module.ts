@@ -8,9 +8,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventEmitter } from 'events';
 
+const event = new EventEmitter();
+
 @Module({
   imports: [
-    EventBusModule.register(),
+    EventBusModule.register({}),
     RuleEngineModule.registerAsync({
       useFactory: (eb: EventBusService): RuleEngineModuleOptions => {
         return {
@@ -18,10 +20,10 @@ import { EventEmitter } from 'events';
           eventPrefix: 'rule',
         };
       },
-      inject: [],
+      inject: [EventBusService],
     }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

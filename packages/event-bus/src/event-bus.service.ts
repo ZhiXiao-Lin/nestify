@@ -8,7 +8,7 @@ import { Callback, EventBusModuleOptions, ListenerDecoratorOptions } from './eve
 
 @Injectable()
 export class EventBusService {
-    private readonly event: EventEmitter = new EventEmitter();
+    private readonly event: EventEmitter;
     private readonly explorer: EventBusExplorer;
 
     constructor(
@@ -17,12 +17,11 @@ export class EventBusService {
         private readonly modulesContainer: ModulesContainer,
         private readonly reflector: Reflector
     ) {
+
+        this.event = this.options.event || new EventEmitter();
+
         this.explorer = new EventBusExplorer(this.modulesContainer, this.reflector, this.handleListener.bind(this));
         this.explorer.explore();
-    }
-
-    public get Emitter() {
-        return this.event;
     }
 
     public emit(eventName: string | symbol, data?: any) {

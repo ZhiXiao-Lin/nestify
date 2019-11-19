@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@nestify/event-bus": "^0.1.17",
-    "@nestify/rule-engine": "^0.1.15",
+    "@nestify/rule-engine": "^0.1.18",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
