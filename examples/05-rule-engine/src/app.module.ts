@@ -18,4 +18,4 @@ const event = new EventEmitter();
   controllers: [AppController],
   providers: [AppService, AppSubscriber],
 })
-export class AppModule { }
+export class AppModule {}

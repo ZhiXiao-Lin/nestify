@@ -5,7 +5,7 @@ import { Fact } from '../types';
 import { inspect } from 'util';
 
 export class RuleEngine {
-    constructor(private readonly eventPrefix: string, private readonly event: EventEmitter, private readonly logger: LoggerService) {}
+    constructor(private readonly eventPrefix: string, private readonly event: EventEmitter, private readonly logger: LoggerService) { }
 
     public async fire(rules: IRule[], facts: Fact) {
         rules = [...new Set(rules)];
@@ -15,7 +15,7 @@ export class RuleEngine {
             return;
         }
 
-        const ruleList = [...rules].sort((a, b) => b._priority - a._priority);
+        const ruleList = [...rules].sort((a, b) => a._priority - b._priority);
 
         this.logRules(ruleList);
 

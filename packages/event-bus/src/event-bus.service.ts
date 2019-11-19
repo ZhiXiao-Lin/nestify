@@ -17,7 +17,6 @@ export class EventBusService {
         private readonly modulesContainer: ModulesContainer,
         private readonly reflector: Reflector
     ) {
-
         this.event = this.options.event || new EventEmitter();
 
         this.explorer = new EventBusExplorer(this.modulesContainer, this.reflector, this.handleListener.bind(this));

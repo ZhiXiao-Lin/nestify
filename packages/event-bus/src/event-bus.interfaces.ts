@@ -1,7 +1,7 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { EventEmitter } from 'events';
 
-export interface SubscriberDecoratorOptions { }
+export interface SubscriberDecoratorOptions {}
 
 export interface ListenerDecoratorOptions {
     event: string | symbol;
