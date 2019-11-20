@@ -1,8 +1,12 @@
 import { TaskStatus } from '../workflow.enums';
 import { ITask } from '../workflow.interfaces';
 import { SequentialFlowBuilder } from './sequential.flow';
+import { ParallelFlowBuilder } from './parallel.flow';
 import { TaskResult } from './task-result';
 import { WorkFlowEngine, WorkFlowEngineBuilder } from './workflow-engine';
+
+const wait = timeout => new Promise((resolve, reject) => setTimeout(() => resolve(), timeout));
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 describe('WorkFlowEngine', () => {
 
@@ -14,6 +18,7 @@ describe('WorkFlowEngine', () => {
         }
 
         public async call() {
+            await wait(rand(1, 3) * 100);
             console.log(this.msg);
             return new TaskResult(TaskStatus.COMPLETED);
         }
@@ -38,6 +43,19 @@ describe('WorkFlowEngine', () => {
                 .execute(t1)
                 .then(t2)
                 .then(t3)
+                .build()
+        );
+
+        expect(result.getStatus()).toEqual(TaskStatus.COMPLETED);
+    });
+
+    it('The ParallelFlow should be executed correctly', async () => {
+
+        const result = await workFlowEngine.run(
+            ParallelFlowBuilder
+                .newFlow()
+                .name('test flow')
+                .execute(t1, t2, t3)
                 .build()
         );
 
