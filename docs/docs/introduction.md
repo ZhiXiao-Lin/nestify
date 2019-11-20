@@ -25,4 +25,4 @@ Gmail: [linzhixiao1996@gmail.com](mailto://linzhixiao1996@gmail.com)
 
 Wechat: lzx19960425
 
-Telegram: @Nestify
+Telegram: Nestify
