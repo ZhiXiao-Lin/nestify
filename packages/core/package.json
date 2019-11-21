@@ -43,15 +43,15 @@
   },
   "gitHead": "1130e2db90b62b97beab1fb834110d53229e6506",
   "devDependencies": {
-    "@nestjs/common": "^6.9.0",
-    "@types/jest": "^24.0.23",
-    "@types/node": "^12.12.7",
-    "jest": "^24.9.0",
-    "rimraf": "^3.0.0",
-    "rxjs": "^6.5.3",
-    "ts-jest": "^24.1.0",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.2"
+    "@nestjs/common": "6.10.1",
+    "@types/jest": "24.0.23",
+    "@types/node": "12.12.11",
+    "jest": "24.9.0",
+    "rimraf": "3.0.0",
+    "rxjs": "6.5.3",
+    "ts-jest": "24.1.0",
+    "tslint": "5.20.1",
+    "typescript": "3.7.2"
   },
   "dependencies": {
     "reflect-metadata": "^0.1.13"
