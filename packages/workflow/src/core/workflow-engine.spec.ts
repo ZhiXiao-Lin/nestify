@@ -27,14 +27,14 @@ describe('WorkFlowEngine', () => {
     let t2 = new MyTask('t2');
     let t3 = new MyTask('t3');
 
-    let workFlowEngine: WorkFlowEngine;
+    let workflowEngine: WorkFlowEngine;
 
     beforeAll(async () => {
-        workFlowEngine = WorkFlowEngineBuilder.newWorkFlow().build();
+        workflowEngine = WorkFlowEngineBuilder.newWorkFlow().build();
     });
 
     it('The engine should run the workflow correctly', async () => {
-        const result = await workFlowEngine.run(
+        const result = await workflowEngine.run(
             SequentialFlowBuilder.newFlow()
                 .name('SequentialFlow')
                 .execute(
