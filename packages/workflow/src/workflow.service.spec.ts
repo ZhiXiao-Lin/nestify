@@ -49,7 +49,6 @@ describe('WorkFlow Service', () => {
 
     it('WorkFlow should be run', async () => {
         const reuslt = await service.run(raceFlow);
-
         expect(reuslt.getStatus()).toEqual(TaskStatus.COMPLETED);
     });
 });
