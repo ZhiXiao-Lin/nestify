@@ -1,6 +1,6 @@
 {
   "name": "@nestify/rule-engine",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "A nest.js rule engine module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
