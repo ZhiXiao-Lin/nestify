@@ -1,7 +1,7 @@
 import * as UUID from 'uuid';
-import { TaskStatus } from "../workflow.enums";
-import { ITask, ITaskResult } from "../workflow.interfaces";
-import { AbstractWorkFlow } from "./abstract-workflow";
+import { TaskStatus } from '../workflow.enums';
+import { ITask, ITaskResult } from '../workflow.interfaces';
+import { AbstractWorkFlow } from '../core';
 
 export class SequentialFlowBuilder {
     private _name: string = UUID.v4();
@@ -32,7 +32,7 @@ export class SequentialFlowBuilder {
 }
 
 export class SequentialFlow extends AbstractWorkFlow {
-    private tasks: ITask[] = [];
+    private readonly tasks: ITask[] = [];
 
     constructor(name: string, tasks: ITask[]) {
         super(name);
@@ -40,6 +40,8 @@ export class SequentialFlow extends AbstractWorkFlow {
     }
 
     public async call() {
+        this.logger.debug(`${SequentialFlow.name} ${this.Name} is running`);
+
         let taskResult: ITaskResult = null;
 
         for (let task of this.tasks) {

@@ -1,5 +1,5 @@
-import { ITaskResult } from "../workflow.interfaces";
-import { TaskStatus } from "../workflow.enums";
+import { ITaskResult } from '../workflow.interfaces';
+import { TaskStatus } from '../workflow.enums';
 
 export class TaskResult implements ITaskResult {
     private status: TaskStatus;

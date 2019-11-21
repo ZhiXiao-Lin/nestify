@@ -3,7 +3,6 @@ import { RULE_ENGINE_OPTIONS } from './rule-engine.constants';
 import { RuleEngineModuleAsyncOptions, RuleEngineModuleOptions } from './rule-engine.interfaces';
 import { RuleEngineService } from './rule-engine.service';
 
-@Global()
 @Module({
     providers: [RuleEngineService],
     exports: [RuleEngineService]

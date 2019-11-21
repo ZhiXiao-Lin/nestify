@@ -1,8 +1,7 @@
 import * as UUID from 'uuid';
-import { TaskStatus } from "../workflow.enums";
-import { ITask, ITaskResult } from "../workflow.interfaces";
-import { AbstractWorkFlow } from "./abstract-workflow";
-import { TaskResult } from './task-result';
+import { AbstractWorkFlow, TaskResult } from '../core';
+import { TaskStatus } from '../workflow.enums';
+import { ITask, ITaskResult } from '../workflow.interfaces';
 
 export class ParallelFlowBuilder {
     private _name: string = UUID.v4();
@@ -28,8 +27,7 @@ export class ParallelFlowBuilder {
 }
 
 export class ParallelFlow extends AbstractWorkFlow {
-
-    private _tasks: ITask[] = [];
+    private readonly _tasks: ITask[] = [];
 
     constructor(name: string, tasks: ITask[]) {
         super(name);
@@ -37,13 +35,12 @@ export class ParallelFlow extends AbstractWorkFlow {
     }
 
     public async call(): Promise<ITaskResult> {
+        this.logger.debug(`${ParallelFlow.name} ${this.Name} is running`);
 
-        const taskResults: ITaskResult[] = await Promise.all(this._tasks.map(task => task.call()));
+        const taskResults: ITaskResult[] = await Promise.all(this._tasks.map((task) => task.call()));
 
-        return new TaskResult(taskResults.
-            every(res => res.getStatus() === TaskStatus.COMPLETED)
-            ? TaskStatus.COMPLETED
-            : TaskStatus.FAILED
-        )
+        return new TaskResult(
+            taskResults.every((res) => res.getStatus() === TaskStatus.COMPLETED) ? TaskStatus.COMPLETED : TaskStatus.FAILED
+        );
     }
 }
