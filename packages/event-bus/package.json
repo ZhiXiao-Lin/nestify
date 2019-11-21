@@ -42,13 +42,13 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/testing": "^6.9.0",
-    "@types/jest": "^24.0.23",
-    "jest": "^24.9.0",
-    "rimraf": "^3.0.0",
-    "rxjs": "^6.5.3",
-    "ts-jest": "^24.1.0",
-    "typescript": "^3.7.2"
+    "@nestjs/testing": "6.10.1",
+    "@types/jest": "24.0.23",
+    "jest": "24.9.0",
+    "rimraf": "3.0.0",
+    "rxjs": "6.5.3",
+    "ts-jest": "24.1.0",
+    "typescript": "3.7.2"
   },
   "dependencies": {
     "@nestjs/common": "^6.9.0",
