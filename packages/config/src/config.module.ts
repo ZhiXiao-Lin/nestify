@@ -1,5 +1,4 @@
 import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
-import { INestifyModule } from '@nestify/core';
 import { config as dotenv } from 'dotenv';
 import * as path from 'path';
 import { ConfigOptions, ConfigService } from './config.service';
