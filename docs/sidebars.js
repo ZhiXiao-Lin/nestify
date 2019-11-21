@@ -6,7 +6,8 @@ module.exports = {
       'modules/logger',
       'modules/mailer',
       'modules/event-bus',
-      'modules/rule-engine'
+      'modules/rule-engine',
+      'modules/workflow'
     ]
   },
 };
