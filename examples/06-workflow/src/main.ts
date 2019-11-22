@@ -1,8 +1,20 @@
-import { ConditionalFlowBuilder, NoOpTask, ParallelFlowBuilder, RaceFlowBuilder, RepeatFlowBuilder, SequentialFlowBuilder, TaskPredicate, TaskResult, TaskStatus, WorkFlowService } from '@nestify/workflow';
+import {
+  ConditionalFlowBuilder,
+  NoOpTask,
+  ParallelFlowBuilder,
+  RaceFlowBuilder,
+  RepeatFlowBuilder,
+  SequentialFlowBuilder,
+  TaskPredicate,
+  TaskResult,
+  TaskStatus,
+  WorkFlowService,
+} from '@nestify/workflow';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-const wait = (timeout) => new Promise((resolve) => setTimeout(() => resolve(), timeout));
+const wait = timeout =>
+  new Promise(resolve => setTimeout(() => resolve(), timeout));
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 class MyTask extends NoOpTask {
@@ -34,7 +46,7 @@ async function bootstrap() {
           .name('RepeatFlow')
           .repeat(t1)
           .frequencies(2)
-          .build()
+          .build(),
       )
       .then(
         ConditionalFlowBuilder.newFlow()
@@ -43,19 +55,19 @@ async function bootstrap() {
             ParallelFlowBuilder.newFlow()
               .name('ParallelFlow')
               .execute(t2, t3)
-              .build()
+              .build(),
           )
           .when(TaskPredicate.COMPLETED)
           .then(
             RaceFlowBuilder.newFlow()
               .name('RaceFlow')
               .execute(t1, t2, t3)
-              .build()
+              .build(),
           )
           .catch(t3)
-          .build()
+          .build(),
       )
-      .build()
+      .build(),
   );
 
   console.log(result);

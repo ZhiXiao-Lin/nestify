@@ -8,10 +8,10 @@ import { AppService } from './app.service';
   imports: [
     WorkFlowModule.register({
       event: new EventEmitter(),
-      eventPrefix: 'workflow'
-    })
+      eventPrefix: 'workflow',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
