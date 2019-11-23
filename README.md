@@ -16,6 +16,28 @@ All modules included by nestify have the following features:
 * In line with community best practices
 * Permanent open source free
 
+### Features & Roadmap
+- [x] Config
+- [x] Logger
+- [x] Event Bus
+- [x] Workflow Engine
+- [x] Rule Engine 
+- [x] Mailer
+- [ ] Storage
+- [ ] Task Queue
+- [ ] Notification
+- [ ] Search Engine
+- [ ] OAuth
+- [ ] Knex
+- [ ] Broadcast
+- [ ] Wechat
+- [ ] Cube
+- [ ] Cache 
+- [ ] SSR
+- [ ] Console
+- [ ] Cashier
+...
+
 ### Stay in touch
 * Author - [Roy Lin](https://github.com/ZhiXiao-Lin)
 * Gmail - [linzhixiao1996@gmail.com](mailto://linzhixiao1996@gmail.com)
