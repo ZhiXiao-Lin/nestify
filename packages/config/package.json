@@ -57,5 +57,6 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "reflect-metadata": "^0.1.13"
-  }
+  },
+  "gitHead": "c16ce61cd3aaefe66f57db38bba919baa9033377"
 }
