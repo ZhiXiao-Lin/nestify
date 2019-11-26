@@ -1,7 +1,6 @@
 import { ILoggerService, LOGGER_SERVICE } from '@nestify/logger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { inspect } from 'util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
