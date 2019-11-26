@@ -1,30 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from 'winston';
-import { LOGGER_MODULE_PROVIDER } from './logger.constants';
+import { transports } from 'winston';
+import { LOGGER_MODULE_PROVIDER, LOGGER_SERVICE } from './logger.constants';
+import { LoggerLevel } from './logger.enums';
 import { LoggerModule } from './logger.module';
-
-describe('Logger Module', () => {
-    let logger: Logger;
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [LoggerModule.register({})]
-        }).compile();
-
-        logger = module.get(LOGGER_MODULE_PROVIDER);
-    });
-
-    it('Will boot logger module succesfully', async () => {
-        expect(logger).toBeDefined();
-    });
-});
+import { LoggerService } from './logger.service';
 
 describe('Logger Module', () => {
     it('Will boot logger module succesfully', async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [LoggerModule.register({})]
+            imports: [
+                LoggerModule.register({
+                    level: LoggerLevel.SILLY,
+                    format: LoggerService.createFormat(),
+                    transports: [new transports.Console()],
+                })
+            ]
         }).compile();
 
-        const logger = module.get(LOGGER_MODULE_PROVIDER);
+        const logger = module.get(LOGGER_SERVICE);
+
+        logger.error('error', { level: 'error' });
+        logger.warn('warn', { level: 'warn' });
+        logger.info('info', { level: 'info' });
+        logger.verbose('verbose', { level: 'verbose' });
+        logger.debug('debug', { level: 'debug' });
+        logger.silly('silly', { level: 'silly' });
+
         expect(logger).toBeDefined();
     });
 
