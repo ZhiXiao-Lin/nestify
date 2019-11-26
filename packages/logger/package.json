@@ -59,5 +59,6 @@
     "reflect-metadata": "^0.1.13",
     "stacktrace-js": "^2.0.1",
     "winston": "^3.2.1"
-  }
+  },
+  "gitHead": "9035de8075777ad3c2c58f18f379204c9721922e"
 }
