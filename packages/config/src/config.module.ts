@@ -1,9 +1,8 @@
-import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
+import { DynamicModule, Logger, Module } from '@nestjs/common';
 import { config as dotenv } from 'dotenv';
 import * as path from 'path';
 import { ConfigOptions, ConfigService } from './config.service';
 
-@Global()
 @Module({
     providers: [ConfigService],
     exports: [ConfigService]
