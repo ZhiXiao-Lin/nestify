@@ -34,7 +34,7 @@ export class ConditionalFlowBuilder {
         return this;
     }
 
-    public catch(task: ITask) {
+    public other(task: ITask) {
         this._onFailureTask = task;
         return this;
     }

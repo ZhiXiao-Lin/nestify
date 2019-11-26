@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "6.10.1",
+    "@types/bull": "^3.10.6",
     "@types/jest": "24.0.23",
     "jest": "24.9.0",
     "rimraf": "3.0.0",
@@ -53,6 +54,7 @@
   "dependencies": {
     "@nestjs/common": "^6.9.0",
     "@nestjs/core": "^6.9.0",
+    "bull": "^3.12.1",
     "reflect-metadata": "^0.1.13"
-  },
+  }
 }

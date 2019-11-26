@@ -29,7 +29,7 @@ describe('ConditionalFlow', () => {
             .execute(t1)
             .when(TaskPredicate.COMPLETED)
             .then(t2)
-            .catch(t3)
+            .other(t3)
             .build();
 
         expect(flow).toBeDefined();
@@ -41,7 +41,7 @@ describe('ConditionalFlow', () => {
             .execute(t1)
             .when(TaskPredicate.COMPLETED)
             .then(t2)
-            .catch(t3)
+            .other(t3)
             .build()
             .call();
 

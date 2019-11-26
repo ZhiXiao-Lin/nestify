@@ -114,7 +114,7 @@ const flow = ConditionalFlowBuilder.newFlow()
         .execute(t1)
         .when(TaskPredicate.COMPLETED)
         .then(t2)
-        .catch(t3)
+        .other(t3)
         .build();
 
 ```
@@ -179,7 +179,7 @@ const result = await workflowEngine.run(
               .execute(t1, t2, t3)
               .build()
           )
-          .catch(t3)
+          .other(t3)
           .build()
       )
       .build()
