@@ -1,6 +1,6 @@
 {
   "name": "@nestify/event-bus",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A nest.js event bus module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
