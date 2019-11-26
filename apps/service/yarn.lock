@@ -327,9 +327,9 @@
     "@types/yargs" "^13.0.0"
 
 "@nestify/config@^0.2.15":
-  version "0.2.16"
-  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.16.tgz#5e1f010a9009ba699434606c57898d82d654c81a"
-  integrity sha512-cckTKCyTp4+0m9wDaawfKATHLHQ6/6Zn2RK1ZnMVbcT5VWRiVckDauPRozOXLopmozmjTq3L2p0O8ChILhu/jA==
+  version "0.2.17"
+  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.17.tgz#87c16d4e4ff219f6ff5152322fd7f66caec2164d"
+  integrity sha512-8vI717zPfW/cZchL4avVMuhRX+xGA0OQ5ZLDtR85SR4rftKEaBCvd0wwNHjUnJK21goprNcHyf2iiLo7nZbY+Q==
   dependencies:
     dotenv "^8.2.0"
     reflect-metadata "^0.1.13"
