@@ -326,6 +326,14 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
+"@nestify/config@^0.2.15":
+  version "0.2.15"
+  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.15.tgz#cc14529aa867705248a513b2fc39df82e85ffc70"
+  integrity sha512-4Dic23Uip/XqB62loGGx9B9kU9FjrsyDc1i4SSt7AtnvsjXc5eCOEso1eFEX17EJO47dhAtpLiNYISHyZy2QNQ==
+  dependencies:
+    dotenv "^8.2.0"
+    reflect-metadata "^0.1.13"
+
 "@nestify/logger@^0.2.11":
   version "0.2.15"
   resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.15.tgz#5ac8153506b187d640bb9e66b5d4ce59cf4b5329"
@@ -2084,6 +2092,11 @@ domexception@^1.0.1:
   integrity sha1-k3RCZEymoxJh7zbj7Gd/6AVYLJA=
   dependencies:
     webidl-conversions "^4.0.2"
+
+dotenv@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.npmjs.org/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+  integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
 duplexify@^3.4.2, duplexify@^3.6.0:
   version "3.7.1"

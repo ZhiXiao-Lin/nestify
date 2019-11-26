@@ -1,23 +1,24 @@
-import { LoggerLevel, LoggerModule, LoggerService } from "@nestify/logger";
+import { ConfigModule, ConfigService } from "@nestify/config";
+import { LoggerModule } from "@nestify/logger";
 import { Module } from "@nestjs/common";
-import { transports } from "winston";
-import { LoggerProvider } from "./providers";
+import * as path from 'path';
+import { CONFIG_SERVICE } from "./constants";
+import { ConfigProvider, LoggerProvider } from "./providers";
 
 @Module({
     imports: [
+        ConfigModule.register(path.resolve(process.cwd(), 'src/config', '**/!(*.d).js')),
         LoggerModule.registerAsync({
-            useFactory: () => ({
-                level: LoggerLevel.SILLY,
-                format: LoggerService.createFormat(),
-                transports: [new transports.Console()]
-            }),
+            useFactory: (config: ConfigService) => ({}),
             inject: []
         })
     ],
     providers: [
+        ConfigProvider,
         LoggerProvider
     ],
     exports: [
+        ConfigProvider,
         LoggerProvider
     ]
 })
