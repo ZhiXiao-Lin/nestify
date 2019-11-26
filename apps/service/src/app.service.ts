@@ -1,5 +1,6 @@
-import { ILoggerService, InjectLogger } from '@nestify/logger';
+import { ILoggerService } from '@nestify/logger';
 import { Injectable } from '@nestjs/common';
+import { InjectLogger } from './common';
 
 @Injectable()
 export class AppService {

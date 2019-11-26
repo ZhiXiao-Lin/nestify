@@ -1,6 +1,7 @@
 import { LoggerLevel, LoggerModule, LoggerService } from "@nestify/logger";
 import { Module } from "@nestjs/common";
 import { transports } from "winston";
+import { LoggerProvider } from "./providers";
 
 @Module({
     imports: [
@@ -13,6 +14,11 @@ import { transports } from "winston";
             inject: []
         })
     ],
-    exports: [LoggerModule]
+    providers: [
+        LoggerProvider
+    ],
+    exports: [
+        LoggerProvider
+    ]
 })
 export class CommonModule { }
