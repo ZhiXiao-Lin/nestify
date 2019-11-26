@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { transports } from 'winston';
-import { LOGGER_MODULE_PROVIDER, LOGGER_SERVICE } from './logger.constants';
+import { LOGGER_MODULE_PROVIDER } from './logger.constants';
 import { LoggerLevel } from './logger.enums';
+import { ILoggerService } from './logger.interfaces';
 import { LoggerModule } from './logger.module';
 import { LoggerService } from './logger.service';
 
@@ -17,7 +18,7 @@ describe('Logger Module', () => {
             ]
         }).compile();
 
-        const logger = module.get(LOGGER_SERVICE);
+        const logger: ILoggerService = module.get(LoggerService);
 
         logger.error('error', { level: 'error' });
         logger.warn('warn', { level: 'warn' });

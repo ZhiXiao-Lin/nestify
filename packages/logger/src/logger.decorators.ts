@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { LOGGER_MODULE_PROVIDER, LOGGER_SERVICE } from './logger.constants';
+import { LOGGER_MODULE_PROVIDER } from './logger.constants';
+import { LoggerService } from './logger.service';
 
-export const InjectLoggerProvider = (): ParameterDecorator => Inject(LOGGER_MODULE_PROVIDER);
-export const InjectLogger = (): PropertyDecorator => Inject(LOGGER_SERVICE);
+export const InjectLoggerProvider = () => Inject(LOGGER_MODULE_PROVIDER);
+export const InjectLogger = () => Inject(LoggerService);
