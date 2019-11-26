@@ -1,6 +1,6 @@
 {
   "name": "@nestify/config",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "A nest.js config module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
