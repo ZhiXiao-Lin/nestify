@@ -327,9 +327,9 @@
     "@types/yargs" "^13.0.0"
 
 "@nestify/logger@^0.2.11":
-  version "0.2.13"
-  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.13.tgz#5809d3185a255f2903365bf60487e8ea1fc3ce06"
-  integrity sha512-49NvojbSD3jmRlENsQzIXi7TlhCAYxQh4b5Dc1HsC7LmM5OEOTni/+jl1LrA6tXTHUMOxfoLeU6vNNR6AoTz/Q==
+  version "0.2.15"
+  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.15.tgz#5ac8153506b187d640bb9e66b5d4ce59cf4b5329"
+  integrity sha512-grdbhJFx4xICrUFGQPrw67rFiwC4TS/m9ZbZpsiH9j14xP1LBInqIdhhdHiAcpaEDbJQbIzLashwYJ3QTGBcCQ==
   dependencies:
     "@nestjs/common" "^6.9.0"
     chalk "^3.0.0"

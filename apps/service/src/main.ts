@@ -1,11 +1,11 @@
-import { ILoggerService, LOGGER_SERVICE } from '@nestify/logger';
+import { ILoggerService, LoggerService } from '@nestify/logger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const logger: ILoggerService = app.get(LOGGER_SERVICE);
+  const logger: ILoggerService = app.get(LoggerService);
 
   const port = 3000;
   const prefix = 'api';
