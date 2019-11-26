@@ -1,7 +1,7 @@
-const { transports } = require('winston');
-const { LoggerService, LoggerLevel } = require('@nestify/logger');
+import { LoggerLevel, LoggerService } from '@nestify/logger';
+import { transports } from 'winston';
 
-module.exports = {
+export default {
     level: LoggerLevel.SILLY,
     format: LoggerService.createFormat(),
     transports: [new transports.Console()]

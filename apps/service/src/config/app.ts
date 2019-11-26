@@ -1,6 +1,6 @@
-const { env } = require('@nestify/config');
+import { env } from '@nestify/config';
 
-module.exports = {
+export default {
     env: env('NODE_ENV'),
     port: env('PORT'),
     prefix: 'api',
