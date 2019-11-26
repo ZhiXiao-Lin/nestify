@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as assert from 'assert';
-import { config as dotenv, DotenvConfigOptions } from 'dotenv';
+import { DotenvConfigOptions } from 'dotenv';
 import { Glob, sync as globSync } from 'glob';
 import { get, set } from 'lodash';
 import * as path from 'path';
+import { IConfigService } from './config.interfaces';
 import { ProxyProperty } from './decorators/proxy';
 
 export interface ModuleConfig {
@@ -24,7 +25,7 @@ export interface ConfigOptions extends Partial<DotenvConfigOptions> {
 
 @Injectable()
 @ProxyProperty('helpers')
-export class ConfigService {
+export class ConfigService implements IConfigService {
     [key: string]: Config | CustomHelper | ((...args: any[]) => any) | any;
 
     private static config: Config;
@@ -223,7 +224,6 @@ export class ConfigService {
                 if (err) {
                     reject(err);
                 } else {
-                    this.loadEnv(options);
 
                     const configs = this.configGraph(matches, options && options.modifyConfigName);
 
@@ -242,7 +242,6 @@ export class ConfigService {
     protected static loadConfigSync(glob: string, options?: ConfigOptions | false): Config {
         glob = this.root(glob);
         const matches = globSync(glob);
-        this.loadEnv(options);
 
         return this.configGraph(matches, options && options.modifyConfigName);
     }
@@ -293,26 +292,5 @@ export class ConfigService {
     protected static getConfigName(file: string) {
         const ext = path.extname(file);
         return path.basename(file, ext);
-    }
-
-    /**
-     * Loads env variables via dotenv.
-     * @param {DotenvConfigOptions | false} options
-     */
-    protected static loadEnv(options?: DotenvConfigOptions | false): void {
-        if (options !== false) {
-            dotenv(options || ConfigService.defaultDotenvConfig());
-        }
-    }
-
-    /**
-     * Default dotenv config point to a .env
-     * on the cwd path
-     * @returns {{path: string}}
-     */
-    protected static defaultDotenvConfig() {
-        return {
-            path: path.join(process.cwd(), '.env')
-        };
     }
 }

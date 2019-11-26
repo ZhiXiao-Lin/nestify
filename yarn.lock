@@ -3104,10 +3104,10 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.npmjs.org/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
   integrity sha512-s5kLOcnH0XqDO+FvuaLX8DDjZ18CGFk7VygH40QoKPUQhW4e2rvM0rwUq0t8IQDOwYSeLK01U90OjzBTme2QqA==
 
-lerna-update-wizard@0.17.4:
-  version "0.17.4"
-  resolved "https://registry.npmjs.org/lerna-update-wizard/-/lerna-update-wizard-0.17.4.tgz#0da8425a3d230faeea2e751a43bc667cfae5aa91"
-  integrity sha512-XNqh7f7k4ETl3Nkl5X4eJ+3miOGx8BPPfRLxG1oneNEIiYRyv6R9+G1KV+z5y5LU8/RGryHEYm96yDaQLxZlvA==
+lerna-update-wizard@0.17.5:
+  version "0.17.5"
+  resolved "https://registry.npmjs.org/lerna-update-wizard/-/lerna-update-wizard-0.17.5.tgz#2b3894ee7359120a23d5ac73aa17c0366410394e"
+  integrity sha512-48SnhBRm/vFjZPuomypcga/NZjI5JQiKgYrw3XJ2Y8lU/14OJntOMUgAj4TYT89ZbzBqGvFci8sWWAxptlT7jQ==
   dependencies:
     chalk "^2.3.0"
     execution-time "^1.2.0"
