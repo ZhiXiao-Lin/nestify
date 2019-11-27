@@ -1,6 +1,6 @@
-import { ConfigService } from "@nestify/config";
-import { LoggerService } from "@nestify/logger";
-import { CONFIG_SERVICE, LOGGER_SERVICE } from "./constants";
+import { ConfigService } from '@nestify/config';
+import { LoggerService } from '@nestify/logger';
+import { CONFIG_SERVICE, LOGGER_SERVICE } from './constants';
 
 export const ConfigProvider = {
     provide: CONFIG_SERVICE,

@@ -8,7 +8,7 @@
   "scripts": {
     "lerna": "lerna-wizard",
     "update": "lernaupdate",
-    "format": "prettier --write \"packages/**/*.ts\" \"examples/**/*.ts\""
+    "format": "prettier --write \"apps/**/*.ts\" \"packages/**/*.ts\" \"examples/**/*.ts\""
   },
   "devDependencies": {
     "cz-conventional-changelog": "3.0.2",

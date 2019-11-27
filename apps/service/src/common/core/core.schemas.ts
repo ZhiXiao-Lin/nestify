@@ -7,11 +7,17 @@ const baseDefinition = {
 };
 
 export const BaseSchema = (definition: SchemaDefinition, options?: SchemaOptions) => {
+    const baseSchema = new Schema(
+        {
+            ...baseDefinition,
+            ...definition
+        },
+        options
+    );
 
-    const baseSchema = new Schema({
-        ...baseDefinition,
-        ...definition
-    }, options);
+    baseSchema.virtual('id').get(function() {
+        return this._id;
+    });
 
     return baseSchema;
 };

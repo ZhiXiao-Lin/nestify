@@ -8,6 +8,6 @@ export default {
         pass: env('MONGO_PASS'),
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useFindAndModify: false,
+        useFindAndModify: false
     }
-}
+};

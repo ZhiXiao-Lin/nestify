@@ -5,17 +5,15 @@ import { InjectConfig, InjectLogger } from './common';
 
 @Injectable()
 export class AppService {
+    @InjectConfig()
+    private readonly config: IConfigService;
 
-  @InjectConfig()
-  private readonly config: IConfigService;
+    @InjectLogger()
+    private readonly logger: ILoggerService;
 
-  @InjectLogger()
-  private readonly logger: ILoggerService;
+    getHello(): string {
+        this.logger.info('Hello World!', this.config.get('app.port'));
 
-  getHello(): string {
-
-    this.logger.info('Hello World!', this.config.get('app.port'));
-
-    return 'Hello World!';
-  }
+        return 'Hello World!';
+    }
 }
