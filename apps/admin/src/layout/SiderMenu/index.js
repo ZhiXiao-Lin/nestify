@@ -34,6 +34,9 @@ class SiderMenu extends Component {
           {/* <Link to="/project">首页</Link> */}
           <span>首页</span>
         </Menu.Item>
+        <SubMenu key="order" title={<span><Icon type="form" /><span>订单管理</span></span>}>
+          <Menu.Item key="/project/order/list"><Link to="/project/order/list">订单列表</Link></Menu.Item>
+        </SubMenu>
         <SubMenu key="form" title={<span><Icon type="mail" /><span>表单页</span></span>}>
           <Menu.Item key="/project/form/basic"><Link to="/project/form/basic">基础表单</Link></Menu.Item>
           <Menu.Item key="/project/form/step"><Link to="/project/form/step">分步表单</Link></Menu.Item>

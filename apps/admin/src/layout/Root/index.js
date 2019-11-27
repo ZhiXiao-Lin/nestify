@@ -44,6 +44,12 @@ const Root = () => (
 
                       <Route
                         exact
+                        path="/project/order/list"
+                        component={getComponentAsync(import(/* webpackChunkName: "StepForm" */ 'page/Order'))}
+                      />
+
+                      <Route
+                        exact
                         path="/project/form/basic/:id?"
                         component={getComponentAsync(import(/* webpackChunkName: "StepForm" */ 'page/BasicForm'))}
                       />
