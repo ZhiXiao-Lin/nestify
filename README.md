@@ -20,6 +20,12 @@ All modules included by nestify have the following features:
 
 ``` shell
 
+$ git@github.com:ZhiXiao-Lin/nestify.git --depth=1
+
+$ docker-compose up -d
+
+$ cd apps/service && yarn && yarn start:dev
+
 ```
 
 ### Features & Roadmap
