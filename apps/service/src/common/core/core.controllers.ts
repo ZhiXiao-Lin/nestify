@@ -1,8 +1,11 @@
 import { Body, Delete, Get, Post, Put, Query } from '@nestjs/common';
+import { BaseInjectable } from './core.injectable';
 import { IModel, IService } from './core.interfaces';
 
-export abstract class BaseController<T extends IModel> {
-    constructor(protected readonly service: IService<T>) {}
+export abstract class BaseController<T extends IModel> extends BaseInjectable {
+    constructor(protected readonly service: IService<T>) {
+        super();
+    }
 
     @Get()
     async query(@Query() payload: any): Promise<T[]> {

@@ -9,7 +9,7 @@ export interface IModel extends Document {
 
 export interface IRepository<T extends IModel> {
     query(conditions: any): Promise<T[]>;
-    create(doc: T): Promise<T>;
+    create(doc: Partial<T>): Promise<T>;
     update(conditions: any, doc: Partial<T>): Promise<T>;
     remove(conditions: any): Promise<T | any>;
 }
