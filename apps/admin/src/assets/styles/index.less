@@ -1,0 +1,192 @@
+@import '~antd/lib/style/themes/default.less';
+@import './iconfont.less';
+@import './animate.css';
+
+html,
+body,
+:global(#root) {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #f0f2f5;
+}
+
+@media print {
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background: transparent !important;
+    border-color: #333 !important;
+  }
+  .ant-checkbox-checked .ant-checkbox-inner:after {
+    border-color: #333 !important;
+  }
+}
+
+@media (min-width: 576px) {
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    z-index: 30;
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    border-left: 1px solid #c1c1c1;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 0;
+    box-shadow: none;
+    border: 0;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 0;
+    box-shadow: none;
+    border: 0;
+  }
+}
+
+body {
+  font-family: 'Monospace Number', 'Chinese Quote', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9f9f9;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #666;
+  &:active {
+    color: @primary-7;
+  }
+  &:hover {
+    color: @primary-6;
+  }
+}
+
+code {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 1px;
+}
+
+/* 重写antd默认布局样式 */
+.ant-layout {
+  .ant-layout-header {
+    height: auto;
+    line-height: normal;
+    padding: 0;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .ant-layout-content {
+    position: relative;
+    min-height: auto; // override antd min-height: 0;
+    // overflow: auto;
+  }
+
+  .ant-layout-footer {
+    text-align: center;
+    width: 100%;
+    background-color: #fff;
+    padding: 10px;
+  }
+}
+
+// 在路由页中的布局
+.page {
+  &.ant-layout {
+    > .ant-layout-content {
+      padding: 24px 24px 0px;
+    }
+  }
+}
+
+// 长文本不换行，如果设置了width，则超出会出现省略号
+.nobr {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+// 清理浮动
+.clearfix {
+  zoom: 1;
+  &:before,
+  &:after {
+    content: ' ';
+    display: table;
+  }
+  &:after {
+    clear: both;
+    visibility: hidden;
+    font-size: 0;
+    height: 0;
+  }
+}
+
+.flex {
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-auto {
+  flex: auto;
+  position: relative;
+  height: 100%;
+}
+
+.flex-auto-hidden {
+  .flex-auto;
+  overflow: hidden;
+}
+
+.flex-none {
+  flex: none;
+  position: relative;
+}
+
+.abs {
+  position: absolute;
+}
+
+.abs-full {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}

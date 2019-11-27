@@ -1,0 +1,108 @@
+@import '~antd/lib/style/themes/default.less';
+
+@form-prefix-cls: antui-form;
+
+// form styles
+// -----------------------------
+.@{form-prefix-cls} {
+  &.form-inline {
+    .row-item {
+      .col-item {
+        display: inline-block;
+        margin-bottom: 5px;
+      }
+    }
+    .form-btns {
+      display: inline-block;
+      line-height: 39px;
+      height: 39px;
+      vertical-align: top;
+      button:first-child {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  &.form-grid {
+    &.preview {
+      .ant-form-item {
+        margin-bottom: 12px;
+      }
+      .ant-form-item-control {
+        min-height: 40px;
+        border-bottom: 1px dashed #aaa;
+      }
+    }
+    .row-item {
+      .col-item {
+        .ant-calendar-picker {
+          width: 100% !important;
+        }
+        .ant-input-number {
+          width: 100% !important;
+        }
+        .ant-time-picker {
+          width: 100% !important;
+        }
+      }
+    }
+    .col-item-password-wrap {
+      > .col-item {
+        padding: 0 4px;
+      }
+    }
+    .form-btns {
+      text-align: right;
+      button:first-child {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .transfer-tree-value-list {
+    display: block;
+    margin-top: 4px;
+    border: 1px solid #eee;
+    padding: 0px 10px;
+    border-radius: 4px;
+  }
+
+  .auto-complete-loading {
+    cursor: text;
+  }
+
+  .ant-divider-horizontal.ant-divider-with-text,
+  .ant-divider-horizontal.ant-divider-with-text-left,
+  .ant-divider-horizontal.ant-divider-with-text-right {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.ant-modal.antui-transfer-modal {
+  .ant-modal-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.ant-modal.antui-table-modal {
+  .ant-modal-body {
+    padding: 0;
+    max-height: 418px;
+    overflow: auto;
+    .ant-table-small {
+      border: none;
+      border-radius: 0px;
+    }
+  }
+  .ant-modal-footer {
+    display: flex;
+    align-items: center;
+    .left {
+      flex: auto;
+      text-align: left;
+    }
+  }
+}
