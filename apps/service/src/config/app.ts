@@ -7,5 +7,6 @@ export default {
     isDev() {
         const env = this.get('app.env');
         return env === 'development';
-    }
+    },
+    cors: { origin: '*' }
 };
