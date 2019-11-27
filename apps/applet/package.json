@@ -46,7 +46,7 @@
     "@types/react": "^16.4.6",
     "@types/webpack-env": "^1.13.6",
     "@tarojs/plugin-babel": "1.3.25",
-    "@tarojs/plugin-csso": "1.3.18",
+    "@tarojs/plugin-csso": "1.3.26",
     "@tarojs/plugin-sass": "1.3.18",
     "@tarojs/plugin-uglifyjs": "1.3.18",
     "@tarojs/webpack-runner": "1.3.18",
