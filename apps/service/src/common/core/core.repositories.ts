@@ -1,9 +1,8 @@
-import { Model } from "mongoose";
-import { IModel, IRepository } from "./core.interfaces";
+import { Model } from 'mongoose';
+import { IModel, IRepository } from './core.interfaces';
 
 export abstract class BaseRepository<T extends IModel> implements IRepository<T> {
-
-    constructor(private readonly model: Model<T>) { }
+    constructor(protected readonly model: Model<T>) {}
 
     async query(conditions: any): Promise<T[]> {
         conditions.isDeleted = false;

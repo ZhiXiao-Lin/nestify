@@ -1,16 +1,16 @@
-import { IConfigService } from "@nestify/config";
-import { ILoggerService } from "@nestify/logger";
-import { InjectConfig, InjectLogger } from "../decorators";
-import { IModel, IRepository, IService } from "./core.interfaces";
+import { IConfigService } from '@nestify/config';
+import { ILoggerService } from '@nestify/logger';
+import { InjectConfig, InjectLogger } from '../decorators';
+import { IModel, IRepository, IService } from './core.interfaces';
 
 export abstract class BaseService<T extends IModel> implements IService<T> {
     @InjectConfig()
-    private readonly config: IConfigService;
+    protected readonly config: IConfigService;
 
     @InjectLogger()
-    private readonly logger: ILoggerService;
+    protected readonly logger: ILoggerService;
 
-    constructor(private readonly repository: IRepository<T>) { }
+    constructor(protected readonly repository: IRepository<T>) {}
 
     async query(conditions: any): Promise<T[]> {
         this.logger.debug('Query by conditions:', conditions);

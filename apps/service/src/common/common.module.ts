@@ -1,12 +1,13 @@
-import { ConfigModule, ConfigService, IConfigService } from "@nestify/config";
-import { LoggerModule } from "@nestify/logger";
-import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService, IConfigService } from '@nestify/config';
+import { LoggerModule } from '@nestify/logger';
+import { Module, Global } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as path from 'path';
-import { ConfigProvider, LoggerProvider } from "./providers";
+import { ConfigProvider, LoggerProvider } from './providers';
 
 ConfigModule.initEnvironment(process.cwd() + '/src/env');
 
+@Global()
 @Module({
     imports: [
         ConfigModule.register(path.resolve(process.cwd(), 'dist/config', '**/!(*.d).js')),
@@ -19,13 +20,7 @@ ConfigModule.initEnvironment(process.cwd() + '/src/env');
             inject: [ConfigService]
         })
     ],
-    providers: [
-        ConfigProvider,
-        LoggerProvider
-    ],
-    exports: [
-        ConfigProvider,
-        LoggerProvider
-    ]
+    providers: [ConfigProvider, LoggerProvider],
+    exports: [ConfigProvider, LoggerProvider]
 })
-export class CommonModule { }
+export class CommonModule {}

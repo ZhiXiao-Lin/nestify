@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface IModel extends Document {
+    readonly id: string;
     readonly isDeleted: boolean;
     readonly createAt: Date;
     readonly updateAt: Date;

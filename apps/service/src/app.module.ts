@@ -5,11 +5,8 @@ import { BllModule } from './bll';
 import { CommonModule } from './common';
 
 @Module({
-  imports: [
-    CommonModule,
-    BllModule
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [CommonModule, BllModule],
+    controllers: [AppController],
+    providers: [AppService]
 })
-export class AppModule { }
+export class AppModule {}

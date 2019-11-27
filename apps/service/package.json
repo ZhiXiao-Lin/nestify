@@ -26,6 +26,7 @@
     "@nestjs/core": "^6.7.2",
     "@nestjs/mongoose": "^6.1.2",
     "@nestjs/platform-express": "^6.7.2",
+    "bcryptjs": "^2.4.3",
     "mongoose": "^5.7.12",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
