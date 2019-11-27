@@ -3,7 +3,7 @@ version: '3.1'
 services:
     redis:
         container_name: nestify_redis
-        image: 'redis:5.0.7'
+        image: 'redis:5.0.6'
         restart: always
         ports:
             - '63790:6379'

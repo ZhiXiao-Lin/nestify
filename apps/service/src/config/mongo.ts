@@ -2,12 +2,12 @@ import { env } from '@nestify/config';
 
 export default {
     connection: {
-        uri: 'mongodb://127.0.0.1:27017',
+        uri: env('MONGO_URI'),
+        dbName: env('MONGO_DB_NAME'),
+        user: env('MONGO_USER'),
+        pass: env('MONGO_PASS'),
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
-        user: 'nestify',
-        pass: env('MONGO_PASS'),
-        dbName: 'nestify'
     }
 }
