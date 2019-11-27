@@ -247,10 +247,22 @@
   dependencies:
     "@tarojs/utils" "1.3.18"
 
+"@tarojs/taro@1.3.26":
+  version "1.3.26"
+  resolved "https://registry.yarnpkg.com/@tarojs/taro/-/taro-1.3.26.tgz#5d8d72ae0e065c171891ffc85e32551c4377f087"
+  integrity sha512-ctUOytccp0PpBAg8rY/YjU6oVmHp9PXyDGS8p7fWddNz8+qOQTIVSVwiep7S65AJeEaRb45YhaEymU9f4f8TGg==
+  dependencies:
+    "@tarojs/utils" "1.3.26"
+
 "@tarojs/utils@1.3.18":
   version "1.3.18"
   resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-1.3.18.tgz#094e61bd27839a699e766e546291508ba8dd742d"
   integrity sha512-SjQC9TyzKlN+5zYgJyHcZjoHRphJNxJ1UuTdLdMlb7d31ePI0W6rEhkUxP04etZJIwq4apwX/nX6O2h0hvsvSg==
+
+"@tarojs/utils@1.3.26":
+  version "1.3.26"
+  resolved "https://registry.yarnpkg.com/@tarojs/utils/-/utils-1.3.26.tgz#893fc3bacd2764293b16e02aa5563c478b5c42b0"
+  integrity sha512-HmoeLHT77xbfBzcRivGxTyHbyCIlhs2MYCOcibzuwMK0+x1pVNgkjBkQ0pECcTKZjeZgNEDN+++7oXNX05oL9g==
 
 "@tarojs/webpack-runner@1.3.18":
   version "1.3.18"
