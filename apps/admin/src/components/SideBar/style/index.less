@@ -1,0 +1,229 @@
+@import "~antd/lib/style/themes/default.less";
+@import "./darkgrey.less";
+// 左侧边栏
+.sidebar-left {
+  background-color: #001529;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+  
+  &.sidebar-left-sm {
+    .ant-menu {
+      &.ant-menu-inline-collapsed {
+        width: 60px;
+        > .ant-menu-submenu .ant-menu-submenu-title,.ant-menu-item {
+          padding: 0 20px !important;
+          margin: 0;
+          .anticon {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+    &.sidebar-left-close {
+      .ant-menu {
+        transform: translate3d(-2000px, 0 ,0);
+      }
+    }
+  }
+  
+  .ant-menu {
+    > .ant-menu-item, 
+    > .ant-menu-submenu>.ant-menu-submenu-title {
+      margin: 0;    
+      height: 48px;
+      line-height: 48px;
+      width: 100%;
+    }
+  }
+  
+  .sidebar-toggle-mini {
+    text-align: center;
+  }
+  
+  &.show-header .sidebar-header{
+    height: 91px;
+  }
+  
+  .sidebar-header {
+    transition: height 0.2s ease;
+    height: 0px;
+    overflow: hidden;
+    .userlogged {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: block;
+      padding: 30px 10px 0 10px;
+      > i {
+        color: #5b5b5b;
+        float: left;
+        font-size: 60px;
+        padding-right: 5px;
+      }
+      .user-details {
+        float: left;
+        padding-left: 5px;
+        text-align: left;
+        > span {
+          font-size: 18px;
+          margin-bottom: 3px;
+          overflow: hidden;
+          text-align: left;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 130px;
+          display: block;
+        }
+      }
+    }
+  }
+  &.darkgrey,
+  &.dark {
+    .sidebar-header {
+      .userlogged .user-details > span {
+        color: #e2e2e2;
+      }
+      .ant-select-selection {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #616574;
+        font-size: 12px;
+        .ant-select-arrow {
+          color: #616574;
+        }
+      }
+    }
+  }
+  &.darkgrey {
+    background-color: #30363e;
+    .ant-menu {
+      border-right: 0;
+      background: #30363e;
+      &.ant-menu-sub {
+        background-color: #282d33;
+      }
+    }
+  }
+
+  &.light {
+    background-color: #fff;
+    .ant-menu {
+      border-right: 0;
+      background: #fff;
+      &.ant-menu-sub {
+        background-color: #fafafa;
+      }
+    }
+  }
+  
+  &.grey {
+    background-color: #fafafa;
+    .ant-menu {
+      border-right: 0;
+      background: #fafafa;
+      &.ant-menu-sub {
+        background-color: #f4f4f4;
+      }
+    }
+  }
+}
+
+&.grey,
+&.light {
+  border-right: 1px solid #e8e8e8;
+  .ant-menu-root.ant-menu {
+    position: relative;
+  }
+}
+
+.sidebar-header-dropdown {
+  font-size: 13px;
+}
+
+.ant-select-selection-selected-value,
+.ant-select-dropdown-menu-item {
+  .user {
+    border-radius: 50%;
+    content: "";
+    float: left;
+    height: 7px;
+    margin-right: 8px;
+    margin-top: 7px;
+    width: 7px;
+  }
+  .online {
+    background-color: #18a689;
+  }
+  .invisible {
+    background-color: #ff9900;
+  }
+  .busy {
+    background-color: #c75757;
+  }
+  .offline {
+    background-color: #666;
+  }
+}
+
+// 左抽屉
+.left-sidebar-drawer {
+  .navbar-branding {
+    position: relative;
+    overflow: hidden;
+    height: 60px;
+    background-color: transparent;
+    .navbar-brand {
+      color: #666;
+      height: 60px;
+      line-height: 58px;
+      padding: 0;
+      font-size: 17px;
+      font-weight: 400;
+      letter-spacing: 0.6px;
+      padding-left: 15px;
+      display: inline-block;
+      overflow: hidden;
+      width: 170px;
+      b {
+        font-weight: bold;
+        padding-right: 1px;
+      }
+      img {
+        width: 35px;
+        height: auto;
+        margin-right: 10px;
+      }
+    }
+    // 左侧导航收缩按钮
+    .toggle_sidemenu_l {
+      float: right;
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 58px;
+      max-height: 60px;
+      width: 45px;
+      text-align: center;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+  }
+  .ant-drawer-close-x {
+    display: none;
+  }
+  .ant-drawer-body {
+    padding: 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .sidebar-left {
+    min-height: 100vh;
+  }
+}
+
+// 右侧边栏
+.sidebar-right {
+  user-select: none;
+  &.ant-layout-sider {
+    background: #f8f8f8;
+    border-left: 1px solid #ddd;
+  }
+}

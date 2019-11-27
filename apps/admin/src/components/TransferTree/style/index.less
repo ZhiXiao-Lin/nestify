@@ -1,0 +1,135 @@
+@import "~antd/lib/style/themes/default.less";
+
+.antui-transfer-tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: relative;
+  &-list {
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    display: inline-block;
+    border-radius: 4px;
+    vertical-align: middle;
+    position: relative;
+    width: 200px;
+    height: 300px;
+    padding-top: 34px;
+    &-header {
+      padding: 6px 12px;
+      border-radius: 4px 4px 0 0;
+      background: #f9f9f9;
+      color: rgba(0, 0, 0, 0.65);
+      border-bottom: 2px solid tint(@primary-color);
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 34px;
+      &.tree-title {
+        color: #333
+      }
+      &-title {
+        position: absolute;
+        right: 12px;
+        a {
+          color: @primary-color;
+          &:hover {
+            color: tint(@primary-color);
+          }
+        }
+      }
+    }
+    &-body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+      &-search-wrapper {
+        flex: none;
+        padding: 4px;
+        .antui-transfer-tree-list-search-action {
+          color: rgba(0,0,0,.25);
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          bottom: 4px;
+          width: 28px;
+          line-height: 32px;
+          text-align: center;
+        }
+      }
+
+      &-content {
+        flex: auto;
+        position: relative;
+        height: 100%;
+        overflow: auto;
+
+        &.tree-content {
+          padding: 0 4px;
+          .tree-filter-result + .ant-tree {
+            display: none;
+          }
+        }
+
+        .ant-tree li .ant-tree-node-content-wrapper {
+          width: ~'calc(100% - 24px)';
+        }
+
+        .ant-tree li > span {
+          vertical-align: middle;
+        }
+
+        &-not-found {
+          text-align: center;
+          color: #ddd;
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 50%;
+          margin: auto;
+          transform: translateY(-50%);
+        }
+        .list-comp-item {
+          position: relative;
+          padding: 7px 16px;
+          transition: all 0.3s ease;
+          &:hover {
+            cursor: pointer;
+            background-color: #e6f7ff;
+          }
+          .list-comp-clear-item{
+            position: absolute;
+            right: 7px;
+            top: 7px;
+            color: #666;
+            display: none;
+            float: right;
+            font-weight: bold;
+            &:hover {
+              color: @error-color;
+            }
+          }
+      
+          .list-comp-item-body{
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+      
+          &:hover .list-comp-clear-item{
+            display: block;
+          }
+        }
+      }
+    }
+  }
+  &-operation {
+    display: inline-block;
+    overflow: hidden;
+    margin: 0 8px;
+    vertical-align: middle;
+  }
+}
