@@ -48,7 +48,7 @@
     "@tarojs/plugin-babel": "1.3.25",
     "@tarojs/plugin-csso": "1.3.18",
     "@tarojs/plugin-sass": "1.3.18",
-    "@tarojs/plugin-uglifyjs": "1.3.18",
+    "@tarojs/plugin-uglifyjs": "1.3.26",
     "@tarojs/webpack-runner": "1.3.18",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
