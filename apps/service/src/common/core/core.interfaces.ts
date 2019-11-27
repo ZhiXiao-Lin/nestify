@@ -10,7 +10,7 @@ export interface IRepository<T extends IModel> {
     query(conditions: any): Promise<T[]>;
     create(doc: T): Promise<T>;
     update(conditions: any, doc: Partial<T>): Promise<T>;
-    remove(conditions: any): Promise<T>;
+    remove(conditions: any): Promise<T | any>;
 }
 
 export interface IService<T extends IModel> {

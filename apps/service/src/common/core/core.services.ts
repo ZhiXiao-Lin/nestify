@@ -27,7 +27,7 @@ export abstract class BaseService<T extends IModel> implements IService<T> {
         return await this.repository.update(conditions, doc);
     }
 
-    async remove(conditions: any): Promise<T> {
+    async remove(conditions: any): Promise<T | any> {
         this.logger.debug('Remove by conditions:', conditions);
         return await this.repository.remove(conditions);
     }
