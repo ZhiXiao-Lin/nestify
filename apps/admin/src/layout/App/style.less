@@ -1,0 +1,78 @@
+@import '~antd/lib/style/themes/default.less';
+
+.logo {
+  height: 64px;
+  position: relative;
+  line-height: 64px;
+  padding-left: 24px;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  background: #002140;
+  overflow: hidden;
+
+  img {
+    display: inline-block;
+    vertical-align: middle;
+    height: 32px;
+  }
+  
+  h1 {
+    color: white;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 20px;
+    margin: 0 0 0 12px;
+    font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 400;
+  }
+}
+
+.icon-menu-trigger {
+  font-size: 20px;
+  line-height: 64px;
+  height: 64px;
+  cursor: pointer;
+  -webkit-transition: all 0.3s, padding 0s;
+  transition: all 0.3s, padding 0s;
+  padding: 22px 24px;
+  &:hover {
+    background: rgba(0, 0, 0, 0.025);
+  }
+}
+
+.right {
+  float: right;
+  height: 100%;
+  .action {
+    cursor: pointer;
+    padding: 0 12px;
+    display: inline-block;
+    transition: all 0.3s;
+    height: 100%;
+    > i {
+      font-size: 18px;
+      vertical-align: middle;
+      color: @text-color;
+    }
+    // &:hover {
+    //   background: @pro-header-hover-bg;
+    // }
+    // :global(&.ant-popover-open) {
+    //   background: @pro-header-hover-bg;
+    // }
+  }
+  // .search {
+  //   padding: 0 12px;
+  //   &:hover {
+  //     background: transparent;
+  //   }
+  // }
+  .account {
+    .avatar {
+      margin: 20px 8px 20px 0;
+      color: @primary-color;
+      background: rgba(255, 255, 255, 0.85);
+      vertical-align: middle;
+    }
+  }
+}
