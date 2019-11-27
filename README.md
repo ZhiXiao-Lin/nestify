@@ -16,6 +16,18 @@ All modules included by nestify have the following features:
 * In line with community best practices
 * Permanent open source free
 
+### Useage
+
+``` shell
+
+$ git@github.com:ZhiXiao-Lin/nestify.git --depth=1
+
+$ docker-compose up -d
+
+$ cd apps/service && yarn && yarn start:dev
+
+```
+
 ### Features & Roadmap
 - [x] Config
 - [x] Logger

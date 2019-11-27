@@ -13,7 +13,7 @@ describe('Logger Module', () => {
                 LoggerModule.register({
                     level: LoggerLevel.SILLY,
                     format: LoggerService.createFormat(),
-                    transports: [new transports.Console()],
+                    transports: [new transports.Console()]
                 })
             ]
         }).compile();
