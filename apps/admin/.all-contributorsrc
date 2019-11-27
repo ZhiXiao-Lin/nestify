@@ -1,0 +1,33 @@
+{
+  "projectName": "antd-pro-mobx",
+  "projectOwner": "gzgogo",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "LeoChowChina",
+      "name": "Leo Chow",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5009640?v=4",
+      "profile": "https://github.com/LeoChowChina",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "soguagirl",
+      "name": "soguagirl",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/7897851?v=4",
+      "profile": "https://github.com/soguagirl",
+      "contributions": [
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
