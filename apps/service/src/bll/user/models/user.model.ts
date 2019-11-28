@@ -1,7 +1,7 @@
 import { BaseSchema } from '../../../common/core';
 import { BaseUserModel, BaseUserSchema } from './base-user.model';
 
-export interface User extends BaseUserModel { }
+export interface User extends BaseUserModel {}
 
 const schema = BaseSchema({
     ...BaseUserSchema
@@ -9,5 +9,6 @@ const schema = BaseSchema({
 
 export const UserModelName = 'User';
 export const UserModel = {
-    name: UserModelName, schema
+    name: UserModelName,
+    schema
 };

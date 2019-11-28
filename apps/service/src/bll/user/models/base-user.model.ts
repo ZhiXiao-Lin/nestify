@@ -1,4 +1,4 @@
-import { IModel } from "../../../common/core";
+import { IModel } from '../../../common/core';
 
 export const BaseUserSchema = {
     account: {
@@ -10,7 +10,7 @@ export const BaseUserSchema = {
     },
     password: { type: String, required: true, trim: true },
     nickname: { type: String, trim: true },
-    avatar: { type: String, trim: true },
+    avatar: { type: String, trim: true }
 };
 
 export interface BaseUserModel extends IModel {

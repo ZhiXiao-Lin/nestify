@@ -6,24 +6,9 @@ import { AdminRepository, UserRepository } from './repositories';
 import { AdminService, UserService } from './services';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([
-            UserModel,
-            AdminModel
-        ])
-    ],
+    imports: [MongooseModule.forFeature([UserModel, AdminModel])],
     controllers: [UserController],
-    providers: [
-        UserRepository,
-        UserService,
-        AdminRepository,
-        AdminService
-    ],
-    exports: [
-        UserRepository,
-        UserService,
-        AdminRepository,
-        AdminService
-    ]
+    providers: [UserRepository, UserService, AdminRepository, AdminService],
+    exports: [UserRepository, UserService, AdminRepository, AdminService]
 })
-export class UserModule { }
+export class UserModule {}
