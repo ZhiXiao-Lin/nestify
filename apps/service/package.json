@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@nestify/config": "^0.2.15",
+    "@nestify/event-bus": "^0.2.11",
     "@nestify/logger": "^0.2.11",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",

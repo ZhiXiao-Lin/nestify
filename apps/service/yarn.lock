@@ -334,6 +334,15 @@
     dotenv "^8.2.0"
     reflect-metadata "^0.1.13"
 
+"@nestify/event-bus@^0.2.11":
+  version "0.2.11"
+  resolved "https://registry.npm.taobao.org/@nestify/event-bus/download/@nestify/event-bus-0.2.11.tgz#31469c4785140259acdd9bea1910e72ad37a0a98"
+  integrity sha1-MUacR4UUAlms3ZvqGRDnKtN6Cpg=
+  dependencies:
+    "@nestjs/common" "^6.9.0"
+    "@nestjs/core" "^6.9.0"
+    reflect-metadata "^0.1.13"
+
 "@nestify/logger@^0.2.11":
   version "0.2.15"
   resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.15.tgz#5ac8153506b187d640bb9e66b5d4ce59cf4b5329"
@@ -381,7 +390,7 @@
     cli-color "2.0.0"
     uuid "3.3.3"
 
-"@nestjs/core@^6.7.2":
+"@nestjs/core@^6.7.2", "@nestjs/core@^6.9.0":
   version "6.10.2"
   resolved "https://registry.npm.taobao.org/@nestjs/core/download/@nestjs/core-6.10.2.tgz#51c36f66abc059a39383a97221ed5b4424b15794"
   integrity sha1-UcNvZqvAWaOTg6lyIe1bRCSxV5Q=
