@@ -1,8 +1,8 @@
 import { InjectableOptions } from '@nestjs/common';
 import { Document } from 'mongoose';
 
-export type RepositoryDecorator = {
-    injectableOptions?: InjectableOptions
+export interface RepositoryDecorator {
+    injectableOptions?: InjectableOptions;
 }
 
 export interface IModel extends Document {

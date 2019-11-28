@@ -1,5 +1,6 @@
 export * from './core.controllers';
 export * from './core.decorators';
+export * from './core.enums';
 export * from './core.interfaces';
 export * from './core.module';
 export * from './core.repositories';

@@ -31,4 +31,4 @@ const event = new EventEmitter();
     providers: [ConfigProvider, LoggerProvider, EventPublisherProvider],
     exports: [ConfigProvider, LoggerProvider, EventPublisherProvider]
 })
-export class CommonModule { }
+export class CommonModule {}
