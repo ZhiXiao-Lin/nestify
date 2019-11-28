@@ -1,3 +1,4 @@
+import { ILoggerService } from '@nestify/core';
 import { Inject, Injectable } from '@nestjs/common';
 import * as chalk from 'chalk';
 import * as _ from 'lodash';
@@ -9,14 +10,13 @@ import * as util from 'util';
 import { format, Logger } from 'winston';
 import { LOGGER_MODULE_PROVIDER } from './logger.constants';
 import { LoggerLevel } from './logger.enums';
-import { ILoggerService } from './logger.interfaces';
 
 @Injectable()
 export class LoggerService implements ILoggerService {
     constructor(
         @Inject(LOGGER_MODULE_PROVIDER)
         private readonly logger: Logger
-    ) {}
+    ) { }
 
     public error(...messages: any[]): any {
         return this.logger.error(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());
