@@ -1,10 +1,10 @@
+import { IConfigService } from '@nestify/core';
 import { Injectable } from '@nestjs/common';
 import * as assert from 'assert';
 import { DotenvConfigOptions } from 'dotenv';
 import { Glob, sync as globSync } from 'glob';
 import { get, set } from 'lodash';
 import * as path from 'path';
-import { IConfigService } from './config.interfaces';
 import { ProxyProperty } from './decorators/proxy';
 
 export interface ModuleConfig {

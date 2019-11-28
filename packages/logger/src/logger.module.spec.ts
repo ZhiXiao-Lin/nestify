@@ -1,8 +1,8 @@
+import { ILoggerService } from '@nestify/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { transports } from 'winston';
 import { LOGGER_MODULE_PROVIDER } from './logger.constants';
 import { LoggerLevel } from './logger.enums';
-import { ILoggerService } from './logger.interfaces';
 import { LoggerModule } from './logger.module';
 import { LoggerService } from './logger.service';
 
