@@ -37,6 +37,10 @@ export class EventBusService implements IEventPublisher {
         return this;
     }
 
+    public subscribe(eventName: string | symbol, callback: Callback) {
+        return this.on(eventName, callback);;
+    }
+
     public once(eventName: string | symbol, callback: Callback) {
         this.event.once(eventName, callback);
         return this;
