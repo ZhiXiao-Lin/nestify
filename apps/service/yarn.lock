@@ -327,11 +327,18 @@
     "@types/yargs" "^13.0.0"
 
 "@nestify/config@^0.2.15":
-  version "0.2.18"
-  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.18.tgz#370e198d62cb4628ff29bd6b5c078b11d14e7841"
-  integrity sha512-GWlhgU+LVhvoggyD64a5KjGVeFLmbvtJhMkAjsBxf4ir8UKBtD3CjKA9yP7F5Fmy66Wt2TbXnrCvTVvfbUv1wQ==
+  version "0.2.19"
+  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.19.tgz#9b2548d36edb7f330d6058985cae321be2c71906"
+  integrity sha512-GYnPoTVSpZmBRT7dMXHK3UV1ERDtud9WAkSx9g/wtqkOQ5epcvH5nbWlUxDkxgLEasYg1ypdg6AAWPXNeURgOw==
   dependencies:
     dotenv "^8.2.0"
+    reflect-metadata "^0.1.13"
+
+"@nestify/core@^0.2.19":
+  version "0.2.19"
+  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.19.tgz#d494d9c96e28a275627a959b84b17814ded85b53"
+  integrity sha512-ekTirYXLu/tNwqnuj9LJfwTptIYkXMnjnjGeL4xm91rU33dkx4WehaxPPbSHsVc004q/WILZTV7I8ONQpqjKmQ==
+  dependencies:
     reflect-metadata "^0.1.13"
 
 "@nestify/event-bus@^0.2.11":
@@ -344,9 +351,9 @@
     reflect-metadata "^0.1.13"
 
 "@nestify/logger@^0.2.11":
-  version "0.2.15"
-  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.15.tgz#5ac8153506b187d640bb9e66b5d4ce59cf4b5329"
-  integrity sha512-grdbhJFx4xICrUFGQPrw67rFiwC4TS/m9ZbZpsiH9j14xP1LBInqIdhhdHiAcpaEDbJQbIzLashwYJ3QTGBcCQ==
+  version "0.2.19"
+  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.19.tgz#a33a04a7102efa1c8f676a3f54f0a1121a04e180"
+  integrity sha512-gkqvdbvYyo2v1lP1hFeV0sYat9OmjzoSgRjJGAIuenkhYT3fs9BwJopjlaPlKRBelpjfr5ym9hC5mEbtM2RquA==
   dependencies:
     "@nestjs/common" "^6.9.0"
     chalk "^3.0.0"
@@ -383,8 +390,8 @@
 
 "@nestjs/common@^6.7.2", "@nestjs/common@^6.9.0":
   version "6.10.2"
-  resolved "https://registry.npm.taobao.org/@nestjs/common/download/@nestjs/common-6.10.2.tgz#629329bb36dde8e9d9820de36df0b16257a1f7e0"
-  integrity sha1-YpMpuzbd6OnZgg3jbfCxYleh9+A=
+  resolved "https://registry.npmjs.org/@nestjs/common/-/common-6.10.2.tgz#629329bb36dde8e9d9820de36df0b16257a1f7e0"
+  integrity sha512-v1FaympATrYiymi1PVmOBJcXUo8iFb+cdb0kMsvHW2Bzf99SMeRQFOAa3pb+xylxGxJMtePY0JaFzmhQaXPI8Q==
   dependencies:
     axios "0.19.0"
     cli-color "2.0.0"

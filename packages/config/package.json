@@ -55,6 +55,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
+    "@nestify/core": "^0.2.19",
     "dotenv": "^8.2.0",
     "reflect-metadata": "^0.1.13"
   },

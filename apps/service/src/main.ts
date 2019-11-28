@@ -1,5 +1,4 @@
-import { IConfigService } from '@nestify/config';
-import { ILoggerService } from '@nestify/logger';
+import { IConfigService, ILoggerService } from '@nestify/core';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CONFIG_SERVICE, LOGGER_SERVICE } from './common';

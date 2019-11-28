@@ -1,5 +1,4 @@
-import { IConfigService } from '@nestify/config';
-import { ILoggerService } from '@nestify/logger';
+import { IConfigService, ILoggerService } from '@nestify/core';
 import { InjectConfig, InjectLogger } from '../decorators';
 
 export abstract class BaseInjectable {
