@@ -1,5 +1,5 @@
-import { IConfigService, ILoggerService } from '@nestify/core';
-import { InjectConfig, InjectLogger } from '../decorators';
+import { IConfigService, IEventPublisher, ILoggerService } from '@nestify/core';
+import { InjectConfig, InjectEventPublisher, InjectLogger } from '../decorators';
 
 export abstract class BaseInjectable {
     @InjectConfig()
@@ -7,4 +7,7 @@ export abstract class BaseInjectable {
 
     @InjectLogger()
     protected readonly logger: ILoggerService;
+
+    @InjectEventPublisher()
+    protected readonly event: IEventPublisher;
 }

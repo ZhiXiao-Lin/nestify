@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BaseRepository } from 'src/common/core';
+import { BaseRepository, Repository } from 'src/common/core';
+import { BeforeLoad } from '../../common/core';
 import { User } from './user.interface';
-import { UserModelToken } from './user.model';
+import { UserModelName } from './user.model';
 
-@Injectable()
+@Repository()
 export class UserRepository extends BaseRepository<User> {
     constructor(
-        @InjectModel(UserModelToken)
+        @InjectModel(UserModelName)
         protected readonly model: Model<User>
     ) {
         super(model);
+    }
+
+    @BeforeLoad()
+    beforeLoad() {
+        this.logger.info('befor load');
     }
 }

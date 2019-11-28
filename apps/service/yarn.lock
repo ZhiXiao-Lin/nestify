@@ -327,34 +327,37 @@
     "@types/yargs" "^13.0.0"
 
 "@nestify/config@^0.2.15":
-  version "0.2.19"
-  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.19.tgz#9b2548d36edb7f330d6058985cae321be2c71906"
-  integrity sha512-GYnPoTVSpZmBRT7dMXHK3UV1ERDtud9WAkSx9g/wtqkOQ5epcvH5nbWlUxDkxgLEasYg1ypdg6AAWPXNeURgOw==
+  version "0.2.21"
+  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.21.tgz#e74d02d262a71c17578a9671286e387b44f6a448"
+  integrity sha512-mXUMajjY3DIWmwCEVz72yKcYgacXH9+t19ziO6+91oaH+uC6X9lGh25xeKktC55aQWCqbU4k5GB52gcopi+9Zw==
   dependencies:
+    "@nestify/core" "^0.2.21"
     dotenv "^8.2.0"
     reflect-metadata "^0.1.13"
 
-"@nestify/core@^0.2.19":
-  version "0.2.19"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.19.tgz#d494d9c96e28a275627a959b84b17814ded85b53"
-  integrity sha512-ekTirYXLu/tNwqnuj9LJfwTptIYkXMnjnjGeL4xm91rU33dkx4WehaxPPbSHsVc004q/WILZTV7I8ONQpqjKmQ==
+"@nestify/core@^0.2.19", "@nestify/core@^0.2.21":
+  version "0.2.21"
+  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.21.tgz#6de8e5c3f19eb93314dd34b14b50c4aefcbcf3c7"
+  integrity sha512-aq8Z44FYuJ17xiLEEPnyptJekhNx6hEhHVyW7VMOzOXKqnZW5Pz+pw38GlJmsD2H3sxINPCtJKL1s6fpBdP+8A==
   dependencies:
     reflect-metadata "^0.1.13"
 
 "@nestify/event-bus@^0.2.11":
-  version "0.2.11"
-  resolved "https://registry.npm.taobao.org/@nestify/event-bus/download/@nestify/event-bus-0.2.11.tgz#31469c4785140259acdd9bea1910e72ad37a0a98"
-  integrity sha1-MUacR4UUAlms3ZvqGRDnKtN6Cpg=
+  version "0.2.21"
+  resolved "https://registry.npmjs.org/@nestify/event-bus/-/event-bus-0.2.21.tgz#41f420333b1d25c06c74fcb0e897f8a28cf80255"
+  integrity sha512-9YsRdN9mTAWQ28SYQ7XF80XmWOVWWfL6WwVtAO0lws/aaGc8bIUGGWzvf8xpbYRNzT+7RUqBaVoKlzkpooC/Jg==
   dependencies:
+    "@nestify/core" "^0.2.21"
     "@nestjs/common" "^6.9.0"
     "@nestjs/core" "^6.9.0"
     reflect-metadata "^0.1.13"
 
 "@nestify/logger@^0.2.11":
-  version "0.2.19"
-  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.19.tgz#a33a04a7102efa1c8f676a3f54f0a1121a04e180"
-  integrity sha512-gkqvdbvYyo2v1lP1hFeV0sYat9OmjzoSgRjJGAIuenkhYT3fs9BwJopjlaPlKRBelpjfr5ym9hC5mEbtM2RquA==
+  version "0.2.21"
+  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.21.tgz#89fdcf19231b2073d6b2e9f991e9d7e86f57612f"
+  integrity sha512-xnU6iUUTrBnewRxuocnAgIZ43S9FH3U/7meSTkE0fONd+FAZ93K76K4zson6kfSeiSA8lpGqEoP8HAi4DvsNNw==
   dependencies:
+    "@nestify/core" "^0.2.21"
     "@nestjs/common" "^6.9.0"
     chalk "^3.0.0"
     moment "^2.24.0"
@@ -464,8 +467,8 @@
 
 "@nuxtjs/opencollective@0.2.2":
   version "0.2.2"
-  resolved "https://registry.npm.taobao.org/@nuxtjs/opencollective/download/@nuxtjs/opencollective-0.2.2.tgz#26a761ebf588cc92a422d7cee996a66bd6e2761e"
-  integrity sha1-Jqdh6/WIzJKkItfO6Zama9bidh4=
+  resolved "https://registry.npmjs.org/@nuxtjs/opencollective/-/opencollective-0.2.2.tgz#26a761ebf588cc92a422d7cee996a66bd6e2761e"
+  integrity sha512-69gFVDs7mJfNjv9Zs5DFVD+pvBW+k1TaHSOqUWqAyTTfLcKI/EMYQgvEvziRd+zAFtUOoye6MfWh0qvinGISPw==
   dependencies:
     chalk "^2.4.1"
     consola "^2.3.0"
@@ -982,8 +985,8 @@ ansi-styles@^2.2.1:
 
 ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   version "3.2.1"
-  resolved "https://registry.npm.taobao.org/ansi-styles/download/ansi-styles-3.2.1.tgz?cache=0&sync_timestamp=1573557674483&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fansi-styles%2Fdownload%2Fansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"
-  integrity sha1-QfuyAkPlCxK+DwS43tvwdSDOhB0=
+  resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"
+  integrity sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==
   dependencies:
     color-convert "^1.9.0"
 
@@ -1518,8 +1521,8 @@ caseless@~0.12.0:
 
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.3.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
-  resolved "https://registry.npm.taobao.org/chalk/download/chalk-2.4.2.tgz?cache=0&sync_timestamp=1573282918610&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fchalk%2Fdownload%2Fchalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
-  integrity sha1-zUJUFnelQzPPVBpJEIwUMrRMlCQ=
+  resolved "https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
+  integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
   dependencies:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
@@ -1681,8 +1684,8 @@ collection-visit@^1.0.0:
 
 color-convert@^1.9.0, color-convert@^1.9.1:
   version "1.9.3"
-  resolved "https://registry.npm.taobao.org/color-convert/download/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
-  integrity sha1-u3GFBpDh8TZWfeYp0tVHHe2kweg=
+  resolved "https://registry.npmjs.org/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
+  integrity sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
   dependencies:
     color-name "1.1.3"
 
@@ -1781,8 +1784,8 @@ concat-stream@^1.5.0, concat-stream@^1.5.2:
 
 consola@^2.3.0:
   version "2.11.0"
-  resolved "https://registry.npm.taobao.org/consola/download/consola-2.11.0.tgz#9bb35d850d8cecde894ce2eb4d792fa6b90d9013"
-  integrity sha1-m7NdhQ2M7N6JTOLrTXkvprkNkBM=
+  resolved "https://registry.npmjs.org/consola/-/consola-2.11.0.tgz#9bb35d850d8cecde894ce2eb4d792fa6b90d9013"
+  integrity sha512-2bcAqHastlPSCvZ+ur8bgHInGAWvUnysWz3h3xRX+/XZoCY7avolJJnVXOPGoVoyCcg1b231XixonoArmgxaoA==
 
 console-browserify@^1.1.0:
   version "1.2.0"
@@ -2330,7 +2333,7 @@ escape-html@~1.0.3:
 
 escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
-  resolved "https://registry.npm.taobao.org/escape-string-regexp/download/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
+  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
 escodegen@^1.9.1:
@@ -2578,8 +2581,8 @@ fast-levenshtein@~2.0.6:
 
 fast-safe-stringify@2.0.7, fast-safe-stringify@^2.0.4:
   version "2.0.7"
-  resolved "https://registry.npm.taobao.org/fast-safe-stringify/download/fast-safe-stringify-2.0.7.tgz#124aa885899261f68aedb42a7c080de9da608743"
-  integrity sha1-EkqohYmSYfaK7bQqfAgN6dpgh0M=
+  resolved "https://registry.npmjs.org/fast-safe-stringify/-/fast-safe-stringify-2.0.7.tgz#124aa885899261f68aedb42a7c080de9da608743"
+  integrity sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
 
 fastq@^1.6.0:
   version "1.6.0"
@@ -2916,7 +2919,7 @@ has-ansi@^2.0.0:
 
 has-flag@^3.0.0:
   version "3.0.0"
-  resolved "https://registry.npm.taobao.org/has-flag/download/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
+  resolved "https://registry.npmjs.org/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"
   integrity sha1-tdRU3CGZriJWmfNGfloH87lVuv0=
 
 has-flag@^4.0.0:
@@ -3482,8 +3485,8 @@ istanbul-reports@^2.2.6:
 
 iterare@1.2.0:
   version "1.2.0"
-  resolved "https://registry.npm.taobao.org/iterare/download/iterare-1.2.0.tgz#7427f5ed45986e4b73e2fea903579f1117f3dd15"
-  integrity sha1-dCf17UWYbktz4v6pA1efERfz3RU=
+  resolved "https://registry.npmjs.org/iterare/-/iterare-1.2.0.tgz#7427f5ed45986e4b73e2fea903579f1117f3dd15"
+  integrity sha512-RxMV9p/UzdK0Iplnd8mVgRvNdXlsTOiuDrqMRnDi3wIhbT+JP4xDquAX9ay13R3CH72NBzQ91KWe0+C168QAyQ==
 
 jest-changed-files@^24.9.0:
   version "24.9.0"
@@ -4534,8 +4537,8 @@ node-emoji@1.10.0:
 
 node-fetch@^2.3.0:
   version "2.6.0"
-  resolved "https://registry.npm.taobao.org/node-fetch/download/node-fetch-2.6.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnode-fetch%2Fdownload%2Fnode-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
-  integrity sha1-5jNFY4bUqlWGP2dqerDaqP3ssP0=
+  resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -4702,8 +4705,8 @@ object-copy@^0.1.0:
 
 object-hash@2.0.0:
   version "2.0.0"
-  resolved "https://registry.npm.taobao.org/object-hash/download/object-hash-2.0.0.tgz#7c4cc341eb8b53367312a7c546142f00c9e0ea20"
-  integrity sha1-fEzDQeuLUzZzEqfFRhQvAMng6iA=
+  resolved "https://registry.npmjs.org/object-hash/-/object-hash-2.0.0.tgz#7c4cc341eb8b53367312a7c546142f00c9e0ea20"
+  integrity sha512-I7zGBH0rDKwVGeGZpZoFaDhIwvJa3l1CZE+8VchylXbInNiCj7sxxea9P5dTM4ftKR5//nrqxrdeGSTWL2VpBA==
 
 object-inspect@^1.7.0:
   version "1.7.0"
@@ -6069,8 +6072,8 @@ supports-color@^2.0.0:
 
 supports-color@^5.3.0:
   version "5.5.0"
-  resolved "https://registry.npm.taobao.org/supports-color/download/supports-color-5.5.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fsupports-color%2Fdownload%2Fsupports-color-5.5.0.tgz#e2e69a44ac8772f78a1ec0b35b689df6530efc8f"
-  integrity sha1-4uaaRKyHcveKHsCzW2id9lMO/I8=
+  resolved "https://registry.npmjs.org/supports-color/-/supports-color-5.5.0.tgz#e2e69a44ac8772f78a1ec0b35b689df6530efc8f"
+  integrity sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==
   dependencies:
     has-flag "^3.0.0"
 

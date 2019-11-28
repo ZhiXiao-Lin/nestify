@@ -11,9 +11,9 @@ export const UserSchema = BaseSchema({
     password: { type: String, required: true, trim: true }
 });
 
-export const UserModelToken = 'User';
+export const UserModelName = 'User';
 
 export const UserModel = {
-    name: UserModelToken,
+    name: UserModelName,
     schema: UserSchema
 };
