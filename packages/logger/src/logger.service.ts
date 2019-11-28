@@ -16,7 +16,7 @@ export class LoggerService implements ILoggerService {
     constructor(
         @Inject(LOGGER_MODULE_PROVIDER)
         private readonly logger: Logger
-    ) { }
+    ) {}
 
     public error(...messages: any[]): any {
         return this.logger.error(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());

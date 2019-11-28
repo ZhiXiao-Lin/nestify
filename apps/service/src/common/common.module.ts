@@ -27,4 +27,4 @@ ConfigModule.initEnvironment(process.cwd() + '/src/env');
     providers: [ConfigProvider, LoggerProvider],
     exports: [ConfigProvider, LoggerProvider]
 })
-export class CommonModule { }
+export class CommonModule {}

@@ -1,3 +1,4 @@
+import { IEventPublisher } from '@nestify/core';
 import { Injectable } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
@@ -7,7 +8,7 @@ import { EventBusExplorer } from './event-bus.explorer';
 import { Callback, EventBusModuleOptions, ListenerDecoratorOptions } from './event-bus.interfaces';
 
 @Injectable()
-export class EventBusService {
+export class EventBusService implements IEventPublisher {
     private readonly event: EventEmitter;
     private readonly explorer: EventBusExplorer;
 
@@ -25,6 +26,10 @@ export class EventBusService {
 
     public emit(eventName: string | symbol, data?: any) {
         return this.event.emit(eventName, data);
+    }
+
+    public publish(eventName: string | symbol, data?: any) {
+        return this.emit(eventName, data);
     }
 
     public on(eventName: string | symbol, callback: Callback) {

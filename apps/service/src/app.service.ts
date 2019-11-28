@@ -1,4 +1,4 @@
-import { } from '@nestify/config';
+import {} from '@nestify/config';
 import { IConfigService, ILoggerService } from '@nestify/core';
 import { Injectable } from '@nestjs/common';
 import { InjectConfig, InjectLogger } from './common';
