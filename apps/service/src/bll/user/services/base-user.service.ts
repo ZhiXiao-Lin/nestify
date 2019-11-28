@@ -1,12 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { BaseService } from '../../common/core';
-import { User } from './user.interface';
-import { UserRepository } from './user.repository';
+import { BaseService } from '../../../common/core';
+import { BaseUserModel } from '../models';
+import { BaseUserRepository } from '../repositories';
 
-@Injectable()
-export class UserService extends BaseService<User> {
-    constructor(protected readonly repository: UserRepository) {
+export abstract class BaseUserService<T extends BaseUserModel> extends BaseService<T> {
+    constructor(protected readonly repository: BaseUserRepository<T>) {
         super(repository);
     }
 
