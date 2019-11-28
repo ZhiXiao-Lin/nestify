@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { BaseController } from '../../common/core';
-import { User } from './user.interface';
-import { UserService } from './user.service';
+import { BaseController } from '../../../common/core';
+import { User } from '../models';
+import { UserService } from '../services';
 
 @Controller('user')
 export class UserController extends BaseController<User> {
@@ -16,7 +16,7 @@ export class UserController extends BaseController<User> {
 
         this.logger.info('user', user.id);
 
-        return users;
+        return user;
     }
 
     @Get('test')
