@@ -23,7 +23,7 @@ export class ConsoleService {
         return this.cli;
     }
 
-    init(argv: string[]) {
+    init(argv: string[]): any {
         this.cli.on('command:*', () => {
             this.cli.help();
         });
