@@ -24,6 +24,21 @@ $ yarn add @nestify/core
 
 ```
 
+## 元数据勘探者
+
+Nestify core 模块提供了一个专门用于扫描 Nest IOC 中的模块元数据的工具类 MetadataExplorer
+
+``` typescript
+
+import { MetadataExplorer } from '@nestify/core';
+
+```
+
+MetadataExplorer 接收 Nest ModulesContainer 作为构造函数的参数
+
+ModulesContainer 是 Nest 中存放所有 Injectable 实例的容器
+
+
 ## 特性（Trait）
 
 实现类似于 PHP 中的 trait 功能，可以简单的理解为多继承。

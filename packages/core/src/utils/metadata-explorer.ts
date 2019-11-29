@@ -12,12 +12,11 @@ export class MetadataExplorer {
         private readonly modulesContainer: ModulesContainer
     ) { }
 
-    public async explore(isComponent: ComponentValidation) {
-
+    public explore(isComponent: ComponentValidation) {
         return MetadataExplorer.getComponents([...this.modulesContainer.values()], isComponent);
     }
 
-    public getProperties(target: any) {
+    public static getProperties(target: any) {
         const properties = [];
         new MetadataScanner().scanFromPrototype(target, Object.getPrototypeOf(target), (key: string) => {
             properties.push(key);
@@ -26,7 +25,7 @@ export class MetadataExplorer {
         return properties;
     }
 
-    private static getComponents(modules: Module[], isComponent: ComponentValidation): InstanceWrapper<Injectable>[] {
+    public static getComponents(modules: Module[], isComponent: ComponentValidation): InstanceWrapper<Injectable>[] {
         return modules
             .map((module: Module) => module.components)
             .reduce((acc, map) => {
