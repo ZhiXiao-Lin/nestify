@@ -1,6 +1,6 @@
 {
   "name": "@nestify/console",
-  "version": "0.2.24",
+  "version": "0.3.1",
   "description": "A nest.js console module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "6.10.1",
+    "@types/commander": "^2.12.2",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^24.0.23",
     "jest": "24.9.0",

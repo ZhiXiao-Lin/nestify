@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "cli": "yarn build && node dist/console",
+    "cli": "nest build && node dist/console",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -21,10 +21,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestify/config": "^0.2.15",
-    "@nestify/core": "^0.2.19",
-    "@nestify/event-bus": "^0.2.11",
-    "@nestify/logger": "^0.2.11",
+    "@nestify/config": "^0.3.1",
+    "@nestify/console": "^0.3.1",
+    "@nestify/core": "^0.3.1",
+    "@nestify/event-bus": "^0.3.1",
+    "@nestify/logger": "^0.3.1",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/mongoose": "^6.1.2",
