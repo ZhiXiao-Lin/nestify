@@ -345,19 +345,19 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestify/config@^0.2.15":
-  version "0.2.24"
-  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.2.24.tgz#010ef80fc940add1aa7be603e88ac53cb5d7c26f"
-  integrity sha512-m/jyxCc9kNXj7Bedq3Qb16cAye6ovXsQo+jv8mC+/3nra/mYjTSMYCL0yhoiqdg6gdzKif1HHbI4SqZEzn9SHw==
+"@nestify/config@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.3.1.tgz#14d602915dafdf6b84f93238472f99eacff32cb3"
+  integrity sha512-wRkVTjBB4t2Or4KLO+A1690STuqqOjxoL2+LzNFdzJo4dbvMlcKKX7Ce8YcJ+9urY3v4aicAGNPLkT3J8K+N2g==
   dependencies:
-    "@nestify/core" "^0.2.24"
+    "@nestify/core" "^0.3.0"
     dotenv "^8.2.0"
     reflect-metadata "^0.1.13"
 
-"@nestify/console@^0.2.24":
-  version "0.2.25"
-  resolved "https://registry.npmjs.org/@nestify/console/-/console-0.2.25.tgz#b9c98a488a5c4a010bb59e315c6be46eefa18875"
-  integrity sha512-nyJaPP5sW14AZXU2c/+GaOeVbClwNEnUqQBKy6J6wUKMIDol5ywXWw+HOW7wIlhBmzd/RTkFgn79/xTD6P9caw==
+"@nestify/console@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@nestify/console/-/console-0.3.1.tgz#75627200812b87ebe0a2c28d4420d8182b8a4dab"
+  integrity sha512-3VbTDMNySzwGUY4z52ziM3e475S3DwCb5UDfjAH1a6IIOnCHxJCX4n778YPj5tpZHENM0Qn0bm6YtTOGjwphmw==
   dependencies:
     "@nestjs/common" "^6.9.0"
     "@nestjs/core" "^6.9.0"
@@ -366,29 +366,29 @@
     ora "^4.0.3"
     reflect-metadata "^0.1.13"
 
-"@nestify/core@^0.2.19", "@nestify/core@^0.2.24":
-  version "0.2.24"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.24.tgz#742f074f6d1b59ad44748949ea3ac934d0544698"
-  integrity sha512-HrEyz6nCsiW7RFxzR7w1iYlHCbaKgFWe3Ez7fgSHp1BawWeVdwf0jYG/Zcvg//D3R8u4G4eLZdgHPE9VoxRe2A==
+"@nestify/core@^0.3.0", "@nestify/core@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.1.tgz#ceae98fa9f66ba568dac1c020878d79d4e58c984"
+  integrity sha512-Tm4l7rHtb65wlgREcBNmFyp1x9PlfXsPLivDm/EkhaAro2Pqw6HtkIUJHh6RgZ96ugOTrYFWZh2pC+m0H8sSjw==
   dependencies:
     reflect-metadata "^0.1.13"
 
-"@nestify/event-bus@^0.2.11":
-  version "0.2.24"
-  resolved "https://registry.npmjs.org/@nestify/event-bus/-/event-bus-0.2.24.tgz#7e406ece9e72916c7c4bc61783043a271d131dbc"
-  integrity sha512-8PEsE7/eFcnvWKFXdY7Dj8vNpU48ZSpzOH0+TpMjRhlX34JQrkKQKPuzvq1kWuuYF+dDshXyKtbsL/CFFu2dNQ==
+"@nestify/event-bus@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@nestify/event-bus/-/event-bus-0.3.1.tgz#4b78339c30d8eb73c41e9bbf2f7f9b3c695b7284"
+  integrity sha512-3Coox8meOlkChjOucw+GjXbHs+OnzAvWaVUCry93D+fHVyo4KOp3xCEXWv9CZUeUyQ9B6yH0StNxhxn9k6gQ/Q==
   dependencies:
-    "@nestify/core" "^0.2.24"
+    "@nestify/core" "^0.3.0"
     "@nestjs/common" "^6.9.0"
     "@nestjs/core" "^6.9.0"
     reflect-metadata "^0.1.13"
 
-"@nestify/logger@^0.2.11":
-  version "0.2.24"
-  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.2.24.tgz#7f38b6de5776d3769bf01754fcf6ea4fad208758"
-  integrity sha512-5qTByVj+XtpdVPnEDziTlQj2vK0xhAa2Z/BeusyR7+L52l5wRAajQ3hUUpYSaKR2cfVlfht44yGW880Py3ngOg==
+"@nestify/logger@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.3.1.tgz#6b39ead06b1c331877e7d8919793d94d8dee48e6"
+  integrity sha512-OXV7jidZqWU/TLkI9k10BbMllxY0hnHGNaWoASogpIDDHI1fNYvEawUZhoD6FfP1oo4ICfENXfuHbFhUFcpRjg==
   dependencies:
-    "@nestify/core" "^0.2.24"
+    "@nestify/core" "^0.3.0"
     "@nestjs/common" "^6.9.0"
     chalk "^3.0.0"
     moment "^2.24.0"

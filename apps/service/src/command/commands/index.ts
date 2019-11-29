@@ -1,1 +1,1 @@
-export * from './seed.command';
+export * from './mongo.command';
