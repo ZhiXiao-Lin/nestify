@@ -149,7 +149,7 @@ const result = await RaceFlowBuilder.newFlow()
 
 ### 流程组合
 
-可以将任意流程和任务进行组合，从而形成完成的业务逻辑。
+可以将任意流程和任务进行组合，从而定义完整的业务逻辑。
 
 ``` typescript 
 

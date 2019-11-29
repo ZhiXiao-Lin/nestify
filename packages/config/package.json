@@ -1,6 +1,6 @@
 {
   "name": "@nestify/config",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "description": "A nest.js config module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
@@ -55,7 +55,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@nestify/core": "^0.3.2",
+    "@nestify/core": "^0.3.4",
     "dotenv": "^8.2.0",
     "reflect-metadata": "^0.1.13"
   },
