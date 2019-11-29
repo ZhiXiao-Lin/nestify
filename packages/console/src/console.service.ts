@@ -9,7 +9,7 @@ export class ConsoleService {
     constructor(
         @InjectCommander()
         private readonly cli: Cli
-    ) { }
+    ) {}
 
     static createSpinner(text: string = 'loading'): ora.Ora {
         return ora(text);

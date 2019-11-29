@@ -6,4 +6,4 @@ import { MongoCommand } from './commands';
     imports: [ConsoleModule],
     providers: [MongoCommand]
 })
-export class CommandModule { }
+export class CommandModule {}

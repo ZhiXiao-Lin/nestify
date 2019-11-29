@@ -7,36 +7,30 @@ import { BaseInjectable } from './core.injectable';
 
 @Injectable()
 export class CoreExplorer extends BaseInjectable implements OnModuleInit {
-    private readonly explorer: MetadataExplorer
-
-    constructor(
-        private readonly modulesContainer: ModulesContainer,
-        private readonly reflector: Reflector
-    ) {
+    constructor(private readonly modulesContainer: ModulesContainer, private readonly reflector: Reflector) {
         super();
-        this.explorer = new MetadataExplorer(this.modulesContainer);
     }
 
-    async onModuleInit() {
-        await this.explore();
+    onModuleInit() {
+        this.explore();
     }
 
-    public async explore() {
+    public explore() {
+        const components = MetadataExplorer.explore([...this.modulesContainer.values()]);
 
-        const components = await this.explorer.explore(this.isRepository.bind(this));
+        components
+            .filter(({ instance }) => this.isRepository(instance as any))
+            .forEach(({ instance }) => {
+                this.logger.debug(`Start scanning ${name}...`);
 
-        components.forEach(({ instance, name }) => {
+                MetadataExplorer.getProperties(instance).forEach((key) => {
+                    if (this.isListener(instance[key])) {
+                        this.handleListener(instance, key, this.getListenerMetadata(instance[key]));
+                    }
+                });
 
-            this.logger.debug(`Start scanning ${name}...`);
-
-            this.explorer.getProperties(instance).forEach(key => {
-                if (this.isListener(instance[key])) {
-                    this.handleListener(instance, key, this.getListenerMetadata(instance[key]));
-                }
+                this.logger.debug(`${name} scanned`);
             });
-
-            this.logger.debug(`${name} scanned`);
-        });
     }
 
     private isRepository(target: Type<any> | Function): boolean {

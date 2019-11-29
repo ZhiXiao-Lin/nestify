@@ -6,12 +6,8 @@ import { CommandModule } from './command';
 import { CommonModule } from './common';
 
 @Module({
-    imports: [
-        CommonModule,
-        CommandModule,
-        BllModule
-    ],
+    imports: [CommonModule, CommandModule, BllModule],
     controllers: [AppController],
     providers: [AppService]
 })
-export class AppModule { }
+export class AppModule {}
