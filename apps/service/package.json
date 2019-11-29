@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "cli": "yarn build && node dist/console",
+    "cli": "node dist/console",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@nestify/config": "^0.2.15",
+    "@nestify/console": "^0.2.24",
     "@nestify/core": "^0.2.19",
     "@nestify/event-bus": "^0.2.11",
     "@nestify/logger": "^0.2.11",
@@ -39,6 +40,7 @@
     "@nestjs/cli": "^6.9.0",
     "@nestjs/schematics": "^6.7.0",
     "@nestjs/testing": "^6.7.1",
+    "@types/commander": "^2.12.2",
     "@types/express": "^4.17.1",
     "@types/jest": "^24.0.18",
     "@types/mongoose": "^5.5.32",

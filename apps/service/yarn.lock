@@ -335,6 +335,18 @@
     dotenv "^8.2.0"
     reflect-metadata "^0.1.13"
 
+"@nestify/console@^0.2.24":
+  version "0.2.24"
+  resolved "https://registry.npmjs.org/@nestify/console/-/console-0.2.24.tgz#793001308fe69b0cecec62b6f3eaf0bc86c615ad"
+  integrity sha512-BfZ7nmOhTRnfB+3eifnjy6PGzjpBscs8GzCYeXa9Ng/J+4IG3X5ZQKcV4WyFuZxSCb2Sykl+R+LVKnOlAEnMYA==
+  dependencies:
+    "@nestjs/common" "^6.9.0"
+    "@nestjs/core" "^6.9.0"
+    commander "^4.0.1"
+    inquirer "^7.0.0"
+    ora "^4.0.3"
+    reflect-metadata "^0.1.13"
+
 "@nestify/core@^0.2.19", "@nestify/core@^0.2.22":
   version "0.2.22"
   resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.22.tgz#47ad4e228a2a8692d85b422ea830c2cd770b80a5"
@@ -539,6 +551,13 @@
   version "1.1.1"
   resolved "https://registry.npmjs.org/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
+
+"@types/commander@^2.12.2":
+  version "2.12.2"
+  resolved "https://registry.npmjs.org/@types/commander/-/commander-2.12.2.tgz#183041a23842d4281478fa5d23c5ca78e6fd08ae"
+  integrity sha512-0QEFiR8ljcHp9bAbWxecjVRuAMr16ivPiGOw6KFQBVrVd0RQIcM3xKdRisH2EDWgVWujiYtHwhSkSUoAAGzH7Q==
+  dependencies:
+    commander "*"
 
 "@types/connect@*":
   version "3.4.32"
@@ -1747,7 +1766,7 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@4.0.1:
+commander@*, commander@4.0.1, commander@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npm.taobao.org/commander/download/commander-4.0.1.tgz#b67622721785993182e807f4883633e6401ba53c"
   integrity sha1-tnYicheFmTGC6Af0iDYz5kAbpTw=
@@ -3142,7 +3161,7 @@ inquirer@6.5.1:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-inquirer@7.0.0:
+inquirer@7.0.0, inquirer@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npm.taobao.org/inquirer/download/inquirer-7.0.0.tgz#9e2b032dde77da1db5db804758b8fea3a970519a"
   integrity sha1-nisDLd532h2124BHWLj+o6lwUZo=
@@ -4791,7 +4810,7 @@ optionator@^0.8.1:
     type-check "~0.3.2"
     word-wrap "~1.2.3"
 
-ora@4.0.3:
+ora@4.0.3, ora@^4.0.3:
   version "4.0.3"
   resolved "https://registry.npm.taobao.org/ora/download/ora-4.0.3.tgz?cache=0&sync_timestamp=1573640943103&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fora%2Fdownload%2Fora-4.0.3.tgz#752a1b7b4be4825546a7a3d59256fa523b6b6d05"
   integrity sha1-dSobe0vkglVGp6PVklb6UjtrbQU=
