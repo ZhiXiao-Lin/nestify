@@ -1,34 +1,37 @@
-import { Injectable as InjectableDecorator, OnModuleInit, Type } from '@nestjs/common';
-import { Injectable } from '@nestjs/common/interfaces';
+import { Injectable, OnModuleInit, Type } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
-import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import { Module } from '@nestjs/core/injector/module';
-import { MetadataScanner } from '@nestjs/core/metadata-scanner';
+import { MetadataExplorer } from '../utils';
 import { REPOSITORY, REPOSITORY_LISTENER } from './core.constants';
 import { RepositoryEvents } from './core.enums';
 import { BaseInjectable } from './core.injectable';
 
-@InjectableDecorator()
+@Injectable()
 export class CoreExplorer extends BaseInjectable implements OnModuleInit {
-    constructor(private readonly modulesContainer: ModulesContainer, private readonly reflector: Reflector) {
+    private readonly explorer: MetadataExplorer
+
+    constructor(
+        private readonly modulesContainer: ModulesContainer,
+        private readonly reflector: Reflector
+    ) {
         super();
+        this.explorer = new MetadataExplorer(this.modulesContainer);
     }
 
-    onModuleInit() {
-        this.explore();
+    async onModuleInit() {
+        await this.explore();
     }
 
-    public explore() {
-        const components = CoreExplorer.getComponents([...this.modulesContainer.values()]);
+    public async explore() {
 
-        components.map((wrapper: InstanceWrapper) => {
-            const { name, instance } = wrapper;
+        const components = await this.explorer.explore(this.isRepository.bind(this));
+
+        components.forEach(({ instance, name }) => {
 
             this.logger.debug(`Start scanning ${name}...`);
 
-            new MetadataScanner().scanFromPrototype(instance, Object.getPrototypeOf(instance), (key: string) => {
-                if (CoreExplorer.isListener(instance[key], this.reflector)) {
-                    this.handleListener(wrapper, key, CoreExplorer.getListenerMetadata(instance[key]));
+            this.explorer.getProperties(instance).forEach(key => {
+                if (this.isListener(instance[key])) {
+                    this.handleListener(instance, key, this.getListenerMetadata(instance[key]));
                 }
             });
 
@@ -36,30 +39,20 @@ export class CoreExplorer extends BaseInjectable implements OnModuleInit {
         });
     }
 
-    private static getComponents(modules: Module[]): InstanceWrapper<Injectable>[] {
-        return modules
-            .map((module: Module) => module.components)
-            .reduce((acc, map) => {
-                acc.push(...map.values());
-                return acc;
-            }, [])
-            .filter((wrapper: InstanceWrapper) => wrapper.metatype && CoreExplorer.isRepository(wrapper.metatype));
+    private isRepository(target: Type<any> | Function): boolean {
+        return !!this.reflector.get(REPOSITORY, target);
     }
 
-    private static isRepository(target: Type<any> | Function, reflector: Reflector = new Reflector()): boolean {
-        return !!reflector.get(REPOSITORY, target);
+    private isListener(target: Type<any> | Function): boolean {
+        return !!this.reflector.get(REPOSITORY_LISTENER, target);
     }
 
-    private static isListener(target: Type<any> | Function, reflector: Reflector = new Reflector()): boolean {
-        return !!reflector.get(REPOSITORY_LISTENER, target);
-    }
-
-    private handleListener({ instance }: InstanceWrapper, key: string, event: RepositoryEvents) {
+    private handleListener(instance: any, key: string, event: RepositoryEvents) {
         this.logger.debug(`${event}_${instance.model.modelName} event has been bound to method ${key}`);
         return this.event.subscribe(`${event}_${instance.model.modelName}`, instance[key].bind(instance));
     }
 
-    private static getListenerMetadata(target: Type<any> | Function, reflector: Reflector = new Reflector()): any {
-        return reflector.get(REPOSITORY_LISTENER, target);
+    private getListenerMetadata(target: Type<any> | Function): any {
+        return this.reflector.get(REPOSITORY_LISTENER, target);
     }
 }
