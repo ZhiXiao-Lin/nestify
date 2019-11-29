@@ -35,6 +35,7 @@ $ cd apps/service && yarn && yarn start:dev
 - [x] Workflow Engine
 - [x] Rule Engine 
 - [x] Mailer
+- [x] Console
 - [ ] Storage
 - [ ] Task Queue
 - [ ] Notification
@@ -46,7 +47,6 @@ $ cd apps/service && yarn && yarn start:dev
 - [ ] Cube
 - [ ] Cache 
 - [ ] SSR
-- [ ] Console
 - [ ] Cashier
 ...
 
