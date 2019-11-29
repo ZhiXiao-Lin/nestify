@@ -1,6 +1,7 @@
 import { MetadataExplorer } from '@nestify/core';
 import { Injectable, OnModuleInit, Type } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
+import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { REPOSITORY, REPOSITORY_LISTENER } from './core.constants';
 import { RepositoryEvents } from './core.enums';
 import { BaseInjectable } from './core.injectable';
@@ -16,11 +17,11 @@ export class CoreExplorer extends BaseInjectable implements OnModuleInit {
     }
 
     public explore() {
-        const components = MetadataExplorer.explore([...this.modulesContainer.values()]);
+        const components = MetadataExplorer.getComponents([...this.modulesContainer.values()]);
 
         components
-            .filter(({ instance }) => this.isRepository(instance as any))
-            .forEach(({ instance }) => {
+            .filter(({ metatype }: InstanceWrapper) => this.isRepository(metatype))
+            .forEach(({ instance, name }: InstanceWrapper) => {
                 this.logger.debug(`Start scanning ${name}...`);
 
                 MetadataExplorer.getProperties(instance).forEach((key) => {
