@@ -7,12 +7,12 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "cli": "yarn build && node dist/console",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "seed": "md-seed",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",

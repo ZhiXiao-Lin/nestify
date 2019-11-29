@@ -1,7 +1,7 @@
 {
-  "name": "@nestify/workflow",
+  "name": "@nestify/console",
   "version": "0.2.24",
-  "description": "A nest.js workflow engine module",
+  "description": "A nest.js console module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
   "license": "MIT",
@@ -22,6 +22,7 @@
   "scripts": {
     "prepublish": "rimraf dist && npm run build",
     "build": "nest build",
+    "cli": "nest build && node dist/test/console",
     "test": "jest"
   },
   "bugs": {
@@ -43,8 +44,8 @@
   },
   "devDependencies": {
     "@nestjs/testing": "6.10.1",
-    "@types/jest": "24.0.23",
-    "@types/uuid": "3.4.6",
+    "@types/inquirer": "^6.5.0",
+    "@types/jest": "^24.0.23",
     "jest": "24.9.0",
     "rimraf": "3.0.0",
     "rxjs": "6.5.3",
@@ -54,8 +55,9 @@
   "dependencies": {
     "@nestjs/common": "^6.9.0",
     "@nestjs/core": "^6.9.0",
-    "reflect-metadata": "^0.1.13",
-    "uuid": "^3.3.3"
-  },
-  "gitHead": "59780eee9c6da50243908b7bef8cbd7aec579837"
+    "commander": "^4.0.1",
+    "inquirer": "^7.0.0",
+    "ora": "^4.0.3",
+    "reflect-metadata": "^0.1.13"
+  }
 }
