@@ -2,11 +2,14 @@ import { ConsoleService } from '@nestify/console';
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import { AdminModelName } from '../../bll/user';
+import { SeederService } from '../../seeder';
 
 @Injectable()
 export class MongoCommand {
     constructor(
         private readonly cli: ConsoleService,
+        private readonly seedService: SeederService,
         @InjectConnection()
         private readonly db: Connection
     ) {
@@ -15,30 +18,20 @@ export class MongoCommand {
             .command('seed')
             .description('Run all database seed files.')
             .action(this.seed.bind(this));
-
-        this.cli
-            .getCli()
-            .command('drop')
-            .description('Deletes the given database, including all collections, documents, and indexes.')
-            .action(this.drop.bind(this));
     }
 
     async seed() {
         const sp = ConsoleService.createSpinner();
         sp.start('Start scanning database seed files...');
 
-        console.log(this.db.models);
+        const models = [AdminModelName];
 
-        sp.stop();
-        this.cli.exit();
-    }
+        models.forEach(async name => {
+            const model = this.seedService.Seeders.find(m => m.modelName === name);
+            await model.seed();
+        });
 
-    async drop() {
-        const sp = ConsoleService.createSpinner();
-        sp.start('Dropping database...');
-
-        await this.db.dropDatabase();
-
+        sp.succeed('Run successfully');
         sp.stop();
         this.cli.exit();
     }
