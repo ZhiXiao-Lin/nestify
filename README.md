@@ -7,6 +7,9 @@ English | [中文文档](https://docs.nestify.cn/)
 
 A enterprise web fullstack framework based on Nest.js
 
+### Preview
+[![Nestify Admin](./admin.png)](http://cms.nestify.cn/)
+
 ### Use
 
 ``` shell
