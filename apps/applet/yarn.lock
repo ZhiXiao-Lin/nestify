@@ -135,10 +135,10 @@
   dependencies:
     babel-core "^6.26.0"
 
-"@tarojs/plugin-csso@1.3.18":
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/@tarojs/plugin-csso/-/plugin-csso-1.3.18.tgz#ccd12a3b99efe826d056173f88ced2f6c6bfc0f9"
-  integrity sha512-2popI4FgIamMXv6MNzsJO6mNZz4WRAoMs3Ij4Q1Wms4whjZAz4t8l4TYct5minEQZSjYHoZ0YQrbJqcAQzujzA==
+"@tarojs/plugin-csso@1.3.26":
+  version "1.3.26"
+  resolved "https://registry.yarnpkg.com/@tarojs/plugin-csso/-/plugin-csso-1.3.26.tgz#a7a463aa1578e0fc0d96276d4375c0a172dd2813"
+  integrity sha512-0Fl9jF/X8saPayPwpLcuavyu6JeiImVElxeimdSKrAwSXxyyIdCaK5oQlucwyJaycGGo5vrhhycUvNRaXJY65g==
   dependencies:
     csso "^3.5.0"
 
