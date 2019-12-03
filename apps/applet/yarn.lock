@@ -243,10 +243,10 @@
   dependencies:
     csso "^3.5.0"
 
-"@tarojs/plugin-sass@1.3.18":
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/@tarojs/plugin-sass/-/plugin-sass-1.3.18.tgz#4ae2b0d80a4f2144b1bbfe5813cdc58eb4f74c15"
-  integrity sha512-RqsJlkDjX2xP2KvHVIeeVhAuxkmaecwP2zRqj0fKatU5i7xd/CuqUR8PCCEgmTsWFoOgHMCQwnO1s5gcPl1WTg==
+"@tarojs/plugin-sass@1.3.27":
+  version "1.3.27"
+  resolved "https://registry.yarnpkg.com/@tarojs/plugin-sass/-/plugin-sass-1.3.27.tgz#37672949bee155b90839a40bd0ac2fc6a9b90b72"
+  integrity sha512-4wbpyJbwSwlKG+7ymBlij8vRoJ44AN1+Pl4BVZMme4UCIr9TcLojuPpQIUNyQ4lrY4j9B4WrxTYYtjNUvqVhLw==
   dependencies:
     node-sass "^4.12.0"
     scss-bundle "^2.5.1"
