@@ -27,13 +27,12 @@ export class MongoCommand {
         try {
 
             if (!!cmd.drop) {
-                sp.start('Start scanning database seed files...');
+                sp.start('Start dropping database...');
                 this.connection.dropDatabase();
                 sp.info('Database dropped');
             }
 
             sp.start('Start scanning database seed files...');
-
             if (models.length > 0) {
                 for (const model of models) {
                     sp.info(`Generated seed for ${model}`);
