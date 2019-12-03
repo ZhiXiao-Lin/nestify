@@ -332,13 +332,13 @@
     lodash "^4.17.10"
     prop-types "^15.6.1"
 
-"@tarojs/taro-tt@1.3.18":
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/@tarojs/taro-tt/-/taro-tt-1.3.18.tgz#7bb06c3ec7823cc5a8956ab3829fe1e45b16879e"
-  integrity sha512-BytC9hpZ4zojx/bb8UJO/+L+ShCwCFuoAJXtBKbP3E7cW29X2Ddy8ouoXPcFUcV37yntdS+MjjoLiyLO8dakMA==
+"@tarojs/taro-tt@1.3.27":
+  version "1.3.27"
+  resolved "https://registry.yarnpkg.com/@tarojs/taro-tt/-/taro-tt-1.3.27.tgz#5a2c76db004416be51f5b4e6c093041321c0e870"
+  integrity sha512-r71QeFLT8jnuJZuJ1TnfV/E4olLvz7zisr6xlX+bTqvsGWIKWFXcwlWKEX4HUHYtHKWwGq71J0LMlErYyFbqCg==
   dependencies:
-    "@tarojs/taro" "1.3.18"
-    "@tarojs/utils" "1.3.18"
+    "@tarojs/taro" "1.3.27"
+    "@tarojs/utils" "1.3.27"
     lodash "^4.17.10"
     prop-types "^15.6.1"
 
@@ -366,6 +366,13 @@
   dependencies:
     "@tarojs/utils" "1.3.26"
 
+"@tarojs/taro@1.3.27":
+  version "1.3.27"
+  resolved "https://registry.yarnpkg.com/@tarojs/taro/-/taro-1.3.27.tgz#5664841b46aaf0790f5f95d2f598424d2300c6b7"
+  integrity sha512-1Od0CJn+tiYcY0WMl5Co/v/zXf7DqLi3IvzL0b1Qp2YL9t1yskUxsErOgjqNDHL0jrs+lQ7RS/lMUwzUwVeedw==
+  dependencies:
+    "@tarojs/utils" "1.3.27"
+
 "@tarojs/utils@1.3.18":
   version "1.3.18"
   resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-1.3.18.tgz#094e61bd27839a699e766e546291508ba8dd742d"
@@ -375,6 +382,11 @@
   version "1.3.26"
   resolved "https://registry.yarnpkg.com/@tarojs/utils/-/utils-1.3.26.tgz#893fc3bacd2764293b16e02aa5563c478b5c42b0"
   integrity sha512-HmoeLHT77xbfBzcRivGxTyHbyCIlhs2MYCOcibzuwMK0+x1pVNgkjBkQ0pECcTKZjeZgNEDN+++7oXNX05oL9g==
+
+"@tarojs/utils@1.3.27":
+  version "1.3.27"
+  resolved "https://registry.yarnpkg.com/@tarojs/utils/-/utils-1.3.27.tgz#49d706afd10825fecec2d8a50414ab4a797fd7b6"
+  integrity sha512-H6168l4Xs0fflFgZPUeAKTJKpv2jR3UxSA3hOppWCmRvmztYgCLT7+MJqzsILbDr8LGAgBMJKttvKvf6UBNqvQ==
 
 "@tarojs/webpack-runner@1.3.18":
   version "1.3.18"
