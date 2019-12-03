@@ -3,12 +3,12 @@ English | [中文文档](https://docs.nestify.cn/)
 # Nestify
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
-[![Nestify](http://img.nestify.cn/Nestify.svg)](http://cms.nestify.cn/)
+[![Nestify](http://img.nestify.cn/Nestify.svg)](http://docs.nestify.cn/)
 
 A enterprise web fullstack framework based on Nest.js
 
 ### Preview
-[![Nestify Admin](./admin.png)](http://cms.nestify.cn/)
+[![Nestify Admin](./admin.png)](http://docs.nestify.cn/)
 
 ### Use
 
@@ -61,7 +61,7 @@ $ cd apps/docs && yarn && yarn start
 
 Nestify is [MIT licensed](https://github.com/ZhiXiao-Lin/nestify/tree/c25b47543f09dc142f7ba7a44078da8d13f9bed0/LICENSE/README.md).
 
-## Contributors
+<!-- ## Contributors
 
 ### Code Contributors
 
@@ -89,4 +89,4 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/nestify/organization/6/website"><img src="https://opencollective.com/nestify/organization/6/avatar.svg"></a>
 <a href="https://opencollective.com/nestify/organization/7/website"><img src="https://opencollective.com/nestify/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/nestify/organization/8/website"><img src="https://opencollective.com/nestify/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/nestify/organization/9/website"><img src="https://opencollective.com/nestify/organization/9/avatar.svg"></a>
+<a href="https://opencollective.com/nestify/organization/9/website"><img src="https://opencollective.com/nestify/organization/9/avatar.svg"></a> -->
