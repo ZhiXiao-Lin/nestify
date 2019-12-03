@@ -5,18 +5,9 @@ English | [中文文档](https://docs.nestify.cn/)
 
 [![Nestify](http://img.nestify.cn/Nestify.svg)](http://cms.nestify.cn/)
 
-### What is Nestify?
-Nestify aims to provide [NestJS](https://www.nestjs.com/) community, with a series of standard modules out of the box.
+A enterprise web fullstack framework based on Nest.js
 
-All modules included by nestify have the following features:
-
-* Unified module registration interface
-* Complete unit test
-* Clear use of documents
-* In line with community best practices
-* Permanent open source free
-
-### Useage
+### Use
 
 ``` shell
 
@@ -36,19 +27,17 @@ $ cd apps/service && yarn && yarn start:dev
 - [x] Rule Engine 
 - [x] Mailer
 - [x] Console
-- [ ] Storage
+- [x] MongoDB Seeder
+- [ ] Cache
 - [ ] Task Queue
-- [ ] Notification
 - [ ] Search Engine
-- [ ] OAuth
-- [ ] Knex
-- [ ] Broadcast
-- [ ] Wechat
-- [ ] Cube
-- [ ] Cache 
-- [ ] SSR
+- [ ] Notification
 - [ ] Cashier
-...
+- [ ] Storage
+- [ ] OAuth
+- [ ] Broadcast
+- [ ] Cube
+- [ ] SSR
 
 ### Stay in touch
 * Author - [Roy Lin](https://github.com/ZhiXiao-Lin)
