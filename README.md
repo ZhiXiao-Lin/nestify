@@ -13,12 +13,23 @@ A enterprise web fullstack framework based on Nest.js
 ### Use
 
 ``` shell
-
+# Clone code
 $ git clone git@github.com:ZhiXiao-Lin/nestify.git --depth=1
 
+# Install dependencies
 $ docker-compose up -d
 
+# Run service
 $ cd apps/service && yarn && yarn start:dev
+
+# Run admin
+$ cd apps/admin && yarn && yarn start
+
+# Run applet
+$ cd apps/applet && yarn && yarn dev:h5
+
+# Run docs
+$ cd apps/docs && yarn && yarn start
 
 ```
 
