@@ -5,4 +5,4 @@ export default {
     level: LoggerLevel.SILLY,
     format: LoggerService.createFormat(),
     transports: [new transports.Console()]
-}
+};

@@ -1,0 +1,100 @@
+@import "~antd/lib/style/themes/default.less";
+// topbar
+.topbar {
+  position: relative;
+  border-bottom: 1px solid #e0e0e0;
+  user-select: none;
+  .topbar-dropmenu {
+    z-index: 9999;
+    overflow: hidden;
+    position: relative;
+    max-height: 0;
+    width: 100%;
+    background: url(../../../assets/images/topbar-bg.jpg) repeat -60px top;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4) inset;
+    transition: .4s max-height ease;
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .ant-row {
+      padding: 17px 20px 10px;
+      > div .metro-tile{
+        display: block;
+        color: #FFF;
+        height: 95px;
+        position: relative;
+        padding: 15px 5px 0;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.25);
+        transition: background 0.2s ease;
+        position: relative;
+        > i {
+          font-size: 44px;
+        }
+        > .metro-title {
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+          font-size: 11px;
+          font-weight: 600;
+        }
+        &:hover {
+          color: #fff;
+          background: rgba(255, 255, 255, 0.4);
+        }
+      }
+    }
+  }
+  &.topbar-expand .topbar-dropmenu{
+    max-height: 1000px;
+  }
+  .topbar-content {
+    position: relative;
+    min-height: 48px;
+    padding: 10px 21px;
+    background: #fafafa;
+    .ant-breadcrumb {
+      display: inline-block;
+      font-size: 12px;
+      .first {
+        color: #555;
+        font-size: 18px;
+      }
+      .icon {
+        position: relative;
+        font-size: 15px;
+        color: #777;
+        top: -1px;
+      }
+      a {
+        color: @primary-6;
+        &:hover {
+          color: tint(@primary-6);
+        }
+      }
+    }
+    .topbar-right {
+      float: right;
+      font-size: 20px;
+      color: @primary-6;
+      &:hover {
+        color: @primary-5;
+      }
+      i {
+        transform: scale(-1, 1);
+        transition: .3s transform ease .1s;
+      }
+      &.collapse i{
+        transform: scale(1, 1);
+      }
+    }
+  }
+}

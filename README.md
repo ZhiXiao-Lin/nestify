@@ -3,18 +3,35 @@ English | [中文文档](https://docs.nestify.cn/)
 # Nestify
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![star this repo](http://githubbadges.com/star.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify) [![fork this repo](http://githubbadges.com/fork.svg?user=ZhiXiao-Lin&repo=nestify&style=default)](https://github.com/ZhiXiao-Lin/nestify/fork)
 
-[![Nestify](http://img.nestify.cn/Nestify.svg)](http://cms.nestify.cn/)
+[![Nestify](http://img.nestify.cn/Nestify.svg)](http://docs.nestify.cn/)
 
-### What is Nestify?
-Nestify aims to provide [NestJS](https://www.nestjs.com/) community, with a series of standard modules out of the box.
+A enterprise web fullstack framework based on Nest.js
 
-All modules included by nestify have the following features:
+### Preview
+[![Nestify Admin](./admin.png)](http://docs.nestify.cn/)
 
-* Unified module registration interface
-* Complete unit test
-* Clear use of documents
-* In line with community best practices
-* Permanent open source free
+### Use
+
+``` shell
+# Clone code
+$ git clone git@github.com:ZhiXiao-Lin/nestify.git --depth=1
+
+# Install dependencies
+$ docker-compose up -d
+
+# Run service
+$ cd apps/service && yarn && yarn start:dev
+
+# Run admin
+$ cd apps/admin && yarn && yarn start
+
+# Run applet
+$ cd apps/applet && yarn && yarn dev:h5
+
+# Run docs
+$ cd apps/docs && yarn && yarn start
+
+```
 
 ### Features & Roadmap
 - [x] Config
@@ -23,20 +40,18 @@ All modules included by nestify have the following features:
 - [x] Workflow Engine
 - [x] Rule Engine 
 - [x] Mailer
-- [ ] Storage
+- [x] Console
+- [x] MongoDB Seeder
+- [ ] Cache
 - [ ] Task Queue
-- [ ] Notification
 - [ ] Search Engine
-- [ ] OAuth
-- [ ] Knex
-- [ ] Broadcast
-- [ ] Wechat
-- [ ] Cube
-- [ ] Cache 
-- [ ] SSR
-- [ ] Console
+- [ ] Notification
 - [ ] Cashier
-...
+- [ ] Storage
+- [ ] OAuth
+- [ ] Broadcast
+- [ ] Cube
+- [ ] SSR
 
 ### Stay in touch
 * Author - [Roy Lin](https://github.com/ZhiXiao-Lin)
@@ -46,7 +61,7 @@ All modules included by nestify have the following features:
 
 Nestify is [MIT licensed](https://github.com/ZhiXiao-Lin/nestify/tree/c25b47543f09dc142f7ba7a44078da8d13f9bed0/LICENSE/README.md).
 
-## Contributors
+<!-- ## Contributors
 
 ### Code Contributors
 
@@ -74,4 +89,4 @@ Support this project with your organization. Your logo will show up here with a 
 <a href="https://opencollective.com/nestify/organization/6/website"><img src="https://opencollective.com/nestify/organization/6/avatar.svg"></a>
 <a href="https://opencollective.com/nestify/organization/7/website"><img src="https://opencollective.com/nestify/organization/7/avatar.svg"></a>
 <a href="https://opencollective.com/nestify/organization/8/website"><img src="https://opencollective.com/nestify/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/nestify/organization/9/website"><img src="https://opencollective.com/nestify/organization/9/avatar.svg"></a>
+<a href="https://opencollective.com/nestify/organization/9/website"><img src="https://opencollective.com/nestify/organization/9/avatar.svg"></a> -->
