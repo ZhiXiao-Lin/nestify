@@ -224,7 +224,6 @@ export class ConfigService implements IConfigService {
                 if (err) {
                     reject(err);
                 } else {
-
                     const configs = this.configGraph(matches, options && options.modifyConfigName);
 
                     resolve(configs);

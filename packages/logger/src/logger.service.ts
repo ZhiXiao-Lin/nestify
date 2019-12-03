@@ -16,30 +16,33 @@ export class LoggerService implements ILoggerService {
     constructor(
         @Inject(LOGGER_MODULE_PROVIDER)
         private readonly logger: Logger
-    ) { }
+    ) {}
 
     public error(...messages: any[]): any {
-        return this.logger.error(messages.map(item => util.isString(item) ? item : util.inspect(item)).join(' '), this.getStackTrace());
+        return this.logger.error(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());
     }
 
     public warn(...messages: any[]): any {
-        return this.logger.warn(messages.map(item => util.isString(item) ? item : util.inspect(item)).join(' '), this.getStackTrace());
+        return this.logger.warn(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());
     }
 
     public info(...messages: any[]): any {
-        return this.logger.info(messages.map(item => util.isString(item) ? item : util.inspect(item)).join(' '), this.getStackTrace());
+        return this.logger.info(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());
     }
 
     public verbose(...messages: any[]): any {
-        return this.logger.verbose(messages.map(item => util.isString(item) ? item : util.inspect(item)).join(' '), this.getStackTrace());
+        return this.logger.verbose(
+            messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '),
+            this.getStackTrace()
+        );
     }
 
     public debug(...messages: any[]): any {
-        return this.logger.debug(messages.map(item => util.isString(item) ? item : util.inspect(item)).join(' '), this.getStackTrace());
+        return this.logger.debug(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());
     }
 
     public silly(...messages: any[]): any {
-        return this.logger.silly(messages.map(item => util.isString(item) ? item : util.inspect(item)).join(' '), this.getStackTrace());
+        return this.logger.silly(messages.map((item) => (util.isString(item) ? item : util.inspect(item))).join(' '), this.getStackTrace());
     }
 
     private getStackTrace(context?: string, depth: number = 2) {
