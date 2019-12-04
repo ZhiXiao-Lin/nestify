@@ -1,6 +1,6 @@
 {
   "name": "@nestify/event-bus",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "A nest.js event bus module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
@@ -51,7 +51,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@nestify/core": "^0.3.4",
+    "@nestify/core": "^0.3.5",
     "@nestjs/common": "^6.9.0",
     "@nestjs/core": "^6.9.0",
     "reflect-metadata": "^0.1.13"
