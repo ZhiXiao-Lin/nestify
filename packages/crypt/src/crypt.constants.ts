@@ -1,0 +1,1 @@
+export const CRYPT_MODULE_OPTIONS = Symbol('CRYPT_MODULE_OPTIONS');
