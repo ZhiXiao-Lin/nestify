@@ -35,4 +35,4 @@ const event = new EventEmitter();
     providers: [ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider],
     exports: [CacheModule, ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider]
 })
-export class CommonModule { }
+export class CommonModule {}

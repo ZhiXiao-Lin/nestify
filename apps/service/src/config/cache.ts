@@ -6,4 +6,4 @@ export default {
     host: env('REDIS_HOST'),
     port: env('REDIS_PORT'),
     ttl: 10 * 60
-}
+};

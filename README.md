@@ -41,6 +41,7 @@ $ cd apps/docs && yarn && yarn start
 - [x] Workflow Engine
 - [x] Rule Engine 
 - [x] Mailer
+- [x] Verification
 - [x] Console
 - [x] MongoDB Seeder
 - [ ] Task Queue
