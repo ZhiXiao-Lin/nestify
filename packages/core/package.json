@@ -47,6 +47,7 @@
     "@types/cache-manager": "^2.10.0",
     "@types/jest": "24.0.23",
     "@types/node": "12.12.14",
+    "cache-manager": "^2.10.1",
     "jest": "24.9.0",
     "rimraf": "3.0.0",
     "rxjs": "6.5.3",

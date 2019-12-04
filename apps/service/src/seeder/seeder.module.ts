@@ -1,8 +1,8 @@
-import { Module } from "@nestjs/common";
-import { SeederService } from "./seeder.service";
+import { Module } from '@nestjs/common';
+import { SeederService } from './seeder.service';
 
 @Module({
     providers: [SeederService],
     exports: [SeederService]
 })
-export class SeederModule { }
+export class SeederModule {}

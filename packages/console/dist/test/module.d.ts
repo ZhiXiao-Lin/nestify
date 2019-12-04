@@ -1,1 +1,2 @@
-export declare class ConsoleModuleTest {}
+export declare class ConsoleModuleTest {
+}

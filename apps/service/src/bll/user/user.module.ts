@@ -9,11 +9,7 @@ import { AdminService, UserService } from './services';
 @Module({
     imports: [MongooseModule.forFeature([UserModel, AdminModel])],
     controllers: [UserController, AdminController],
-    providers: [
-        UserRepository, UserService, AdminRepository, AdminService, AdminSeeder
-    ],
-    exports: [
-        UserRepository, UserService, AdminRepository, AdminService, AdminSeeder
-    ]
+    providers: [UserRepository, UserService, AdminRepository, AdminService, AdminSeeder],
+    exports: [UserRepository, UserService, AdminRepository, AdminService, AdminSeeder]
 })
-export class UserModule { }
+export class UserModule {}

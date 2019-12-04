@@ -1,4 +1,4 @@
-import { InjectableOptions } from "@nestjs/common";
+import { InjectableOptions } from '@nestjs/common';
 
 export interface SeederDecorator {
     injectableOptions?: InjectableOptions;

@@ -25,7 +25,6 @@ export class MongoCommand {
     async seed(models: string[], cmd: any) {
         const sp = ConsoleService.createSpinner();
         try {
-
             if (!!cmd.drop) {
                 sp.start('Start dropping database...');
                 this.connection.dropDatabase();
@@ -36,7 +35,7 @@ export class MongoCommand {
             if (models.length > 0) {
                 for (const model of models) {
                     sp.info(`Generated seed for ${model}`);
-                    const seeder = this.seedService.Seeders.find(m => m.modelName === model);
+                    const seeder = this.seedService.Seeders.find((m) => m.modelName === model);
                     await seeder.seed();
                 }
             } else {

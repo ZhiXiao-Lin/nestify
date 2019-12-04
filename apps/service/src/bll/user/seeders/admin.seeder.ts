@@ -1,15 +1,14 @@
 import * as faker from 'faker';
-import { ISeeder, Seeder } from "../../../seeder";
-import { AdminModelName } from "../models";
-import { AdminService } from "../services";
+import { ISeeder, Seeder } from '../../../seeder';
+import { AdminModelName } from '../models';
+import { AdminService } from '../services';
 
 @Seeder()
 export class AdminSeeder implements ISeeder {
-
     public modelName: string = AdminModelName;
     public sort: number = 1;
 
-    constructor(private readonly service: AdminService) { }
+    constructor(private readonly service: AdminService) {}
 
     async seed() {
         await this.service.create({

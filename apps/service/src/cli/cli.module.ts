@@ -4,10 +4,7 @@ import { SeederModule } from '../seeder';
 import { MongoCommand } from './commands';
 
 @Module({
-    imports: [
-        ConsoleModule,
-        SeederModule
-    ],
+    imports: [ConsoleModule, SeederModule],
     providers: [MongoCommand]
 })
-export class CliModule { }
+export class CliModule {}
