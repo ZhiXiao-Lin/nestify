@@ -40,6 +40,7 @@ $ cd apps/docs && yarn && yarn start
 - [x] Event Bus
 - [x] Workflow Engine
 - [x] Rule Engine 
+- [x] Crypt
 - [x] Mailer
 - [x] Verification
 - [x] Console
