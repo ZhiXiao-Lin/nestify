@@ -55,12 +55,17 @@ $ cd apps/docs && yarn && yarn start
 - [ ] SSR
 
 ### Stay in touch
+
 * Author - [Roy Lin](https://github.com/ZhiXiao-Lin)
 * Gmail - [linzhixiao1996@gmail.com](mailto://linzhixiao1996@gmail.com)
 
 ### License
 
 Nestify is [MIT licensed](https://github.com/ZhiXiao-Lin/nestify/tree/c25b47543f09dc142f7ba7a44078da8d13f9bed0/LICENSE/README.md).
+
+### Support
+
+Any feedback (use, pull request, issue, watch, star, fork) is considered as support for the project.
 
 <!-- ## Contributors
 
