@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestify/config';
 import { IConfigService } from '@nestify/core';
+import { CryptModule } from '@nestify/crypt';
 import { EventBusModule } from '@nestify/event-bus';
 import { LoggerModule } from '@nestify/logger';
 import { CacheModule, Global, Module } from '@nestjs/common';
@@ -8,7 +9,7 @@ import { EventEmitter } from 'events';
 import * as path from 'path';
 import { CONFIG_SERVICE } from './constants';
 import { CoreModule } from './core';
-import { CacheProvider, ConfigProvider, EventPublisherProvider, LoggerProvider } from './providers';
+import { CacheProvider, ConfigProvider, CryptProvider, EventPublisherProvider, LoggerProvider } from './providers';
 
 ConfigModule.initEnvironment(process.cwd() + '/src/env');
 const event = new EventEmitter();
@@ -30,9 +31,13 @@ const event = new EventEmitter();
             useFactory: (config: IConfigService) => config.get('mongo.connection'),
             inject: [CONFIG_SERVICE]
         }),
+        CryptModule.registerAsync({
+            useFactory: (config: IConfigService) => config.get('crypt'),
+            inject: [CONFIG_SERVICE]
+        }),
         CoreModule
     ],
-    providers: [ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider],
-    exports: [CacheModule, ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider]
+    providers: [ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider, CryptProvider],
+    exports: [CacheModule, ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider, CryptProvider]
 })
 export class CommonModule {}

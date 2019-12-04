@@ -355,6 +355,15 @@
     "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
 
+"@nestify/crypt@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.npmjs.org/@nestify/crypt/-/crypt-0.3.9.tgz#07b414fa9653ff0e7795ac8ef9554604d05b38e7"
+  integrity sha512-kcrXhlpc6PrpR8uRzMPsl2xttzglpfif9vX8e4YHk5t8DaJkE4hDeFVWs/VUKyI4Ywt5oTq0iLIyM6mbIDv6Tg==
+  dependencies:
+    "@nestjs/common" "^6.10.5"
+    bcryptjs "^2.4.3"
+    reflect-metadata "^0.1.13"
+
 "@nestify/event-bus@^0.3.1":
   version "0.3.7"
   resolved "https://registry.npmjs.org/@nestify/event-bus/-/event-bus-0.3.7.tgz#e42442a04ce8124290421274fe02bba535871d8a"
@@ -404,7 +413,7 @@
     webpack "4.41.2"
     webpack-node-externals "1.7.2"
 
-"@nestjs/common@^6.7.2", "@nestjs/common@^6.9.0":
+"@nestjs/common@^6.10.5", "@nestjs/common@^6.7.2", "@nestjs/common@^6.9.0":
   version "6.10.5"
   resolved "https://registry.npmjs.org/@nestjs/common/-/common-6.10.5.tgz#7038606785016cf60543f2b673967980e5b19426"
   integrity sha512-TrtvgEPM80X5KFkNEK+7u87zdmTF0laG8gOCuHOi9IPAXOdTUKpuTw7d6+h9by4jHLN8xJr067pIf6AruO3N/w==
