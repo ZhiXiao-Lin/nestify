@@ -265,10 +265,10 @@
   dependencies:
     uglify-js "^3.3.24"
 
-"@tarojs/router@1.3.18":
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/@tarojs/router/-/router-1.3.18.tgz#6c23fa32e5099ba57b12b9b1e28bd49e2677a01d"
-  integrity sha512-N+EAftVFx6Obkk8SQ2BpYxMn6lTKEETeNU7iIZy+84dbpp92eE4EyjYr9W5JWh9r15qZ2kwizGg+qZmdQl8Peg==
+"@tarojs/router@1.3.27":
+  version "1.3.27"
+  resolved "https://registry.yarnpkg.com/@tarojs/router/-/router-1.3.27.tgz#332a12ef626106487a8b949bacc8bbc13e62fe6d"
+  integrity sha512-ui3i5n9DDHIx2hI87qRSY4e3HWFbG9VLVYg15y8Gcf+sowPTfBrd6CXskNY6n6u1fyL0cTf+OLaZzZ2qMG13Qg==
   dependencies:
     invariant "2.2.4"
     lodash "4.17.13"
