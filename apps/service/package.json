@@ -32,6 +32,7 @@
     "@nestjs/platform-express": "^6.7.2",
     "bcryptjs": "^2.4.3",
     "cache-manager": "^2.10.1",
+    "cache-manager-ioredis": "^1.0.1",
     "mongoose": "^5.7.12",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",

@@ -35,6 +35,7 @@ $ cd apps/docs && yarn && yarn start
 
 ### Features & Roadmap
 - [x] Config
+- [x] Cache
 - [x] Logger
 - [x] Event Bus
 - [x] Workflow Engine
@@ -42,7 +43,6 @@ $ cd apps/docs && yarn && yarn start
 - [x] Mailer
 - [x] Console
 - [x] MongoDB Seeder
-- [ ] Cache
 - [ ] Task Queue
 - [ ] Search Engine
 - [ ] Notification

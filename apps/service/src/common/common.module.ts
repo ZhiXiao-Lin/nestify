@@ -33,6 +33,6 @@ const event = new EventEmitter();
         CoreModule
     ],
     providers: [ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider],
-    exports: [ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider]
+    exports: [CacheModule, ConfigProvider, CacheProvider, LoggerProvider, EventPublisherProvider]
 })
-export class CommonModule {}
+export class CommonModule { }

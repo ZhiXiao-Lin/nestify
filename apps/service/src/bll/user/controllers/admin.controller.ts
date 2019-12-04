@@ -16,6 +16,13 @@ export class AdminController extends BaseController<Admin> {
 
         this.logger.info('user', user.id);
 
+        await this.cache.set('user', user, { ttl: 10 });
+
         return user;
+    }
+
+    @Get('cache')
+    async cacheVal() {
+        return await this.cache.get('user');
     }
 }
