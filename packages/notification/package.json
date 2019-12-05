@@ -53,6 +53,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
+    "@nestify/core": "^0.3.10",
     "reflect-metadata": "^0.1.13"
   }
 }
