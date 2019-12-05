@@ -105,7 +105,7 @@ bootstrap();
   |- database.ts
 ```
 
-一个配置文件的例子，env 函数
+一个配置文件的例子
 
 ``` typescript
 
