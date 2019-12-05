@@ -2,8 +2,9 @@ import { ConfigService } from '@nestify/config';
 import { CryptService } from '@nestify/crypt';
 import { EventBusService } from '@nestify/event-bus';
 import { LoggerService } from '@nestify/logger';
+import { NotificationService } from '@nestify/notification';
 import { CACHE_MANAGER } from '@nestjs/common';
-import { CACHE_SERVICE, CONFIG_SERVICE, CRYPT_SERVICE, EVENT_PUBLISHER, LOGGER_SERVICE } from './constants';
+import { CACHE_SERVICE, CONFIG_SERVICE, CRYPT_SERVICE, EVENT_PUBLISHER, LOGGER_SERVICE, NOTIFICATION_SERVICE } from './constants';
 
 export const ConfigProvider = {
     provide: CONFIG_SERVICE,
@@ -28,4 +29,9 @@ export const EventPublisherProvider = {
 export const CryptProvider = {
     provide: CRYPT_SERVICE,
     useExisting: CryptService
+};
+
+export const NotificationProvider = {
+    provide: NOTIFICATION_SERVICE,
+    useExisting: NotificationService
 };

@@ -27,6 +27,7 @@
     "@nestify/crypt": "^0.3.9",
     "@nestify/event-bus": "^0.3.1",
     "@nestify/logger": "^0.3.1",
+    "@nestify/notification": "^0.3.11",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/mongoose": "^6.1.2",
