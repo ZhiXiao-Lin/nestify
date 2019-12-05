@@ -51,4 +51,4 @@ const event = new EventEmitter();
         NotificationProvider
     ]
 })
-export class CommonModule { }
+export class CommonModule {}

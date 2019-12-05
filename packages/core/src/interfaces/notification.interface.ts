@@ -1,7 +1,7 @@
 export interface INotificationMessage {
     readonly type: string;
     readonly action: string;
-    readonly context: any;
+    readonly context?: any;
 }
 
 export interface INotification {

@@ -42,8 +42,6 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/common": "^6.9.0",
-    "@nestjs/core": "^6.9.0",
     "@nestjs/testing": "6.10.1",
     "@types/jest": "^24.0.23",
     "jest": "24.9.0",
@@ -53,6 +51,8 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
+    "@nestjs/common": "^6.7.2",
+    "@nestjs/core": "^6.7.2",
     "@nestify/core": "^0.3.13",
     "reflect-metadata": "^0.1.13"
   }
