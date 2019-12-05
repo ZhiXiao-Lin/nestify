@@ -23,4 +23,9 @@ export class UserController extends BaseController<User> {
     async test() {
         return await this.service.create({ account: 'test', password: '12345678' });
     }
+
+    @Get('register-code')
+    async getRegisterCode() {
+        return await this.service.sendRegisterSmsCode({ mobile: '1877022xxxx' });
+    }
 }

@@ -286,10 +286,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestify/core@^0.3.13":
-  version "0.3.13"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.13.tgz#fdea345140e1f3135beeedffa735c7953e9e0745"
-  integrity sha512-alpMAm9O5Pa278ZsMG3Mq6wcDyL4VN8IQNQy0NaCWcVRH0UH/DUb1Y/tMEE60Zl2QM3GcA+Qlx23SO5zVaAqig==
+"@nestify/core@^0.3.14":
+  version "0.3.14"
+  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.14.tgz#35b8c83c4876ca3b5d46570b4d7dbdcd8be4b7ac"
+  integrity sha512-yQOCRG02m8yAGtmpAZKaLcZp1YGrEOirFzbcVy8Wd33YcRlUOO5dnTZMuJuaU2tsN+JEbiQ8/AjbNwTZkLON1A==
   dependencies:
     "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
