@@ -1,6 +1,6 @@
 export interface INotificationMessage {
-    readonly type: string | symbol;
-    readonly action: string | symbol;
+    readonly type: string;
+    readonly action: string;
     readonly context: any;
 }
 
