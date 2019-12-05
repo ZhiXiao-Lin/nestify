@@ -1,6 +1,6 @@
 {
   "name": "@nestify/crypt",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Nestify crypt module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
