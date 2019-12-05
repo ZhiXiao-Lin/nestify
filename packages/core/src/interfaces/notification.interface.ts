@@ -1,5 +1,9 @@
-import { INotifiable } from './notifiable.interface';
+export interface INotificationMessage {
+    readonly type: string | symbol;
+    readonly action: string | symbol;
+    readonly context: any;
+}
 
 export interface INotification {
-    notify(...notifiables: INotifiable[]): Promise<boolean>;
+    notify(message: INotificationMessage): Promise<boolean>;
 }
