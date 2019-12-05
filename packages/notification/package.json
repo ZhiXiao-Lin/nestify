@@ -1,6 +1,6 @@
 {
   "name": "@nestify/notification",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "A nest.js notification module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
@@ -53,7 +53,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@nestify/core": "^0.3.10",
+    "@nestify/core": "^0.3.12",
     "reflect-metadata": "^0.1.13"
   }
 }
