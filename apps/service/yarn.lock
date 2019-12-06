@@ -387,6 +387,16 @@
     stacktrace-js "^2.0.1"
     winston "^3.2.1"
 
+"@nestify/mongo-seeder@^0.3.17":
+  version "0.3.17"
+  resolved "https://registry.npmjs.org/@nestify/mongo-seeder/-/mongo-seeder-0.3.17.tgz#f35931bc736b788fb337cd20b9a8890b91a6f9c6"
+  integrity sha512-92XUFdWdMpMqVTBLCsJESj/zIfAgAs6OayS+FyZ4ZFll0cONEgoaTx8fyeleJ5CC6UbQcNQ0nbQUR9gMkMNRTg==
+  dependencies:
+    "@nestify/core" "^0.3.16"
+    "@nestjs/common" "^6.7.2"
+    "@nestjs/core" "^6.7.2"
+    reflect-metadata "^0.1.13"
+
 "@nestify/notification@^0.3.11":
   version "0.3.16"
   resolved "https://registry.npmjs.org/@nestify/notification/-/notification-0.3.16.tgz#3b34ec1076e8258298cd23c9790c0fdd959f2a65"

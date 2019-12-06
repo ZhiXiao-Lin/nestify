@@ -1,8 +1,8 @@
 import { ConsoleService } from '@nestify/console';
+import { SeederService } from '@nestify/mongo-seeder';
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
-import { SeederService } from '../../seeder';
 
 @Injectable()
 export class MongoCommand {
