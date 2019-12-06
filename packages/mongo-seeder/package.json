@@ -1,6 +1,6 @@
 {
   "name": "@nestify/mongo-seeder",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "description": "A nest.js mongo seeder module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
