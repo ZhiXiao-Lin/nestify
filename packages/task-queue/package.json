@@ -1,6 +1,6 @@
 {
   "name": "@nestify/task-queue",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "description": "A nest.js task queue module",
   "author": "roylin <1002591652@qq.com>",
   "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
@@ -51,7 +51,7 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@nestify/core": "^0.3.14",
+    "@nestify/core": "^0.3.16",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
     "bullmq": "^1.5.0",
