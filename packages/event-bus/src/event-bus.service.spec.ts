@@ -22,6 +22,8 @@ describe('EventBus Service', () => {
         }).compile();
 
         service = module.get(EventBusService);
+
+        service.onModuleInit();
     });
 
     it('should emit the event', async () => {

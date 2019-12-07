@@ -1,5 +1,5 @@
 import { IEventPublisher } from '@nestify/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import * as EventEmitter from 'events';
@@ -8,7 +8,7 @@ import { EventBusExplorer } from './event-bus.explorer';
 import { Callback, EventBusModuleOptions, ListenerDecoratorOptions } from './event-bus.interfaces';
 
 @Injectable()
-export class EventBusService implements IEventPublisher {
+export class EventBusService implements IEventPublisher, OnModuleInit {
     private readonly event: EventEmitter;
     private readonly explorer: EventBusExplorer;
 
@@ -21,6 +21,9 @@ export class EventBusService implements IEventPublisher {
         this.event = this.options.event || new EventEmitter();
 
         this.explorer = new EventBusExplorer(this.modulesContainer, this.reflector, this.handleListener.bind(this));
+    }
+
+    onModuleInit() {
         this.explorer.explore();
     }
 
