@@ -286,27 +286,38 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestify/core@^0.3.14":
-  version "0.3.14"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.14.tgz#35b8c83c4876ca3b5d46570b4d7dbdcd8be4b7ac"
-  integrity sha512-yQOCRG02m8yAGtmpAZKaLcZp1YGrEOirFzbcVy8Wd33YcRlUOO5dnTZMuJuaU2tsN+JEbiQ8/AjbNwTZkLON1A==
+"@nestify/core@^0.3.16":
+  version "0.3.16"
+  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.16.tgz#6904eeaaafafe73995c18d9ba0d91f27c1f4aa7c"
+  integrity sha512-L4OinNVQJt5kaJMyahG/Otrt3U58s26JMwWzA4mwG6pE6aM6YBoSWK7pOZb7GFy+Fk8QS5Lr5UYmhGrBwTz5Fw==
   dependencies:
     "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
 
-"@nestjs/common@^6.7.2":
-  version "6.10.5"
-  resolved "https://registry.npmjs.org/@nestjs/common/-/common-6.10.5.tgz#7038606785016cf60543f2b673967980e5b19426"
-  integrity sha512-TrtvgEPM80X5KFkNEK+7u87zdmTF0laG8gOCuHOi9IPAXOdTUKpuTw7d6+h9by4jHLN8xJr067pIf6AruO3N/w==
+"@nestjs/common@^6.9.0":
+  version "6.10.7"
+  resolved "https://registry.npmjs.org/@nestjs/common/-/common-6.10.7.tgz#d64d19fe2623f8538e77f13e3f386b4b1764107f"
+  integrity sha512-f0T89fOn/4YxHyXDxq1tfPSQV3OpJqGAZ5xjnrtBqt74IGD/kgksrLLeqdA4T8jLG48HFUN8qJnQktuC+aZYDw==
   dependencies:
     axios "0.19.0"
     cli-color "2.0.0"
     uuid "3.3.3"
 
-"@nestjs/core@^6.10.2", "@nestjs/core@^6.7.2":
+"@nestjs/core@^6.10.2":
   version "6.10.5"
   resolved "https://registry.npmjs.org/@nestjs/core/-/core-6.10.5.tgz#2cd1b16bb193a2fd173a74271b31282d951dcf6d"
   integrity sha512-o2+Amob7T8BFlxj73G2lfUpRE60oijnsKS3r/llwSW8u5XCVVcnXKtzCPK6MfaPfdy1X2AYqq9AjtkCJ8XNRLA==
+  dependencies:
+    "@nuxtjs/opencollective" "0.2.2"
+    fast-safe-stringify "2.0.7"
+    iterare "1.2.0"
+    object-hash "2.0.1"
+    uuid "3.3.3"
+
+"@nestjs/core@^6.9.0":
+  version "6.10.7"
+  resolved "https://registry.npmjs.org/@nestjs/core/-/core-6.10.7.tgz#08b45fe86ddd0cafc779b3e9f439570922c4f84e"
+  integrity sha512-zZgA1/mj2zSH3bYj+cfuVsEors0J2qQsPhYlN4KcX9kFeEcorrb4xGbNVeXgJFz2zN9eiTjDr7vFwa3A3BlqIA==
   dependencies:
     "@nuxtjs/opencollective" "0.2.2"
     fast-safe-stringify "2.0.7"

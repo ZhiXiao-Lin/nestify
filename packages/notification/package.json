@@ -52,8 +52,8 @@
   },
   "dependencies": {
     "@nestify/core": "^0.3.16",
-    "@nestjs/common": "^6.7.2",
-    "@nestjs/core": "^6.7.2",
+    "@nestjs/common": "^6.9.0",
+    "@nestjs/core": "^6.9.0",
     "reflect-metadata": "^0.1.13"
   }
 }

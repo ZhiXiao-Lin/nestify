@@ -7,4 +7,4 @@ import { MongoCommand } from './commands';
     imports: [ConsoleModule, SeederModule],
     providers: [MongoCommand]
 })
-export class CliModule { }
+export class CliModule {}

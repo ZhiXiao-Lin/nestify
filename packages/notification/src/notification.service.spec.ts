@@ -44,8 +44,7 @@ describe('Notification Service', () => {
     beforeAll(async () => {
         module = await Test.createTestingModule({
             imports: [NotificationModule],
-            providers: [SmsNotification, MailNotification, BroadcastNotification],
-            exports: [NotificationModule]
+            providers: [SmsNotification, MailNotification, BroadcastNotification]
         }).compile();
 
         service = module.get(NotificationService);

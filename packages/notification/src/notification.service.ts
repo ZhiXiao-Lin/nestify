@@ -1,7 +1,6 @@
 import { INotification, INotificationMessage, MetadataExplorer } from '@nestify/core';
 import { Injectable, Type } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
-import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { NOTIFICATION_ACTION, NOTIFICATION_NOTIFIABLE } from './notification.constants';
 import { Action } from './notification.interfaces';
 
@@ -22,11 +21,11 @@ export class NotificationService implements INotification {
     }
 
     private explore() {
-        const components = MetadataExplorer.getComponents([...this.modulesContainer.values()]);
+        const components = MetadataExplorer.getComponents([...(this.modulesContainer.values() as any)]);
 
         components
-            .filter(({ metatype }: InstanceWrapper) => this.isNotifiable(metatype))
-            .forEach(({ instance, metatype }: InstanceWrapper) => {
+            .filter(({ metatype }) => this.isNotifiable(metatype))
+            .forEach(({ instance, metatype }) => {
                 const type = this.getNotifiableMetadata(metatype);
                 MetadataExplorer.getProperties(instance).forEach((key) => {
                     if (this.isAction(instance[key])) {
