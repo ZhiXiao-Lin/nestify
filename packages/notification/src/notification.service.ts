@@ -1,12 +1,12 @@
 import { INotification, INotificationMessage, MetadataExplorer } from '@nestify/core';
-import { Inject, Injectable, Type } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit, Type } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
 import { EventEmitter } from 'events';
 import { NOTIFICATION_ACTION, NOTIFICATION_NOTIFIABLE, NOTIFICATION_OPTIONS } from './notification.constants';
 import { NotificationModuleOptions } from './notification.interfaces';
 
 @Injectable()
-export class NotificationService implements INotification {
+export class NotificationService implements INotification, OnModuleInit {
     private readonly event: EventEmitter;
 
     constructor(
@@ -16,6 +16,9 @@ export class NotificationService implements INotification {
         private readonly reflector: Reflector
     ) {
         this.event = this.options.event;
+    }
+
+    onModuleInit() {
         this.explore();
     }
 

@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { NOTIFICATION_OPTIONS } from './notification.constants';
-import { NotificationModuleOptions, NotificationModuleAsyncOptions } from './notification.interfaces';
+import { NotificationModuleAsyncOptions, NotificationModuleOptions } from './notification.interfaces';
 import { NotificationService } from './notification.service';
 
 @Module({

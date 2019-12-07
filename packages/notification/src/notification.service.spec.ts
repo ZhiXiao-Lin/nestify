@@ -48,13 +48,15 @@ describe('Notification Service', () => {
     let module: TestingModule;
     let service: NotificationService;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         module = await Test.createTestingModule({
             imports: [NotificationModule.register({ event: new EventEmitter() })],
             providers: [TestService, SmsNotification, MailNotification, BroadcastNotification]
         }).compile();
 
         service = module.get(NotificationService);
+
+        service.onModuleInit();
     });
 
     it('Dependency injection should be correct', () => {
