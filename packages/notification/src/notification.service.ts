@@ -1,29 +1,24 @@
 import { INotification, INotificationMessage, MetadataExplorer } from '@nestify/core';
-import { Inject, Injectable, OnModuleInit, Type } from '@nestjs/common';
+import { Injectable, OnModuleInit, Type } from '@nestjs/common';
 import { ModulesContainer, Reflector } from '@nestjs/core';
-import { EventEmitter } from 'events';
-import { NOTIFICATION_ACTION, NOTIFICATION_NOTIFIABLE, NOTIFICATION_OPTIONS } from './notification.constants';
-import { NotificationModuleOptions } from './notification.interfaces';
+import { NOTIFICATION_ACTION, NOTIFICATION_NOTIFIABLE } from './notification.constants';
 
 @Injectable()
 export class NotificationService implements INotification, OnModuleInit {
-    private readonly event: EventEmitter;
+    private readonly notifiables: Map<string, Function> = new Map<string, Function>();
 
-    constructor(
-        @Inject(NOTIFICATION_OPTIONS)
-        private readonly options: NotificationModuleOptions,
-        private readonly modulesContainer: ModulesContainer,
-        private readonly reflector: Reflector
-    ) {
-        this.event = this.options.event;
-    }
+    constructor(private readonly modulesContainer: ModulesContainer, private readonly reflector: Reflector) {}
 
     onModuleInit() {
         this.explore();
     }
 
     async notify(message: INotificationMessage): Promise<boolean> {
-        return this.event.emit(`${message.type}-${message.action}`, message.context);
+        const action = this.notifiables.get(`${message.type}-${message.action}`);
+
+        if (!action) throw new Error(`${message.type}-${message.action} does not exist.`);
+
+        return await action(message.context);
     }
 
     private explore() {
@@ -36,7 +31,7 @@ export class NotificationService implements INotification, OnModuleInit {
                 MetadataExplorer.getProperties(instance).forEach((key) => {
                     if (this.isAction(instance[key])) {
                         const action = this.getActionMetadata(instance[key]);
-                        this.event.on(`${type}-${action}`, instance[key].bind(instance));
+                        this.notifiables.set(`${type}-${action}`, instance[key].bind(instance));
                     }
                 });
             });

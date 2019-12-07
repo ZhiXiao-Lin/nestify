@@ -10,7 +10,6 @@ class TestService { }
 
 @Notifiable('sms')
 class SmsNotification {
-
     constructor(public readonly testService: TestService) { }
 
     @Action('register')
@@ -40,7 +39,7 @@ class BroadcastNotification {
     @Action('order-shipped')
     async orderShipped(orderInfo: any): Promise<boolean> {
         console.log('orderInfo', orderInfo);
-        return true;
+        return false;
     }
 }
 
@@ -72,6 +71,6 @@ describe('Notification Service', () => {
         expect(res1).toEqual(true);
         expect(res2).toEqual(true);
         expect(res3).toEqual(true);
-        expect(res4).toEqual(true);
+        expect(res4).toEqual(false);
     });
 });
