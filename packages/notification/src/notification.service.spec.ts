@@ -1,11 +1,18 @@
-import { INotificationMessage } from '@nestify/core';
+import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { EventEmitter } from 'events';
 import { Action, Notifiable } from './notification.decorators';
 import { NotificationModule } from './notification.module';
 import { NotificationService } from './notification.service';
 
+@Injectable()
+class TestService { }
+
 @Notifiable('sms')
 class SmsNotification {
+
+    constructor(public readonly testService: TestService) { }
+
     @Action('register')
     async register(registerInfo: any): Promise<boolean> {
         console.log('registerInfo', registerInfo);
@@ -33,7 +40,7 @@ class BroadcastNotification {
     @Action('order-shipped')
     async orderShipped(orderInfo: any): Promise<boolean> {
         console.log('orderInfo', orderInfo);
-        return false;
+        return true;
     }
 }
 
@@ -43,32 +50,26 @@ describe('Notification Service', () => {
 
     beforeAll(async () => {
         module = await Test.createTestingModule({
-            imports: [NotificationModule],
-            providers: [SmsNotification, MailNotification, BroadcastNotification]
+            imports: [NotificationModule.register({ event: new EventEmitter() })],
+            providers: [TestService, SmsNotification, MailNotification, BroadcastNotification]
         }).compile();
 
         service = module.get(NotificationService);
+    });
+
+    it('Dependency injection should be correct', () => {
+        expect(module.get(SmsNotification).testService).toBeDefined();
     });
 
     it('Notification should be sent successfully', async () => {
         const res1 = await service.notify({ type: 'sms', action: 'register', context: { mobile: 'mobile', code: '1234' } });
         const res2 = await service.notify({ type: 'sms', action: 'reset-pass', context: { mobile: 'mobile', code: '5678' } });
         const res3 = await service.notify({ type: 'mail', action: 'welcome', context: { email: 'email' } });
+        const res4 = await service.notify({ type: 'broadcast', action: 'order-shipped', context: { email: 'email' } });
 
         expect(res1).toEqual(true);
         expect(res2).toEqual(true);
         expect(res3).toEqual(true);
-    });
-
-    it('Notification should be sent failed', async () => {
-        const broadcastMessage: INotificationMessage = {
-            type: 'broadcast',
-            action: 'order-shipped',
-            context: { orderId: 'orderId', userId: 'userId' }
-        };
-
-        const res = await service.notify(broadcastMessage);
-
-        expect(res).toEqual(false);
+        expect(res4).toEqual(true);
     });
 });

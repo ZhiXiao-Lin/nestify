@@ -327,11 +327,11 @@
     "@types/yargs" "^13.0.0"
 
 "@nestify/config@^0.3.1":
-  version "0.3.16"
-  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.3.16.tgz#611f20ee533fad930268a9c3957dbb30ae9a33d6"
-  integrity sha512-eP/XV0c24Nc0UZx3CELepgaH+LpaQkedDrBifmVLxJhiEIRhDzyuAZVRG+bOyC2u6/TDSY4yF0nbN3hh5Ah0NA==
+  version "0.3.19"
+  resolved "https://registry.npmjs.org/@nestify/config/-/config-0.3.19.tgz#2483de258792e76acf5f8a8c6134efaa99007f3a"
+  integrity sha512-ugQeUSFBb2basCeDv+6kky4luttEEDd4OrnLPO3hvIWvKfCUIbCXuaHmtXwY4/wG3CqaWahw8C7XCJtSOnGH4A==
   dependencies:
-    "@nestify/core" "^0.3.16"
+    "@nestify/core" "^0.3.19"
     dotenv "^8.2.0"
     reflect-metadata "^0.1.13"
 
@@ -347,10 +347,10 @@
     ora "^4.0.3"
     reflect-metadata "^0.1.13"
 
-"@nestify/core@^0.3.1", "@nestify/core@^0.3.16":
-  version "0.3.16"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.16.tgz#6904eeaaafafe73995c18d9ba0d91f27c1f4aa7c"
-  integrity sha512-L4OinNVQJt5kaJMyahG/Otrt3U58s26JMwWzA4mwG6pE6aM6YBoSWK7pOZb7GFy+Fk8QS5Lr5UYmhGrBwTz5Fw==
+"@nestify/core@^0.3.1", "@nestify/core@^0.3.19":
+  version "0.3.19"
+  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.19.tgz#495f4f88907d180fef93dcb46af66f76be634545"
+  integrity sha512-9AmjjmHRMQWv1o1THlpHulUBHckYLZykLf5aPQMtxq1EsVH5vkygANKnB4xk5U2836z91U4ywOr/QtdzqM/GeA==
   dependencies:
     "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
@@ -365,21 +365,21 @@
     reflect-metadata "^0.1.13"
 
 "@nestify/event-bus@^0.3.1":
-  version "0.3.16"
-  resolved "https://registry.npmjs.org/@nestify/event-bus/-/event-bus-0.3.16.tgz#366266113e47ac9121ddf546c822c181157f9f61"
-  integrity sha512-XYOF8XUOPsxDJESBktKEaLP3RQmgSJb3c42f8yEetAGdzZLdyZtPmcFgtYh9oGAxpauYvQyNQ6lSziiUsTFhZA==
+  version "0.3.19"
+  resolved "https://registry.npmjs.org/@nestify/event-bus/-/event-bus-0.3.19.tgz#94a56db8cbfc0bb070e5854a5d7bd53d138c080a"
+  integrity sha512-W5YJVRmlCz4gBMCK1XBdg862rMql858FAvcLWNMPnojmEVXRPjItgAew0/Ccf2QFF5quwfh+AbBtRy+0IwcOgg==
   dependencies:
-    "@nestify/core" "^0.3.16"
+    "@nestify/core" "^0.3.19"
     "@nestjs/common" "^6.9.0"
     "@nestjs/core" "^6.9.0"
     reflect-metadata "^0.1.13"
 
 "@nestify/logger@^0.3.1":
-  version "0.3.16"
-  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.3.16.tgz#0ad9856ba56ade97cf632561435894a812a4cb19"
-  integrity sha512-ZTlgLJRAxbDn45cR24RtYCXADHPmSEBwj91bh+IGstY1dQ3A0optUBGPuDIQVnp9JdWCe/Fk2tNJ5S6gDeCNnA==
+  version "0.3.19"
+  resolved "https://registry.npmjs.org/@nestify/logger/-/logger-0.3.19.tgz#ce387b92d701177bdf805297bd055f02febaf548"
+  integrity sha512-R6weHpbk+cJK18j/HUrMQ/oh/JCNcUL3xWwL9ou0mJ8kTbKNhgebr4vxNw4OOze574PO+oB3DX5spENR4jJF6A==
   dependencies:
-    "@nestify/core" "^0.3.16"
+    "@nestify/core" "^0.3.19"
     "@nestjs/common" "^6.9.0"
     chalk "^3.0.0"
     moment "^2.24.0"
@@ -388,23 +388,23 @@
     winston "^3.2.1"
 
 "@nestify/mongo-seeder@^0.3.17":
-  version "0.3.17"
-  resolved "https://registry.npmjs.org/@nestify/mongo-seeder/-/mongo-seeder-0.3.17.tgz#f35931bc736b788fb337cd20b9a8890b91a6f9c6"
-  integrity sha512-92XUFdWdMpMqVTBLCsJESj/zIfAgAs6OayS+FyZ4ZFll0cONEgoaTx8fyeleJ5CC6UbQcNQ0nbQUR9gMkMNRTg==
+  version "0.3.19"
+  resolved "https://registry.npmjs.org/@nestify/mongo-seeder/-/mongo-seeder-0.3.19.tgz#2fc6186b63f0150fa9f6a9d0423c30dcafedb86f"
+  integrity sha512-kIedhHK7uPKQpOJi720emBKvO1zzR3yQq8/lQwlYx2Fd6/UsH033E7pHfQP8a2rk/DSPWfqOIHzLGz2st35f8g==
   dependencies:
-    "@nestify/core" "^0.3.16"
+    "@nestify/core" "^0.3.19"
     "@nestjs/common" "^6.7.2"
     "@nestjs/core" "^6.7.2"
     reflect-metadata "^0.1.13"
 
 "@nestify/notification@^0.3.11":
-  version "0.3.16"
-  resolved "https://registry.npmjs.org/@nestify/notification/-/notification-0.3.16.tgz#3b34ec1076e8258298cd23c9790c0fdd959f2a65"
-  integrity sha512-bsRX0YBXIz+9Vm2wHvjNRgdi/ichWENnuH0Q0sC5ZQyRrBzy7xJv369hKhLv6kKOB8O69Zbg4fwMswzymjeukA==
+  version "0.3.19"
+  resolved "https://registry.npmjs.org/@nestify/notification/-/notification-0.3.19.tgz#d5b9aca6e802dd54392ad606d28a202a2e061c11"
+  integrity sha512-3uBPyeDvoNZi9sswEIIl+P4ocgmoZLVoJ15d+6h2i/IK6zPZvMxBFGPu0CHv2DxjMMwTP/REP/r2ptnggj4fwQ==
   dependencies:
-    "@nestify/core" "^0.3.16"
-    "@nestjs/common" "^6.7.2"
-    "@nestjs/core" "^6.7.2"
+    "@nestify/core" "^0.3.19"
+    "@nestjs/common" "^6.9.0"
+    "@nestjs/core" "^6.9.0"
     reflect-metadata "^0.1.13"
 
 "@nestjs/cli@^6.9.0":
@@ -4636,9 +4636,9 @@ mongoose-legacy-pluralize@1.0.2:
   integrity sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==
 
 mongoose@^5.7.12:
-  version "5.7.13"
-  resolved "https://registry.npmjs.org/mongoose/-/mongoose-5.7.13.tgz#d8ebbc15cfb19d014cf1fbd4b7af413d75952d46"
-  integrity sha512-MoTCETTIfXU1PqIYc+YAkhSB3uzK5xseh6ysAUnoOowkqS66OjBJtsL/bcgAKi6XfMYkFU6M1abKyuL7k//xeg==
+  version "5.7.14"
+  resolved "https://registry.npmjs.org/mongoose/-/mongoose-5.7.14.tgz#1e9be2b561b6f4e3fad9d4b2a4f0de14f02a785f"
+  integrity sha512-fF+7+7Xl856VQRwRl1/pc/sL3eblWnaYO1K0Yp3d7v+53e5dMJDg3b1Iz61Fk1PBbJF2Z39yGyxakj59lLoj0w==
   dependencies:
     bson "~1.1.1"
     kareem "2.3.1"
