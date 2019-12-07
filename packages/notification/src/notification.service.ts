@@ -31,7 +31,7 @@ export class NotificationService implements INotification {
                 MetadataExplorer.getProperties(instance).forEach((key) => {
                     if (this.isAction(instance[key])) {
                         const action = this.getActionMetadata(instance[key]);
-                        this.notifiables.set(`${type}-${action}`, instance[key].bind(this));
+                        this.notifiables.set(`${type}-${action}`, instance[key].bind(instance));
                     }
                 });
             });
