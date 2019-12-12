@@ -1,5 +1,5 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
-import { ClientOpts } from "redis";
+import { ClientOpts } from 'redis';
 
 interface MiddlewareListenOptions {
     port?: number;
@@ -12,14 +12,11 @@ interface MiddlewareListenOptions {
 interface QueueOptions {
     name: string;
     hostId?: string;
-    type?: "bull" | "bee";
-    prefix?: "bull" | "bq" | string;
+    type?: 'bull' | 'bee';
+    prefix?: 'bull' | 'bq' | string;
 }
 
-type ConnectionOptions =
-    | PortHostConnectionOptions
-    | RedisUrlConnectionOptions
-    | RedisClientConnectionOptions;
+type ConnectionOptions = PortHostConnectionOptions | RedisUrlConnectionOptions | RedisClientConnectionOptions;
 
 interface PortHostConnectionOptions {
     host: string;

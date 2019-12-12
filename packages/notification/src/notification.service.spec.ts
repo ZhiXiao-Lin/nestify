@@ -6,11 +6,11 @@ import { NotificationModule } from './notification.module';
 import { NotificationService } from './notification.service';
 
 @Injectable()
-class TestService { }
+class TestService {}
 
 @Notifiable('sms')
 class SmsNotification {
-    constructor(public readonly testService: TestService) { }
+    constructor(public readonly testService: TestService) {}
 
     @Action('register')
     async register(registerInfo: any): Promise<boolean> {
