@@ -1,0 +1,60 @@
+{
+  "name": "@nestify/arena",
+  "version": "0.3.23",
+  "description": "A nest.js arena module",
+  "author": "roylin <1002591652@qq.com>",
+  "homepage": "https://github.com/ZhiXiao-Lin/nestify#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "dist": "dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZhiXiao-Lin/nestify.git"
+  },
+  "scripts": {
+    "prepublish": "rimraf dist && npm run build",
+    "build": "nest build",
+    "test": "jest"
+  },
+  "bugs": {
+    "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "6.10.1",
+    "@types/jest": "^24.0.23",
+    "jest": "24.9.0",
+    "rimraf": "3.0.0",
+    "rxjs": "6.5.3",
+    "ts-jest": "24.2.0",
+    "typescript": "3.7.2"
+  },
+  "dependencies": {
+    "@nestify/core": "^0.3.19",
+    "@nestjs/common": "^6.7.2",
+    "@nestjs/core": "^6.7.2",
+    "bull-arena": "^2.6.4",
+    "reflect-metadata": "^0.1.13"
+  }
+}
