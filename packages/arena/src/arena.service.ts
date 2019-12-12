@@ -13,6 +13,8 @@ export class ArenaService implements OnModuleInit {
     ) { }
 
     async onModuleInit() {
-        this.adapterHost.httpAdapter.getInstance().use(Arena({ queues: this.options.queues }, this.options.listenOptions));
+        if (this.adapterHost.httpAdapter) {
+            this.adapterHost.httpAdapter.getInstance().use(Arena({ queues: this.options.queues }, this.options.listenOptions));
+        }
     }
 }
