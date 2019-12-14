@@ -46,6 +46,7 @@ $ cd apps/docs && yarn && yarn start
 - [x] MongoDB Seeder
 - [x] Crypt
 - [x] Mailer
+- [x] Arena
 - [ ] Task Queue
 - [ ] Search Engine
 - [ ] Cashier
