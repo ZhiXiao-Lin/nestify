@@ -349,13 +349,13 @@
     lodash "^4.17.10"
     prop-types "^15.6.1"
 
-"@tarojs/taro-weapp@1.3.18":
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/@tarojs/taro-weapp/-/taro-weapp-1.3.18.tgz#a56a41b7ad9f12ef1a03caa57b27471bdcaa6845"
-  integrity sha512-Wvk/0t596C2t08cWGG3UOgJfkmbKVOLm33NtMU2j/iJsuv4O0z2KEyBoU5msbea0SeEb7Twb9HqGCsK/mK8P1g==
+"@tarojs/taro-weapp@1.3.30":
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/@tarojs/taro-weapp/-/taro-weapp-1.3.30.tgz#54e6b17b9714c1ec0be733115171470936c50657"
+  integrity sha512-MavZL8JErm9AxXJFut4imNcpogkPXqUy1+dzkuKXcNZVZWfFkQLhh42vIwETFT4s0oYlsshdPVAH9Whz3DHtsA==
   dependencies:
-    "@tarojs/taro" "1.3.18"
-    "@tarojs/utils" "1.3.18"
+    "@tarojs/taro" "1.3.30"
+    "@tarojs/utils" "1.3.30"
     lodash "^4.17.10"
     prop-types "^15.6.1"
 
@@ -380,6 +380,13 @@
   dependencies:
     "@tarojs/utils" "1.3.27"
 
+"@tarojs/taro@1.3.30":
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/@tarojs/taro/-/taro-1.3.30.tgz#449c628f118d4463ff9bd9db28b9e2b5e202bff9"
+  integrity sha512-3+0A61jC5CnX1hLqirb+ikYnovEXaNyr0odjiWVbF3Hhx3pUJj34zgqyk94Fv6/e/jpPZO1hytOxBD6ONFoexQ==
+  dependencies:
+    "@tarojs/utils" "1.3.30"
+
 "@tarojs/utils@1.3.18":
   version "1.3.18"
   resolved "https://registry.npmjs.org/@tarojs/utils/-/utils-1.3.18.tgz#094e61bd27839a699e766e546291508ba8dd742d"
@@ -394,6 +401,11 @@
   version "1.3.27"
   resolved "https://registry.yarnpkg.com/@tarojs/utils/-/utils-1.3.27.tgz#49d706afd10825fecec2d8a50414ab4a797fd7b6"
   integrity sha512-H6168l4Xs0fflFgZPUeAKTJKpv2jR3UxSA3hOppWCmRvmztYgCLT7+MJqzsILbDr8LGAgBMJKttvKvf6UBNqvQ==
+
+"@tarojs/utils@1.3.30":
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/@tarojs/utils/-/utils-1.3.30.tgz#d67ae95d417a4583afef3afdf2e68da424ad9045"
+  integrity sha512-1aTvyXTc2NvKCPEbnU48whmYHw6OCGxi6R8f7Tbb/cAZ6dVzQW5m4+PeWExP51mapBGkt504RqDRvRnKhPbbLg==
 
 "@tarojs/webpack-runner@1.3.18":
   version "1.3.18"
