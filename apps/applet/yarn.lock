@@ -8099,10 +8099,10 @@ style-search@^0.1.0:
   resolved "https://registry.npmjs.org/style-search/-/style-search-0.1.0.tgz#7958c793e47e32e07d2b5cafe5c0bf8e12e77902"
   integrity sha1-eVjHk+R+MuB9K1yv5cC/jhLneQI=
 
-stylelint-config-taro-rn@1.3.18:
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/stylelint-config-taro-rn/-/stylelint-config-taro-rn-1.3.18.tgz#c150d807467e07f2e222127d8fbe73fcf044446f"
-  integrity sha512-Fc8XE9HJRnXGqiGnSud8yw5lXMggL8p19+6YdjRnaWRP3qNANbLqGk+p/RCpXV2S6k8vWJZeN8PqdWlGpisxYg==
+stylelint-config-taro-rn@1.3.30:
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/stylelint-config-taro-rn/-/stylelint-config-taro-rn-1.3.30.tgz#122aff80ead1126e1979926d05f9ff948563878a"
+  integrity sha512-2RidPBwuG9jTUwz33fV/DL1cvgmTqE8HL+nqGimrWNr91XZZisI7GNpJKmaQYUINj5djn0uxQQQYUoPbO37bgA==
 
 stylelint-taro-rn@1.3.27:
   version "1.3.27"
