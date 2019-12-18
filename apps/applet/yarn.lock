@@ -236,10 +236,10 @@
     swiper "4.4.2"
     weui "^1.1.2"
 
-"@tarojs/plugin-babel@1.3.25":
-  version "1.3.25"
-  resolved "https://registry.yarnpkg.com/@tarojs/plugin-babel/-/plugin-babel-1.3.25.tgz#2085e105fa2bfd7c3e64227bee987a7fb23bd05a"
-  integrity sha512-DQ457W2I9GmMVxfvL8CJ4i9bcgPw2/QeTc69RZXZUYaadB6S5tRDXH5WifyDMjz9Dv9C9BeGbfFINJ10muec+g==
+"@tarojs/plugin-babel@1.3.30":
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/@tarojs/plugin-babel/-/plugin-babel-1.3.30.tgz#ec5b2736f2e884b2639002fd35f15de90ecac17e"
+  integrity sha512-rfKRvzwlApsbiJOUFwUlZa0kF+oCRqHpTlU1D4S6+qmYZAf59p+jgoAkzzyDHk5crmVbFFzxLHC6Thcu2pVKDA==
   dependencies:
     babel-core "^6.26.0"
 
