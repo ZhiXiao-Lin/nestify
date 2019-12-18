@@ -3218,12 +3218,12 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
-eslint-config-taro@1.3.18:
-  version "1.3.18"
-  resolved "https://registry.npmjs.org/eslint-config-taro/-/eslint-config-taro-1.3.18.tgz#bd7050ffd8df131b8b3eca485d973de1451b8815"
-  integrity sha512-6I44v3q/aKl70t0+Ig2oQ1n5t5iA0ky6smu2CVORJLmkhxpRXK/TQDBqhubdhEv4P363qkgEp81FZuYqk3PiRA==
+eslint-config-taro@1.3.30:
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/eslint-config-taro/-/eslint-config-taro-1.3.30.tgz#be46f9ae10485df1eff32db7d7e7642c915f2581"
+  integrity sha512-zjiBTIiOXfxema2NObwp6qcjS6DzR+920gDoVUiXVANRJw43Mv9Y0MZ1JQbLXxEBZ2RxwCyX1GMQoSkIT0lwHg==
   dependencies:
-    eslint-plugin-taro "1.3.18"
+    eslint-plugin-taro "1.3.30"
 
 eslint-import-resolver-node@^0.3.2:
   version "0.3.2"
@@ -3282,6 +3282,13 @@ eslint-plugin-taro@1.3.18:
   version "1.3.18"
   resolved "https://registry.npmjs.org/eslint-plugin-taro/-/eslint-plugin-taro-1.3.18.tgz#48de57532173d50b697dc8adc94b402fb673c4cd"
   integrity sha512-H7pa242oPg5SCKwI7LkSgLEnx8kggJOxGRfKyVL/gkbYU722eQn/CFi4ixDlXq2PKrUpMK433gWhwCeug0h1Gg==
+  dependencies:
+    has "^1.0.1"
+
+eslint-plugin-taro@1.3.30:
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-taro/-/eslint-plugin-taro-1.3.30.tgz#46751dda8467ff0aaa0057a301d9023bdd2c648d"
+  integrity sha512-p3WrahbNRmKEy/y6PikW8Ni52wREHd7RkaByh6x2Ju7hSU3g9S7FuN3FrXFhoNQH2esFAoWekFgklTHzMpibkg==
   dependencies:
     has "^1.0.1"
 
