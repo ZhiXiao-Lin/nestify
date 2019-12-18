@@ -223,10 +223,10 @@
   resolved "https://registry.npmjs.org/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@tarojs/components@1.3.26":
-  version "1.3.26"
-  resolved "https://registry.yarnpkg.com/@tarojs/components/-/components-1.3.26.tgz#6c7cf4ca7eddb09dbe3209da66fb507ad51bd93c"
-  integrity sha512-eGoU+d/P9owN6FRj2nR5n7ZfCUDOPAm1Z2PWDeKR+VSIcHDBjWYpjUCp69owYdD2qAHqNOzPpbOIL+huqv1dUw==
+"@tarojs/components@1.3.30":
+  version "1.3.30"
+  resolved "https://registry.yarnpkg.com/@tarojs/components/-/components-1.3.30.tgz#6a1326d60496df6582496d260f16f9771edfa989"
+  integrity sha512-eoae4V6+XAYp2OF2qx3Bzh5myIu2R+rZN3CteY3Qh0+Qo6EbOJKaB2vreDHBLXZzRBpwAGdA5uaJLiDgtlR39Q==
   dependencies:
     better-scroll "^1.14.1"
     classnames "^2.2.5"
