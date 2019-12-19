@@ -26,7 +26,7 @@ $ cd apps/service && yarn && yarn start:dev
 $ cd apps/admin && yarn && yarn start
 
 # Run applet
-$ cd apps/applet && yarn && yarn dev:h5
+$ cd apps/applet && yarn && yarn start
 
 # Run docs
 $ cd apps/docs && yarn && yarn start
