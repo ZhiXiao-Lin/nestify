@@ -5,7 +5,7 @@ English | [中文文档](https://docs.nestify.cn/)
 
 [![Nestify](http://img.nestify.cn/Nestify.svg)](http://docs.nestify.cn/)
 
-A enterprise web fullstack framework based on Nest.js
+An enterprise web fullstack framework based on Nest.js
 
 ### Preview
 [![Nestify Admin](./admin.png)](http://docs.nestify.cn/)
