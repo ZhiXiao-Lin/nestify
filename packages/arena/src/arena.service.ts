@@ -10,7 +10,7 @@ export class ArenaService implements OnModuleInit {
         @Inject(ARENA_OPTIONS)
         private readonly options: ArenaModuleOptions,
         private readonly adapterHost: HttpAdapterHost
-    ) { }
+    ) {}
 
     async onModuleInit() {
         if (this.adapterHost.httpAdapter) {

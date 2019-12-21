@@ -1,40 +1,19 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
-import { ClientOpts } from 'redis';
+import { QueueOptions } from 'bull';
 
 interface MiddlewareListenOptions {
     port?: number;
     host?: string;
     basePath?: string;
-    disableListen?: boolean;
-    useCdn?: boolean;
 }
 
-interface QueueOptions {
+export interface BullQueueOptions {
     name: string;
-    hostId?: string;
-    type?: 'bull';
-    prefix?: 'bull' | string;
-}
-
-type ConnectionOptions = PortHostConnectionOptions | RedisUrlConnectionOptions | RedisClientConnectionOptions;
-
-interface PortHostConnectionOptions {
-    host: string;
-    port?: number;
-    password?: string;
-    db?: string;
-}
-
-interface RedisUrlConnectionOptions {
-    url: string;
-}
-
-interface RedisClientConnectionOptions {
-    redis: ClientOpts;
+    options: QueueOptions;
 }
 
 export interface BullModuleOptions {
-    queues: Array<QueueOptions & ConnectionOptions>;
+    queues: Array<BullQueueOptions>;
     listenOptions: MiddlewareListenOptions;
 }
 
