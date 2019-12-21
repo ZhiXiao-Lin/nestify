@@ -1,12 +1,16 @@
 export * from './bull.constants';
+export * from './bull.interfaces';
+export * from './bull.service';
+export * from './dtos';
+
 import { DynamicModule, Module } from '@nestjs/common';
 import { BULL_OPTIONS } from './bull.constants';
-import { createBullController } from './bull.controllers';
 import { BullModuleOptions } from './bull.interfaces';
 import { BullService } from './bull.service';
+import { createQueueController } from './controllers';
 
 export function createBullModule(options: BullModuleOptions): DynamicModule {
-    const bullController = createBullController(options.listenOptions.basePath);
+    const bullController = createQueueController(options.listenOptions.basePath);
 
     @Module({
         controllers: [bullController],

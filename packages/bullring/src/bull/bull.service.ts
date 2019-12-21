@@ -16,8 +16,23 @@ export class BullService {
         this.create(this.options.queues);
     }
 
-    public getQueue(name: string): Queue {
-        return this.queuesMap.get(name);
+    public async getQueues(): Promise<Queue[]> {
+        const queues: Queue[] = [];
+        for (let q of this.queuesMap.values()) {
+            await q.client.info();
+            queues.push(q);
+        }
+        return queues;
+    }
+
+    public async getQueue(name: string): Promise<Queue> {
+
+        const queue = this.queuesMap.get(name);
+        if (!queue) return null;
+
+        await queue.client.info();
+
+        return queue;
     }
 
     private create(queueOptions: Array<BullQueueOptions>) {

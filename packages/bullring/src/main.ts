@@ -13,9 +13,9 @@ async function bootstrap(options: BullModuleOptions) {
     await app.listen(options.listenOptions.port, options.listenOptions.host || 'localhost', async () => {
         console.info(
             `Bullring is listening at http://${options.listenOptions.host}:` +
-                options.listenOptions.port +
-                '/' +
-                options.listenOptions.basePath
+            options.listenOptions.port +
+            '/' +
+            options.listenOptions.basePath
         );
     });
 }
@@ -38,6 +38,19 @@ bootstrap({
                     duration: 1000
                 }
             }
-        }
+        },
+        {
+            name: '{scenic}',
+            options: {
+                redis: {
+                    host: '127.0.0.1',
+                    port: 63711
+                },
+                limiter: {
+                    max: 200,
+                    duration: 1000
+                }
+            }
+        },
     ]
 });
