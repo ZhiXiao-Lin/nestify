@@ -26,7 +26,6 @@ export class BullService {
     }
 
     public async getQueue(name: string): Promise<Queue> {
-
         const queue = this.queuesMap.get(name);
         if (!queue) return null;
 

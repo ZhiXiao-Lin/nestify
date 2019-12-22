@@ -5,9 +5,7 @@ import { CleanJobDto, GetJobsDto } from '../dtos';
 export function createQueueController(basePath: string = 'bull'): any {
     @Controller(basePath)
     class QueueController {
-        constructor(
-            private readonly service: BullService
-        ) { }
+        constructor(private readonly service: BullService) {}
 
         @Get()
         getQueues() {
@@ -27,19 +25,13 @@ export function createQueueController(basePath: string = 'bull'): any {
         }
 
         @Get(':queueName/jobs')
-        async getJobs(
-            @Param('queueName') queueName: string,
-            @Query() dto: GetJobsDto
-        ) {
+        async getJobs(@Param('queueName') queueName: string, @Query() dto: GetJobsDto) {
             const queue = await this.service.getQueue(queueName);
             return await queue.getJobs(dto.status, dto.start, dto.end, dto.asc);
         }
 
         @Delete(':queueName/clean')
-        async clean(
-            @Param('queueName') queueName: string,
-            @Query() dto: CleanJobDto
-        ) {
+        async clean(@Param('queueName') queueName: string, @Query() dto: CleanJobDto) {
             const queue = await this.service.getQueue(queueName);
             return await queue.clean(dto.grace, dto.status, dto.limit);
         }

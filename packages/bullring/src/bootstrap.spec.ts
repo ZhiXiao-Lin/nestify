@@ -13,9 +13,9 @@ async function bootstrap(options: BullModuleOptions) {
     await app.listen(options.listenOptions.port, options.listenOptions.host || 'localhost', async () => {
         console.info(
             `Bullring is listening at http://${options.listenOptions.host}:` +
-            options.listenOptions.port +
-            '/' +
-            options.listenOptions.basePath
+                options.listenOptions.port +
+                '/' +
+                options.listenOptions.basePath
         );
     });
 }
@@ -51,6 +51,6 @@ bootstrap({
                     duration: 1000
                 }
             }
-        },
+        }
     ]
 });

@@ -1,4 +1,4 @@
-import { JobStatus } from "bull";
+import { JobStatus } from 'bull';
 
 export class GetJobsDto {
     status: JobStatus[];

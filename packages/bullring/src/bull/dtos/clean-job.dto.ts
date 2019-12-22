@@ -1,4 +1,4 @@
-import { JobStatusClean } from "bull";
+import { JobStatusClean } from 'bull';
 
 export class CleanJobDto {
     grace: number;
