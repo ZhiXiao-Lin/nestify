@@ -75,7 +75,7 @@ module.exports = {
         alt: 'Nestify Logo',
         src: 'img/logo-h.png',
       },
-      copyright: `Copyright © ${new Date().getFullYear()} NestifyStack Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Nestify Built with Docusaurus. ICP证: 赣 19007858`,
     },
   },
   presets: [
