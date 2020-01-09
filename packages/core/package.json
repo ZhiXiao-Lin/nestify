@@ -44,7 +44,7 @@
   "gitHead": "1130e2db90b62b97beab1fb834110d53229e6506",
   "devDependencies": {
     "@nestjs/common": "6.10.1",
-    "@types/bull": "^3.10.6",
+    "@types/bull": "3.10.6",
     "@types/jest": "24.0.23",
     "@types/node": "12.12.14",
     "jest": "24.9.0",
