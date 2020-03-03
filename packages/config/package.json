@@ -42,9 +42,9 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/common": "6.10.1",
-    "@nestjs/core": "^6.10.2",
-    "@nestjs/testing": "^6.10.2",
+    "@nestjs/common": "6.11.11",
+    "@nestjs/core": "6.11.11",
+    "@nestjs/testing": "6.11.11",
     "@types/jest": "24.0.23",
     "@types/node": "12.12.12",
     "jest": "24.9.0",
