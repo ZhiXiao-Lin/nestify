@@ -11,7 +11,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"packages/**/*.ts\" \"examples/**/*.ts\""
   },
   "devDependencies": {
-    "cz-conventional-changelog": "3.0.2",
+    "cz-conventional-changelog": "3.2.0",
     "husky": "^3.1.0",
     "lerna": "3.19.0",
     "lerna-update-wizard": "0.17.5",
