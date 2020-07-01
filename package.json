@@ -13,7 +13,7 @@
   "devDependencies": {
     "cz-conventional-changelog": "3.0.2",
     "husky": "^3.1.0",
-    "lerna": "3.19.0",
+    "lerna": "3.22.1",
     "lerna-update-wizard": "0.17.5",
     "lerna-wizard": "1.1.1",
     "prettier": "1.19.1",
