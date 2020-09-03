@@ -27,7 +27,7 @@
     "dva-loading": "^1.0.4",
     "echarts": "^4.1.0",
     "enquire.js": "^2.1.6",
-    "lazysizes": "^4.0.4",
+    "lazysizes": "^5.2.1",
     "masonry-layout": "^4.2.1",
     "object.omit": "^3.0.0",
     "path-to-regexp": "^2.2.1",
