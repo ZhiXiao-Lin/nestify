@@ -55,7 +55,7 @@
   "dependencies": {
     "@nestify/core": "^0.3.19",
     "@nestjs/common": "^6.9.0",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "moment": "^2.24.0",
     "reflect-metadata": "^0.1.13",
     "stacktrace-js": "^2.0.1",
