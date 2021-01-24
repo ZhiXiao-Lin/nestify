@@ -63,7 +63,7 @@
     "bull": "^3.12.1",
     "bull-arena": "^2.6.4",
     "class-transformer": "^0.2.3",
-    "class-validator": "^0.11.0",
+    "class-validator": "^0.13.0",
     "reflect-metadata": "^0.1.13"
   }
 }
