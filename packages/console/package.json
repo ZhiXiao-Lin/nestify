@@ -56,7 +56,7 @@
   "dependencies": {
     "@nestjs/common": "^6.9.0",
     "@nestjs/core": "^6.9.0",
-    "commander": "^4.0.1",
+    "commander": "^7.0.0",
     "inquirer": "^7.0.0",
     "ora": "^4.0.3",
     "reflect-metadata": "^0.1.13"
