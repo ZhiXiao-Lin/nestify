@@ -54,7 +54,7 @@
     "@nestify/core": "^0.3.19",
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
-    "bull-arena": "^2.6.4",
+    "bull-arena": "^3.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "gitHead": "5c14be7c32a40b12b5b92a6df88553b8f429ed40"
