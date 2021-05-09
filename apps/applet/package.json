@@ -14,13 +14,13 @@
     "build": "NODE_ENV=production remax build -t wechat"
   },
   "dependencies": {
-    "clsx": "^1.0.4",
-    "react": "^16.8.6",
-    "remax": "^1.1.0",
-    "remax-cli": "^1.1.0",
-    "rimraf": "^2.6.3"
+    "clsx": "1.0.4",
+    "react": "16.12.0",
+    "remax": "1.10.5",
+    "remax-cli": "1.10.5",
+    "rimraf": "2.7.1"
   },
   "devDependencies": {
-    "chokidar": "^2.1.8"
+    "chokidar": "2.1.8"
   }
 }
