@@ -47,8 +47,8 @@
   },
   "devDependencies": {
     "@nestjs/testing": "6.10.1",
-    "@types/bull": "^3.10.6",
-    "@types/jest": "^24.0.23",
+    "@types/bull": "3.10.6",
+    "@types/jest": "24.0.24",
     "jest": "24.9.0",
     "rimraf": "3.0.0",
     "rxjs": "6.5.3",
