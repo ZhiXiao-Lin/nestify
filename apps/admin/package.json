@@ -31,9 +31,9 @@
     "masonry-layout": "^4.2.1",
     "object.omit": "^3.0.0",
     "path-to-regexp": "^2.2.1",
-    "react": "^16.2.1",
+    "react": "16.14.0",
     "react-document-title": "^2.0.3",
-    "react-dom": "^16.2.1",
+    "react-dom": "16.14.0",
     "react-fast-compare": "^2.0.0",
     "wangeditor": "^3.1.1"
   },
