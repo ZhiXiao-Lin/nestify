@@ -46,7 +46,7 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/testing": "6.10.1",
+    "@nestjs/testing": "6.11.11",
     "@types/bull": "^3.10.6",
     "@types/jest": "^24.0.23",
     "jest": "24.9.0",
