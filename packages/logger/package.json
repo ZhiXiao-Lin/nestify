@@ -42,8 +42,8 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/core": "6.10.1",
-    "@nestjs/testing": "6.10.1",
+    "@nestjs/core": "7.6.17",
+    "@nestjs/testing": "7.6.17",
     "@types/jest": "24.0.23",
     "@types/winston": "2.4.4",
     "jest": "24.9.0",
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@nestify/core": "^0.3.19",
-    "@nestjs/common": "^6.9.0",
+    "@nestjs/common": "^7.0.0",
     "chalk": "^3.0.0",
     "moment": "^2.24.0",
     "reflect-metadata": "^0.1.13",
