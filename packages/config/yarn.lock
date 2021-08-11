@@ -286,11 +286,12 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestify/core@^0.2.19":
-  version "0.2.19"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.19.tgz#d494d9c96e28a275627a959b84b17814ded85b53"
-  integrity sha512-ekTirYXLu/tNwqnuj9LJfwTptIYkXMnjnjGeL4xm91rU33dkx4WehaxPPbSHsVc004q/WILZTV7I8ONQpqjKmQ==
+"@nestify/core@^0.3.19":
+  version "0.3.19"
+  resolved "https://registry.yarnpkg.com/@nestify/core/-/core-0.3.19.tgz#495f4f88907d180fef93dcb46af66f76be634545"
+  integrity sha512-9AmjjmHRMQWv1o1THlpHulUBHckYLZykLf5aPQMtxq1EsVH5vkygANKnB4xk5U2836z91U4ywOr/QtdzqM/GeA==
   dependencies:
+    "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
 
 "@nestjs/common@6.10.1":
@@ -2853,9 +2854,9 @@ path-key@^2.0.0, path-key@^2.0.1:
   integrity sha1-QRyttXTFoUDTpLGRDUDYDMn0C0A=
 
 path-parse@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.npm.taobao.org/path-parse/download/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
-  integrity sha1-1i27VnlAXXLEc37FhgDp3c8G0kw=
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
+  integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
 
 path-type@^3.0.0:
   version "3.0.0"
