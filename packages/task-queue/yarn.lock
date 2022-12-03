@@ -286,10 +286,10 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestify/core@^0.3.14":
-  version "0.3.14"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.3.14.tgz#35b8c83c4876ca3b5d46570b4d7dbdcd8be4b7ac"
-  integrity sha512-yQOCRG02m8yAGtmpAZKaLcZp1YGrEOirFzbcVy8Wd33YcRlUOO5dnTZMuJuaU2tsN+JEbiQ8/AjbNwTZkLON1A==
+"@nestify/core@^0.3.19":
+  version "0.3.19"
+  resolved "https://registry.yarnpkg.com/@nestify/core/-/core-0.3.19.tgz#495f4f88907d180fef93dcb46af66f76be634545"
+  integrity sha512-9AmjjmHRMQWv1o1THlpHulUBHckYLZykLf5aPQMtxq1EsVH5vkygANKnB4xk5U2836z91U4ywOr/QtdzqM/GeA==
   dependencies:
     "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
@@ -987,9 +987,9 @@ decamelize@^1.2.0:
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
 
 decode-uri-component@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
-  integrity sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
+  integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
 deep-extend@^0.6.0:
   version "0.6.0"
