@@ -286,11 +286,12 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@nestify/core@^0.2.19":
-  version "0.2.19"
-  resolved "https://registry.npmjs.org/@nestify/core/-/core-0.2.19.tgz#d494d9c96e28a275627a959b84b17814ded85b53"
-  integrity sha512-ekTirYXLu/tNwqnuj9LJfwTptIYkXMnjnjGeL4xm91rU33dkx4WehaxPPbSHsVc004q/WILZTV7I8ONQpqjKmQ==
+"@nestify/core@^0.3.19":
+  version "0.3.19"
+  resolved "https://registry.yarnpkg.com/@nestify/core/-/core-0.3.19.tgz#495f4f88907d180fef93dcb46af66f76be634545"
+  integrity sha512-9AmjjmHRMQWv1o1THlpHulUBHckYLZykLf5aPQMtxq1EsVH5vkygANKnB4xk5U2836z91U4ywOr/QtdzqM/GeA==
   dependencies:
+    "@nestjs/core" "^6.10.2"
     reflect-metadata "^0.1.13"
 
 "@nestjs/common@6.10.1":
@@ -2955,9 +2956,9 @@ punycode@^2.1.0, punycode@^2.1.1:
   integrity sha1-tYsBCsQMIsVldhbI0sLALHv0eew=
 
 qs@~6.5.2:
-  version "6.5.2"
-  resolved "https://registry.npm.taobao.org/qs/download/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
-  integrity sha1-yzroBuh0BERYTvFUzo7pjUA/PjY=
+  version "6.5.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.3.tgz#3aeeffc91967ef6e35c0e488ef46fb296ab76aad"
+  integrity sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==
 
 rc@^1.2.7:
   version "1.2.8"
