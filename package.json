@@ -16,7 +16,7 @@
     "lerna": "3.19.0",
     "lerna-update-wizard": "0.17.5",
     "lerna-wizard": "1.1.1",
-    "prettier": "1.19.1",
+    "prettier": "2.8.8",
     "typescript": "3.7.2"
   },
   "config": {
