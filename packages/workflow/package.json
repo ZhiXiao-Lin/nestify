@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^6.9.0",
-    "@nestjs/core": "^6.9.0",
+    "@nestjs/core": "^9.0.0",
     "reflect-metadata": "^0.1.13",
     "uuid": "^3.3.3"
   },
