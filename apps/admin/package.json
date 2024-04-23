@@ -43,7 +43,7 @@
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "customize-cra": "^0.2.12",
     "fetch-mock": "^6.4.3",
-    "gh-pages": "^2.0.1",
+    "gh-pages": "^5.0.0",
     "http-proxy-middleware": "^0.19.1",
     "less": "^3.8.1",
     "less-loader": "^4.1.0",
