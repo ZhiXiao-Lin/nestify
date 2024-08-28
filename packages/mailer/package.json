@@ -42,8 +42,8 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/core": "6.10.1",
-    "@nestjs/testing": "6.10.1",
+    "@nestjs/core": "6.11.11",
+    "@nestjs/testing": "6.11.11",
     "@types/jest": "24.0.23",
     "@types/nodemailer": "6.2.2",
     "dotenv": "8.2.0",
