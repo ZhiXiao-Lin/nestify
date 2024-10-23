@@ -42,7 +42,7 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/testing": "6.10.1",
+    "@nestjs/testing": "10.4.6",
     "@types/jest": "24.0.23",
     "jest": "24.9.0",
     "rimraf": "3.0.0",
@@ -52,8 +52,8 @@
   },
   "dependencies": {
     "@nestify/core": "^0.3.19",
-    "@nestjs/common": "^6.9.0",
-    "@nestjs/core": "^6.9.0",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "gitHead": "acc3b6694bd6378b23777b9a18d3119ae2f8ba98"

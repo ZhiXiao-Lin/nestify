@@ -43,7 +43,7 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/testing": "6.10.1",
+    "@nestjs/testing": "10.4.6",
     "@types/commander": "^2.12.2",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^24.0.23",
@@ -54,8 +54,8 @@
     "typescript": "3.7.2"
   },
   "dependencies": {
-    "@nestjs/common": "^6.9.0",
-    "@nestjs/core": "^6.9.0",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
     "commander": "^4.0.1",
     "inquirer": "^7.0.0",
     "ora": "^4.0.3",
