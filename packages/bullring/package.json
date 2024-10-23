@@ -46,7 +46,7 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@nestjs/testing": "6.10.1",
+    "@nestjs/testing": "10.4.6",
     "@types/bull": "^3.10.6",
     "@types/jest": "^24.0.23",
     "jest": "24.9.0",
@@ -57,9 +57,9 @@
   },
   "dependencies": {
     "@nestify/core": "^0.3.19",
-    "@nestjs/common": "^6.7.2",
-    "@nestjs/core": "^6.7.2",
-    "@nestjs/platform-express": "^6.10.12",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
     "bull": "^3.12.1",
     "bull-arena": "^2.6.4",
     "class-transformer": "^0.2.3",
