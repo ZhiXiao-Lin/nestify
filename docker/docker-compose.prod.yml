@@ -1,85 +1,90 @@
 services:
   # =============================================================================
-  # PostgreSQL Database
+  # PostgreSQL Database (Production)
   # =============================================================================
   postgres:
     image: postgres:16-alpine
     container_name: nestify-postgres
     environment:
-      POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_DATABASE:-nestify}
-    ports:
-      - "${DB_PORT:-5432}:5432"
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../apps/api/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-nestify}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
     networks:
       - nestify-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   # =============================================================================
-  # Redis Cache
+  # Redis Cache (Production)
   # =============================================================================
   redis:
     image: redis:7-alpine
     container_name: nestify-redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis123}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 5s
     networks:
       - nestify-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   # =============================================================================
-  # NestJS Application (Development)
+  # NestJS Application (Production)
   # =============================================================================
   app:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: docker/Dockerfile
     container_name: nestify-app
     ports:
       - "${APP_PORT:-3000}:3000"
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       APP_PORT: 3000
       # Database
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_DATABASE: ${DB_DATABASE:-nestify}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
       # Redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_DB: ${REDIS_DB:-0}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      # Mount source code for hot reload
-      - ../apps/api/src:/app/apps/api/src:ro
-      - ../packages/kysely/src:/app/packages/kysely/src:ro
-      - ../packages/redisson/src:/app/packages/redisson/src:ro
     networks:
       - nestify-network
-    restart: unless-stopped
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+      replicas: 1
 
 # =============================================================================
 # Networks
