@@ -1,13 +1,39 @@
 {
     "name": "@a3s-lab/kysely",
     "version": "1.0.0",
+    "description": "NestJS module for Kysely SQL query builder with syntax-highlighted logging",
+    "author": "ZhiXiao-Lin",
+    "license": "MIT",
+    "homepage": "https://github.com/ZhiXiao-Lin/nestify/tree/main/packages/kysely#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ZhiXiao-Lin/nestify.git",
+        "directory": "packages/kysely"
+    },
+    "bugs": {
+        "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+    },
+    "keywords": [
+        "nestjs",
+        "kysely",
+        "sql",
+        "query-builder",
+        "database",
+        "postgresql",
+        "mysql",
+        "sqlite",
+        "typescript",
+        "logger"
+    ],
     "source": "./src/index.ts",
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "sideEffects": false,
     "exports": {
         ".": {
             "import": "./dist/index.js",
-            "default": "./dist/index.js"
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
         }
     },
     "files": [
@@ -17,7 +43,8 @@
         "build": "tsc",
         "test": "jest",
         "test:cov": "jest --coverage",
-        "clean": "rimraf dist && rimraf node_modules"
+        "clean": "rimraf dist && rimraf node_modules",
+        "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
         "dayjs": "^1.11.13",
@@ -38,6 +65,9 @@
     },
     "peerDependencies": {
         "@nestjs/common": "^10.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "jest": {
         "moduleFileExtensions": ["js", "json", "ts"],

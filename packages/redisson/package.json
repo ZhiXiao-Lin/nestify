@@ -1,13 +1,38 @@
 {
     "name": "@a3s-lab/redisson",
     "version": "1.0.0",
+    "description": "NestJS module for Redis distributed locks and caching using Redisson",
+    "author": "ZhiXiao-Lin",
+    "license": "MIT",
+    "homepage": "https://github.com/ZhiXiao-Lin/nestify/tree/main/packages/redisson#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ZhiXiao-Lin/nestify.git",
+        "directory": "packages/redisson"
+    },
+    "bugs": {
+        "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+    },
+    "keywords": [
+        "nestjs",
+        "redis",
+        "redisson",
+        "distributed-lock",
+        "cache",
+        "ioredis",
+        "typescript",
+        "mutex",
+        "semaphore"
+    ],
     "source": "./src/index.ts",
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "sideEffects": false,
     "exports": {
         ".": {
             "import": "./dist/index.js",
-            "default": "./dist/index.js"
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
         }
     },
     "files": [
@@ -17,7 +42,8 @@
         "build": "tsc",
         "test": "jest",
         "test:cov": "jest --coverage",
-        "clean": "rimraf dist && rimraf node_modules"
+        "clean": "rimraf dist && rimraf node_modules",
+        "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
         "ioredis": "^5.9.1",
@@ -37,6 +63,9 @@
     },
     "peerDependencies": {
         "@nestjs/common": "^10.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "jest": {
         "moduleFileExtensions": ["js", "json", "ts"],
