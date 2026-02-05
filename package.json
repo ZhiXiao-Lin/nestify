@@ -1,0 +1,33 @@
+{
+    "name": "@a3s-lab/nestify",
+    "version": "1.0.0",
+    "description": "Production-ready NestJS monorepo with pnpm workspace, Domain-Driven Design and Clean Architecture",
+    "author": "",
+    "private": true,
+    "license": "MIT",
+    "scripts": {
+        "build": "pnpm -r build",
+        "build:api": "pnpm --filter @a3s-lab/api build",
+        "build:packages": "pnpm --filter \"./packages/**\" build",
+        "format": "biome format --write .",
+        "format:check": "biome format .",
+        "lint": "biome lint --write .",
+        "lint:check": "biome lint .",
+        "start": "pnpm --filter @a3s-lab/api start",
+        "start:dev": "pnpm --filter @a3s-lab/api start:dev",
+        "start:debug": "pnpm --filter @a3s-lab/api start:debug",
+        "start:prod": "pnpm --filter @a3s-lab/api start:prod",
+        "test": "pnpm -r test",
+        "test:api": "pnpm --filter @a3s-lab/api test",
+        "test:packages": "pnpm --filter \"./packages/**\" test",
+        "test:kysely": "pnpm --filter @a3s-lab/kysely test",
+        "test:redisson": "pnpm --filter @a3s-lab/redisson test",
+        "test:cov": "pnpm -r test:cov",
+        "clean": "pnpm -r clean && rm -rf node_modules"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.3.14",
+        "rimraf": "^6.0.1",
+        "typescript": "^5.1.3"
+    }
+}

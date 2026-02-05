@@ -1,0 +1,93 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+    "vcs": {
+        "enabled": true,
+        "defaultBranch": "main",
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "maxSize": 10240000,
+        "ignoreUnknown": false,
+        "experimentalScannerIgnores": [
+            "**/dist/**",
+            ".vscode/**/*",
+            "node_modules/**",
+            "dist/**",
+            "build/**",
+            "coverage/**",
+            "tsconfig.*"
+        ]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "javascript": {
+        "parser": {
+            "unsafeParameterDecoratorsEnabled": true
+        },
+        "formatter": {
+            "quoteStyle": "single",
+            "arrowParentheses": "asNeeded",
+            "jsxQuoteStyle": "double",
+            "lineWidth": 120
+        }
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "security": {
+                "noDangerouslySetInnerHtml": "off"
+            },
+            "suspicious": {
+                "noExplicitAny": "off",
+                "noArrayIndexKey": "off",
+                "noAsyncPromiseExecutor": "off",
+                "noAssignInExpressions": "off",
+                "noConfusingVoidType": "off",
+                "noControlCharactersInRegex": "off"
+            },
+            "style": {
+                "useConst": "off",
+                "noUselessElse": "off",
+                "useImportType": "off",
+                "noParameterAssign": "off",
+                "noInferrableTypes": "off",
+                "noNonNullAssertion": "off",
+                "useExportType": "off",
+                "useNodejsImportProtocol": "off"
+            },
+            "performance": {
+                "noDelete": "off",
+                "noAccumulatingSpread": "off"
+            },
+            "complexity": {
+                "noUselessTypeConstraint": "off",
+                "noStaticOnlyClass": "off",
+                "noUselessFragments": "off",
+                "useOptionalChain": "off",
+                "noExtraBooleanCast": "off",
+                "useLiteralKeys": "off",
+                "noThisInStatic": "off",
+                "noBannedTypes": "off",
+                "noForEach": "off"
+            },
+            "correctness": {
+                "noEmptyCharacterClassInRegex": "off",
+                "useExhaustiveDependencies": "off",
+                "useJsxKeyInIterable": "off",
+                "noConstructorReturn": "off"
+            },
+            "a11y": {
+                "useKeyWithClickEvents": "off",
+                "noSvgWithoutTitle": "off",
+                "useAltText": "off",
+                "useButtonType": "off",
+                "useValidAnchor": "off"
+            }
+        }
+    }
+}

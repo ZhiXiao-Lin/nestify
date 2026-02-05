@@ -1,0 +1,40 @@
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
+import { CreateOrderCommand } from './create-order.command';
+import { Order } from '../../../domain/entities/order.entity';
+import { OrderItem } from '../../../domain/entities/order-item.entity';
+import { Money } from '../../../domain/value-objects/money.vo';
+import { Quantity } from '../../../domain/value-objects/quantity.vo';
+import { OrderId } from '../../../domain/value-objects/order-id.vo';
+import { IOrderRepository, ORDER_REPOSITORY } from '../../../domain/repositories/order.repository.interface';
+import { EVENT_BUS, IEventBus } from '@/shared/infrastructure/messaging/event-bus.interface';
+
+@CommandHandler(CreateOrderCommand)
+export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
+    constructor(
+        @Inject(ORDER_REPOSITORY)
+        private readonly orderRepository: IOrderRepository,
+        @Inject(EVENT_BUS)
+        private readonly eventBus: IEventBus,
+    ) {}
+
+    async execute(command: CreateOrderCommand): Promise<string> {
+        const orderItems = command.items.map(item =>
+            OrderItem.create({
+                id: OrderId.create().value,
+                productId: item.productId,
+                quantity: Quantity.create(item.quantity),
+                unitPrice: Money.create(item.unitPrice),
+            }),
+        );
+
+        const order = Order.create(command.customerId, orderItems);
+
+        await this.orderRepository.save(order);
+
+        await this.eventBus.publishAll(order.domainEvents);
+        order.clearEvents();
+
+        return order.id;
+    }
+}
