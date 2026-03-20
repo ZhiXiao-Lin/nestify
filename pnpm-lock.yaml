@@ -51,8 +51,8 @@ importers:
         specifier: ^0.14.0
         version: 0.14.3
       kysely:
-        specifier: ^0.28.11
-        version: 0.28.11
+        specifier: ^0.28.14
+        version: 0.28.14
       pg:
         specifier: ^8.18.0
         version: 8.18.0
@@ -127,8 +127,8 @@ importers:
         specifier: ^1.11.13
         version: 1.11.19
       kysely:
-        specifier: ^0.28.9
-        version: 0.28.11
+        specifier: ^0.28.14
+        version: 0.28.14
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -2277,8 +2277,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  kysely@0.28.11:
-    resolution: {integrity: sha512-zpGIFg0HuoC893rIjYX1BETkVWdDnzTzF5e0kWXJFg5lE0k1/LfNWBejrcnOFu8Q2Rfq/hTDTU7XLUM8QOrpzg==}
+  kysely@0.28.14:
+    resolution: {integrity: sha512-SU3lgh0rPvq7upc6vvdVrCsSMUG1h3ChvHVOY7wJ2fw4C9QEB7X3d5eyYEyULUX7UQtxZJtZXGuT6U2US72UYA==}
     engines: {node: '>=20.0.0'}
 
   leven@3.1.0:
@@ -5861,7 +5861,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  kysely@0.28.11: {}
+  kysely@0.28.14: {}
 
   leven@3.1.0: {}
 

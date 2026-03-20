@@ -48,7 +48,7 @@
     },
     "dependencies": {
         "dayjs": "^1.11.13",
-        "kysely": "^0.28.9",
+        "kysely": "^0.28.14",
         "picocolors": "^1.1.1"
     },
     "devDependencies": {
