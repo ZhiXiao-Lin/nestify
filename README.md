@@ -1,477 +1,450 @@
-# Nestify - NestJS Monorepo Template
+# Nestify - Production-Ready NestJS Monorepo Template
 
-A production-ready NestJS monorepo template with pnpm workspace, implementing Domain-Driven Design (DDD) and Clean Architecture principles.
+A production-ready NestJS monorepo template with pnpm workspace, implementing Domain-Driven Design (DDD), Clean Architecture, and comprehensive infrastructure for enterprise applications.
 
 ## Features
 
+### Core Architecture
 - **Monorepo Architecture**: pnpm workspace for managing multiple packages and applications
-- **Custom NestJS Packages**: Reusable @a3s-lab scoped packages (kysely, etc.)
 - **Clean Architecture**: Clear separation of concerns with Domain, Application, Infrastructure, and Presentation layers
 - **Domain-Driven Design**: Rich domain models with entities, value objects, aggregates, and domain events
 - **CQRS Pattern**: Separate command and query handlers using @nestjs/cqrs
 - **Event-Driven**: Domain events for decoupled communication
-- **Type Safety**: Full TypeScript with strict mode enabled
+
+### Infrastructure Packages
 - **Type-Safe SQL**: Kysely query builder with full TypeScript support
+- **Distributed Caching**: Redis with Redisson for locks, caching, and rate limiting
+- **Structured Logging**: Pino-based JSON logging with request tracing
+- **Message Queue**: BullMQ for distributed task processing
+- **Event Streaming**: NATS with JetStream support
+- **Object Storage**: S3-compatible RustFS storage
+- **Distributed Config**: etcd for configuration management with hot-reload
+
+### Application Features
+- **Authentication**: JWT with access/refresh tokens, RBAC permission system
+- **API Metrics**: Prometheus metrics with request tracking
+- **Circuit Breaker**: Fault tolerance with automatic failover
+- **Retry Logic**: Exponential backoff with jitter
+- **Rate Limiting**: Redis-based sliding window rate limiting
+- **Multi-tenancy**: Tenant isolation support
+- **Audit Logging**: Comprehensive audit trail
+- **Feature Flags**: Rollout management
+- **API Versioning**: Header-based API versioning
+- **File Upload**: Multipart file handling
+
+### Quality Assurance
+- **Type Safety**: Full TypeScript with strict mode
 - **API Documentation**: Swagger/OpenAPI integration
-- **Validation**: Request validation with class-validator
-- **Docker**: Development and production Docker configurations
+- **Validation**: class-validator with custom decorators
 - **Testing**: Unit, integration, and E2E test setup
+- **Code Quality**: Biome linting and formatting
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              API Application                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Presentation    │  Application    │  Domain      │  Infrastructure         │
+│  - Controllers   │  - Commands     │  - Entities  │  - Kysely (PostgreSQL) │
+│  - DTOs          │  - Queries      │  - Value Obj │  - Redisson (Redis)    │
+│  - Guards        │  - Event Hand. │  - Aggreg.   │  - BullMQ (Tasks)       │
+│  - Interceptors  │  - DTOs        │  - Events    │  - NATS (Messaging)     │
+│                  │                 │  - Services   │  - RustFS (Storage)     │
+│                  │                 │              │  - etcd (Config)        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                           Shared Infrastructure                               │
+│  Auth │ Metrics │ Cache │ CircuitBreaker │ Retry │ RateLimit │ Health    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Monorepo Structure
 
 ```
 nestify/
-├── pnpm-workspace.yaml          # Workspace configuration
-├── package.json                 # Root package.json with workspace scripts
+├── pnpm-workspace.yaml              # Workspace configuration
+├── package.json                     # Root package.json with workspace scripts
+├── tsconfig.json                   # Base TypeScript configuration
+├── biome.json                      # Biome linting/formatting config
 ├── apps/
-│   └── api/                     # Main NestJS API application
+│   └── api/                       # Main NestJS API application
 │       ├── src/
-│       ├── test/
-│       ├── package.json
-│       └── tsconfig.json
+│       │   ├── app.module.ts      # Root application module
+│       │   ├── main.ts            # Application entry point
+│       │   ├── modules/          # Business modules (DDD)
+│       │   └── shared/            # Shared infrastructure modules
+│       └── package.json
 └── packages/
-    ├── kysely/                  # @a3s-lab/kysely - Type-safe SQL query builder
-    │   ├── src/
-    │   ├── package.json
-    │   └── tsconfig.json
-    └── redisson/                # @a3s-lab/redisson - Redis distributed locks & caching
-        ├── src/
-        ├── package.json
-        └── tsconfig.json
+    ├── kysely/                    # @a3s-lab/kysely - Type-safe SQL
+    ├── redisson/                  # @a3s-lab/redisson - Redis client
+    ├── logger/                    # @a3s-lab/logger - Structured logging
+    ├── bullmq/                    # @a3s-lab/bullmq - Task queue
+    ├── nats/                      # @a3s-lab/nats - Message broker
+    ├── rustfs/                    # @a3s-lab/rustfs - S3 storage
+    └── etcd/                      # @a3s-lab/etcd - Config center
 ```
 
 ## Packages
 
 ### @a3s-lab/kysely
 
-Type-safe SQL query builder module for NestJS with Kysely integration.
+Type-safe SQL query builder module for NestJS.
 
-**Installation:**
-```bash
-pnpm add @a3s-lab/kysely
-```
-
-**Usage:**
 ```typescript
-import { Module } from '@nestjs/common';
-import { KyselyModule } from '@a3s-lab/kysely';
-import { PostgresDialect } from 'kysely';
-import { Pool } from 'pg';
-
-@Module({
-  imports: [
-    KyselyModule.register({
-      config: {
-        dialect: new PostgresDialect({
-          pool: new Pool({
-            connectionString: process.env.DATABASE_URL,
-          }),
-        }),
-      },
-    }),
-  ],
+KyselyModule.register({
+  config: {
+    dialect: new PostgresDialect({ pool: new Pool({ connectionString }) }),
+  },
 })
-export class AppModule {}
-```
-
-**Async Configuration:**
-```typescript
-KyselyModule.registerAsync({
-  imports: [ConfigModule],
-  useFactory: (config: ConfigService) => ({
-    config: {
-      dialect: new PostgresDialect({
-        pool: new Pool({
-          connectionString: config.get('DATABASE_URL'),
-        }),
-      }),
-    },
-  }),
-  inject: [ConfigService],
-})
-```
-
-**Using KyselyService:**
-```typescript
-import { Injectable } from '@nestjs/common';
-import { KyselyService } from '@a3s-lab/kysely';
-import { Database } from './database.types';
-
-@Injectable()
-export class UserRepository {
-  constructor(private readonly db: KyselyService<Database>) {}
-
-  async findById(id: string) {
-    return this.db
-      .selectFrom('users')
-      .where('id', '=', id)
-      .selectAll()
-      .executeTakeFirst();
-  }
-}
 ```
 
 ### @a3s-lab/redisson
 
-Redis distributed locks and caching module for NestJS with Redisson integration.
+Redis distributed locks, caching, and rate limiting.
 
-**Installation:**
-```bash
-pnpm add @a3s-lab/redisson
+```typescript
+// Distributed lock
+await redisson.withLock('resource-key', async () => {
+  // Critical section
+});
+
+// Cache with TTL
+await redisson.setJSON('cache-key', data, 3600);
+
+// Rate limiting
+const limited = await rateLimiter.tryAcquire('endpoint-limit');
 ```
 
-**Usage:**
-```typescript
-import { Module } from '@nestjs/common';
-import { RedissonModule } from '@a3s-lab/redisson';
+### @a3s-lab/logger
 
-@Module({
-  imports: [
-    RedissonModule.register({
-      redis: {
-        options: {
-          host: 'localhost',
-          port: 6379,
-        },
-      },
-    }),
-  ],
-})
-export class AppModule {}
+Structured JSON logging with request tracing.
+
+```typescript
+LoggerModule.register({
+  level: 'info',
+  name: 'api',
+  json: true,  // JSON format for K8s
+});
+
+// In services
+logger.logRequest({ method, url, statusCode, responseTime });
 ```
 
-**Async Configuration:**
+### @a3s-lab/bullmq
+
+Distributed task queue with retry and delayed jobs.
+
 ```typescript
-RedissonModule.registerAsync({
-  imports: [ConfigModule],
-  useFactory: (config: ConfigService) => ({
-    redis: {
-      options: {
-        host: config.get('REDIS_HOST', 'localhost'),
-        port: config.get('REDIS_PORT', 6379),
-        password: config.get('REDIS_PASSWORD'),
-      },
-    },
-  }),
-  inject: [ConfigService],
-})
+// Add job
+await bullmq.addJob('notifications', 'send-email', { to: 'user@example.com' });
+
+// Create worker
+bullmq.createWorker('notifications', async (job) => {
+  await sendEmail(job.data);
+  return { success: true };
+});
 ```
 
-**Using RedissonService:**
+### @a3s-lab/nats
+
+High-performance message broker with JetStream.
+
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { RedissonService } from '@a3s-lab/redisson';
+// Publish
+await nats.publish({ subject: 'orders.created', data: orderEvent });
 
-@Injectable()
-export class CacheService {
-  constructor(private readonly redisson: RedissonService) {}
+// Subscribe
+await nats.subscribe$('orders.created', async (data) => {
+  await handleOrderCreated(data);
+});
 
-  // Cache with TTL
-  async cacheData(key: string, data: any, ttl: number = 3600) {
-    await this.redisson.setJSON(key, data, ttl);
-  }
+// JetStream
+await nats.jsPublish({ stream: 'ORDERS', subject: 'created', data });
+```
 
-  // Get cached data
-  async getCachedData<T>(key: string): Promise<T | null> {
-    return this.redisson.getJSON<T>(key);
-  }
+### @a3s-lab/rustfs
 
-  // Distributed lock
-  async withLock<T>(key: string, operation: () => Promise<T>): Promise<T> {
-    return this.redisson.withLock(key, operation, 5000, 10000);
-  }
+S3-compatible object storage.
 
-  // Counter
-  async incrementCounter(key: string): Promise<number> {
-    return this.redisson.increment(key);
-  }
+```typescript
+// Upload file
+const result = await rustfs.putObject('bucket', {
+  key: 'uploads/file.pdf',
+  body: fileBuffer,
+  contentType: 'application/pdf',
+});
+
+// Get presigned URL
+const url = await rustfs.getPresignedUrl('bucket', {
+  key: 'uploads/file.pdf',
+  expiresIn: 3600,
+});
+```
+
+### @a3s-lab/etcd
+
+Distributed configuration with hot-reload.
+
+```typescript
+// Get config
+const value = await etcd.get('config/feature-flags');
+
+// Watch for changes
+etcd.watch('config/feature-flags', (event) => {
+  if (event.value) reloadFeatures(event.value);
+});
+```
+
+## Shared Modules
+
+### Authentication (auth)
+
+JWT-based authentication with RBAC.
+
+```typescript
+// JWT Token Generation
+const tokens = jwtService.generateTokenPair({ sub: userId, roles: ['admin'] });
+
+// Protect Routes
+@UseGuards(JwtAuthGuard)
+
+// Role-based Access
+@Roles('admin')
+@UseGuards(RolesGuard)
+
+// Permission Check
+@Permissions('users', 'create')
+@UseGuards(PermissionsGuard)
+```
+
+### Metrics (metrics)
+
+Prometheus metrics collection.
+
+```typescript
+// Automatic HTTP metrics
+GET /metrics  // Prometheus format
+
+// Custom metrics
+metricsService.incGauge('active_users');
+metricsService.observeHistogram('request_duration', duration);
+```
+
+### Circuit Breaker (circuit-breaker)
+
+Fault tolerance pattern.
+
+```typescript
+@CircuitBreaker({ timeout: 5000, maxFailures: 5 })
+async callExternalService() {
+  return await externalService.get();
 }
 ```
 
-## Architecture
+### Retry (retry)
 
-This template follows Clean Architecture principles with four main layers:
+Automatic retry with exponential backoff.
 
-### 1. Domain Layer (Core Business Logic)
-- **Entities**: Business objects with identity (Order, OrderItem)
-- **Value Objects**: Immutable objects without identity (Money, Quantity, OrderStatus)
-- **Aggregates**: Clusters of entities and value objects (Order as aggregate root)
-- **Domain Events**: Events that represent business occurrences
-- **Domain Services**: Business logic that doesn't belong to a single entity
-- **Repository Interfaces**: Contracts for data persistence
+```typescript
+const result = await retryService.execute(fn, {
+  maxAttempts: 3,
+  initialDelay: 100,
+  backoffMultiplier: 2,
+  retryableErrors: [NetworkError, TimeoutError],
+});
+```
 
-### 2. Application Layer (Use Cases)
-- **Commands**: Write operations (CreateOrder, ConfirmOrder, CancelOrder)
-- **Queries**: Read operations (GetOrder, ListOrders)
-- **DTOs**: Data transfer objects for API contracts
-- **Event Handlers**: React to domain events
-- **CQRS**: Separate read and write models
+### Rate Limiting (rate-limiting)
 
-### 3. Infrastructure Layer (Technical Concerns)
-- **Persistence**: Kysely repositories and database schemas
-- **Caching**: Redis caching with Redisson
-- **Messaging**: Event bus implementation
-- **External Services**: Third-party integrations
-- **Configuration**: Environment and database setup
+Redis-based sliding window rate limiting.
 
-### 4. Presentation Layer (API)
-- **Controllers**: REST API endpoints
-- **Filters**: Exception handling
-- **Interceptors**: Logging and transformation
-- **Validation**: Request validation
+```typescript
+@RateLimit({ limit: 100, window: '1m' })
+async endpoint() { }
+```
+
+### Health (health)
+
+Health check endpoints.
+
+```typescript
+GET /health      // Full health check
+GET /health/live // Liveness probe
+GET /health/ready // Readiness probe
+```
+
+### Validation (validation)
+
+Custom validators beyond class-validator.
+
+```typescript
+@IsPassword()              // Strong password
+@IsStrongPassword()        // Very strong password
+@IsUsername()              // Alphanumeric with underscores
+@IsSlug()                  // URL-safe slug
+@IsFutureDate()           // Future date only
+@IsInRange(0, 100)        // Number in range
+```
+
+### Serialization (serialization)
+
+class-transformer integration with groups.
+
+```typescript
+class UserEntity { }
+class UserDto { }
+
+@Serialize(UserDto, { groups: ['user:read'] })
+getUser(): UserEntity { }
+```
+
+## Project Structure
+
+```
+apps/api/src/
+├── app.module.ts                    # Root module
+├── main.ts                         # Bootstrap
+├── modules/                         # Business modules
+│   └── order/                      # Order bounded context
+│       ├── domain/
+│       │   ├── entities/          # Order, OrderItem
+│       │   ├── value-objects/    # Money, Quantity
+│       │   ├── events/           # OrderCreated, OrderConfirmed
+│       │   ├── repositories/     # IOrderRepository
+│       │   └── exceptions/      # Domain exceptions
+│       ├── application/
+│       │   ├── commands/        # CreateOrder, CancelOrder
+│       │   ├── queries/        # GetOrder, ListOrders
+│       │   └── event-handlers/ # HandleOrderCreated
+│       ├── infrastructure/
+│       │   └── persistence/     # KyselyOrderRepository
+│       └── presentation/
+│           └── order.controller.ts
+└── shared/                         # Shared kernel
+    ├── auth/                      # JWT, RBAC, Guards
+    ├── metrics/                   # Prometheus
+    ├── cache/                     # Caching
+    ├── circuit-breaker/           # Fault tolerance
+    ├── retry/                    # Retry logic
+    ├── rate-limiting/            # Rate limit
+    ├── health/                    # Health checks
+    ├── validation/                # Custom validators
+    ├── serialization/             # DTO transformation
+    ├── base/                      # Base service, entity
+    ├── domain/                    # Core DDD
+    ├── errors/                    # Error handling
+    ├── utils/                     # Utilities
+    └── ...
+```
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 20+
-- pnpm 8+ (install with `npm install -g pnpm`)
+- pnpm 8+
 - Docker and Docker Compose
-- PostgreSQL (or use Docker)
-- Redis (or use Docker)
+- PostgreSQL 15+
+- Redis 7+
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone <repository-url>
+# Clone and install
+git clone https://github.com/A3S-Lab/nestify.git
 cd nestify
-```
-
-2. Install dependencies:
-```bash
 pnpm install
-```
 
-3. Create environment file:
-```bash
-cp .env.example .env
-```
+# Start infrastructure
+cd docker && docker-compose up -d
 
-4. Start PostgreSQL with Docker:
-```bash
-cd docker
-docker-compose up -d postgres
-```
+# Build
+pnpm build
 
-5. Build packages:
-```bash
-pnpm build:packages
-```
-
-6. Run the application:
-```bash
+# Run
 pnpm start:dev
 ```
 
-The application will be available at:
-- API: http://localhost:3000/api
-- Swagger Docs: http://localhost:3000/api/docs
-
-## Project Structure
-
-```
-nestify/
-├── apps/
-│   └── api/                         # Main API application
-│       └── src/
-│           ├── shared/              # Shared kernel
-│           │   ├── domain/          # Base domain classes
-│           │   ├── application/     # Base application interfaces
-│           │   ├── infrastructure/  # Base infrastructure
-│           │   ├── presentation/    # Filters, interceptors
-│           │   └── utils/           # Utilities
-│           └── modules/
-│               └── order/           # Order bounded context
-│                   ├── domain/      # Domain layer
-│                   │   ├── entities/
-│                   │   ├── value-objects/
-│                   │   ├── events/
-│                   │   ├── repositories/
-│                   │   ├── services/
-│                   │   └── exceptions/
-│                   ├── application/ # Application layer
-│                   │   ├── commands/
-│                   │   ├── queries/
-│                   │   └── event-handlers/
-│                   ├── infrastructure/  # Infrastructure layer
-│                   │   └── persistence/
-│                   └── presentation/    # Presentation layer
-│                       └── order.controller.ts
-└── packages/
-    ├── kysely/                      # @a3s-lab/kysely package
-    │   └── src/
-    │       ├── kysely.module.ts
-    │       ├── kysely.service.ts
-    │       ├── kysely.logger.ts
-    │       └── index.ts
-    └── redisson/                    # @a3s-lab/redisson package
-        └── src/
-            ├── redisson.module.ts
-            ├── redisson.service.ts
-            ├── types.ts
-            └── index.ts
-```
-
-## API Endpoints
-
-### Orders
-
-- `POST /api/orders` - Create a new order
-- `GET /api/orders/:id` - Get order by ID
-- `GET /api/orders?customerId=xxx` - List orders by customer
-- `POST /api/orders/:id/confirm` - Confirm an order
-- `POST /api/orders/:id/cancel` - Cancel an order
-
-### Example: Create Order
-
-```bash
-curl -X POST http://localhost:3000/api/orders \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": "customer-123",
-    "items": [
-      {
-        "productId": "product-456",
-        "quantity": 2,
-        "unitPrice": 10.99
-      }
-    ]
-  }'
-```
+Access:
+- API: http://localhost:3000
+- Swagger: http://localhost:3000/api/docs
+- Metrics: http://localhost:3000/metrics
 
 ## Scripts
 
 ```bash
-# Workspace Management
-pnpm install              # Install all dependencies
-pnpm build                # Build all packages and apps
-pnpm build:packages       # Build only packages
-pnpm build:api            # Build only API app
-pnpm clean                # Clean all node_modules and dist
-
-# Development
-pnpm start:dev            # Start API in watch mode
-pnpm start:debug          # Start API in debug mode
-
-# Build
-pnpm build                # Build all packages and apps
-
-# Testing
-pnpm test                 # Run all tests
-pnpm test:api             # Run API tests
-
-# Linting
-pnpm lint                 # Lint and fix
-pnpm format               # Format code
-
-# Package-specific commands
-pnpm --filter @a3s-lab/kysely build    # Build kysely package
-pnpm --filter @a3s-lab/redisson build  # Build redisson package
-pnpm --filter @a3s-lab/api test        # Test API app
+pnpm install              # Install dependencies
+pnpm build               # Build all
+pnpm start:dev           # Development mode
+pnpm test                # Run tests
+pnpm lint                # Lint code
+pnpm format             # Format code
 ```
-
-## Docker
-
-### Development
-```bash
-cd docker
-docker-compose up
-```
-
-### Production
-```bash
-docker build -f docker/Dockerfile -t nest-ddd .
-docker run -p 3000:3000 nest-ddd
-```
-
-## Testing
-
-The template includes examples for:
-- Unit tests for domain entities and value objects
-- Integration tests for repositories
-- E2E tests for API endpoints
-
-Run tests:
-```bash
-pnpm test                 # All tests
-pnpm test:api             # API tests only
-pnpm --filter @a3s-lab/api test:cov  # Coverage report
-```
-
-## Creating New Packages
-
-To create a new custom NestJS package:
-
-1. Create package directory:
-```bash
-mkdir -p packages/my-package/src
-```
-
-2. Create package.json:
-```json
-{
-  "name": "@a3s-lab/my-package",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc"
-  },
-  "peerDependencies": {
-    "@nestjs/common": "^10.0.0"
-  }
-}
-```
-
-3. Create tsconfig.json following the kysely package pattern
-
-4. Build and use:
-```bash
-pnpm build:packages
-# Use in apps with: import { ... } from '@a3s-lab/my-package'
-```
-
-## Documentation
-
-- [Architecture Guide](docs/architecture.md) - Detailed architecture explanation
-- [DDD Patterns](docs/ddd-patterns.md) - DDD patterns used in this template
-- [Adding Features](docs/adding-features.md) - How to add new features
-- [Database Setup](apps/api/DATABASE.md) - PostgreSQL and Kysely setup
-- [Redis Usage](apps/api/REDIS_USAGE.md) - Redis and Redisson usage guide
 
 ## Key Design Patterns
 
 ### Domain-Driven Design
-- **Entities**: Objects with identity and lifecycle
-- **Value Objects**: Immutable objects defined by their attributes
-- **Aggregates**: Consistency boundaries with a root entity
-- **Domain Events**: Capture business occurrences
-- **Repositories**: Abstract data access
 
-### CQRS (Command Query Responsibility Segregation)
-- Separate models for reads and writes
-- Commands change state, queries return data
-- Event-driven communication
+```
+Domain Layer (innermost, no dependencies)
+    │
+    ▼
+Application Layer (depends on Domain)
+    │
+    ▼
+Infrastructure Layer (implements interfaces)
+    │
+    ▼
+Presentation Layer (depends on all)
+```
 
-### Clean Architecture
-- Dependency rule: inner layers don't depend on outer layers
-- Domain layer is independent of frameworks
-- Infrastructure depends on domain, not vice versa
+### CQRS
 
-## Best Practices
+- **Commands**: `CreateOrder`, `ConfirmOrder` - Write operations
+- **Queries**: `GetOrder`, `ListOrders` - Read operations
+- **Events**: `OrderCreated`, `OrderConfirmed` - Decoupled communication
 
-1. **Domain First**: Start with domain modeling before infrastructure
-2. **Immutability**: Use value objects for immutable concepts
-3. **Encapsulation**: Keep business logic in domain entities
-4. **Events**: Use domain events for side effects
-5. **Testing**: Write tests for domain logic first
-6. **Validation**: Validate at boundaries (DTOs, value objects)
+### Fault Tolerance
+
+```
+Circuit Breaker States:
+┌─────────┐     5 failures      ┌──────┐     timeout     ┌───────────┐
+│ CLOSED │ ─────────────────▶  │ OPEN │ ──────────────▶ │ HALF_OPEN │
+└─────────┘                     └──────┘                 └───────────┘
+     ▲                                                        │
+     │            success                                     │
+     └────────────────────────────────────────────────────────┘
+```
+
+## Environment Variables
+
+```env
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/nestify
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# JWT
+JWT_ACCESS_SECRET=your-access-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_ACCESS_EXPIRY=15m
+JWT_REFRESH_EXPIRY=7d
+
+# NATS (optional)
+NATS_SERVERS=nats://localhost:4222
+
+# RustFS (optional)
+RUSTFS_ENDPOINT=http://localhost:9000
+RUSTFS_ACCESS_KEY=rustfsadmin
+RUSTFS_SECRET_KEY=rustfsadmin
+RUSTFS_BUCKET=nestify
+
+# etcd (optional)
+ETCD_ENDPOINTS=http://localhost:2379
+```
 
 ## License
 
 MIT
-
-## Contributing
-
-Contributions are welcome! Please read the contributing guidelines first.
