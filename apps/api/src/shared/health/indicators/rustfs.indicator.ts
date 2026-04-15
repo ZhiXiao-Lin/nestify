@@ -4,11 +4,12 @@
 
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
-import { RustFSService } from '@a3s-lab/rustfs';
+import { RustFSServiceImpl } from '@a3s-lab/rustfs';
+import { IStorageService } from '../../infrastructure/storage/storage.interface';
 
 @Injectable()
 export class RustFSHealthIndicator extends HealthIndicator {
-    constructor(private readonly rustfs: RustFSService) {
+    constructor(private readonly rustfs: IStorageService) {
         super();
     }
 

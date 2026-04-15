@@ -4,11 +4,12 @@
 
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
-import { NatsService } from '@a3s-lab/nats';
+import { NatsServiceImpl } from '@a3s-lab/nats';
+import { IMessagingService } from '../../infrastructure/messaging/messaging.interface';
 
 @Injectable()
 export class NatsHealthIndicator extends HealthIndicator {
-    constructor(private readonly nats: NatsService) {
+    constructor(private readonly nats: IMessagingService) {
         super();
     }
 
