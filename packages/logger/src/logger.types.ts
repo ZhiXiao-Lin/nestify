@@ -45,19 +45,6 @@ export interface ErrorLog {
     code?: string;
 }
 
-export interface LoggerService {
-    fatal(message: string, context?: Partial<LogContext>): void;
-    error(message: string, context?: Partial<LogContext>): void;
-    error(error: Error, context?: Partial<LogContext>): void;
-    warn(message: string, context?: Partial<LogContext>): void;
-    info(message: string, context?: Partial<LogContext>): void;
-    debug(message: string, context?: Partial<LogContext>): void;
-    trace(message: string, context?: Partial<LogContext>): void;
-
-    log(level: LogLevel, message: string, context?: Partial<LogContext>): void;
-    child(context: Partial<LogContext>): LoggerService;
-}
-
 export interface RequestLoggingOptions {
     excludePaths?: string[];
     includeBody?: boolean;

@@ -220,46 +220,6 @@ export interface ListPartsResult {
 }
 
 // ============================================================================
-// Service Types
-// ============================================================================
-
-export interface RustFSService {
-    // Bucket operations
-    createBucket(options: CreateBucketOptions): Promise<Bucket>;
-    listBuckets(): Promise<Bucket[]>;
-    getBucketAcl(bucketName: string): Promise<BucketAcl>;
-    setBucketAcl(bucketName: string, acl: BucketAcl): Promise<void>;
-    deleteBucket(bucketName: string): Promise<void>;
-    bucketExists(bucketName: string): Promise<boolean>;
-
-    // Object operations
-    putObject(bucketName: string, options: PutObjectOptions): Promise<StorageObject>;
-    getObject(bucketName: string, options: GetObjectOptions): Promise<Buffer>;
-    getObjectMetadata(bucketName: string, key: string): Promise<StorageObject>;
-    copyObject(bucketName: string, options: CopyObjectOptions): Promise<StorageObject>;
-    deleteObject(bucketName: string, key: string): Promise<void>;
-    deleteObjects(bucketName: string, keys: string[]): Promise<void>;
-    listObjects(bucketName: string, options?: ListObjectsOptions): Promise<ListObjectsResult>;
-
-    // Presigned URLs
-    getPresignedUrl(bucketName: string, options: PresignedUrlOptions): Promise<string>;
-    getPresignedPostUrl(bucketName: string, options: PresignedPostOptions): Promise<{
-        url: string;
-        fields: Record<string, string>;
-    }>;
-
-    // Multipart upload
-    createMultipartUpload(bucketName: string, options: CreateMultipartUploadOptions): Promise<string>;
-    uploadPart(bucketName: string, options: UploadPartOptions): Promise<string>;
-    completeMultipartUpload(bucketName: string, options: CompleteMultipartUploadOptions): Promise<StorageObject>;
-    abortMultipartUpload(bucketName: string, key: string, uploadId: string): Promise<void>;
-    listParts(bucketName: string, options: ListPartsOptions): Promise<ListPartsResult>;
-
-    // Health check
-    isHealthy(): Promise<boolean>;
-}
-
-// ============================================================================
 // Errors
 // ============================================================================
 

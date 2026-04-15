@@ -10,8 +10,6 @@ import {
     SubscriptionHandler,
     JetStreamPublishOptions,
     JetStreamSubscribeOptions,
-    NatsService,
-    Subscription,
     NatsError,
     NatsConnectionError,
     NatsPublishError,
@@ -19,8 +17,17 @@ import {
     NatsRequestError,
 } from './nats.types';
 
+// Local type for subscription return values (not an interface - no implementation contract)
+export interface Subscription {
+    sid: number;
+    subject: string;
+    queue?: string;
+    cancel(): void;
+    isCancelled(): boolean;
+}
+
 @Injectable()
-export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy, NatsService {
+export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
     private connection: NatsConnection | null = null;
     private jetStream: JetStreamClient | null = null;
     private subscriptions: Map<number, NatsSubscription> = new Map();

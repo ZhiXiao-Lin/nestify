@@ -6,14 +6,13 @@ import {
     LogLevel,
     LogContext,
     LogEntry,
-    LoggerService,
 } from './logger.types';
 
 // Async local storage for request context
 const asyncLocalStorage = new AsyncLocalStorage<LogContext>();
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class LoggerServiceImpl implements NestLoggerService, LoggerService {
+export class LoggerServiceImpl implements NestLoggerService {
     private logger: BaseLogger;
     private name: string;
     private baseContext: Partial<LogContext>;

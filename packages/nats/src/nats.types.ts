@@ -221,41 +221,6 @@ export interface PeerInfo {
 }
 
 // ============================================================================
-// Service Types
-// ============================================================================
-
-export interface NatsService {
-    getConnection(): Promise<NatsConnection>;
-    getJetStream(): Promise<JetStreamClient>;
-
-    publish(options: PublishOptions): Promise<void>;
-    pubsub(subject: string, data: object): Promise<void>;
-    request(options: RequestOptions): Promise<NatsMessage>;
-    request$<T>(subject: string, data?: object): Promise<T>;
-
-    subscribe(options: SubscribeOptions, handler: SubscriptionHandler): Promise<Subscription>;
-    subscribe$(subject: string, handler: (data: unknown) => Promise<void>): Promise<Subscription>;
-    unsubscribe(subscription: Subscription): void;
-}
-
-export interface Subscription {
-    sid: number;
-    subject: string;
-    queue?: string;
-    cancel(): void;
-    isCancelled(): boolean;
-}
-
-// ============================================================================
-// Health & Metrics
-// ============================================================================
-
-export interface NatsHealthIndicator {
-    isHealthy(): Promise<boolean>;
-    getState(): Promise<NatsConnectionState>;
-}
-
-// ============================================================================
 // Errors
 // ============================================================================
 

@@ -21,7 +21,6 @@ import {
     ListPartsCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { RustFSService } from './rustfs.types';
 import {
     RustFSPackageOptions,
     Bucket,
@@ -48,7 +47,7 @@ import {
 } from './rustfs.types';
 
 @Injectable()
-export class RustFSServiceImpl implements OnModuleInit, RustFSService {
+export class RustFSServiceImpl implements OnModuleInit {
     private client: S3Client;
     private defaultBucket: string;
     private readonly logger = new Logger(RustFSServiceImpl.name);
