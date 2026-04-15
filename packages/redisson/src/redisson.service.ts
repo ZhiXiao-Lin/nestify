@@ -292,4 +292,34 @@ export class RedissonService extends Redisson implements OnModuleInit, OnModuleD
     async scriptLoad(script: string): Promise<string> {
         return (await this.redis.call('SCRIPT', 'LOAD', script)) as string;
     }
+
+    /**
+     * 获取底层 Redis 客户端 (IORedis)
+     * 用于需要直接访问 Redis 的高级操作
+     * @returns IORedis 客户端实例
+     */
+    getRedis(): ReturnType<Redisson['getRedis']> {
+        return this.redis;
+    }
+
+    /**
+     * 尝试获取分布式锁
+     * @param key 锁的键名
+     * @param waitTime 等待时间（毫秒）
+     * @param leaseTime 锁的租期（毫秒）
+     * @returns 是否成功获取锁
+     */
+    async tryLock(key: string, waitTime = 5000, leaseTime = 10000): Promise<boolean> {
+        const lock = this.getLock(key);
+        return await lock.tryLock(waitTime, leaseTime);
+    }
+
+    /**
+     * 释放分布式锁
+     * @param key 锁的键名
+     */
+    async unlock(key: string): Promise<void> {
+        const lock = this.getLock(key);
+        await lock.unlock();
+    }
 }
