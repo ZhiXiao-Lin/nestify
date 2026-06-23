@@ -1,4 +1,4 @@
-import { AggregateRoot } from '@/shared/domain/aggregate-root';
+import { AggregateRoot } from '@a3s-lab/ddd';
 import { OrderId } from '../value-objects/order-id.vo';
 import { OrderStatus } from '../value-objects/order-status.vo';
 import { Money } from '../value-objects/money.vo';

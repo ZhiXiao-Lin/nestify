@@ -1,4 +1,4 @@
-import { DomainEvent } from '@/shared/domain/domain-event';
+import { DomainEvent } from '@a3s-lab/ddd';
 import { Money } from '../value-objects/money.vo';
 
 export class OrderCreatedEvent extends DomainEvent {

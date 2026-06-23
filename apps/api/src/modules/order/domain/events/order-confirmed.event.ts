@@ -1,4 +1,4 @@
-import { DomainEvent } from '@/shared/domain/domain-event';
+import { DomainEvent } from '@a3s-lab/ddd';
 
 export class OrderConfirmedEvent extends DomainEvent {
     constructor(public readonly orderId: string) {

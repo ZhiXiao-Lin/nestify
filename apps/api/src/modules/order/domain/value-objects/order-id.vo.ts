@@ -1,4 +1,4 @@
-import { ValueObject } from '@/shared/domain/value-object';
+import { ValueObject } from '@a3s-lab/ddd';
 import { v4 as uuidv4 } from 'uuid';
 
 interface OrderIdProps {

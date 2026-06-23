@@ -1,4 +1,4 @@
-import { ValueObject } from '@/shared/domain/value-object';
+import { ValueObject } from '@a3s-lab/ddd';
 
 export enum OrderStatusEnum {
     PENDING = 'PENDING',

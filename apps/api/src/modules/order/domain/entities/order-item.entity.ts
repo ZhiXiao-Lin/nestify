@@ -1,4 +1,4 @@
-import { Entity } from '@/shared/domain/entity';
+import { Entity } from '@a3s-lab/ddd';
 import { Money } from '../value-objects/money.vo';
 import { Quantity } from '../value-objects/quantity.vo';
 

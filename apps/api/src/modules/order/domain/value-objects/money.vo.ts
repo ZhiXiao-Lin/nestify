@@ -1,5 +1,4 @@
-import { ValueObject } from '@/shared/domain/value-object';
-import { Guard } from '@/shared/utils/guard';
+import { Guard, ValueObject } from '@a3s-lab/ddd';
 
 interface MoneyProps {
     amount: number;
