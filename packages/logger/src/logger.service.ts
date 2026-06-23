@@ -1,6 +1,6 @@
 import { Injectable, LoggerService as NestLoggerService, Scope } from '@nestjs/common';
 import pino, { type BaseLogger } from 'pino';
-import { AsyncLocalStorage } from 'async_hooks';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import type { LoggerModuleOptions, LogLevel, LogContext } from './logger.types';
 
 // Async local storage for request context

@@ -123,9 +123,24 @@ Run:
 
 ```bash
 pnpm release:check
+pnpm release:publish:dry-run
 pnpm build
 pnpm test
 pnpm lint:check
 ```
 
 `pnpm release:check` formats, lints, builds, tests, packs the framework core packages, and verifies each package manifest and tarball. The verification checks publishability metadata, public entry points, type declarations, repository metadata, required README sections, README inclusion in tarballs, workspace dependency rewriting, and absence of test/source/build-cache files.
+
+## Release Flow
+
+Use Changesets to record public package changes and update versions:
+
+```bash
+pnpm changeset
+pnpm version-packages
+pnpm release:check
+pnpm release:publish:dry-run
+pnpm release:publish
+```
+
+`pnpm release:publish:dry-run` runs the full release check first, then dry-runs `pnpm publish` for every core package from the shared package list. It does not publish packages.
