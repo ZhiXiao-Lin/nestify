@@ -1,6 +1,6 @@
 # @a3s-lab/http
 
-HTTP API contracts, response envelopes, validation, business errors, request IDs, pagination, DTO serialization helpers, response/key transforms, API versioning, and OpenAPI helpers for NestJS APIs.
+HTTP API contracts, response envelopes, validation, business errors, request IDs, pagination, DTO serialization helpers, response/key transforms, presentation filters/interceptors, API versioning, and OpenAPI helpers for NestJS APIs.
 
 ## Install
 
@@ -24,7 +24,16 @@ if (page.limit > 100) {
 }
 ```
 
-Register `ApiResponseInterceptor`, `BusinessExceptionFilter`, and validation pipes using the NestJS provider style that fits your API.
+Register `ApiResponseInterceptor`, `GlobalErrorFilter`, and validation pipes using the NestJS provider style that fits your API.
+
+```ts
+import { DomainException, GlobalErrorFilter, LoggingInterceptor } from '@a3s-lab/http';
+
+class InvalidState extends DomainException {}
+
+app.useGlobalFilters(new GlobalErrorFilter());
+app.useGlobalInterceptors(new LoggingInterceptor());
+```
 
 ```ts
 import { Serializer, transformKeysToCamelCase } from '@a3s-lab/http';
@@ -44,6 +53,7 @@ const input = transformKeysToCamelCase({ resource_id: 'resource-1' });
 - Business exceptions and error filter
 - Validation pipes and DTO helpers
 - Request/correlation ID helpers
+- Domain/http exception filters and request logging interceptor
 - Serializer, mapper, and class-transformer helpers
 - Key transform helpers and transform interceptors
 - OpenAPI decorators and API versioning metadata

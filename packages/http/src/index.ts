@@ -7,3 +7,4 @@ export * from './openapi';
 export * from './api-versioning';
 export * from './serialization';
 export * from './transform';
+export * from './presentation';

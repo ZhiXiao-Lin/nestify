@@ -1,11 +1,15 @@
 import 'reflect-metadata';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { lastValueFrom, of } from 'rxjs';
 import {
     ApiResponseInterceptor,
+    DomainException,
+    DomainExceptionFilter,
     GlobalErrorFilter,
+    HttpExceptionFilter,
     KeyTransformInterceptor,
+    LoggingInterceptor,
     SKIP_API_RESPONSE,
     StatusCode,
     TransformInterceptor,
@@ -83,6 +87,48 @@ describe('http Nest integrations', () => {
         expect(headers.get('x-request-id')).toBeDefined();
     });
 
+    it('normalizes domain exceptions in the global error filter', () => {
+        const filter = new GlobalErrorFilter();
+        const json = jest.fn();
+        const status = jest.fn(() => ({ json }));
+        const request = { headers: {}, url: '/resources/1', method: 'PATCH' };
+        const response = { headersSent: false, setHeader: jest.fn(), status };
+
+        filter.catch(new DomainException('transition is not allowed'), createArgumentsHost({ request, response }));
+
+        expect(status).toHaveBeenCalledWith(400);
+        expect(json).toHaveBeenCalledWith(
+            expect.objectContaining({
+                code: 400,
+                status: StatusCode.BUSINESS_RULE_VIOLATION,
+                message: 'transition is not allowed',
+                details: { type: 'DomainException' },
+            }),
+        );
+    });
+
+    it('keeps compatibility domain and http exception filters available', () => {
+        const domainFilter = new DomainExceptionFilter();
+        const httpFilter = new HttpExceptionFilter();
+        const domainJson = jest.fn();
+        const httpJson = jest.fn();
+        const request = { headers: {}, url: '/resources/1', method: 'GET' };
+
+        domainFilter.catch(
+            new DomainException('rule failed'),
+            createArgumentsHost({ request, response: { status: jest.fn(() => ({ json: domainJson })) } }),
+        );
+        httpFilter.catch(
+            new NotFoundException('missing'),
+            createArgumentsHost({ request, response: { status: jest.fn(() => ({ json: httpJson })) } }),
+        );
+
+        expect(domainJson).toHaveBeenCalledWith(
+            expect.objectContaining({ statusCode: 400, message: 'rule failed', type: 'DomainException' }),
+        );
+        expect(httpJson).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 404, message: 'missing' }));
+    });
+
     it('wraps generic transformed responses with metadata', async () => {
         const interceptor = new TransformInterceptor();
         const request = {
@@ -124,6 +170,18 @@ describe('http Nest integrations', () => {
             nested_value: [{ child_name: 'child' }],
         });
         expect(transformKeysToCamelCase(date)).toBe(date);
+    });
+
+    it('logs request and response around the handler', async () => {
+        const interceptor = new LoggingInterceptor();
+        const request = { headers: {}, url: '/resources/1', method: 'GET' };
+        const response = { statusCode: 204 };
+
+        const result = await lastValueFrom(
+            interceptor.intercept(createHttpContext({ request, response }), { handle: () => of('done') }),
+        );
+
+        expect(result).toBe('done');
     });
 });
 

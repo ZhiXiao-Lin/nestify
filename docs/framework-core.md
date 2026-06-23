@@ -7,7 +7,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | Package | Responsibility |
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, guards, and `Result`. |
-| `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, and OpenAPI decorators. |
+| `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public route metadata, local/dev-only guards, path validation, sensitive operation metadata, and JWT payload types. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, and HTTP metrics interceptor. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
@@ -62,6 +62,7 @@ the sample API for now because they encode application choices rather than stabl
 | `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
 | `file-upload` | Package-backed | Generic upload validation, storage contracts, decorators, and interceptors now live in `@a3s-lab/files`; app files are compatibility wrappers. |
 | `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; app files are compatibility wrappers. |
+| `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `cache`, `retry`, `rate-limiting`, `circuit-breaker`, `metrics`, `tracking`, `openapi`, `validation`, `errors`, `domain`, `utils` | Already package-backed | These are now package exports or compatibility wrappers over package exports. |
 
 Future extraction should only happen when an area has a package-level contract that does not depend on sample API
@@ -86,6 +87,7 @@ The framework core is covered by package tests for:
 - DDD primitives and `Result`
 - HTTP envelopes, errors, request ids, and pagination
 - HTTP interceptors and filters with Nest `Reflector` metadata
+- HTTP presentation filters and logging interceptor
 - Security path validation, metadata decorators, and default-deny behavior
 - Observability collectors and metrics formatting
 - Observability request tracking with SQL and external-call request stores

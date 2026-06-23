@@ -2,6 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@n
 import { DomainValidationError } from '@a3s-lab/ddd';
 import type { Request, Response } from 'express';
 import { BusinessException, getStatusMessage, StatusCode, StatusCodeHttpStatus } from './exceptions';
+import { DomainException } from './presentation';
 import { attachRequestIdHeader, getOrCreateRequestId } from './request-id';
 
 interface ErrorResponse {
@@ -32,6 +33,14 @@ export class GlobalErrorFilter implements ExceptionFilter {
                 code: StatusCode.VALIDATION_ERROR,
                 message: normalized.message,
                 details: normalized.details,
+            });
+        }
+
+        if (normalized instanceof DomainException) {
+            normalized = new BusinessException({
+                code: StatusCode.BUSINESS_RULE_VIOLATION,
+                message: normalized.message,
+                details: { type: normalized.name },
             });
         }
 
