@@ -303,7 +303,7 @@ etcd.watch('settings/api', (event) => {
 
 ## API Wiring
 
-Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API imports package modules directly from `apps/api/src/app.module.ts`; order-specific database schema types stay inside the order persistence adapter.
+Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API imports only the package modules it wires from `apps/api/src/app.module.ts`; order-specific database schema types stay inside the order persistence adapter.
 
 ```typescript
 GET /health       // Full health check
@@ -418,23 +418,17 @@ Circuit Breaker States:
 
 ```env
 # Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/nestify
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=nestify
 
 # Redis
 REDIS_HOST=localhost
 REDIS_PORT=6379
-
-# NATS (optional)
-NATS_SERVERS=nats://localhost:4222
-
-# RustFS (optional)
-RUSTFS_ENDPOINT=http://localhost:9000
-RUSTFS_ACCESS_KEY=rustfsadmin
-RUSTFS_SECRET_KEY=rustfsadmin
-RUSTFS_BUCKET=nestify
-
-# etcd (optional)
-ETCD_ENDPOINTS=http://localhost:2379
+REDIS_PASSWORD=redis123
+REDIS_DB=0
 ```
 
 ## License

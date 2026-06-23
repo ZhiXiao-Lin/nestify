@@ -20,21 +20,12 @@ importers:
 
   apps/api:
     dependencies:
-      '@a3s-lab/bullmq':
-        specifier: workspace:*
-        version: link:../../packages/bullmq
-      '@a3s-lab/clickhouse':
-        specifier: workspace:*
-        version: link:../../packages/clickhouse
       '@a3s-lab/cqrs':
         specifier: workspace:*
         version: link:../../packages/cqrs
       '@a3s-lab/ddd':
         specifier: workspace:*
         version: link:../../packages/ddd
-      '@a3s-lab/etcd':
-        specifier: workspace:*
-        version: link:../../packages/etcd
       '@a3s-lab/files':
         specifier: workspace:*
         version: link:../../packages/files
@@ -44,15 +35,6 @@ importers:
       '@a3s-lab/kysely':
         specifier: workspace:*
         version: link:../../packages/kysely
-      '@a3s-lab/logger':
-        specifier: workspace:*
-        version: link:../../packages/logger
-      '@a3s-lab/migrations':
-        specifier: workspace:*
-        version: link:../../packages/migrations
-      '@a3s-lab/nats':
-        specifier: workspace:*
-        version: link:../../packages/nats
       '@a3s-lab/observability':
         specifier: workspace:*
         version: link:../../packages/observability
@@ -62,12 +44,6 @@ importers:
       '@a3s-lab/resilience':
         specifier: workspace:*
         version: link:../../packages/resilience
-      '@a3s-lab/rustfs':
-        specifier: workspace:*
-        version: link:../../packages/rustfs
-      '@a3s-lab/security':
-        specifier: workspace:*
-        version: link:../../packages/security
       '@nestjs/common':
         specifier: ^10.0.0
         version: 10.4.22(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2)
@@ -101,12 +77,6 @@ importers:
       pg:
         specifier: ^8.18.0
         version: 8.18.0
-      pino:
-        specifier: ^9.0.0
-        version: 9.14.0
-      pino-http:
-        specifier: ^10.0.0
-        version: 10.5.0
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14
