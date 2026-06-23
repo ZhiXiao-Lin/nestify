@@ -2,21 +2,13 @@
 // Permissions Guard - Checks user permissions (RBAC)
 // ============================================================================
 
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException, SetMetadata } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Permissions, PERMISSIONS_KEY } from '@a3s-lab/security';
 import { RbacService } from '../rbac/rbac.service';
 import { JwtPayload } from '../jwt/jwt.types';
 
-/**
- * Metadata key for required permissions
- */
-export const PERMISSIONS_KEY = 'permissions';
-
-/**
- * Require specific permissions to access route
- * Format: 'resource:action' e.g., 'users:read', 'workflows:delete'
- */
-export const Permissions = (...permissions: string[]) => SetMetadata(PERMISSIONS_KEY, permissions);
+export { Permissions, PERMISSIONS_KEY };
 
 /**
  * Permissions Guard - checks if user has required permissions

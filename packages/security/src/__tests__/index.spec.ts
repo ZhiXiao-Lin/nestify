@@ -5,10 +5,14 @@ import {
     DefaultDenyAuthGuard,
     JwtTokenHelper,
     MarkSensitive,
+    Permissions,
+    PERMISSIONS_KEY,
     PathSecurityValidator,
     Public,
     PUBLIC_ROUTE_KEY,
     RolePermissionChecker,
+    Roles,
+    ROLES_KEY,
     SENSITIVE_OPERATION_KEY,
 } from '../index';
 
@@ -51,6 +55,26 @@ describe('security utilities', () => {
             requireReauth: true,
             description: 'Delete record',
         });
+    });
+
+    it('sets role and permission metadata', () => {
+        class Controller {
+            handler() {}
+        }
+
+        Roles('editor')(
+            Controller.prototype,
+            'handler',
+            Object.getOwnPropertyDescriptor(Controller.prototype, 'handler')!,
+        );
+        Permissions('records:read')(
+            Controller.prototype,
+            'handler',
+            Object.getOwnPropertyDescriptor(Controller.prototype, 'handler')!,
+        );
+
+        expect(Reflect.getMetadata(ROLES_KEY, Controller.prototype.handler)).toEqual(['editor']);
+        expect(Reflect.getMetadata(PERMISSIONS_KEY, Controller.prototype.handler)).toEqual(['records:read']);
     });
 
     it('allows public routes before requiring a configured delegate', async () => {

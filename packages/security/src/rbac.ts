@@ -1,3 +1,13 @@
+import { SetMetadata } from '@nestjs/common';
+
+export const ROLES_KEY = 'roles';
+export const PERMISSIONS_KEY = 'permissions';
+
+export const Roles = (...roles: string[]): ClassDecorator & MethodDecorator => SetMetadata(ROLES_KEY, roles);
+
+export const Permissions = (...permissions: string[]): ClassDecorator & MethodDecorator =>
+    SetMetadata(PERMISSIONS_KEY, permissions);
+
 export interface Permission {
     resource: string;
     actions: string[];

@@ -38,6 +38,7 @@ class HealthController {
 
 - Default-deny authentication guard and delegate token
 - `@Public()` metadata
+- Role and permission metadata
 - Development-only guard helpers
 - Path validation utilities
 - Sensitive operation metadata

@@ -2,20 +2,13 @@
 // Roles Guard - Checks user roles
 // ============================================================================
 
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException, SetMetadata } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Roles, ROLES_KEY } from '@a3s-lab/security';
 import { RbacService } from '../rbac/rbac.service';
 import { JwtPayload } from '../jwt/jwt.types';
 
-/**
- * Metadata key for required roles
- */
-export const ROLES_KEY = 'roles';
-
-/**
- * Require specific roles to access route
- */
-export const Roles = (...roles: string[]) => SetMetadata(ROLES_KEY, roles);
+export { Roles, ROLES_KEY };
 
 /**
  * Roles Guard - checks if user has required roles
