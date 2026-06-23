@@ -64,7 +64,7 @@ export class EtcdConfigService implements OnModuleInit {
     }
 
     async setJSON<T extends object>(key: string, value: T, options?: { ttl?: number }): Promise<void> {
-        await this.set(key, JSON.stringify(value), options);
+        await this.set(key, value, options);
     }
 
     // ==================== Delete Configuration ====================

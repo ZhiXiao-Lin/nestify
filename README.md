@@ -293,11 +293,11 @@ Distributed configuration with hot-reload.
 
 ```typescript
 // Get config
-const value = await etcd.get('config/runtime');
+const value = await etcd.get('settings/api');
 
 // Watch for changes
-etcd.watch('config/runtime', (event) => {
-  if (event.value) reloadRuntimeConfig(event.value);
+etcd.watch('settings/api', (event) => {
+  if (event.value) applySettings(event.value);
 });
 ```
 

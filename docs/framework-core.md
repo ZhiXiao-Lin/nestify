@@ -18,6 +18,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
+| `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
@@ -36,6 +37,7 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/bullmq`](../packages/bullmq/README.md)
 - [`@a3s-lab/nats`](../packages/nats/README.md)
 - [`@a3s-lab/rustfs`](../packages/rustfs/README.md)
+- [`@a3s-lab/etcd`](../packages/etcd/README.md)
 - [`@a3s-lab/clickhouse`](../packages/clickhouse/README.md)
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
 - [`@a3s-lab/files`](../packages/files/README.md)
@@ -112,6 +114,7 @@ The framework core is covered by package tests for:
 - BullMQ queue creation, worker lifecycle, metrics, and module registration
 - NATS module registration, publish/request encoding, subscriptions, JetStream publishing, and lifecycle cleanup
 - RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks
+- Etcd client registration, key-value operations, config cache, watches, leases, compare-and-set, health checks, and lifecycle cleanup
 - ClickHouse client routing and lifecycle
 - Migration provider wrapping and module registration
 - File upload validation, storage key handling, module registration, and upload interceptors

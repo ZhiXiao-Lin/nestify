@@ -18,6 +18,7 @@ const corePackages = [
     { name: '@a3s-lab/bullmq', dir: 'packages/bullmq' },
     { name: '@a3s-lab/nats', dir: 'packages/nats' },
     { name: '@a3s-lab/rustfs', dir: 'packages/rustfs' },
+    { name: '@a3s-lab/etcd', dir: 'packages/etcd' },
     { name: '@a3s-lab/clickhouse', dir: 'packages/clickhouse' },
     { name: '@a3s-lab/migrations', dir: 'packages/migrations' },
     { name: '@a3s-lab/files', dir: 'packages/files' },

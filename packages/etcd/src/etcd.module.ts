@@ -1,4 +1,11 @@
-import { Module, Global, DynamicModule, Provider } from '@nestjs/common';
+import {
+    Global,
+    Module,
+    type DynamicModule,
+    type FactoryProvider,
+    type ModuleMetadata,
+    type Provider,
+} from '@nestjs/common';
 import { ETCD_MODULE_OPTIONS, type EtcdModuleOptions } from './etcd.types';
 import { EtcdService } from './etcd.service';
 import { EtcdConfigService } from './config.service';
@@ -22,9 +29,9 @@ export class EtcdModule {
     }
 
     static registerAsync(options: {
-        imports?: DynamicModule['imports'];
+        imports?: ModuleMetadata['imports'];
         useFactory?: (...args: unknown[]) => Promise<EtcdModuleOptions> | EtcdModuleOptions;
-        inject?: any[];
+        inject?: FactoryProvider['inject'];
     }): DynamicModule {
         const asyncProviders: Provider[] = [];
 
