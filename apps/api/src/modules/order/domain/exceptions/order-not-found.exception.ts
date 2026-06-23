@@ -1,4 +1,4 @@
-import { DomainException } from '@/shared/presentation/filters/domain-exception.filter';
+import { DomainException } from '@a3s-lab/http';
 
 export class OrderNotFoundException extends DomainException {
     constructor(orderId: string) {
