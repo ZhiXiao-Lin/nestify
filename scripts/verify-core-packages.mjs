@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { corePackages } from './core-packages.mjs';
 
@@ -10,6 +10,8 @@ const requiredFiles = ['README.md', 'dist/**/*.js', 'dist/**/*.d.ts', 'dist/**/*
 const deniedFiles = ['!dist/**/__tests__/**', '!dist/**/*.spec.*', '!dist/**/*.tsbuildinfo'];
 const forbiddenTarEntries = [/\/src\//, /__tests__/, /\.spec\./, /tsbuildinfo$/];
 const failures = [];
+
+verifyCorePackageList();
 
 for (const corePackage of corePackages) {
     verifyPackage(corePackage);
@@ -24,6 +26,31 @@ if (failures.length > 0) {
 }
 
 console.log(`Verified ${corePackages.length} core package manifests and tarballs.`);
+
+function verifyCorePackageList() {
+    const coreNames = corePackages.map(corePackage => corePackage.name);
+    const coreDirs = corePackages.map(corePackage => corePackage.dir);
+    const duplicateNames = findDuplicates(coreNames);
+    const duplicateDirs = findDuplicates(coreDirs);
+
+    expect(duplicateNames.length === 0, `corePackages contains duplicate package names: ${duplicateNames.join(', ')}`);
+    expect(duplicateDirs.length === 0, `corePackages contains duplicate package dirs: ${duplicateDirs.join(', ')}`);
+
+    const packageDirs = readdirSync(path.join(rootDir, 'packages'), { withFileTypes: true })
+        .filter(entry => entry.isDirectory())
+        .map(entry => `packages/${entry.name}`)
+        .filter(dir => existsSync(path.join(rootDir, dir, 'package.json')))
+        .sort();
+
+    const missingFromCore = packageDirs.filter(dir => !coreDirs.includes(dir));
+    const staleCoreDirs = coreDirs.filter(dir => !packageDirs.includes(dir));
+
+    expect(
+        missingFromCore.length === 0,
+        `corePackages must include every packages/* package; missing ${missingFromCore.join(', ')}`,
+    );
+    expect(staleCoreDirs.length === 0, `corePackages includes missing package dirs: ${staleCoreDirs.join(', ')}`);
+}
 
 function verifyPackage(corePackage) {
     const packageDir = path.join(rootDir, corePackage.dir);
@@ -108,6 +135,20 @@ function verifyTarball(corePackage, manifest) {
 
 function readJson(filePath) {
     return JSON.parse(readFileSync(filePath, 'utf8'));
+}
+
+function findDuplicates(values) {
+    const seen = new Set();
+    const duplicates = new Set();
+
+    for (const value of values) {
+        if (seen.has(value)) {
+            duplicates.add(value);
+        }
+        seen.add(value);
+    }
+
+    return [...duplicates].sort();
 }
 
 function expect(condition, message) {
