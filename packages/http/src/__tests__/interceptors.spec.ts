@@ -5,9 +5,13 @@ import { lastValueFrom, of } from 'rxjs';
 import {
     ApiResponseInterceptor,
     GlobalErrorFilter,
+    KeyTransformInterceptor,
     SKIP_API_RESPONSE,
     StatusCode,
+    TransformInterceptor,
     getOrCreateRequestId,
+    transformKeysToCamelCase,
+    transformKeysToSnakeCase,
 } from '../index';
 
 describe('http Nest integrations', () => {
@@ -77,6 +81,49 @@ describe('http Nest integrations', () => {
             }),
         );
         expect(headers.get('x-request-id')).toBeDefined();
+    });
+
+    it('wraps generic transformed responses with metadata', async () => {
+        const interceptor = new TransformInterceptor();
+        const request = {
+            id: 'req-from-request',
+            headers: { 'x-request-id': 'req-transform' },
+            path: '/resources/1',
+            method: 'GET',
+        };
+
+        const result = await lastValueFrom(
+            interceptor.intercept(createHttpContext({ request }), { handle: () => of({ id: 'resource-1' }) }),
+        );
+
+        expect(result).toMatchObject({
+            data: { id: 'resource-1' },
+            _meta: {
+                path: '/resources/1',
+                method: 'GET',
+                requestId: 'req-from-request',
+            },
+        });
+    });
+
+    it('transforms request keys and preserves non-plain values', async () => {
+        const date = new Date('2026-01-01T00:00:00.000Z');
+        const request = {
+            headers: {},
+            query: { page_size: '20' },
+            body: { resource_id: 'res-1', nested_value: [{ child_name: 'child', created_at: date }] },
+        };
+        const interceptor = new KeyTransformInterceptor();
+
+        await lastValueFrom(interceptor.intercept(createHttpContext({ request }), { handle: () => of('ok') }));
+
+        expect(request.query).toEqual({ pageSize: '20' });
+        expect(request.body).toEqual({ resourceId: 'res-1', nestedValue: [{ childName: 'child', createdAt: date }] });
+        expect(transformKeysToSnakeCase({ resourceId: 'res-1', nestedValue: [{ childName: 'child' }] })).toEqual({
+            resource_id: 'res-1',
+            nested_value: [{ child_name: 'child' }],
+        });
+        expect(transformKeysToCamelCase(date)).toBe(date);
     });
 });
 

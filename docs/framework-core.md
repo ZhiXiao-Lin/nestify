@@ -7,7 +7,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | Package | Responsibility |
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, guards, and `Result`. |
-| `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, and OpenAPI decorators. |
+| `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public route metadata, local/dev-only guards, path validation, sensitive operation metadata, and JWT payload types. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, and HTTP metrics interceptor. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
@@ -57,7 +57,8 @@ the sample API for now because they encode application choices rather than stabl
 | `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. |
 | `audit`, `feature-flags` | Keep app-local | They depend on app persistence/cache conventions and default flag/audit semantics. |
 | `database`, `health`, `redis` | Keep app-local compatibility/integration | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
-| `file-upload`, `serialization`, `transform`, `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
+| `file-upload`, `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
+| `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `cache`, `retry`, `rate-limiting`, `circuit-breaker`, `metrics`, `tracking`, `openapi`, `validation`, `errors`, `domain`, `utils` | Already package-backed | These are now package exports or compatibility wrappers over package exports. |
 
 Future extraction should only happen when an area has a package-level contract that does not depend on sample API

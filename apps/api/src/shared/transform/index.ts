@@ -1,16 +1,8 @@
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { TransformInterceptor } from './transform.interceptor';
-
 export {
-    TransformInterceptor,
     KeyTransformInterceptor,
+    TransformInterceptor,
+    TransformModule,
     transformKeysToCamelCase,
     transformKeysToSnakeCase,
-} from './transform.interceptor';
-export type { TransformOptions, ResponseMetadata } from './transform.interceptor';
-
-@Module({
-    providers: [{ provide: APP_INTERCEPTOR, useClass: TransformInterceptor }],
-})
-export class TransformModule {}
+} from '@a3s-lab/http';
+export type { ResponseMetadata, TransformOptions } from '@a3s-lab/http';

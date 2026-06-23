@@ -112,7 +112,7 @@ const result = Guard.againstNullOrUndefined(orderId, 'orderId');
 
 ### @a3s-lab/http
 
-API envelopes, errors, validation, pagination, request ids, and OpenAPI helpers.
+API envelopes, errors, validation, pagination, request ids, DTO serialization, response/key transforms, and OpenAPI helpers.
 
 ```typescript
 throw new BusinessException({

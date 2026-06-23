@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { Expose } from 'class-transformer';
 import { validate } from 'class-validator';
 import {
     API_SUCCESS_MESSAGE,
@@ -11,13 +12,21 @@ import {
     IsSlug,
     IsStrongPassword,
     SearchQueryDto,
+    Serializer,
+    SerializationModule,
     StatusCode,
     attachCorrelationIdHeader,
     attachRequestIdHeader,
     getOrCreateCorrelationId,
     getOrCreateRequestId,
     parsePaginationOptions,
+    toDto,
+    toDtoList,
     toPaginatedResponse,
+    transformListToInstance,
+    transformListToPlain,
+    transformToInstance,
+    transformToPlain,
 } from '../index';
 
 describe('http api helpers', () => {
@@ -133,5 +142,66 @@ describe('http api helpers', () => {
 
         expect(await validate(valid)).toHaveLength(0);
         expect(await validate(invalid)).toHaveLength(4);
+    });
+
+    it('maps entities to DTOs with serializer helpers', () => {
+        interface Entity {
+            id: string;
+            name: string;
+            secret: string;
+        }
+
+        interface Dto {
+            id: string;
+            label: string;
+        }
+
+        class EntitySerializer extends Serializer<Entity, Dto> {
+            toDto(entity: Entity): Dto {
+                return { id: entity.id, label: entity.name };
+            }
+        }
+
+        const mapper = toDto<Entity, Dto>(entity => ({ id: entity.id, label: entity.name }));
+        const mapList = toDtoList(mapper);
+        const entities = [
+            { id: 'one', name: 'First', secret: 'hidden' },
+            { id: 'two', name: 'Second', secret: 'hidden' },
+        ];
+
+        expect(new EntitySerializer().toDtoList(entities)).toEqual([
+            { id: 'one', label: 'First' },
+            { id: 'two', label: 'Second' },
+        ]);
+        expect(mapList(entities)).toEqual([
+            { id: 'one', label: 'First' },
+            { id: 'two', label: 'Second' },
+        ]);
+        expect(SerializationModule).toBeDefined();
+    });
+
+    it('transforms plain values and class instances with class-transformer defaults', () => {
+        class OutputDto {
+            @Expose()
+            id!: string;
+
+            @Expose()
+            name!: string;
+
+            secret?: string;
+        }
+
+        const instance = transformToInstance({ id: 'one', name: 'First', secret: 'hidden' }, OutputDto);
+        const instances = transformListToInstance([{ id: 'two', name: 'Second', secret: 'hidden' }], OutputDto);
+        const plain = transformToPlain(Object.assign(new OutputDto(), { id: 'one', name: 'First', secret: 'hidden' }));
+        const plainList = transformListToPlain([
+            Object.assign(new OutputDto(), { id: 'two', name: 'Second', secret: 'hidden' }),
+        ]);
+
+        expect(instance).toBeInstanceOf(OutputDto);
+        expect(instance).toMatchObject({ id: 'one', name: 'First' });
+        expect(instances[0]).toBeInstanceOf(OutputDto);
+        expect(plain).toEqual({ id: 'one', name: 'First' });
+        expect(plainList).toEqual([{ id: 'two', name: 'Second' }]);
     });
 });

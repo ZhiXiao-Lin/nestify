@@ -1,7 +1,11 @@
-import { Module } from '@nestjs/common';
-
-export * from './serializer';
-export * from './example';
-
-@Module({})
-export class SerializationModule {}
+export {
+    SerializationModule,
+    Serializer,
+    transformListToInstance,
+    transformListToPlain,
+    transformToInstance,
+    transformToPlain,
+    toDto,
+    toDtoList,
+} from '@a3s-lab/http';
+export type { ClassType, Mapper, SerializationTransformOptions } from '@a3s-lab/http';
