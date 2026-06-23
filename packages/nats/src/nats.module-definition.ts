@@ -1,5 +1,5 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
-import { NatsPackageOptions } from './nats.types';
+import type { NatsPackageOptions } from './nats.types';
 
 /**
  * Configurable module builder for NatsModule

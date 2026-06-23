@@ -12,7 +12,7 @@ import {
     type Subscription as NatsSubscription,
 } from 'nats';
 import { MODULE_OPTIONS_TOKEN } from './nats.module-definition';
-import {
+import type {
     NatsPackageOptions,
     NatsConnectionState,
     PublishOptions,
@@ -22,11 +22,8 @@ import {
     SubscriptionHandler,
     JetStreamPublishOptions,
     JetStreamSubscribeOptions,
-    NatsConnectionError,
-    NatsPublishError,
-    NatsSubscribeError,
-    NatsRequestError,
 } from './nats.types';
+import { NatsConnectionError, NatsPublishError, NatsSubscribeError, NatsRequestError } from './nats.types';
 
 // Local type for subscription return values (not an interface - no implementation contract)
 export interface Subscription {

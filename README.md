@@ -257,15 +257,15 @@ High-performance message broker with JetStream.
 
 ```typescript
 // Publish
-await nats.publish({ subject: 'orders.created', data: orderEvent });
+await nats.publish({ subject: 'resources.changed', data: resourceEvent });
 
 // Subscribe
-await nats.subscribe$('orders.created', async (data) => {
-  await handleOrderCreated(data);
+await nats.subscribe$('resources.changed', async (data) => {
+  await handleResourceChanged(data);
 });
 
 // JetStream
-await nats.jsPublish({ stream: 'ORDERS', subject: 'created', data });
+await nats.jsPublish({ stream: 'RESOURCE_EVENTS', subject: 'resources.changed', data: resourceEvent });
 ```
 
 ### @a3s-lab/rustfs
