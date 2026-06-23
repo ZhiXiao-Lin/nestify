@@ -236,60 +236,36 @@ export class RustFSError extends Error {
 
 export class BucketNotFoundError extends RustFSError {
     constructor(bucketName: string) {
-        super(
-            `Bucket not found: ${bucketName}`,
-            'BUCKET_NOT_FOUND',
-            404,
-        );
+        super(`Bucket not found: ${bucketName}`, 'BUCKET_NOT_FOUND', 404);
     }
 }
 
 export class ObjectNotFoundError extends RustFSError {
     constructor(key: string, bucketName: string) {
-        super(
-            `Object not found: ${key} in ${bucketName}`,
-            'OBJECT_NOT_FOUND',
-            404,
-        );
+        super(`Object not found: ${key} in ${bucketName}`, 'OBJECT_NOT_FOUND', 404);
     }
 }
 
 export class BucketAlreadyExistsError extends RustFSError {
     constructor(bucketName: string) {
-        super(
-            `Bucket already exists: ${bucketName}`,
-            'BUCKET_ALREADY_EXISTS',
-            409,
-        );
+        super(`Bucket already exists: ${bucketName}`, 'BUCKET_ALREADY_EXISTS', 409);
     }
 }
 
 export class InvalidAccessKeyIdError extends RustFSError {
     constructor() {
-        super(
-            'Invalid access key ID',
-            'INVALID_ACCESS_KEY_ID',
-            403,
-        );
+        super('Invalid access key ID', 'INVALID_ACCESS_KEY_ID', 403);
     }
 }
 
 export class SignatureDoesNotMatchError extends RustFSError {
     constructor() {
-        super(
-            'Signature does not match',
-            'SIGNATURE_DOES_NOT_MATCH',
-            403,
-        );
+        super('Signature does not match', 'SIGNATURE_DOES_NOT_MATCH', 403);
     }
 }
 
 export class RegionMismatchError extends RustFSError {
     constructor(expected: string, actual: string) {
-        super(
-            `Region mismatch: expected ${expected}, got ${actual}`,
-            'REGION_MISMATCH',
-            400,
-        );
+        super(`Region mismatch: expected ${expected}, got ${actual}`, 'REGION_MISMATCH', 400);
     }
 }

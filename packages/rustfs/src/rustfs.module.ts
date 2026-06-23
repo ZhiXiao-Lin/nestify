@@ -1,9 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import {
-    ASYNC_OPTIONS_TYPE,
-    ConfigurableModuleClass,
-    OPTIONS_TYPE,
-} from './rustfs.module-definition';
+import { ASYNC_OPTIONS_TYPE, ConfigurableModuleClass, OPTIONS_TYPE } from './rustfs.module-definition';
 import { RustFSServiceImpl } from './rustfs.service';
 
 @Module({})

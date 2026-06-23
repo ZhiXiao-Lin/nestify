@@ -150,12 +150,7 @@ export class FileUploadService {
     /**
      * Validate file
      */
-    private validateFile(
-        buffer: Buffer,
-        filename: string,
-        mimeType: string,
-        options: FileValidationOptions,
-    ): void {
+    private validateFile(buffer: Buffer, filename: string, mimeType: string, options: FileValidationOptions): void {
         // Check size
         if (options.maxSize && buffer.length > options.maxSize) {
             const maxMB = options.maxSize / (1024 * 1024);

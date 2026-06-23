@@ -14,21 +14,13 @@ export class OrderRepository implements IOrderRepository {
     constructor(private readonly db: KyselyService<Database>) {}
 
     async findById(id: string): Promise<Order | null> {
-        const orderRow = await this.db
-            .selectFrom('orders')
-            .where('id', '=', id)
-            .selectAll()
-            .executeTakeFirst();
+        const orderRow = await this.db.selectFrom('orders').where('id', '=', id).selectAll().executeTakeFirst();
 
         if (!orderRow) {
             return null;
         }
 
-        const itemRows = await this.db
-            .selectFrom('order_items')
-            .where('order_id', '=', id)
-            .selectAll()
-            .execute();
+        const itemRows = await this.db.selectFrom('order_items').where('order_id', '=', id).selectAll().execute();
 
         return this.toDomain(orderRow, itemRows);
     }
@@ -56,7 +48,7 @@ export class OrderRepository implements IOrderRepository {
     }
 
     async save(order: Order): Promise<Order> {
-        return await this.db.transaction().execute(async (trx) => {
+        return await this.db.transaction().execute(async trx => {
             // Check if order exists
             const existingOrder = await trx
                 .selectFrom('orders')
@@ -88,21 +80,15 @@ export class OrderRepository implements IOrderRepository {
                     .execute();
 
                 // Delete existing items
-                await trx
-                    .deleteFrom('order_items')
-                    .where('order_id', '=', order.id)
-                    .execute();
+                await trx.deleteFrom('order_items').where('order_id', '=', order.id).execute();
             } else {
                 // Insert new order
-                await trx
-                    .insertInto('orders')
-                    .values(orderData)
-                    .execute();
+                await trx.insertInto('orders').values(orderData).execute();
             }
 
             // Insert order items
             if (order.items.length > 0) {
-                const itemsData: NewOrderItem[] = order.items.map((item) => ({
+                const itemsData: NewOrderItem[] = order.items.map(item => ({
                     id: item.id,
                     order_id: order.id,
                     product_id: item.productId,
@@ -112,10 +98,7 @@ export class OrderRepository implements IOrderRepository {
                     created_at: new Date().toISOString(),
                 }));
 
-                await trx
-                    .insertInto('order_items')
-                    .values(itemsData)
-                    .execute();
+                await trx.insertInto('order_items').values(itemsData).execute();
             }
 
             return order;
@@ -123,16 +106,10 @@ export class OrderRepository implements IOrderRepository {
     }
 
     async delete(id: string): Promise<void> {
-        await this.db.transaction().execute(async (trx) => {
-            await trx
-                .deleteFrom('order_items')
-                .where('order_id', '=', id)
-                .execute();
+        await this.db.transaction().execute(async trx => {
+            await trx.deleteFrom('order_items').where('order_id', '=', id).execute();
 
-            await trx
-                .deleteFrom('orders')
-                .where('id', '=', id)
-                .execute();
+            await trx.deleteFrom('orders').where('id', '=', id).execute();
         });
     }
 
@@ -181,7 +158,7 @@ export class OrderRepository implements IOrderRepository {
             created_at: Date;
         }>,
     ): Order {
-        const items = itemRows.map((itemRow) =>
+        const items = itemRows.map(itemRow =>
             OrderItem.create({
                 id: itemRow.id,
                 productId: itemRow.product_id,

@@ -57,9 +57,7 @@ export class ValidationException extends BusinessException {
 
 export class NotFoundException extends BusinessException {
     constructor(resource: string, identifier?: string | number) {
-        const message = identifier
-            ? `${resource} with identifier '${identifier}' not found`
-            : `${resource} not found`;
+        const message = identifier ? `${resource} with identifier '${identifier}' not found` : `${resource} not found`;
 
         super({
             code: ErrorCode.RESOURCE_NOT_FOUND,

@@ -2,13 +2,7 @@
 // Audit Interceptor - Automatically logs operations
 // ============================================================================
 
-import {
-    Injectable,
-    NestInterceptor,
-    ExecutionContext,
-    CallHandler,
-    Logger,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { AuditService } from './audit.service';
@@ -58,7 +52,7 @@ export class AuditInterceptor implements NestInterceptor {
         const userAgent = request.headers['user-agent'];
 
         return next.handle().pipe(
-            tap(async (response) => {
+            tap(async response => {
                 const duration = Date.now() - startTime;
                 await this.auditService.log({
                     userId: user.sub,
@@ -76,7 +70,7 @@ export class AuditInterceptor implements NestInterceptor {
                     status: 'success',
                 });
             }),
-            catchError(async (error) => {
+            catchError(async error => {
                 const duration = Date.now() - startTime;
                 await this.auditService.log({
                     userId: user.sub,
@@ -101,17 +95,11 @@ export class AuditInterceptor implements NestInterceptor {
     }
 
     private getAction(context: ExecutionContext): string | undefined {
-        return (
-            Reflect.getMetadata(AUDIT_ACTION_KEY, context.getHandler()) ||
-            this.inferAction(context)
-        );
+        return Reflect.getMetadata(AUDIT_ACTION_KEY, context.getHandler()) || this.inferAction(context);
     }
 
     private getResource(context: ExecutionContext): string | undefined {
-        return (
-            Reflect.getMetadata(AUDIT_RESOURCE_KEY, context.getHandler()) ||
-            this.inferResource(context)
-        );
+        return Reflect.getMetadata(AUDIT_RESOURCE_KEY, context.getHandler()) || this.inferResource(context);
     }
 
     private inferAction(context: ExecutionContext): string {

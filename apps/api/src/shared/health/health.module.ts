@@ -11,9 +11,6 @@ import { RedisHealthIndicator } from './indicators/redis.indicator';
 @Module({
     imports: [TerminusModule],
     controllers: [HealthController],
-    providers: [
-        DatabaseHealthIndicator,
-        RedisHealthIndicator,
-    ],
+    providers: [DatabaseHealthIndicator, RedisHealthIndicator],
 })
 export class HealthModule {}

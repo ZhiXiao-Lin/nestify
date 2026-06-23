@@ -1,5 +1,5 @@
-import type { ModuleMetadata, Type } from "@nestjs/common";
-import type { Kysely, KyselyConfig } from "kysely";
+import type { ModuleMetadata, Type } from '@nestjs/common';
+import type { Kysely, KyselyConfig } from 'kysely';
 
 export interface KyselyModuleOptions<DB = unknown> {
     config: KyselyConfig;
@@ -10,17 +10,12 @@ export interface KyselyModuleOptions<DB = unknown> {
 }
 
 export interface KyselyModuleOptionsFactory<DB = unknown> {
-    createKyselyModuleOptions():
-        | Promise<KyselyModuleOptions<DB>>
-        | KyselyModuleOptions<DB>;
+    createKyselyModuleOptions(): Promise<KyselyModuleOptions<DB>> | KyselyModuleOptions<DB>;
 }
 
-export interface KyselyModuleAsyncOptions<DB = unknown>
-    extends Pick<ModuleMetadata, "imports"> {
+export interface KyselyModuleAsyncOptions<DB = unknown> extends Pick<ModuleMetadata, 'imports'> {
     useExisting?: Type<KyselyModuleOptionsFactory<DB>>;
     useClass?: Type<KyselyModuleOptionsFactory<DB>>;
-    useFactory?: (
-        ...args: unknown[]
-    ) => Promise<KyselyModuleOptions<DB>> | KyselyModuleOptions<DB>;
+    useFactory?: (...args: unknown[]) => Promise<KyselyModuleOptions<DB>> | KyselyModuleOptions<DB>;
     inject?: unknown[];
 }

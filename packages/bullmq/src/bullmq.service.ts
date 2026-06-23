@@ -90,12 +90,7 @@ export class BullMQService implements OnModuleDestroy {
     /**
      * Add a delayed job (runs after delay)
      */
-    async addDelayedJob<T extends JobData>(
-        queueName: string,
-        jobName: string,
-        data: T,
-        delayMs: number,
-    ): Promise<Job> {
+    async addDelayedJob<T extends JobData>(queueName: string, jobName: string, data: T, delayMs: number): Promise<Job> {
         return this.addJob(queueName, jobName, data, { delay: delayMs });
     }
 
@@ -128,7 +123,7 @@ export class BullMQService implements OnModuleDestroy {
 
         const worker = new Worker<T>(
             queueName,
-            async (job) => {
+            async job => {
                 this.logger.debug(`Processing job '${job.name}' in queue '${queueName}'`);
                 try {
                     const result = await processor(job);
@@ -148,7 +143,7 @@ export class BullMQService implements OnModuleDestroy {
             },
         );
 
-        worker.on('completed', (job) => {
+        worker.on('completed', job => {
             this.logger.debug(`Job '${job.name}' completed`);
         });
 

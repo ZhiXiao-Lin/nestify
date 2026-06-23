@@ -9,10 +9,7 @@ export { MetricsController } from './metrics.controller';
 @Global()
 @Module({
     controllers: [MetricsController],
-    providers: [
-        MetricsService,
-        { provide: APP_INTERCEPTOR, useClass: MetricsInterceptor },
-    ],
+    providers: [MetricsService, { provide: APP_INTERCEPTOR, useClass: MetricsInterceptor }],
     exports: [MetricsService],
 })
 export class MetricsModule {}

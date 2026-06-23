@@ -33,4 +33,4 @@ import { Pool } from 'pg';
     ],
     exports: [KyselyModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

@@ -42,13 +42,9 @@ export class OrderCacheService {
     /**
      * Cache order list for a customer
      */
-    async cacheCustomerOrders(
-        customerId: string,
-        orders: Order[],
-        ttl: number = DEFAULT_TTL,
-    ): Promise<void> {
+    async cacheCustomerOrders(customerId: string, orders: Order[], ttl: number = DEFAULT_TTL): Promise<void> {
         const key = `${ORDER_LIST_CACHE_PREFIX}${customerId}`;
-        const data = orders.map((order) => this.serializeOrder(order));
+        const data = orders.map(order => this.serializeOrder(order));
         await this.redisson.setJSON(key, data, ttl);
         this.logger.debug(`Cached ${orders.length} orders for customer: ${customerId}`);
     }
@@ -127,7 +123,7 @@ export class OrderCacheService {
             customerId: order.customerId,
             status: order.status.value,
             totalAmount: order.getTotalAmount().amount,
-            items: order.items.map((item) => ({
+            items: order.items.map(item => ({
                 id: item.id,
                 productId: item.productId,
                 quantity: item.quantity.value,

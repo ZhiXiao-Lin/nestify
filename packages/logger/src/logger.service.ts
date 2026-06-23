@@ -1,11 +1,7 @@
 import { Injectable, LoggerService as NestLoggerService, Scope } from '@nestjs/common';
 import pino, { Logger as PinoLogger, BaseLogger } from 'pino';
 import { AsyncLocalStorage } from 'async_hooks';
-import {
-    LoggerModuleOptions,
-    LogLevel,
-    LogContext,
-} from './logger.types';
+import { LoggerModuleOptions, LogLevel, LogContext } from './logger.types';
 
 // Async local storage for request context
 const asyncLocalStorage = new AsyncLocalStorage<LogContext>();
@@ -174,7 +170,10 @@ export class LoggerServiceImpl implements NestLoggerService {
 
     private logAtLevel(level: LogLevel, message: string, context?: Partial<LogContext>): void {
         const mergedContext = this.getMergedContext(context);
-        const logFn = this.logger[level as keyof typeof this.logger] as (msg: string, obj?: Record<string, unknown>) => void;
+        const logFn = this.logger[level as keyof typeof this.logger] as (
+            msg: string,
+            obj?: Record<string, unknown>,
+        ) => void;
 
         if (logFn) {
             logFn.call(this.logger, message, mergedContext);
@@ -194,10 +193,7 @@ export class LoggerServiceImpl implements NestLoggerService {
             cause: error.cause instanceof Error ? error.cause.message : undefined,
         };
 
-        this.logger.error(
-            { ...mergedContext, err: errorLog },
-            error.message,
-        );
+        this.logger.error({ ...mergedContext, err: errorLog }, error.message);
     }
 
     private getMergedContext(context?: Partial<LogContext>): Record<string, unknown> {

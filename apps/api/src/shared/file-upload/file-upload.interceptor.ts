@@ -2,13 +2,7 @@
 // File Upload Interceptor - Handles multipart file uploads
 // ============================================================================
 
-import {
-    Injectable,
-    NestInterceptor,
-    ExecutionContext,
-    CallHandler,
-    BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, BadRequestException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { FileUploadService } from './file-upload.service';
@@ -54,12 +48,8 @@ export class FileUploadInterceptor implements NestInterceptor {
 
         // Process and upload files
         const uploadedFiles = await Promise.all(
-            files.map(async (file) => {
-                return this.fileUploadService.uploadFile(
-                    file.buffer,
-                    file.originalname,
-                    file.mimetype,
-                );
+            files.map(async file => {
+                return this.fileUploadService.uploadFile(file.buffer, file.originalname, file.mimetype);
             }),
         );
 
@@ -67,7 +57,7 @@ export class FileUploadInterceptor implements NestInterceptor {
         request.uploadedFiles = uploadedFiles;
 
         return next.handle().pipe(
-            map((response) => {
+            map(response => {
                 // If response already contains data, merge uploaded files
                 if (response && typeof response === 'object') {
                     return {
@@ -121,16 +111,12 @@ export class SingleFileUploadInterceptor implements NestInterceptor {
 
         const file = request.file || request.files?.file;
 
-        const uploadedFile = await this.fileUploadService.uploadFile(
-            file.buffer,
-            file.originalname,
-            file.mimetype,
-        );
+        const uploadedFile = await this.fileUploadService.uploadFile(file.buffer, file.originalname, file.mimetype);
 
         request.uploadedFile = uploadedFile;
 
         return next.handle().pipe(
-            map((response) => {
+            map(response => {
                 if (response && typeof response === 'object') {
                     return {
                         ...response,

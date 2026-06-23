@@ -2,13 +2,7 @@
 // Roles Guard - Checks user roles
 // ============================================================================
 
-import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    ForbiddenException,
-    SetMetadata,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RbacService } from '../rbac/rbac.service';
 import { JwtPayload } from '../jwt/jwt.types';
@@ -52,9 +46,7 @@ export class RolesGuard implements CanActivate {
 
         const hasRole = this.rbacService.hasAnyRole(user.roles, requiredRoles);
         if (!hasRole) {
-            throw new ForbiddenException(
-                `Access denied: Required role(s): ${requiredRoles.join(', ')}`,
-            );
+            throw new ForbiddenException(`Access denied: Required role(s): ${requiredRoles.join(', ')}`);
         }
 
         return true;

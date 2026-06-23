@@ -1,10 +1,6 @@
-import { DynamicModule, Module } from "@nestjs/common";
-import {
-    ASYNC_OPTIONS_TYPE,
-    ConfigurableModuleClass,
-    OPTIONS_TYPE,
-} from "./kysely.module-definition";
-import { KyselyService } from "./kysely.service";
+import { DynamicModule, Module } from '@nestjs/common';
+import { ASYNC_OPTIONS_TYPE, ConfigurableModuleClass, OPTIONS_TYPE } from './kysely.module-definition';
+import { KyselyService } from './kysely.service';
 
 @Module({})
 export class KyselyModule extends ConfigurableModuleClass {

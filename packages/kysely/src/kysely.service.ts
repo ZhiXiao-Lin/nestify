@@ -1,7 +1,7 @@
-import { Inject, Injectable, OnModuleDestroy } from "@nestjs/common";
-import { Kysely } from "kysely";
-import type { KyselyModuleOptions } from "./kysely-module-options.interface";
-import { MODULE_OPTIONS_TOKEN } from "./kysely.module-definition";
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Kysely } from 'kysely';
+import type { KyselyModuleOptions } from './kysely-module-options.interface';
+import { MODULE_OPTIONS_TOKEN } from './kysely.module-definition';
 
 @Injectable()
 export class KyselyService<T> extends Kysely<T> implements OnModuleDestroy {
@@ -15,9 +15,7 @@ export class KyselyService<T> extends Kysely<T> implements OnModuleDestroy {
         options: KyselyModuleOptions,
     ) {
         if (!options) {
-            throw new Error(
-                "KyselyModuleOptions is not defined. Ensure KyselyModule is properly configured.",
-            );
+            throw new Error('KyselyModuleOptions is not defined. Ensure KyselyModule is properly configured.');
         }
         super(options.config);
     }

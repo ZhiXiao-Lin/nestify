@@ -2,13 +2,7 @@
 // Feature Flags Guard - Protects routes based on feature flags
 // ============================================================================
 
-import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    ForbiddenException,
-    SetMetadata,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { FeatureFlagsService } from './feature-flags.service';
 
@@ -17,8 +11,7 @@ export const FEATURE_FLAG_KEY = 'feature_flag';
 /**
  * Require a feature flag to be enabled
  */
-export const RequiresFeature = (flagName: string) =>
-    SetMetadata(FEATURE_FLAG_KEY, flagName);
+export const RequiresFeature = (flagName: string) => SetMetadata(FEATURE_FLAG_KEY, flagName);
 
 @Injectable()
 export class FeatureFlagsGuard implements CanActivate {
@@ -28,10 +21,7 @@ export class FeatureFlagsGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const flagName = this.reflector.get<string>(
-            FEATURE_FLAG_KEY,
-            context.getHandler(),
-        );
+        const flagName = this.reflector.get<string>(FEATURE_FLAG_KEY, context.getHandler());
 
         if (!flagName) {
             return true;
@@ -47,9 +37,7 @@ export class FeatureFlagsGuard implements CanActivate {
         });
 
         if (!evaluation.enabled) {
-            throw new ForbiddenException(
-                `This feature is currently unavailable: ${flagName}`,
-            );
+            throw new ForbiddenException(`This feature is currently unavailable: ${flagName}`);
         }
 
         return true;

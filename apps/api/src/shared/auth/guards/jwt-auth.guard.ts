@@ -2,13 +2,7 @@
 // JWT Auth Guard - Validates JWT tokens
 // ============================================================================
 
-import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    UnauthorizedException,
-    SetMetadata,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, SetMetadata } from '@nestjs/common';
 import { JwtService } from '../jwt/jwt.service';
 import { Request } from 'express';
 import { JwtPayload } from '../jwt/jwt.types';

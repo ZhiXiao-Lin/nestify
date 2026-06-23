@@ -96,7 +96,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 reconnectCount: 0,
             };
 
-            this.connection.closed().then((err) => {
+            this.connection.closed().then(err => {
                 if (err) {
                     this.logger.error(`NATS connection closed with error: ${err.message}`);
                 }
@@ -114,10 +114,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
             const err = error as Error;
             this.connectionState.lastError = err.message;
             this.connectionState.connected = false;
-            throw new NatsConnectionError(
-                this.options.servers?.[0] || 'localhost:4222',
-                err.message,
-            );
+            throw new NatsConnectionError(this.options.servers?.[0] || 'localhost:4222', err.message);
         }
     }
 
@@ -185,10 +182,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
 
             this.logger.debug(`Published to ${options.subject}`);
         } catch (error) {
-            throw new NatsPublishError(
-                options.subject,
-                (error as Error).message,
-            );
+            throw new NatsPublishError(options.subject, (error as Error).message);
         }
     }
 
@@ -216,10 +210,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
 
             return this.convertMessage(msg);
         } catch (error) {
-            throw new NatsRequestError(
-                options.subject,
-                (error as Error).message,
-            );
+            throw new NatsRequestError(options.subject, (error as Error).message);
         }
     }
 
@@ -236,10 +227,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
     // Subscribe
     // =========================================================================
 
-    async subscribe(
-        options: SubscribeOptions,
-        handler: SubscriptionHandler,
-    ): Promise<Subscription> {
+    async subscribe(options: SubscribeOptions, handler: SubscriptionHandler): Promise<Subscription> {
         try {
             const conn = await this.getConnection();
 
@@ -265,24 +253,15 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 isCancelled: () => sub.isClosed(),
             };
         } catch (error) {
-            throw new NatsSubscribeError(
-                options.subject,
-                (error as Error).message,
-            );
+            throw new NatsSubscribeError(options.subject, (error as Error).message);
         }
     }
 
-    async subscribe$(
-        subject: string,
-        handler: (data: unknown) => Promise<void>,
-    ): Promise<Subscription> {
-        return this.subscribe(
-            { subject },
-            async (msg: NatsMessage) => {
-                const data = this.decodeData(msg.data);
-                await handler(data);
-            },
-        );
+    async subscribe$(subject: string, handler: (data: unknown) => Promise<void>): Promise<Subscription> {
+        return this.subscribe({ subject }, async (msg: NatsMessage) => {
+            const data = this.decodeData(msg.data);
+            await handler(data);
+        });
     }
 
     unsubscribe(subscription: Subscription): void {
@@ -349,17 +328,11 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
 
             return pubAck;
         } catch (error) {
-            throw new NatsPublishError(
-                `${options.stream}:${options.subject}`,
-                (error as Error).message,
-            );
+            throw new NatsPublishError(`${options.stream}:${options.subject}`, (error as Error).message);
         }
     }
 
-    async jsSubscribe(
-        options: JetStreamSubscribeOptions,
-        handler: SubscriptionHandler,
-    ): Promise<Subscription> {
+    async jsSubscribe(options: JetStreamSubscribeOptions, handler: SubscriptionHandler): Promise<Subscription> {
         try {
             const js = await this.getJetStream();
 
@@ -371,18 +344,20 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 ...(options.queue && { queue: options.queue }),
             };
 
-            const sub = (js as unknown as {
-                subscribe(
-                    subject: string,
-                    opts?: {
-                        stream?: string;
-                        deliverSubject?: string;
-                        durable?: string;
-                        queue?: string;
-                        config?: Record<string, unknown>;
-                    },
-                ): NatsSubscription;
-            }).subscribe(options.subject, opts);
+            const sub = (
+                js as unknown as {
+                    subscribe(
+                        subject: string,
+                        opts?: {
+                            stream?: string;
+                            deliverSubject?: string;
+                            durable?: string;
+                            queue?: string;
+                            config?: Record<string, unknown>;
+                        },
+                    ): NatsSubscription;
+                }
+            ).subscribe(options.subject, opts);
 
             const sid = sub.getID();
             this.subscriptions.set(sid, sub);
@@ -402,10 +377,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 isCancelled: () => sub.isClosed(),
             };
         } catch (error) {
-            throw new NatsSubscribeError(
-                `${options.stream}:${options.subject}`,
-                (error as Error).message,
-            );
+            throw new NatsSubscribeError(`${options.stream}:${options.subject}`, (error as Error).message);
         }
     }
 

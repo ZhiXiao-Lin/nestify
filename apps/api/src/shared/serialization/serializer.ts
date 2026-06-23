@@ -47,7 +47,7 @@ export abstract class Serializer<Entity, Dto> {
      * Convert list of Entities to DTOs
      */
     toDtoList(entities: Entity[]): Dto[] {
-        return entities.map((entity) => this.toDto(entity));
+        return entities.map(entity => this.toDto(entity));
     }
 }
 
@@ -74,7 +74,10 @@ export function transformToInstance<T>(
 /**
  * Transform an object to a plain JavaScript object
  */
-export function transformToPlain<T>(entity: T, options?: { excludeExtraneousValues?: boolean }): Record<string, unknown> {
+export function transformToPlain<T>(
+    entity: T,
+    options?: { excludeExtraneousValues?: boolean },
+): Record<string, unknown> {
     return instanceToPlain(entity, {
         excludeExtraneousValues: options?.excludeExtraneousValues ?? true,
     }) as Record<string, unknown>;
@@ -98,7 +101,7 @@ export function transformListToInstance<T>(
  * Transform list of objects to plain objects
  */
 export function transformListToPlain<T>(entities: T[]): Record<string, unknown>[] {
-    return entities.map((entity) => transformToPlain(entity));
+    return entities.map(entity => transformToPlain(entity));
 }
 
 /**

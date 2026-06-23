@@ -59,10 +59,7 @@ export abstract class BaseService<
      * Find entity by ID
      */
     async findById(id: string): Promise<Entity | null> {
-        const row = await (this.kysely as any)
-            .selectFrom(this.tableName)
-            .where('id', '=', id)
-            .executeTakeFirst();
+        const row = await (this.kysely as any).selectFrom(this.tableName).where('id', '=', id).executeTakeFirst();
 
         return (row as Entity) || null;
     }
@@ -95,9 +92,7 @@ export abstract class BaseService<
         }
 
         // Get total count using efficient SQL COUNT
-        const countResult = await baseQuery
-            .select((eb: any) => eb.fn.countAll().as('count'))
-            .executeTakeFirst();
+        const countResult = await baseQuery.select((eb: any) => eb.fn.countAll().as('count')).executeTakeFirst();
 
         const total = Number(countResult?.count ?? 0);
 
@@ -196,10 +191,7 @@ export abstract class BaseService<
     async delete(id: string): Promise<void> {
         const existing = await this.findByIdOrThrow(id);
 
-        await (this.kysely as any)
-            .deleteFrom(this.tableName)
-            .where('id', '=', id)
-            .executeTakeFirst();
+        await (this.kysely as any).deleteFrom(this.tableName).where('id', '=', id).executeTakeFirst();
     }
 
     /**
@@ -254,9 +246,7 @@ export abstract class BaseService<
      */
     async count(filter?: FilterDto): Promise<number> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let query = (this.kysely as any)
-            .selectFrom(this.tableName)
-            .select((eb: any) => eb.fn.countAll().as('count'));
+        let query = (this.kysely as any).selectFrom(this.tableName).select((eb: any) => eb.fn.countAll().as('count'));
 
         if (filter) {
             query = this.applyFilters(query, filter);
@@ -273,17 +263,14 @@ export abstract class BaseService<
         if (dtos.length === 0) return [];
 
         const now = new Date();
-        const entities = dtos.map((dto) => ({
+        const entities = dtos.map(dto => ({
             ...dto,
             id: crypto.randomUUID(),
             createdAt: now,
             updatedAt: now,
         })) as Array<Record<string, unknown>>;
 
-        await (this.kysely as any)
-            .insertInto(this.tableName)
-            .values(entities)
-            .executeTakeFirst();
+        await (this.kysely as any).insertInto(this.tableName).values(entities).executeTakeFirst();
 
         return entities as unknown as Entity[];
     }

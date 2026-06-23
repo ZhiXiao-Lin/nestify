@@ -2,12 +2,7 @@
 // Tenant Interceptor - Automatically extracts tenant from request
 // ============================================================================
 
-import {
-    Injectable,
-    NestInterceptor,
-    ExecutionContext,
-    CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { TenantService } from './tenant.service';
 

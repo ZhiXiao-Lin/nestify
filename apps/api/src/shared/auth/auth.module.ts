@@ -11,19 +11,7 @@ import { PermissionsGuard } from './guards/permissions.guard';
 
 @Global()
 @Module({
-    providers: [
-        JwtService,
-        RbacService,
-        JwtAuthGuard,
-        RolesGuard,
-        PermissionsGuard,
-    ],
-    exports: [
-        JwtService,
-        RbacService,
-        JwtAuthGuard,
-        RolesGuard,
-        PermissionsGuard,
-    ],
+    providers: [JwtService, RbacService, JwtAuthGuard, RolesGuard, PermissionsGuard],
+    exports: [JwtService, RbacService, JwtAuthGuard, RolesGuard, PermissionsGuard],
 })
 export class AuthModule {}

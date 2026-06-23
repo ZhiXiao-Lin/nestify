@@ -27,8 +27,7 @@ export async function createTestingModule(options: {
         imports,
         controllers,
         providers: [...providers, ...mockProviders],
-    })
-        .compile();
+    }).compile();
 }
 
 /**

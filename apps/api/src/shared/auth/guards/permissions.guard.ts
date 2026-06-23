@@ -2,13 +2,7 @@
 // Permissions Guard - Checks user permissions (RBAC)
 // ============================================================================
 
-import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    ForbiddenException,
-    SetMetadata,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RbacService } from '../rbac/rbac.service';
 import { JwtPayload } from '../jwt/jwt.types';
@@ -22,8 +16,7 @@ export const PERMISSIONS_KEY = 'permissions';
  * Require specific permissions to access route
  * Format: 'resource:action' e.g., 'users:read', 'workflows:delete'
  */
-export const Permissions = (...permissions: string[]) =>
-    SetMetadata(PERMISSIONS_KEY, permissions);
+export const Permissions = (...permissions: string[]) => SetMetadata(PERMISSIONS_KEY, permissions);
 
 /**
  * Permissions Guard - checks if user has required permissions
@@ -36,10 +29,10 @@ export class PermissionsGuard implements CanActivate {
     ) {}
 
     canActivate(context: ExecutionContext): boolean {
-        const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
-            PERMISSIONS_KEY,
-            [context.getHandler(), context.getClass()],
-        );
+        const requiredPermissions = this.reflector.getAllAndOverride<string[]>(PERMISSIONS_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
         if (!requiredPermissions || requiredPermissions.length === 0) {
             return true;
@@ -54,16 +47,10 @@ export class PermissionsGuard implements CanActivate {
 
         for (const permission of requiredPermissions) {
             const [resource, action] = permission.split(':');
-            const hasPermission = this.rbacService.hasAnyPermission(
-                user.roles,
-                resource,
-                action,
-            );
+            const hasPermission = this.rbacService.hasAnyPermission(user.roles, resource, action);
 
             if (!hasPermission) {
-                throw new ForbiddenException(
-                    `Access denied: Missing permission '${permission}'`,
-                );
+                throw new ForbiddenException(`Access denied: Missing permission '${permission}'`);
             }
         }
 

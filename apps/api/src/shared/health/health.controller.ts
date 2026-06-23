@@ -3,11 +3,7 @@
 // ============================================================================
 
 import { Controller, Get } from '@nestjs/common';
-import {
-    HealthCheck,
-    HealthCheckService,
-    HealthCheckResult,
-} from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService, HealthCheckResult } from '@nestjs/terminus';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DatabaseHealthIndicator } from './indicators/database.indicator';
 import { RedisHealthIndicator } from './indicators/redis.indicator';

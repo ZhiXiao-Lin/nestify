@@ -107,17 +107,9 @@ export type DeliverPolicy =
     | 'by_start_sequence'
     | 'by_start_time';
 
-export type AckPolicy =
-    | 'none'
-    | 'all'
-    | 'explicit'
-    | 'allInclusive';
+export type AckPolicy = 'none' | 'all' | 'explicit' | 'allInclusive';
 
-export type ReplayPolicy =
-    | 'instant'
-    | 'original'
-    | 'by_start_time'
-    | 'last';
+export type ReplayPolicy = 'instant' | 'original' | 'by_start_time' | 'last';
 
 export interface NatsMessage {
     subject: string;
@@ -187,14 +179,9 @@ export interface StreamConfig {
     allowRollup?: boolean;
 }
 
-export type RetentionPolicy =
-    | 'limits'
-    | 'interest'
-    | 'workqueue';
+export type RetentionPolicy = 'limits' | 'interest' | 'workqueue';
 
-export type StorageType =
-    | 'file'
-    | 'memory';
+export type StorageType = 'file' | 'memory';
 
 export interface StreamState {
     messages: number;
@@ -237,40 +224,24 @@ export class NatsError extends Error {
 
 export class NatsConnectionError extends NatsError {
     constructor(server: string, reason?: string) {
-        super(
-            `Failed to connect to NATS server ${server}: ${reason || 'Unknown error'}`,
-            'NATS_CONNECTION_ERROR',
-            503,
-        );
+        super(`Failed to connect to NATS server ${server}: ${reason || 'Unknown error'}`, 'NATS_CONNECTION_ERROR', 503);
     }
 }
 
 export class NatsPublishError extends NatsError {
     constructor(subject: string, reason?: string) {
-        super(
-            `Failed to publish to ${subject}: ${reason || 'Unknown error'}`,
-            'NATS_PUBLISH_ERROR',
-            500,
-        );
+        super(`Failed to publish to ${subject}: ${reason || 'Unknown error'}`, 'NATS_PUBLISH_ERROR', 500);
     }
 }
 
 export class NatsSubscribeError extends NatsError {
     constructor(subject: string, reason?: string) {
-        super(
-            `Failed to subscribe to ${subject}: ${reason || 'Unknown error'}`,
-            'NATS_SUBSCRIBE_ERROR',
-            500,
-        );
+        super(`Failed to subscribe to ${subject}: ${reason || 'Unknown error'}`, 'NATS_SUBSCRIBE_ERROR', 500);
     }
 }
 
 export class NatsRequestError extends NatsError {
     constructor(subject: string, reason?: string) {
-        super(
-            `Request to ${subject} failed: ${reason || 'Unknown error'}`,
-            'NATS_REQUEST_ERROR',
-            504,
-        );
+        super(`Request to ${subject} failed: ${reason || 'Unknown error'}`, 'NATS_REQUEST_ERROR', 504);
     }
 }

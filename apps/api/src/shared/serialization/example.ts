@@ -186,4 +186,13 @@ class CreateUserSerializer extends Serializer<UserEntity, CreateUserDto> {
 //   }
 // }
 
-export { UserDto, CreateUserDto, UpdateUserDto, userToDto, userToCreateDto, userListToDto, UserSerializer, CreateUserSerializer };
+export {
+    UserDto,
+    CreateUserDto,
+    UpdateUserDto,
+    userToDto,
+    userToCreateDto,
+    userListToDto,
+    UserSerializer,
+    CreateUserSerializer,
+};

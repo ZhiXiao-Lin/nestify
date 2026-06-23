@@ -2,13 +2,7 @@
 // Transform Interceptor - Global request/response transformation
 // ============================================================================
 
-import {
-    Injectable,
-    NestInterceptor,
-    ExecutionContext,
-    CallHandler,
-    Logger,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Request, Response } from 'express';
@@ -62,7 +56,7 @@ export class TransformInterceptor implements NestInterceptor {
         }
 
         return next.handle().pipe(
-            map((data) => {
+            map(data => {
                 const duration = this.getDuration(startTime);
                 const metadata = this.buildMetadata(request, response, duration);
 
@@ -117,10 +111,13 @@ export class TransformInterceptor implements NestInterceptor {
      * Check if value is primitive
      */
     private isPrimitive(value: any): boolean {
-        return value === null || value === undefined ||
+        return (
+            value === null ||
+            value === undefined ||
             typeof value === 'string' ||
             typeof value === 'number' ||
-            typeof value === 'boolean';
+            typeof value === 'boolean'
+        );
     }
 
     /**
@@ -128,9 +125,11 @@ export class TransformInterceptor implements NestInterceptor {
      */
     private isWrappedResponse(value: any): boolean {
         if (!value || typeof value !== 'object') return false;
-        return value.items !== undefined && value.total !== undefined ||
+        return (
+            (value.items !== undefined && value.total !== undefined) ||
             value.data !== undefined ||
-            value._meta !== undefined;
+            value._meta !== undefined
+        );
     }
 
     /**
@@ -188,9 +187,7 @@ export function transformKeysToSnakeCase<T>(obj: any): T {
  */
 @Injectable()
 export class KeyTransformInterceptor implements NestInterceptor {
-    constructor(
-        private readonly toCamelCase: boolean = true,
-    ) {}
+    constructor(private readonly toCamelCase: boolean = true) {}
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const request = context.switchToHttp().getRequest();

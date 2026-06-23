@@ -194,11 +194,9 @@ export class AuditService {
         const offset = (page - 1) * pageSize;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let query = (this.kysely as any).selectFrom(this.tableName).where(
-            'organization_id',
-            '=',
-            options.organizationId,
-        );
+        let query = (this.kysely as any)
+            .selectFrom(this.tableName)
+            .where('organization_id', '=', options.organizationId);
 
         if (options.userId) {
             query = query.where('user_id', '=', options.userId);
@@ -220,17 +218,11 @@ export class AuditService {
             query = query.where('timestamp', '<=', options.endDate);
         }
 
-        const countResult = await query
-            .select((eb: any) => eb.fn.countAll().as('count'))
-            .executeTakeFirst();
+        const countResult = await query.select((eb: any) => eb.fn.countAll().as('count')).executeTakeFirst();
 
         const total = Number((countResult as { count?: number })?.count ?? 0);
 
-        const items = await query
-            .orderBy('timestamp', 'desc')
-            .limit(pageSize)
-            .offset(offset)
-            .execute();
+        const items = await query.orderBy('timestamp', 'desc').limit(pageSize).offset(offset).execute();
 
         return {
             items: items as AuditLogEntry[],

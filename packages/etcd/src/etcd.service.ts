@@ -1,12 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import {
-    Etcd3,
-    type IKeyValue,
-    type IOptions,
-    type IStatusResponse,
-    type Lease,
-    type Watcher,
-} from 'etcd3';
+import { Etcd3, type IKeyValue, type IOptions, type IStatusResponse, type Lease, type Watcher } from 'etcd3';
 import {
     ETCD_MODULE_OPTIONS,
     type ConfigEntry,
@@ -28,17 +21,18 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
             hosts: this.options.endpoints,
             credentials: this.options.tls
                 ? {
-                    rootCertificate: Buffer.from(this.options.tls.ca ?? ''),
-                    privateKey: this.options.tls.key ? Buffer.from(this.options.tls.key) : undefined,
-                    certChain: this.options.tls.cert ? Buffer.from(this.options.tls.cert) : undefined,
-                }
+                      rootCertificate: Buffer.from(this.options.tls.ca ?? ''),
+                      privateKey: this.options.tls.key ? Buffer.from(this.options.tls.key) : undefined,
+                      certChain: this.options.tls.cert ? Buffer.from(this.options.tls.cert) : undefined,
+                  }
                 : undefined,
-            auth: this.options.auth?.username && this.options.auth.password
-                ? {
-                    username: this.options.auth.username,
-                    password: this.options.auth.password,
-                }
-                : undefined,
+            auth:
+                this.options.auth?.username && this.options.auth.password
+                    ? {
+                          username: this.options.auth.username,
+                          password: this.options.auth.password,
+                      }
+                    : undefined,
             defaultCallOptions: this.options.requestOptions?.timeout
                 ? () => ({ deadline: Date.now() + this.options.requestOptions!.timeout! })
                 : undefined,
@@ -191,27 +185,39 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
     }
 
     watch<T = string>(key: string, callback: WatchCallback<T>): () => void {
-        const watcher = this.client.watch().key(key).create().then(watcher => {
-            this.attachWatcherHandlers(watcher, key, callback);
-            return watcher;
-        });
+        const watcher = this.client
+            .watch()
+            .key(key)
+            .create()
+            .then(watcher => {
+                this.attachWatcherHandlers(watcher, key, callback);
+                return watcher;
+            });
         this.watchers.set(key, watcher);
 
         return () => {
-            void watcher.then(w => w.cancel()).catch(error => this.logger.error(`Cancel watcher failed: ${key}`, error));
+            void watcher
+                .then(w => w.cancel())
+                .catch(error => this.logger.error(`Cancel watcher failed: ${key}`, error));
             this.watchers.delete(key);
         };
     }
 
     watchPrefix<T = string>(prefix: string, callback: WatchCallback<T>): () => void {
-        const watcher = this.client.watch().prefix(prefix).create().then(watcher => {
-            this.attachWatcherHandlers(watcher, prefix, callback);
-            return watcher;
-        });
+        const watcher = this.client
+            .watch()
+            .prefix(prefix)
+            .create()
+            .then(watcher => {
+                this.attachWatcherHandlers(watcher, prefix, callback);
+                return watcher;
+            });
         this.watchers.set(prefix, watcher);
 
         return () => {
-            void watcher.then(w => w.cancel()).catch(error => this.logger.error(`Cancel watcher failed: ${prefix}`, error));
+            void watcher
+                .then(w => w.cancel())
+                .catch(error => this.logger.error(`Cancel watcher failed: ${prefix}`, error));
             this.watchers.delete(prefix);
         };
     }
@@ -249,9 +255,10 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         newValue: string,
         options?: { ttl?: number },
     ): Promise<boolean> {
-        const comparison = expectedValue === null
-            ? this.client.if(key, 'Create', '==', 0)
-            : this.client.if(key, 'Value', '==', expectedValue);
+        const comparison =
+            expectedValue === null
+                ? this.client.if(key, 'Create', '==', 0)
+                : this.client.if(key, 'Value', '==', expectedValue);
         const put = options?.ttl
             ? this.client.lease(options.ttl, { autoKeepAlive: false }).put(key).value(newValue)
             : this.client.put(key).value(newValue);
