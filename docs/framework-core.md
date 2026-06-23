@@ -134,6 +134,8 @@ pnpm lint:check
 
 `pnpm smoke:core-install` creates a temporary consumer project, installs the packed core package tarballs plus their peer dependencies, type-checks public imports, and runs a Node import smoke test.
 
+The shared core package list is dependency-ordered so internal package dependencies are built, packed, smoke-installed, and dry-run published before packages that consume them.
+
 ## Release Flow
 
 Use Changesets to record public package changes and update versions:

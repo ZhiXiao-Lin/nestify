@@ -51,6 +51,22 @@ function verifyCorePackageList() {
         `corePackages must include every packages/* package; missing ${missingFromCore.join(', ')}`,
     );
     expect(staleCoreDirs.length === 0, `corePackages includes missing package dirs: ${staleCoreDirs.join(', ')}`);
+
+    const coreIndexByName = new Map(corePackages.map((corePackage, index) => [corePackage.name, index]));
+    for (const [packageIndex, corePackage] of corePackages.entries()) {
+        const manifest = readJson(path.join(rootDir, corePackage.dir, 'package.json'));
+        const dependencies = Object.keys(manifest.dependencies ?? {}).filter(dependencyName =>
+            coreIndexByName.has(dependencyName),
+        );
+
+        for (const dependencyName of dependencies) {
+            const dependencyIndex = coreIndexByName.get(dependencyName);
+            expect(
+                dependencyIndex < packageIndex,
+                `${corePackage.name}: internal dependency ${dependencyName} must appear earlier in corePackages`,
+            );
+        }
+    }
 }
 
 function verifyPackage(corePackage) {
