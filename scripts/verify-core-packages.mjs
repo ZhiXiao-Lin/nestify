@@ -60,6 +60,11 @@ function verifyPackage(corePackage) {
     const expectedHomepage = `https://github.com/A3S-Lab/nestify/tree/main/${corePackage.dir}#readme`;
 
     expect(manifest.name === corePackage.name, `${corePackage.dir}: package name must be ${corePackage.name}`);
+    expect(manifest.private !== true, `${corePackage.name}: core packages must be publishable`);
+    expect(
+        typeof manifest.description === 'string' && manifest.description.length > 0,
+        `${corePackage.name}: description is required`,
+    );
     expect(manifest.author === 'A3S Lab', `${corePackage.name}: author must be A3S Lab`);
     expect(manifest.license === 'MIT', `${corePackage.name}: license must be MIT`);
     expect(manifest.homepage === expectedHomepage, `${corePackage.name}: homepage must be ${expectedHomepage}`);
@@ -76,8 +81,14 @@ function verifyPackage(corePackage) {
         manifest.bugs?.url === 'https://github.com/A3S-Lab/nestify/issues',
         `${corePackage.name}: bugs.url must point to the nestify issue tracker`,
     );
+    expect(
+        Array.isArray(manifest.keywords) && manifest.keywords.length > 0,
+        `${corePackage.name}: keywords are required`,
+    );
+    expect(manifest.source === './src/index.ts', `${corePackage.name}: source must point to ./src/index.ts`);
     expect(manifest.main === './dist/index.js', `${corePackage.name}: main must point to ./dist/index.js`);
     expect(manifest.types === './dist/index.d.ts', `${corePackage.name}: types must point to ./dist/index.d.ts`);
+    expect(manifest.publishConfig?.access === 'public', `${corePackage.name}: publishConfig.access must be public`);
     expect(
         manifest.exports?.['.']?.import === './dist/index.js',
         `${corePackage.name}: exports["."].import is missing`,
