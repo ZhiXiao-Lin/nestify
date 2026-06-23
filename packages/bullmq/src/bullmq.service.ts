@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { Inject, Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
-import { Queue, Worker, Job, QueueEvents } from 'bullmq';
+import { Queue, Worker, QueueEvents, type Job } from 'bullmq';
 import type { BullMQModuleOptions } from './bullmq.types';
 import { BULLMQ_OPTIONS_TOKEN } from './bullmq.module-definition';
 
@@ -50,6 +50,7 @@ export class BullMQService implements OnModuleDestroy {
         const queue = new Queue(name, {
             connection: this.options.connection,
             defaultJobOptions: this.options.defaultJobOptions,
+            prefix: this.options.prefix,
         });
 
         this.queues.set(name, queue);
@@ -140,6 +141,7 @@ export class BullMQService implements OnModuleDestroy {
             {
                 connection: this.options.connection,
                 concurrency: options?.concurrency ?? 1,
+                prefix: this.options.prefix,
             },
         );
 
@@ -167,6 +169,7 @@ export class BullMQService implements OnModuleDestroy {
 
         const events = new QueueEvents(queueName, {
             connection: this.options.connection,
+            prefix: this.options.prefix,
         });
 
         this.queueEvents.set(queueName, events);

@@ -15,6 +15,7 @@ const corePackages = [
     { name: '@a3s-lab/resilience', dir: 'packages/resilience' },
     { name: '@a3s-lab/kysely', dir: 'packages/kysely' },
     { name: '@a3s-lab/redisson', dir: 'packages/redisson' },
+    { name: '@a3s-lab/bullmq', dir: 'packages/bullmq' },
     { name: '@a3s-lab/clickhouse', dir: 'packages/clickhouse' },
     { name: '@a3s-lab/migrations', dir: 'packages/migrations' },
     { name: '@a3s-lab/files', dir: 'packages/files' },

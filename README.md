@@ -148,7 +148,7 @@ Request tracking, SQL/external-call collectors, and Prometheus-style metrics.
 
 ```typescript
 const requestId = getRequestId();
-recordExternalCall({ kind: 'http', target: 'billing', op: 'POST /charges', durationMs });
+recordExternalCall({ kind: 'http', target: 'external-service', op: 'POST /events', durationMs });
 ```
 
 ### @a3s-lab/resilience
@@ -242,11 +242,11 @@ Distributed task queue with retry and delayed jobs.
 
 ```typescript
 // Add job
-await bullmq.addJob('notifications', 'send-email', { to: 'user@example.com' });
+await bullmq.addJob('tasks', 'process-resource', { resourceId: 'resource-1' });
 
 // Create worker
-bullmq.createWorker('notifications', async (job) => {
-  await sendEmail(job.data);
+bullmq.createWorker('tasks', async (job) => {
+  await processResource(job.data);
   return { success: true };
 });
 ```
