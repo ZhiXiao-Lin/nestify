@@ -14,6 +14,16 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
 
+Each package has a package-level README with install notes, import examples, exported capabilities, and boundary notes:
+
+- [`@a3s-lab/ddd`](../packages/ddd/README.md)
+- [`@a3s-lab/http`](../packages/http/README.md)
+- [`@a3s-lab/security`](../packages/security/README.md)
+- [`@a3s-lab/observability`](../packages/observability/README.md)
+- [`@a3s-lab/resilience`](../packages/resilience/README.md)
+- [`@a3s-lab/clickhouse`](../packages/clickhouse/README.md)
+- [`@a3s-lab/migrations`](../packages/migrations/README.md)
+
 ## Application Compatibility Layer
 
 `apps/api/src/shared/*` keeps compatibility paths for the example API. Most files now re-export or lightly adapt the package-level APIs. This lets existing application modules keep their current imports while the reusable framework surface lives in packages.
@@ -88,3 +98,5 @@ pnpm build
 pnpm test
 pnpm lint:check
 ```
+
+`pnpm release:check` formats, lints, builds, tests, packs the framework core packages, and verifies each package manifest and tarball. The tarball verification checks public entry points, type declarations, README inclusion, workspace dependency rewriting, and absence of test/source/build-cache files.

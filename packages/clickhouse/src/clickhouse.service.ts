@@ -99,7 +99,7 @@ export class ClickHouseService implements OnModuleDestroy {
             database: database ?? undefined,
             request_timeout: this.options.requestTimeoutMs ?? 10000,
             max_open_connections: this.options.maxOpenConnections,
-            application: this.options.application ?? '@a3s-lab/api',
+            application: this.options.application ?? '@a3s-lab/clickhouse',
             compression: this.options.compression,
         });
     }

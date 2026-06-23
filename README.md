@@ -94,7 +94,7 @@ nestify/
 
 ## Packages
 
-See [Framework Core](docs/framework-core.md) for the reusable DDD/API packages extracted from the application shared layer.
+See [Framework Core](docs/framework-core.md) for the reusable DDD/API packages extracted from the application shared layer. Each core package also has its own README with install notes, import examples, exported capabilities, and package boundaries.
 
 ### @a3s-lab/ddd
 
