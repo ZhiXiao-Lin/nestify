@@ -67,8 +67,8 @@ the sample API for now because they encode application choices rather than stabl
 | `infrastructure/storage/storage.interface` | Keep app-local compatibility/integration | This is a RustFS/S3-level bucket/object service facade used by sample infrastructure health checks. Generic upload contracts live in `@a3s-lab/files`; concrete object storage APIs remain in `@a3s-lab/rustfs`. |
 | `file-upload` | Package-backed | Generic upload validation, storage client contracts, decorators, and interceptors now live in `@a3s-lab/files`; app files are compatibility wrappers. |
 | `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; app files are compatibility wrappers. |
-| `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; app files are compatibility wrappers. |
-| `messaging/event-bus` | Package-backed | Generic DDD domain event publishing through Nest CQRS now lives in `@a3s-lab/cqrs`; app files are compatibility wrappers. |
+| `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; sample API entry points import the package directly, and app files remain as compatibility wrappers. |
+| `messaging/event-bus` | Package-backed | Generic DDD domain event publishing through Nest CQRS now lives in `@a3s-lab/cqrs`; sample order handlers import the package contracts directly, and app files remain as compatibility wrappers. |
 | `persistence/repository`, `persistence/unit-of-work` | Package-backed | Generic repository and unit of work contracts now live in `@a3s-lab/ddd`; app files are compatibility wrappers. |
 | `cache`, `retry`, `rate-limiting`, `circuit-breaker`, `metrics`, `tracking`, `openapi`, `validation`, `errors`, `domain`, `utils` | Already package-backed | These are now package exports or compatibility wrappers over package exports. |
 

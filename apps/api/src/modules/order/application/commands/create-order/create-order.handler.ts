@@ -1,5 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
+import { DOMAIN_EVENT_PUBLISHER, type IDomainEventPublisher } from '@a3s-lab/ddd';
 import { CreateOrderCommand } from './create-order.command';
 import { Order } from '../../../domain/entities/order.entity';
 import { OrderItem } from '../../../domain/entities/order-item.entity';
@@ -7,15 +8,14 @@ import { Money } from '../../../domain/value-objects/money.vo';
 import { Quantity } from '../../../domain/value-objects/quantity.vo';
 import { OrderId } from '../../../domain/value-objects/order-id.vo';
 import { IOrderRepository, ORDER_REPOSITORY } from '../../../domain/repositories/order.repository.interface';
-import { EVENT_BUS, IEventBus } from '@/shared/infrastructure/messaging/event-bus.interface';
 
 @CommandHandler(CreateOrderCommand)
 export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
     constructor(
         @Inject(ORDER_REPOSITORY)
         private readonly orderRepository: IOrderRepository,
-        @Inject(EVENT_BUS)
-        private readonly eventBus: IEventBus,
+        @Inject(DOMAIN_EVENT_PUBLISHER)
+        private readonly domainEventPublisher: IDomainEventPublisher,
     ) {}
 
     async execute(command: CreateOrderCommand): Promise<string> {
@@ -32,7 +32,7 @@ export class CreateOrderHandler implements ICommandHandler<CreateOrderCommand> {
 
         await this.orderRepository.save(order);
 
-        await this.eventBus.publishAll(order.domainEvents);
+        await this.domainEventPublisher.publishAll(order.domainEvents);
         order.clearEvents();
 
         return order.id;

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { createNestCqrsDomainEventPublisherProvider } from '@a3s-lab/cqrs';
 import { OrderController } from './presentation/order.controller';
 import { OrderRepository } from './infrastructure/persistence/kysely-order.repository';
 import { OrderCacheService } from './infrastructure/cache/order-cache.service';
@@ -12,8 +13,6 @@ import { ListOrdersHandler } from './application/queries/list-orders/list-orders
 import { OrderCreatedHandler } from './application/event-handlers/order-created.handler';
 import { OrderConfirmedHandler } from './application/event-handlers/order-confirmed.handler';
 import { OrderPricingService } from './domain/services/order-pricing.service';
-import { EventBusService } from '@/shared/infrastructure/messaging/event-bus.service';
-import { EVENT_BUS } from '@/shared/infrastructure/messaging/event-bus.interface';
 
 const CommandHandlers = [CreateOrderHandler, ConfirmOrderHandler, CancelOrderHandler];
 const QueryHandlers = [GetOrderHandler, ListOrdersHandler];
@@ -32,10 +31,7 @@ const EventHandlers = [OrderCreatedHandler, OrderConfirmedHandler];
             provide: ORDER_REPOSITORY,
             useClass: OrderRepository,
         },
-        {
-            provide: EVENT_BUS,
-            useClass: EventBusService,
-        },
+        createNestCqrsDomainEventPublisherProvider(),
     ],
     exports: [OrderCacheService],
 })

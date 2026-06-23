@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DOMAIN_EVENT_PUBLISHER, type IDomainEventPublisher } from '@a3s-lab/ddd';
 import { CancelOrderHandler } from './cancel-order.handler';
 import { CancelOrderCommand } from './cancel-order.command';
 import { IOrderRepository, ORDER_REPOSITORY } from '../../../domain/repositories/order.repository.interface';
-import { IEventBus, EVENT_BUS } from '@/shared/infrastructure/messaging/event-bus.interface';
 import { Order } from '../../../domain/entities/order.entity';
 import { OrderItem } from '../../../domain/entities/order-item.entity';
 import { Money } from '../../../domain/value-objects/money.vo';
@@ -13,7 +13,7 @@ import { InvalidOrderStateException } from '../../../domain/exceptions/invalid-o
 describe('CancelOrderHandler', () => {
     let handler: CancelOrderHandler;
     let orderRepository: jest.Mocked<IOrderRepository>;
-    let eventBus: jest.Mocked<IEventBus>;
+    let domainEventPublisher: jest.Mocked<IDomainEventPublisher>;
 
     beforeEach(async () => {
         const mockOrderRepository: Partial<IOrderRepository> = {
@@ -23,7 +23,7 @@ describe('CancelOrderHandler', () => {
             delete: jest.fn(),
         };
 
-        const mockEventBus: Partial<IEventBus> = {
+        const mockDomainEventPublisher: Partial<IDomainEventPublisher> = {
             publish: jest.fn(),
             publishAll: jest.fn(),
         };
@@ -36,15 +36,15 @@ describe('CancelOrderHandler', () => {
                     useValue: mockOrderRepository,
                 },
                 {
-                    provide: EVENT_BUS,
-                    useValue: mockEventBus,
+                    provide: DOMAIN_EVENT_PUBLISHER,
+                    useValue: mockDomainEventPublisher,
                 },
             ],
         }).compile();
 
         handler = module.get<CancelOrderHandler>(CancelOrderHandler);
         orderRepository = module.get(ORDER_REPOSITORY);
-        eventBus = module.get(EVENT_BUS);
+        domainEventPublisher = module.get(DOMAIN_EVENT_PUBLISHER);
     });
 
     it('should be defined', () => {
@@ -113,7 +113,7 @@ describe('CancelOrderHandler', () => {
 
             await handler.execute(command);
 
-            expect(eventBus.publishAll).toHaveBeenCalledTimes(1);
+            expect(domainEventPublisher.publishAll).toHaveBeenCalledTimes(1);
         });
 
         it('should throw OrderNotFoundException when order not found', async () => {

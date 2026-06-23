@@ -1,17 +1,17 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
+import { DOMAIN_EVENT_PUBLISHER, type IDomainEventPublisher } from '@a3s-lab/ddd';
 import { CancelOrderCommand } from './cancel-order.command';
 import { IOrderRepository, ORDER_REPOSITORY } from '../../../domain/repositories/order.repository.interface';
 import { OrderNotFoundException } from '../../../domain/exceptions/order-not-found.exception';
-import { EVENT_BUS, IEventBus } from '@/shared/infrastructure/messaging/event-bus.interface';
 
 @CommandHandler(CancelOrderCommand)
 export class CancelOrderHandler implements ICommandHandler<CancelOrderCommand> {
     constructor(
         @Inject(ORDER_REPOSITORY)
         private readonly orderRepository: IOrderRepository,
-        @Inject(EVENT_BUS)
-        private readonly eventBus: IEventBus,
+        @Inject(DOMAIN_EVENT_PUBLISHER)
+        private readonly domainEventPublisher: IDomainEventPublisher,
     ) {}
 
     async execute(command: CancelOrderCommand): Promise<void> {
@@ -25,7 +25,7 @@ export class CancelOrderHandler implements ICommandHandler<CancelOrderCommand> {
 
         await this.orderRepository.save(order);
 
-        await this.eventBus.publishAll(order.domainEvents);
+        await this.domainEventPublisher.publishAll(order.domainEvents);
         order.clearEvents();
     }
 }

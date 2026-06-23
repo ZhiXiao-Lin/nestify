@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { DOMAIN_EVENT_PUBLISHER, type IDomainEventPublisher } from '@a3s-lab/ddd';
 import { CreateOrderHandler } from './create-order.handler';
 import { CreateOrderCommand } from './create-order.command';
 import { IOrderRepository, ORDER_REPOSITORY } from '../../../domain/repositories/order.repository.interface';
-import { IEventBus, EVENT_BUS } from '@/shared/infrastructure/messaging/event-bus.interface';
 import { Order } from '../../../domain/entities/order.entity';
 
 describe('CreateOrderHandler', () => {
     let handler: CreateOrderHandler;
     let orderRepository: jest.Mocked<IOrderRepository>;
-    let eventBus: jest.Mocked<IEventBus>;
+    let domainEventPublisher: jest.Mocked<IDomainEventPublisher>;
 
     beforeEach(async () => {
         const mockOrderRepository: Partial<IOrderRepository> = {
@@ -18,7 +18,7 @@ describe('CreateOrderHandler', () => {
             delete: jest.fn(),
         };
 
-        const mockEventBus: Partial<IEventBus> = {
+        const mockDomainEventPublisher: Partial<IDomainEventPublisher> = {
             publish: jest.fn(),
             publishAll: jest.fn(),
         };
@@ -31,15 +31,15 @@ describe('CreateOrderHandler', () => {
                     useValue: mockOrderRepository,
                 },
                 {
-                    provide: EVENT_BUS,
-                    useValue: mockEventBus,
+                    provide: DOMAIN_EVENT_PUBLISHER,
+                    useValue: mockDomainEventPublisher,
                 },
             ],
         }).compile();
 
         handler = module.get<CreateOrderHandler>(CreateOrderHandler);
         orderRepository = module.get(ORDER_REPOSITORY);
-        eventBus = module.get(EVENT_BUS);
+        domainEventPublisher = module.get(DOMAIN_EVENT_PUBLISHER);
     });
 
     it('should be defined', () => {
@@ -93,8 +93,8 @@ describe('CreateOrderHandler', () => {
 
             await handler.execute(command);
 
-            expect(eventBus.publishAll).toHaveBeenCalledTimes(1);
-            expect(eventBus.publishAll).toHaveBeenCalledWith(
+            expect(domainEventPublisher.publishAll).toHaveBeenCalledTimes(1);
+            expect(domainEventPublisher.publishAll).toHaveBeenCalledWith(
                 expect.arrayContaining([
                     expect.objectContaining({
                         customerId: 'customer-1',
