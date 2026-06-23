@@ -12,6 +12,8 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
+| `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
+| `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
@@ -24,6 +26,8 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/security`](../packages/security/README.md)
 - [`@a3s-lab/observability`](../packages/observability/README.md)
 - [`@a3s-lab/resilience`](../packages/resilience/README.md)
+- [`@a3s-lab/kysely`](../packages/kysely/README.md)
+- [`@a3s-lab/redisson`](../packages/redisson/README.md)
 - [`@a3s-lab/clickhouse`](../packages/clickhouse/README.md)
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
 - [`@a3s-lab/files`](../packages/files/README.md)
@@ -94,6 +98,8 @@ The framework core is covered by package tests for:
 - Observability health check endpoint registration
 - Resilience retry, circuit breaker, and TTL cache
 - Resilience module registration and interceptor metadata execution
+- Kysely PostgreSQL option builders and module registration
+- Redisson Redis option builders and module registration
 - ClickHouse client routing and lifecycle
 - Migration provider wrapping and module registration
 - File upload validation, storage key handling, module registration, and upload interceptors

@@ -30,30 +30,29 @@ REDIS_DB=0
 
 ### Module Setup
 
-The `RedisModule` is configured globally in `src/shared/redis/redis.module.ts`:
+The application registers `RedissonModule` directly in `src/app.module.ts`. The app owns the environment variable names, while `@a3s-lab/redisson` provides the reusable module and option builder:
 
 ```typescript
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedissonModule } from '@a3s-lab/redisson';
+import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
 
-@Global()
 @Module({
     imports: [
         RedissonModule.registerAsync({
             imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                host: configService.get('REDIS_HOST', 'localhost'),
-                port: configService.get('REDIS_PORT', 6379),
-                password: configService.get('REDIS_PASSWORD'),
-                db: configService.get('REDIS_DB', 0),
-            }),
             inject: [ConfigService],
+            useFactory: (configService: ConfigService) =>
+                createRedissonModuleOptions({
+                    host: configService.get<string>('REDIS_HOST', 'localhost'),
+                    port: configService.get<number>('REDIS_PORT', 6379),
+                    password: configService.get<string>('REDIS_PASSWORD'),
+                    db: configService.get<number>('REDIS_DB', 0),
+                }),
         }),
     ],
-    exports: [RedissonModule],
 })
-export class RedisModule {}
+export class AppModule {}
 ```
 
 ## Basic Usage

@@ -122,10 +122,43 @@ curl -X POST http://localhost:3000/api/orders/{orderId}/cancel
 
 ## Using Kysely in Your Code
 
+The application registers `KyselyModule` directly in `src/app.module.ts` with package helpers:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { KyselyModule, createPostgresKyselyModuleOptions } from '@a3s-lab/kysely';
+import { recordSql } from '@a3s-lab/observability';
+
+@Module({
+  imports: [
+    KyselyModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        createPostgresKyselyModuleOptions({
+          host: configService.get<string>('DB_HOST', 'localhost'),
+          port: configService.get<number>('DB_PORT', 5432),
+          user: configService.get<string>('DB_USERNAME', 'postgres'),
+          password: configService.get<string>('DB_PASSWORD', 'postgres'),
+          database: configService.get<string>('DB_DATABASE', 'nestify'),
+          logger: {
+            consoleOutput: configService.get<string>('NODE_ENV') === 'development',
+            onQuery: recordSql,
+          },
+        }),
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+Order table schema types live next to the order persistence adapter:
+
 ```typescript
 import { Injectable } from '@nestjs/common';
 import { KyselyService } from '@a3s-lab/kysely';
-import { Database } from '@/shared/database/database.types';
+import { Database, NewOrder, OrderUpdate } from './order-database.types';
 
 @Injectable()
 export class MyRepository {
