@@ -1,18 +1,18 @@
-# Nestify - Production-Ready NestJS Monorepo Template
+# Nestify - DDD Backend API Framework
 
-A production-ready NestJS monorepo template with pnpm workspace, implementing Domain-Driven Design (DDD), Clean Architecture, and comprehensive infrastructure for enterprise applications.
+Nestify is a reusable NestJS framework workspace for backend APIs built with Domain-Driven Design (DDD), Clean Architecture, and capability-based packages. The repository also includes a sample order API that shows how the framework packages compose in a real NestJS application.
 
 ## Features
 
 ### Core Architecture
-- **Monorepo Architecture**: pnpm workspace for managing multiple packages and applications
+- **Framework Workspace**: pnpm workspace for reusable backend API packages and the sample API
 - **Reusable API Framework Core**: Capability-based packages for DDD, HTTP contracts, security, observability, resilience, analytics, migrations, and files
 - **Clean Architecture**: Clear separation of concerns with Domain, Application, Infrastructure, and Presentation layers
 - **Domain-Driven Design**: Rich domain models with entities, value objects, aggregates, and domain events
 - **CQRS Pattern**: Separate command and query handlers using @nestjs/cqrs
 - **Event-Driven**: Domain events for decoupled communication
 
-### Infrastructure Packages
+### API Infrastructure Packages
 - **Type-Safe SQL**: Kysely query builder with full TypeScript support
 - **Distributed Caching**: Redis with Redisson for locks, caching, and rate limiting
 - **Structured Logging**: Pino-based JSON logging with request tracing
@@ -21,7 +21,7 @@ A production-ready NestJS monorepo template with pnpm workspace, implementing Do
 - **Object Storage**: S3-compatible RustFS storage
 - **Distributed Config**: etcd for configuration management with hot-reload
 
-### Application Features
+### API Framework Capabilities
 - **Security Primitives**: JWT helpers, RBAC checks, and route metadata through `@a3s-lab/security`
 - **API Metrics**: Prometheus metrics with request tracking
 - **Circuit Breaker**: Fault tolerance with automatic failover
@@ -41,7 +41,7 @@ A production-ready NestJS monorepo template with pnpm workspace, implementing Do
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              API Application                                  │
+│                            Sample API Application                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Presentation    │  Application    │  Domain      │  Infrastructure         │
 │  - Controllers   │  - Commands     │  - Entities  │  - Kysely (PostgreSQL) │
@@ -65,7 +65,7 @@ nestify/
 ├── tsconfig.json                   # Base TypeScript configuration
 ├── biome.json                      # Biome linting/formatting config
 ├── apps/
-│   └── api/                       # Main NestJS API application
+│   └── api/                       # Sample NestJS API application
 │       ├── src/
 │       │   ├── app.module.ts      # Root application module
 │       │   ├── main.ts            # Application entry point
@@ -92,7 +92,7 @@ nestify/
 
 ## Packages
 
-See [Framework Core](docs/framework-core.md) for the reusable DDD/API packages extracted from the application shared layer. Each core package also has its own README with install notes, import examples, exported capabilities, and package boundaries.
+See [Framework Core](docs/framework-core.md) for the reusable DDD/API packages extracted from the application shared layer. Each core package has its own README with install notes, import examples, exported capabilities, and package boundaries.
 
 ### @a3s-lab/ddd
 

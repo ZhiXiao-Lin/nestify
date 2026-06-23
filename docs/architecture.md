@@ -2,7 +2,7 @@
 
 ## Overview
 
-This template implements Clean Architecture and Domain-Driven Design (DDD) principles to create a maintainable, testable, and scalable application structure.
+This sample API implements Clean Architecture and Domain-Driven Design (DDD) principles to create a maintainable, testable, and scalable backend structure.
 
 ## The Dependency Rule
 

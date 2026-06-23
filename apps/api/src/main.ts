@@ -22,8 +22,8 @@ async function bootstrap() {
     app.useGlobalInterceptors(new LoggingInterceptor());
 
     const config = new DocumentBuilder()
-        .setTitle('NestJS DDD Template')
-        .setDescription('Production-ready NestJS template with Domain-Driven Design')
+        .setTitle('Nestify Sample API')
+        .setDescription('Sample backend API built with Nestify DDD framework packages')
         .setVersion('1.0')
         .addTag('orders')
         .build();

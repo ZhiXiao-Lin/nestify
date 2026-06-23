@@ -1,6 +1,6 @@
 # DDD Patterns Guide
 
-This document explains the Domain-Driven Design patterns used in this template.
+This document explains the Domain-Driven Design patterns used in the sample API and reusable framework packages.
 
 ## Core Building Blocks
 
@@ -297,7 +297,7 @@ export class OrderRepository implements IOrderRepository {
 
 **Definition**: A boundary within which a domain model is defined and applicable.
 
-**In This Template**:
+**In This Sample API**:
 - `order` module is a bounded context
 - Has its own domain model
 - Clear boundaries with other contexts
@@ -420,7 +420,7 @@ export class GetOrderHandler {
 
 **Definition**: Store state as a sequence of events.
 
-**Note**: This template uses traditional state storage, but can be extended to event sourcing.
+**Note**: This sample API uses traditional state storage, but can be extended to event sourcing.
 
 ```typescript
 // Event sourced aggregate (conceptual)

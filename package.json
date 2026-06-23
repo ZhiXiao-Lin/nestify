@@ -1,7 +1,7 @@
 {
     "name": "@a3s-lab/nestify",
     "version": "1.0.0",
-    "description": "Production-ready NestJS monorepo with pnpm workspace, Domain-Driven Design and Clean Architecture",
+    "description": "DDD-focused NestJS backend API framework packages with a sample API workspace",
     "author": "",
     "private": true,
     "license": "MIT",
