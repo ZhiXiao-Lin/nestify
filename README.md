@@ -79,6 +79,7 @@ nestify/
     ├── kysely/                    # @a3s-lab/kysely - Type-safe SQL
     ├── redisson/                  # @a3s-lab/redisson - Redis client
     ├── ddd/                       # @a3s-lab/ddd - DDD primitives
+    ├── cqrs/                      # @a3s-lab/cqrs - Nest CQRS adapters
     ├── http/                      # @a3s-lab/http - API contracts
     ├── security/                  # @a3s-lab/security - API security primitives
     ├── observability/             # @a3s-lab/observability - Tracking and metrics
@@ -109,6 +110,17 @@ class Order extends AggregateRoot<string> {
 }
 
 const result = Guard.againstNullOrUndefined(orderId, 'orderId');
+```
+
+### @a3s-lab/cqrs
+
+Nest CQRS adapters for DDD domain event publishing.
+
+```typescript
+{
+    provide: DOMAIN_EVENT_PUBLISHER,
+    useClass: NestCqrsDomainEventPublisher,
+}
 ```
 
 ### @a3s-lab/http

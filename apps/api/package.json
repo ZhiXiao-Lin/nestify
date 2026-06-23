@@ -30,6 +30,7 @@
         "@a3s-lab/rustfs": "workspace:*",
         "@a3s-lab/etcd": "workspace:*",
         "@a3s-lab/ddd": "workspace:*",
+        "@a3s-lab/cqrs": "workspace:*",
         "@a3s-lab/http": "workspace:*",
         "@a3s-lab/security": "workspace:*",
         "@a3s-lab/observability": "workspace:*",

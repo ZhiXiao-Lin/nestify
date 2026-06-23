@@ -7,6 +7,7 @@ const artifactsDir = path.join(rootDir, '.artifacts/core-packages');
 
 const corePackages = [
     { name: '@a3s-lab/ddd', dir: 'packages/ddd' },
+    { name: '@a3s-lab/cqrs', dir: 'packages/cqrs' },
     { name: '@a3s-lab/http', dir: 'packages/http' },
     { name: '@a3s-lab/security', dir: 'packages/security' },
     { name: '@a3s-lab/observability', dir: 'packages/observability' },

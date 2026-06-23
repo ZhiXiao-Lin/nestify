@@ -1,8 +1,2 @@
-import { DomainEvent } from '@/shared/domain/domain-event';
-
-export interface IEventBus {
-    publish(event: DomainEvent): Promise<void>;
-    publishAll(events: DomainEvent[]): Promise<void>;
-}
-
-export const EVENT_BUS = Symbol('EVENT_BUS');
+export type { IDomainEventPublisher as IEventBus } from '@a3s-lab/ddd';
+export { DOMAIN_EVENT_PUBLISHER as EVENT_BUS } from '@a3s-lab/ddd';
