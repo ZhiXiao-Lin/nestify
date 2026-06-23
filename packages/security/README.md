@@ -1,6 +1,6 @@
 # @a3s-lab/security
 
-Reusable security decorators, guards, and validation helpers for NestJS APIs.
+Reusable security decorators, guards, role-permission checks, and validation helpers for NestJS APIs.
 
 ## Install
 
@@ -42,9 +42,10 @@ class HealthController {
 - Path validation utilities
 - Sensitive operation metadata
 - JWT payload types
+- Role-permission checker helpers
 
 ## Notes
 
-This package provides generic guard composition. Token verification, user shape, roles, permissions, and policy defaults belong in the consuming API.
+This package provides generic guard composition and role-permission checks. Token verification, request user shape, role names, resources, and policy defaults belong in the consuming API.
 
 See the [framework core guide](../../docs/framework-core.md) for package boundaries.

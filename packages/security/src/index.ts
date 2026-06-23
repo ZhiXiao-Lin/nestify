@@ -4,3 +4,4 @@ export * from './environment-guards';
 export * from './path-security';
 export * from './sensitive-operation';
 export * from './jwt';
+export * from './rbac';

@@ -7,6 +7,7 @@ import {
     PathSecurityValidator,
     Public,
     PUBLIC_ROUTE_KEY,
+    RolePermissionChecker,
     SENSITIVE_OPERATION_KEY,
 } from '../index';
 
@@ -15,11 +16,11 @@ describe('security utilities', () => {
         expect(PathSecurityValidator.hasPathTraversal('/safe/../secret')).toBe(true);
         expect(PathSecurityValidator.hasPathTraversal('/safe/path')).toBe(false);
         expect(PathSecurityValidator.normalizePath('/safe/./nested/')).toBe('/safe/nested');
-        expect(PathSecurityValidator.validatePathAccess('/admin/users', { blockedPaths: ['/admin'] })).toEqual({
+        expect(PathSecurityValidator.validatePathAccess('/admin/settings', { blockedPaths: ['/admin'] })).toEqual({
             valid: false,
             violations: ['Access to blocked path: /admin'],
         });
-        expect(PathSecurityValidator.validatePathAccess('/api/orders', { allowedPaths: ['/api'] })).toEqual({
+        expect(PathSecurityValidator.validatePathAccess('/api/resources', { allowedPaths: ['/api'] })).toEqual({
             valid: true,
             violations: [],
         });
@@ -37,7 +38,7 @@ describe('security utilities', () => {
         }
 
         Public()(Controller.prototype, 'handler', Object.getOwnPropertyDescriptor(Controller.prototype, 'handler')!);
-        MarkSensitive('orders:delete', { requireReauth: true, description: 'Delete order' })(
+        MarkSensitive('records:delete', { requireReauth: true, description: 'Delete record' })(
             Controller.prototype,
             'handler',
             Object.getOwnPropertyDescriptor(Controller.prototype, 'handler')!,
@@ -45,9 +46,9 @@ describe('security utilities', () => {
 
         expect(Reflect.getMetadata(PUBLIC_ROUTE_KEY, Controller.prototype.handler)).toBe(true);
         expect(Reflect.getMetadata(SENSITIVE_OPERATION_KEY, Controller.prototype.handler)).toEqual({
-            operation: 'orders:delete',
+            operation: 'records:delete',
             requireReauth: true,
-            description: 'Delete order',
+            description: 'Delete record',
         });
     });
 
@@ -74,6 +75,31 @@ describe('security utilities', () => {
         );
 
         await expect(guard.canActivate(createExecutionContext())).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('checks role permissions without application defaults', () => {
+        const checker = new RolePermissionChecker([
+            {
+                name: 'editor',
+                permissions: [{ resource: 'records', actions: ['read', 'update'] }],
+            },
+            {
+                name: 'owner',
+                permissions: [{ resource: 'records', actions: ['*'] }],
+            },
+        ]);
+
+        checker.registerRole({ name: 'viewer', permissions: [{ resource: 'records', actions: ['read'] }] });
+
+        expect(checker.getRole('editor')?.name).toBe('editor');
+        expect(checker.getRoles()).toHaveLength(3);
+        expect(checker.hasPermission('editor', 'records', 'update')).toBe(true);
+        expect(checker.hasPermission('editor', 'records', 'delete')).toBe(false);
+        expect(checker.hasPermission('owner', 'records', 'delete')).toBe(true);
+        expect(checker.hasAnyPermission(['viewer', 'editor'], 'records', 'update')).toBe(true);
+        expect(checker.hasAllPermissions(['viewer', 'editor'], 'records', 'read')).toBe(true);
+        expect(checker.hasRole(['editor'], 'editor')).toBe(true);
+        expect(checker.hasAnyRole(['viewer'], ['editor', 'owner'])).toBe(false);
     });
 });
 

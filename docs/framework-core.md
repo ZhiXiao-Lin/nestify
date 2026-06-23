@@ -9,7 +9,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
-| `@a3s-lab/security` | Default-deny guard primitives, public route metadata, local/dev-only guards, path validation, sensitive operation metadata, and JWT payload types. |
+| `@a3s-lab/security` | Default-deny guard primitives, public route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload types, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, and HTTP metrics interceptor. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
@@ -58,7 +58,7 @@ the sample API for now because they encode application choices rather than stabl
 
 | Area | Current decision | Reason |
 | --- | --- | --- |
-| `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. |
+| `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. Generic role-permission checks live in `@a3s-lab/security`; app roles remain local. |
 | `audit`, `feature-flags` | Keep app-local | They depend on app persistence/cache conventions and default flag/audit semantics. |
 | `database`, `health`, `redis` | Keep app-local compatibility/integration | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
 | `application/dto.base`, `base` | Defer | `BaseDto` has no current consumers, and `BaseService` couples a CRUD template to Kysely plus a pagination shape that differs from `@a3s-lab/http`; extract only after a smaller generic contract is used outside the sample app. |
@@ -97,6 +97,7 @@ The framework core is covered by package tests for:
 - HTTP interceptors and filters with Nest `Reflector` metadata
 - HTTP presentation filters and logging interceptor
 - Security path validation, metadata decorators, and default-deny behavior
+- Security role-permission checker behavior
 - Observability collectors and metrics formatting
 - Observability request tracking with SQL and external-call request stores
 - Resilience retry, circuit breaker, and TTL cache
