@@ -95,9 +95,6 @@ importers:
       class-validator:
         specifier: ^0.14.0
         version: 0.14.3
-      jsonwebtoken:
-        specifier: ^9.0.2
-        version: 9.0.3
       kysely:
         specifier: ^0.28.11
         version: 0.28.11
@@ -141,9 +138,6 @@ importers:
       '@types/jest':
         specifier: ^29.5.0
         version: 29.5.14
-      '@types/jsonwebtoken':
-        specifier: ^9.0.7
-        version: 9.0.10
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.31
@@ -706,6 +700,9 @@ importers:
       express:
         specifier: ^4.17.0 || ^5.0.0
         version: 4.22.1
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.3
     devDependencies:
       '@nestjs/common':
         specifier: ^10.0.0
@@ -719,6 +716,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.0
         version: 29.5.14
+      '@types/jsonwebtoken':
+        specifier: ^9.0.7
+        version: 9.0.10
       jest:
         specifier: ^29.5.0
         version: 29.7.0(@types/node@20.19.31)(ts-node@10.9.2(@swc/core@1.15.11)(@types/node@20.19.31)(typescript@5.9.3))

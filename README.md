@@ -136,7 +136,7 @@ throw new BusinessException({
 
 ### @a3s-lab/security
 
-Default-deny guard primitives, role-permission checks, and reusable API security helpers.
+Default-deny guard primitives, JWT helpers, role-permission checks, and reusable API security helpers.
 
 ```typescript
 @Public()

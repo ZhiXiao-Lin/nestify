@@ -3,6 +3,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import {
     DefaultDenyAuthGuard,
+    JwtTokenHelper,
     MarkSensitive,
     PathSecurityValidator,
     Public,
@@ -100,6 +101,16 @@ describe('security utilities', () => {
         expect(checker.hasAllPermissions(['viewer', 'editor'], 'records', 'read')).toBe(true);
         expect(checker.hasRole(['editor'], 'editor')).toBe(true);
         expect(checker.hasAnyRole(['viewer'], ['editor', 'owner'])).toBe(false);
+    });
+
+    it('signs and verifies JWTs with explicit options', () => {
+        const tokens = new JwtTokenHelper<{ sub: string }>();
+        const token = tokens.sign({ sub: 'subject-1' }, { secret: 'test-secret', expiresIn: '10m' });
+
+        expect(tokens.verify(token, { secret: 'test-secret' }).sub).toBe('subject-1');
+        expect(tokens.decode(token)?.sub).toBe('subject-1');
+        expect(tokens.isExpiringSoon(token, 60)).toBe(false);
+        expect(() => tokens.verify(token, { secret: 'wrong-secret' })).toThrow();
     });
 });
 

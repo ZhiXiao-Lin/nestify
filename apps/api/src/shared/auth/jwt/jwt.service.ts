@@ -4,11 +4,12 @@
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as jwt from 'jsonwebtoken';
+import { JwtTokenHelper } from '@a3s-lab/security';
 import { JwtPayload, TokenPair } from './jwt.types';
 
 @Injectable()
 export class JwtService {
+    private readonly tokens = new JwtTokenHelper<JwtPayload>();
     private readonly accessTokenSecret: string;
     private readonly refreshTokenSecret: string;
     private readonly accessTokenExpiry: string;
@@ -25,18 +26,14 @@ export class JwtService {
      * Generate access token
      */
     generateAccessToken(payload: JwtPayload): string {
-        return jwt.sign(payload as object, this.accessTokenSecret, {
-            expiresIn: this.accessTokenExpiry as jwt.SignOptions['expiresIn'],
-        });
+        return this.tokens.sign(payload, { secret: this.accessTokenSecret, expiresIn: this.accessTokenExpiry });
     }
 
     /**
      * Generate refresh token
      */
     generateRefreshToken(payload: JwtPayload): string {
-        return jwt.sign(payload as object, this.refreshTokenSecret, {
-            expiresIn: this.refreshTokenExpiry as jwt.SignOptions['expiresIn'],
-        });
+        return this.tokens.sign(payload, { secret: this.refreshTokenSecret, expiresIn: this.refreshTokenExpiry });
     }
 
     /**
@@ -54,7 +51,7 @@ export class JwtService {
      */
     verifyAccessToken(token: string): JwtPayload {
         try {
-            return jwt.verify(token, this.accessTokenSecret) as JwtPayload;
+            return this.tokens.verify(token, { secret: this.accessTokenSecret });
         } catch {
             throw new UnauthorizedException('Invalid or expired access token');
         }
@@ -65,7 +62,7 @@ export class JwtService {
      */
     verifyRefreshToken(token: string): JwtPayload {
         try {
-            return jwt.verify(token, this.refreshTokenSecret) as JwtPayload;
+            return this.tokens.verify(token, { secret: this.refreshTokenSecret });
         } catch {
             throw new UnauthorizedException('Invalid or expired refresh token');
         }
@@ -75,23 +72,13 @@ export class JwtService {
      * Decode token without verification (for debugging)
      */
     decodeToken(token: string): JwtPayload | null {
-        try {
-            return jwt.decode(token) as JwtPayload;
-        } catch {
-            return null;
-        }
+        return this.tokens.decode(token);
     }
 
     /**
      * Check if token is about to expire (within 5 minutes)
      */
     isTokenExpiringSoon(token: string): boolean {
-        const decoded = this.decodeToken(token);
-        if (!decoded || !decoded.exp) {
-            return true;
-        }
-
-        const fiveMinutesFromNow = Math.floor(Date.now() / 1000) + 300;
-        return decoded.exp < fiveMinutesFromNow;
+        return this.tokens.isExpiringSoon(token, 300);
     }
 }
