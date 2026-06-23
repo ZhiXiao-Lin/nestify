@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
     S3Client,
     CreateBucketCommand,
@@ -28,7 +28,8 @@ import {
     type Type as AwsGranteeType,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import {
+import { MODULE_OPTIONS_TOKEN } from './rustfs.module-definition';
+import type {
     RustFSPackageOptions,
     Bucket,
     CreateBucketOptions,
@@ -49,10 +50,8 @@ import {
     ListPartsOptions,
     ListPartsResult,
     StorageClass,
-    RustFSError,
-    ObjectNotFoundError,
-    BucketAlreadyExistsError,
 } from './rustfs.types';
+import { RustFSError, ObjectNotFoundError, BucketAlreadyExistsError } from './rustfs.types';
 
 function toBucketAcl(acl?: BucketCannedAcl): AwsBucketCannedACL | undefined {
     return acl as AwsBucketCannedACL | undefined;
@@ -142,7 +141,7 @@ export class RustFSServiceImpl implements OnModuleInit {
     private defaultBucket: string;
     private readonly logger = new Logger(RustFSServiceImpl.name);
 
-    constructor(private readonly options: RustFSPackageOptions) {
+    constructor(@Inject(MODULE_OPTIONS_TOKEN) private readonly options: RustFSPackageOptions) {
         this.defaultBucket = options.bucket || '';
         this.client = this.createClient();
     }

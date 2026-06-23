@@ -17,6 +17,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
+| `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
@@ -34,6 +35,7 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/redisson`](../packages/redisson/README.md)
 - [`@a3s-lab/bullmq`](../packages/bullmq/README.md)
 - [`@a3s-lab/nats`](../packages/nats/README.md)
+- [`@a3s-lab/rustfs`](../packages/rustfs/README.md)
 - [`@a3s-lab/clickhouse`](../packages/clickhouse/README.md)
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
 - [`@a3s-lab/files`](../packages/files/README.md)
@@ -63,7 +65,7 @@ The former `apps/api/src/shared/*` implementations were reviewed after the frame
 | `application/dto.base`, `base` | Removed unused app template code | `BaseDto` had no consumers, and `BaseService` coupled a CRUD template to Kysely plus a pagination shape that differs from `@a3s-lab/http`. Generic `IQuery` and `IUseCase` contracts live in `@a3s-lab/ddd`; no stable extra framework contract remained. |
 | `testing` | Removed unused app template code | Test helpers had no consumers and included sample user, organization, Redis, and Kysely mock conventions. Add framework-neutral builders later only when a package-level use case appears. |
 | `infrastructure/messaging/messaging.interface` | Removed unused app integration interface | The NATS-style service facade had no active consumers after the DDD event publisher moved to `@a3s-lab/cqrs`; concrete broker APIs remain in `@a3s-lab/nats`. |
-| `infrastructure/storage/storage.interface` | Removed unused app integration interface | The RustFS/S3-level bucket/object service facade had no active consumers. Generic upload contracts live in `@a3s-lab/files`; concrete object storage APIs remain in `@a3s-lab/rustfs`. |
+| `infrastructure/storage/storage.interface` | Removed unused app integration interface | The RustFS/S3-level bucket/object service facade had no active consumers. Generic upload contracts live in `@a3s-lab/files`; concrete object storage APIs live in `@a3s-lab/rustfs`. |
 | `file-upload` | Package-backed | Generic upload validation, storage client contracts, decorators, and interceptors now live in `@a3s-lab/files`; AppModule imports the package directly, and the legacy app wrappers have been removed. |
 | `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; AppModule imports the package modules directly, and the legacy app wrappers have been removed. |
 | `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; sample API entry points import the package directly, and the legacy app wrappers have been removed. |
@@ -109,6 +111,7 @@ The framework core is covered by package tests for:
 - Redisson Redis option builders and module registration
 - BullMQ queue creation, worker lifecycle, metrics, and module registration
 - NATS module registration, publish/request encoding, subscriptions, JetStream publishing, and lifecycle cleanup
+- RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks
 - ClickHouse client routing and lifecycle
 - Migration provider wrapping and module registration
 - File upload validation, storage key handling, module registration, and upload interceptors

@@ -1,5 +1,5 @@
 import { ConfigurableModuleBuilder } from '@nestjs/common';
-import { RustFSPackageOptions } from './rustfs.types';
+import type { RustFSPackageOptions } from './rustfs.types';
 
 /**
  * Configurable module builder for RustFSModule
