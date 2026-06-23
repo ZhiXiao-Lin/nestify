@@ -128,4 +128,4 @@ pnpm test
 pnpm lint:check
 ```
 
-`pnpm release:check` formats, lints, builds, tests, packs the framework core packages, and verifies each package manifest and tarball. The tarball verification checks public entry points, type declarations, README inclusion, workspace dependency rewriting, and absence of test/source/build-cache files.
+`pnpm release:check` formats, lints, builds, tests, packs the framework core packages, and verifies each package manifest and tarball. The verification checks public entry points, type declarations, required README sections, README inclusion in tarballs, workspace dependency rewriting, and absence of test/source/build-cache files.

@@ -65,4 +65,13 @@ export class ResourceEvents {
 }
 ```
 
+## Exports
+
+- `NatsModule`
+- `NatsService`
+- NATS message, headers, subscription, JetStream, health, and module option types
+- Configurable module definition helpers
+
+## Notes
+
 The package owns generic NATS connection management, headers, serialization helpers, subscriptions, JetStream publish/subscribe helpers, health state, and lifecycle cleanup. Applications still own subject naming, stream naming, payload contracts, and message handling policy.

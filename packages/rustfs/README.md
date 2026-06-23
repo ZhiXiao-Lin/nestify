@@ -59,4 +59,13 @@ export class ObjectStorage {
 }
 ```
 
+## Exports
+
+- `RustFSModule`
+- `RustFSService`
+- Bucket, object, presigned URL, multipart upload, health, and module option types
+- Configurable module definition helpers
+
+## Notes
+
 The package owns generic S3-compatible client creation, bucket operations, object operations, presigned URLs, multipart upload helpers, error mapping, and health checks. Applications still own bucket names, object key conventions, metadata contracts, retention policy, and access policy.

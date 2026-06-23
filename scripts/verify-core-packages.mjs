@@ -8,6 +8,7 @@ const artifactsDir = path.join(rootDir, '.artifacts/core-packages');
 
 const requiredFiles = ['README.md', 'dist/**/*.js', 'dist/**/*.d.ts', 'dist/**/*.js.map'];
 const deniedFiles = ['!dist/**/__tests__/**', '!dist/**/*.spec.*', '!dist/**/*.tsbuildinfo'];
+const requiredReadmeSections = ['## Install', '## Use', '## Exports', '## Notes'];
 const forbiddenTarEntries = [/\/src\//, /__tests__/, /\.spec\./, /tsbuildinfo$/];
 const failures = [];
 
@@ -83,6 +84,9 @@ function verifyPackage(corePackage) {
     if (existsSync(readmePath)) {
         const readme = readFileSync(readmePath, 'utf8');
         expect(readme.includes(corePackage.name), `${corePackage.name}: README.md should mention the package name`);
+        for (const section of requiredReadmeSections) {
+            expect(readme.includes(section), `${corePackage.name}: README.md should include ${section}`);
+        }
     }
 
     expect(existsSync(path.join(packageDir, 'dist/index.js')), `${corePackage.name}: dist/index.js is missing`);

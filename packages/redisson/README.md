@@ -27,4 +27,14 @@ import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
 export class AppModule {}
 ```
 
+## Exports
+
+- `RedissonModule`
+- `RedissonService`
+- Redisson and Redis client option contracts
+- Single-node Redis option builders
+- Re-exported `node-redisson` and `ioredis` public APIs
+
+## Notes
+
 `createRedissonModuleOptions` builds single-node Redis options for the existing module. Applications still own concrete environment variable names, key naming, cache policy, and lock usage.

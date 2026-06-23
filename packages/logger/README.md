@@ -42,4 +42,14 @@ export class ExampleService {
 }
 ```
 
+## Exports
+
+- `LoggerModule`
+- `Logger`
+- `LoggingInterceptor`
+- Log context, log level, logger options, and module option types
+- Configurable module definition helpers
+
+## Notes
+
 `LoggingInterceptor` can be registered as a Nest interceptor when request/response timing should be captured. The package keeps context generic: applications may add their own fields through the open `LogContext` shape.

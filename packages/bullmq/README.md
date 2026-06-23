@@ -54,4 +54,13 @@ export class TaskService {
 }
 ```
 
+## Exports
+
+- `BullMQModule`
+- `BullMQService`
+- Queue, worker, job, metrics, and module option types
+- Configurable module definition helpers
+
+## Notes
+
 The package owns generic queue registration, worker lifecycle, queue metrics, and cleanup helpers. Applications still own queue names, job payloads, retry policy, and worker business logic.

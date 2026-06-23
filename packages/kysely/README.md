@@ -30,4 +30,14 @@ import { KyselyModule, createPostgresKyselyModuleOptions } from '@a3s-lab/kysely
 export class AppModule {}
 ```
 
+## Exports
+
+- `KyselyModule`
+- `KyselyService`
+- `KyselyLogger`
+- Kysely module option contracts and configurable module definition helpers
+- PostgreSQL option builders
+
+## Notes
+
 `createPostgresKyselyModuleOptions` is a small builder around `PostgresDialect` and `pg.Pool`. Applications still own their environment variable names, database names, schema types, migrations, and query policy.

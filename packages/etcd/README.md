@@ -60,4 +60,13 @@ export class SettingsStore {
 }
 ```
 
+## Exports
+
+- `EtcdModule`
+- `EtcdService`
+- `EtcdConfigService`
+- Connection, watch, lease, compare-and-set, health, and module option types
+
+## Notes
+
 The package owns generic etcd client creation, key-value operations, prefix reads, JSON helpers, local config caching, watches, leases, compare-and-set, cluster health, and lifecycle cleanup. Applications still own key naming, value schemas, cache TTL policy, and change-handling behavior.
