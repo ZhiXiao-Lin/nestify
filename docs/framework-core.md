@@ -37,6 +37,22 @@ New application code can import directly from the packages. Existing application
 - Keep NestJS dependencies in packages that need Nest integration; keep DDD primitives framework-independent.
 - Keep package names short and capability-based, for example `@a3s-lab/http`.
 
+## Remaining Shared App Scope
+
+The remaining `apps/api/src/shared/*` implementations were reviewed after the framework extraction. They should stay in
+the sample API for now because they encode application choices rather than stable framework contracts:
+
+| Area | Current decision | Reason |
+| --- | --- | --- |
+| `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. |
+| `audit`, `feature-flags` | Keep app-local | They depend on app persistence/cache conventions and default flag/audit semantics. |
+| `database`, `health`, `redis` | Keep app-local compatibility/integration | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
+| `file-upload`, `serialization`, `transform`, `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
+| `cache`, `retry`, `rate-limiting`, `circuit-breaker`, `metrics`, `tracking`, `openapi`, `validation`, `errors`, `domain`, `utils` | Already package-backed | These are now package exports or compatibility wrappers over package exports. |
+
+Future extraction should only happen when an area has a package-level contract that does not depend on sample API
+tables, request user conventions, environment variable names, or default business resources.
+
 ## Migration Naming
 
 `@a3s-lab/migrations` treats migration names matching `/(^|_)concurrent(_|$)/i` as non-transactional. These migrations are wrapped so `up` and `down` run against the outer Kysely instance instead of Kysely's transactional migration connection.
@@ -55,15 +71,19 @@ The framework core is covered by package tests for:
 
 - DDD primitives and `Result`
 - HTTP envelopes, errors, request ids, and pagination
+- HTTP interceptors and filters with Nest `Reflector` metadata
 - Security path validation, metadata decorators, and default-deny behavior
 - Observability collectors and metrics formatting
+- Observability request tracking with SQL and external-call request stores
 - Resilience retry, circuit breaker, and TTL cache
+- Resilience module registration and interceptor metadata execution
 - ClickHouse client routing and lifecycle
 - Migration provider wrapping and module registration
 
 Run:
 
 ```bash
+pnpm release:check
 pnpm build
 pnpm test
 pnpm lint:check
