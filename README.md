@@ -22,14 +22,11 @@ A production-ready NestJS monorepo template with pnpm workspace, implementing Do
 - **Distributed Config**: etcd for configuration management with hot-reload
 
 ### Application Features
-- **Authentication**: JWT with access/refresh tokens, RBAC permission system
+- **Security Primitives**: JWT helpers, RBAC checks, and route metadata through `@a3s-lab/security`
 - **API Metrics**: Prometheus metrics with request tracking
 - **Circuit Breaker**: Fault tolerance with automatic failover
 - **Retry Logic**: Exponential backoff with jitter
 - **Rate Limiting**: Redis-based sliding window rate limiting
-- **Multi-tenancy**: Tenant isolation support
-- **Audit Logging**: Comprehensive audit trail
-- **Feature Flags**: Rollout management
 - **API Versioning**: Header-based API versioning
 - **File Upload**: Multipart file handling
 
@@ -54,8 +51,8 @@ A production-ready NestJS monorepo template with pnpm workspace, implementing Do
 │                  │                 │  - Services   │  - RustFS (Storage)     │
 │                  │                 │              │  - etcd (Config)        │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                           Shared Infrastructure                               │
-│  Auth │ Metrics │ Cache │ CircuitBreaker │ Retry │ RateLimit │ Health    │
+│                           Reusable Framework Packages                         │
+│  DDD │ HTTP │ Security │ Observability │ Resilience │ Files │ Health      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -297,115 +294,22 @@ Distributed configuration with hot-reload.
 
 ```typescript
 // Get config
-const value = await etcd.get('config/feature-flags');
+const value = await etcd.get('config/runtime');
 
 // Watch for changes
-etcd.watch('config/feature-flags', (event) => {
-  if (event.value) reloadFeatures(event.value);
+etcd.watch('config/runtime', (event) => {
+  if (event.value) reloadRuntimeConfig(event.value);
 });
 ```
 
-## Shared Modules
+## API Wiring
 
-### Authentication (auth)
-
-JWT-based authentication with RBAC.
+Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API keeps only concrete app wiring under `apps/api/src/shared`: database, Redis, and health checks.
 
 ```typescript
-// JWT Token Generation
-const tokens = jwtService.generateTokenPair({ sub: userId, roles: ['admin'] });
-
-// Protect Routes
-@UseGuards(JwtAuthGuard)
-
-// Role-based Access
-@Roles('admin')
-@UseGuards(RolesGuard)
-
-// Permission Check
-@Permissions('users', 'create')
-@UseGuards(PermissionsGuard)
-```
-
-### Metrics (metrics)
-
-Prometheus metrics collection.
-
-```typescript
-// Automatic HTTP metrics
-GET /metrics  // Prometheus format
-
-// Custom metrics
-metricsService.incGauge('active_users');
-metricsService.observeHistogram('request_duration', duration);
-```
-
-### Circuit Breaker (circuit-breaker)
-
-Fault tolerance pattern.
-
-```typescript
-@CircuitBreaker({ timeout: 5000, maxFailures: 5 })
-async callExternalService() {
-  return await externalService.get();
-}
-```
-
-### Retry (retry)
-
-Automatic retry with exponential backoff.
-
-```typescript
-const result = await retryService.execute(fn, {
-  maxAttempts: 3,
-  initialDelay: 100,
-  backoffMultiplier: 2,
-  retryableErrors: [NetworkError, TimeoutError],
-});
-```
-
-### Rate Limiting (rate-limiting)
-
-Redis-based sliding window rate limiting.
-
-```typescript
-@RateLimit({ limit: 100, window: '1m' })
-async endpoint() { }
-```
-
-### Health (health)
-
-Health check endpoints.
-
-```typescript
-GET /health      // Full health check
-GET /health/live // Liveness probe
+GET /health       // Full health check
+GET /health/live  // Liveness probe
 GET /health/ready // Readiness probe
-```
-
-### Validation (validation)
-
-Custom validators beyond class-validator.
-
-```typescript
-@IsPassword()              // Strong password
-@IsStrongPassword()        // Very strong password
-@IsUsername()              // Alphanumeric with underscores
-@IsSlug()                  // URL-safe slug
-@IsFutureDate()           // Future date only
-@IsInRange(0, 100)        // Number in range
-```
-
-### Serialization (serialization)
-
-class-transformer integration with groups.
-
-```typescript
-class UserEntity { }
-class UserDto { }
-
-@Serialize(UserDto, { groups: ['user:read'] })
-getUser(): UserEntity { }
 ```
 
 ## Project Structure
@@ -430,21 +334,10 @@ apps/api/src/
 │       │   └── persistence/     # KyselyOrderRepository
 │       └── presentation/
 │           └── order.controller.ts
-└── shared/                         # Shared kernel
-    ├── auth/                      # JWT, RBAC, Guards
-    ├── metrics/                   # Prometheus
-    ├── cache/                     # Caching
-    ├── circuit-breaker/           # Fault tolerance
-    ├── retry/                    # Retry logic
-    ├── rate-limiting/            # Rate limit
-    ├── health/                    # Health checks
-    ├── validation/                # Custom validators
-    ├── serialization/             # DTO transformation
-    ├── base/                      # Base service, entity
-    ├── domain/                    # Core DDD
-    ├── errors/                    # Error handling
-    ├── utils/                     # Utilities
-    └── ...
+└── shared/                         # App-local infrastructure wiring
+    ├── database/                  # Kysely + PostgreSQL wiring and schema types
+    ├── redis/                     # Redisson wiring
+    └── health/                    # Health checks for app infrastructure
 ```
 
 ## Getting Started
@@ -535,12 +428,6 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/nestify
 # Redis
 REDIS_HOST=localhost
 REDIS_PORT=6379
-
-# JWT
-JWT_ACCESS_SECRET=your-access-secret
-JWT_REFRESH_SECRET=your-refresh-secret
-JWT_ACCESS_EXPIRY=15m
-JWT_REFRESH_EXPIRY=7d
 
 # NATS (optional)
 NATS_SERVERS=nats://localhost:4222

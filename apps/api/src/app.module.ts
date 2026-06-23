@@ -14,11 +14,7 @@ import { OrderModule } from './modules/order/order.module';
 import { DatabaseModule } from './shared/database';
 import { RedisModule } from './shared/redis';
 
-import { AuthModule } from './shared/auth';
 import { HealthModule } from './shared/health';
-import { TenantModule } from './shared/tenant';
-import { AuditModule } from './shared/audit';
-import { FeatureFlagsModule } from './shared/feature-flags';
 
 @Module({
     imports: [
@@ -34,9 +30,6 @@ import { FeatureFlagsModule } from './shared/feature-flags';
         // Redis (Redisson)
         RedisModule,
 
-        // Auth (JWT + RBAC)
-        AuthModule,
-
         // Metrics (Prometheus)
         MetricsModule,
 
@@ -49,20 +42,11 @@ import { FeatureFlagsModule } from './shared/feature-flags';
         // Serialization (class-transformer)
         SerializationModule,
 
-        // Tenant isolation
-        TenantModule,
-
-        // Audit logging
-        AuditModule,
-
         // API response wrapper
         ApiResponseModule,
 
         // API versioning
         ApiVersioningModule,
-
-        // Feature flags
-        FeatureFlagsModule,
 
         // File upload
         FileUploadModule,

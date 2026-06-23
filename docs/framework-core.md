@@ -28,39 +28,27 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
 - [`@a3s-lab/files`](../packages/files/README.md)
 
-## Application Compatibility Layer
+## Sample API Wiring
 
-`apps/api/src/shared/*` keeps compatibility paths for the example API. Most files now re-export or lightly adapt the package-level APIs. This lets existing application modules keep their current imports while the reusable framework surface lives in packages.
-
-Examples:
-
-```ts
-export { Result, voidOk } from '@a3s-lab/ddd';
-export * from '@a3s-lab/http';
-export { MetricsService } from '@a3s-lab/observability';
-export { RetryService } from '@a3s-lab/resilience';
-```
-
-New application code can import directly from the packages. Existing application code can continue through `apps/api/src/shared/*` until a later import cleanup.
+Reusable API framework capabilities now live in packages and are imported directly by the sample API. The remaining `apps/api/src/shared/*` files are concrete sample-app wiring for PostgreSQL, Redis, and health checks; they are not compatibility re-export layers.
 
 ## Design Rules
 
 - Keep framework packages generic and API-focused.
 - Do not move business entities, order-specific rules, sample DTOs, or product-domain concepts into packages.
-- Prefer package-level implementations for cross-cutting behavior and keep app-level files as compatibility wrappers.
+- Prefer package-level implementations for cross-cutting behavior and keep app-level files only for concrete application wiring.
 - Keep NestJS dependencies in packages that need Nest integration; keep DDD primitives framework-independent.
 - Keep package names short and capability-based, for example `@a3s-lab/http`.
 
 ## Remaining Shared App Scope
 
-The remaining `apps/api/src/shared/*` implementations were reviewed after the framework extraction. They should stay in
-the sample API for now because they encode application choices rather than stable framework contracts:
+The remaining `apps/api/src/shared/*` implementations were reviewed after the framework extraction. They stay in the sample API because they encode concrete application wiring rather than stable framework contracts:
 
 | Area | Current decision | Reason |
 | --- | --- | --- |
-| `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. Generic JWT token helpers and role-permission checks live in `@a3s-lab/security`; app config and roles remain local. |
-| `audit`, `feature-flags` | Keep app-local | They depend on app persistence/cache conventions and default flag/audit semantics. |
-| `database`, `health`, `redis` | Keep app-local compatibility/integration | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
+| `auth`, `tenant` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level guards/decorators/services. Generic JWT token helpers, route metadata, and role-permission checks live in `@a3s-lab/security`. |
+| `audit`, `feature-flags` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level audit or feature-flag services, and their defaults encoded application policy rather than framework contracts. |
+| `database`, `health`, `redis` | Keep app-local wiring | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
 | `application/dto.base`, `base` | Removed unused app template code | `BaseDto` had no consumers, and `BaseService` coupled a CRUD template to Kysely plus a pagination shape that differs from `@a3s-lab/http`. Generic `IQuery` and `IUseCase` contracts live in `@a3s-lab/ddd`; no stable extra framework contract remained. |
 | `testing` | Removed unused app template code | Test helpers had no consumers and included sample user, organization, Redis, and Kysely mock conventions. Add framework-neutral builders later only when a package-level use case appears. |
 | `infrastructure/messaging/messaging.interface` | Removed unused app integration interface | The NATS-style service facade had no active consumers after the DDD event publisher moved to `@a3s-lab/cqrs`; concrete broker APIs remain in `@a3s-lab/nats`. |
