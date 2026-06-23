@@ -340,7 +340,7 @@ apps/api/src/
 ### Prerequisites
 
 - Node.js 20+
-- pnpm 8+
+- pnpm 10+
 - Docker and Docker Compose
 - PostgreSQL 15+
 - Redis 7+

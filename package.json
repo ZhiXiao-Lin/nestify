@@ -4,6 +4,7 @@
     "description": "DDD-focused NestJS backend API framework packages with a sample API workspace",
     "author": "",
     "private": true,
+    "packageManager": "pnpm@10.30.3",
     "license": "MIT",
     "scripts": {
         "build": "pnpm -r build",
