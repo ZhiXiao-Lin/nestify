@@ -1,5 +1,3 @@
-export interface IRepository<T> {
-    findById(id: string): Promise<T | null>;
-    save(entity: T): Promise<T>;
-    delete(id: string): Promise<void>;
-}
+import type { IRepository as DddRepository } from '@a3s-lab/ddd';
+
+export type IRepository<T> = DddRepository<string, T>;

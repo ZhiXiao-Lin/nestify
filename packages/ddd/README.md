@@ -41,7 +41,7 @@ class ExampleAggregate extends AggregateRoot<string> {
 
 - Entities, aggregate roots, value objects, and auditable entities
 - Domain events and domain event publishing contracts
-- Repository and use case contracts
+- Repository, unit of work, and use case contracts
 - Guard helpers and `Result`
 
 ## Notes

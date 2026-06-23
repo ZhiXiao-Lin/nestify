@@ -4,6 +4,7 @@ export * from './entity';
 export * from './aggregate-root';
 export * from './value-object';
 export * from './repository';
+export * from './unit-of-work';
 export * from './errors';
 export * from './auditable-entity';
 export * from './use-case';

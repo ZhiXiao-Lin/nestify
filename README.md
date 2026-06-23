@@ -100,7 +100,7 @@ See [Framework Core](docs/framework-core.md) for the reusable DDD/API packages e
 
 ### @a3s-lab/ddd
 
-Framework-independent DDD primitives.
+Framework-independent DDD primitives and persistence contracts.
 
 ```typescript
 class Order extends AggregateRoot<string> {

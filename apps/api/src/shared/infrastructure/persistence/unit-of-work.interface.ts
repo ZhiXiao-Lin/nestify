@@ -1,5 +1,2 @@
-export interface IUnitOfWork {
-    start(): Promise<void>;
-    commit(): Promise<void>;
-    rollback(): Promise<void>;
-}
+export type { IUnitOfWork } from '@a3s-lab/ddd';
+export { UNIT_OF_WORK } from '@a3s-lab/ddd';

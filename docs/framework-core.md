@@ -6,7 +6,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 
 | Package | Responsibility |
 | --- | --- |
-| `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, guards, and `Result`. |
+| `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public route metadata, local/dev-only guards, path validation, sensitive operation metadata, and JWT payload types. |
@@ -66,6 +66,7 @@ the sample API for now because they encode application choices rather than stabl
 | `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `messaging/event-bus` | Package-backed | Generic DDD domain event publishing through Nest CQRS now lives in `@a3s-lab/cqrs`; app files are compatibility wrappers. |
+| `persistence/repository`, `persistence/unit-of-work` | Package-backed | Generic repository and unit of work contracts now live in `@a3s-lab/ddd`; app files are compatibility wrappers. |
 | `cache`, `retry`, `rate-limiting`, `circuit-breaker`, `metrics`, `tracking`, `openapi`, `validation`, `errors`, `domain`, `utils` | Already package-backed | These are now package exports or compatibility wrappers over package exports. |
 
 Future extraction should only happen when an area has a package-level contract that does not depend on sample API
@@ -87,7 +88,7 @@ export async function up(db: Kysely<unknown>) {
 
 The framework core is covered by package tests for:
 
-- DDD primitives and `Result`
+- DDD primitives, persistence contracts, and `Result`
 - CQRS domain event publisher adapter
 - HTTP envelopes, errors, request ids, and pagination
 - HTTP interceptors and filters with Nest `Reflector` metadata

@@ -1,4 +1,15 @@
-import { AggregateRoot, DomainEvent, Entity, Guard, Result, ValueObject, voidOk } from '../index';
+import {
+    AggregateRoot,
+    DomainEvent,
+    Entity,
+    Guard,
+    Result,
+    UNIT_OF_WORK,
+    ValueObject,
+    voidOk,
+    type IRepository,
+    type IUnitOfWork,
+} from '../index';
 
 class TestEntity extends Entity<string> {}
 
@@ -81,5 +92,22 @@ describe('ddd primitives', () => {
         expect(Guard.isOneOf('a', ['a', 'b'], 'letter').succeeded).toBe(true);
         expect(Guard.inRange(5, 1, 10, 'count').succeeded).toBe(true);
         expect(Guard.allInRange([1, 2, 11], 1, 10, 'counts').succeeded).toBe(false);
+    });
+
+    it('defines persistence contracts without framework dependencies', async () => {
+        const repository: IRepository<string, TestEntity> = {
+            findById: jest.fn(async id => new TestEntity(id)),
+            save: jest.fn(async entity => entity),
+            delete: jest.fn(async () => undefined),
+        };
+        const unitOfWork: IUnitOfWork = {
+            start: jest.fn(async () => undefined),
+            commit: jest.fn(async () => undefined),
+            rollback: jest.fn(async () => undefined),
+        };
+
+        await expect(repository.findById('entity-1')).resolves.toEqual(new TestEntity('entity-1'));
+        await expect(unitOfWork.commit()).resolves.toBeUndefined();
+        expect(typeof UNIT_OF_WORK).toBe('symbol');
     });
 });
