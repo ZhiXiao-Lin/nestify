@@ -1,3 +1,1 @@
-export interface IQuery<IResponse> {
-    execute(): Promise<IResponse>;
-}
+export type { IQuery } from '@a3s-lab/ddd';

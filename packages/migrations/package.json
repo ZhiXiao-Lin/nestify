@@ -1,0 +1,60 @@
+{
+    "name": "@a3s-lab/migrations",
+    "version": "0.1.0",
+    "description": "Kysely migration helpers for NestJS APIs",
+    "author": "A3S Lab",
+    "license": "MIT",
+    "source": "./src/index.ts",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "test": "jest --passWithNoTests",
+        "clean": "rimraf dist && rimraf node_modules"
+    },
+    "dependencies": {
+        "@a3s-lab/kysely": "workspace:*"
+    },
+    "peerDependencies": {
+        "@nestjs/common": "^10.0.0",
+        "kysely": "^0.28.0"
+    },
+    "devDependencies": {
+        "@nestjs/common": "^10.0.0",
+        "@types/jest": "^29.5.0",
+        "@types/node": "^20.0.0",
+        "jest": "^29.5.0",
+        "kysely": "^0.28.11",
+        "reflect-metadata": "^0.1.13",
+        "rimraf": "^6.0.1",
+        "ts-jest": "^29.1.0",
+        "typescript": "^5.1.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "src",
+        "testRegex": ".*\\.spec\\.ts$",
+        "transform": {
+            "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "testEnvironment": "node"
+    }
+}

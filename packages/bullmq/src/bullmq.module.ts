@@ -3,14 +3,12 @@
 // ============================================================================
 
 import { Module, Global, DynamicModule, Provider } from '@nestjs/common';
-import { BullMQModuleOptions, BullMQOptionsFactory } from './bullmq.types';
+import type { BullMQModuleOptions } from './bullmq.types';
+import { BULLMQ_OPTIONS_TOKEN } from './bullmq.module-definition';
 import { BullMQService } from './bullmq.service';
 
 @Global()
-@Module({
-    providers: [BullMQService],
-    exports: [BullMQService],
-})
+@Module({})
 export class BullMQModule {
     /**
      * Register BullMQ module with static options
@@ -20,9 +18,10 @@ export class BullMQModule {
             module: BullMQModule,
             providers: [
                 {
-                    provide: BullMQModuleOptions,
+                    provide: BULLMQ_OPTIONS_TOKEN,
                     useValue: options,
                 },
+                BullMQService,
             ],
             exports: [BullMQService],
         };
@@ -32,14 +31,15 @@ export class BullMQModule {
      * Register BullMQ module asynchronously (for ConfigService-based config)
      */
     static registerAsync(options: {
-        useFactory?: (factory: BullMQOptionsFactory) => Promise<BullMQModuleOptions> | BullMQModuleOptions;
+        imports?: DynamicModule['imports'];
+        useFactory?: (...args: unknown[]) => Promise<BullMQModuleOptions> | BullMQModuleOptions;
         inject?: any[];
     }): DynamicModule {
         const asyncProviders: Provider[] = [];
 
         if (options.useFactory) {
             asyncProviders.push({
-                provide: BullMQModuleOptions,
+                provide: BULLMQ_OPTIONS_TOKEN,
                 useFactory: options.useFactory,
                 inject: options.inject ?? [],
             });
@@ -47,8 +47,8 @@ export class BullMQModule {
 
         return {
             module: BullMQModule,
-            imports: [],
-            providers: asyncProviders,
+            imports: options.imports,
+            providers: [...asyncProviders, BullMQService],
             exports: [BullMQService],
         };
     }

@@ -1,3 +1,1 @@
-export interface IUseCase<IRequest, IResponse> {
-    execute(request: IRequest): Promise<IResponse>;
-}
+export type { IUseCase } from '@a3s-lab/ddd';

@@ -1,69 +1,88 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Etcd3, EtcdOptions } from 'etcd3';
-import type { EtcdModuleOptions, WatchEvent, WatchCallback, ConfigEntry, LeaseInfo, HealthResult } from './etcd.types';
+import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+    Etcd3,
+    type IKeyValue,
+    type IOptions,
+    type IStatusResponse,
+    type Lease,
+    type Watcher,
+} from 'etcd3';
+import {
+    ETCD_MODULE_OPTIONS,
+    type ConfigEntry,
+    type EtcdModuleOptions,
+    type HealthResult,
+    type LeaseInfo,
+    type WatchCallback,
+} from './etcd.types';
 
 @Injectable()
 export class EtcdService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(EtcdService.name);
-    private client: Etcd3;
-    private watchers: Map<string, ReturnType<Etcd3['watch']>> = new Map();
+    private readonly client: Etcd3;
+    private readonly watchers = new Map<string, Promise<Watcher>>();
+    private readonly leases = new Map<string, Lease>();
 
-    constructor(private readonly options: EtcdModuleOptions) {
-        const etcdOptions: EtcdOptions = {
+    constructor(@Inject(ETCD_MODULE_OPTIONS) private readonly options: EtcdModuleOptions) {
+        const etcdOptions: IOptions = {
             hosts: this.options.endpoints,
             credentials: this.options.tls
                 ? {
-                      cert: this.options.tls.cert,
-                      key: this.options.tls.key,
-                      ca: this.options.tls.ca,
-                  }
+                    rootCertificate: Buffer.from(this.options.tls.ca ?? ''),
+                    privateKey: this.options.tls.key ? Buffer.from(this.options.tls.key) : undefined,
+                    certChain: this.options.tls.cert ? Buffer.from(this.options.tls.cert) : undefined,
+                }
                 : undefined,
-            username: this.options.auth?.username,
-            password: this.options.auth?.password,
+            auth: this.options.auth?.username && this.options.auth.password
+                ? {
+                    username: this.options.auth.username,
+                    password: this.options.auth.password,
+                }
+                : undefined,
+            defaultCallOptions: this.options.requestOptions?.timeout
+                ? () => ({ deadline: Date.now() + this.options.requestOptions!.timeout! })
+                : undefined,
         };
 
         this.client = new Etcd3(etcdOptions);
     }
 
-    async onModuleInit() {
+    async onModuleInit(): Promise<void> {
         try {
             const health = await this.healthCheck();
-            if (health.healthy) {
-                this.logger.log(`Successfully connected to etcd: ${this.options.endpoints.join(', ')}`);
-            } else {
+            if (!health.healthy) {
                 throw new Error('Etcd health check failed');
             }
+            this.logger.log(`Successfully connected to etcd: ${this.options.endpoints.join(', ')}`);
         } catch (error) {
             this.logger.error('Failed to connect to etcd', error);
             throw error;
         }
     }
 
-    async onModuleDestroy() {
+    async onModuleDestroy(): Promise<void> {
         try {
             for (const [key, watcher] of this.watchers) {
                 this.logger.debug(`Canceling watcher: ${key}`);
-                watcher.cancel();
+                await (await watcher).cancel();
             }
             this.watchers.clear();
-            await this.client.close();
+
+            for (const lease of this.leases.values()) {
+                lease.release();
+            }
+            this.leases.clear();
+
+            this.client.close();
             this.logger.log('Etcd connection closed');
         } catch (error) {
             this.logger.error('Error closing etcd connection', error);
         }
     }
 
-    // ==================== Key-Value Operations ====================
-
     async get<T = string>(key: string): Promise<T | null> {
-        try {
-            return (await this.client.get(key).string()) as T;
-        } catch (error: unknown) {
-            if ((error as { code?: string })?.code === 'KEY_NOT_FOUND') {
-                return null;
-            }
-            throw error;
-        }
+        const value = await this.client.get(key).string();
+        return value === null ? null : (value as T);
     }
 
     async getJSON<T = unknown>(key: string): Promise<T | null> {
@@ -76,54 +95,55 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         }
     }
 
-    async set(key: string, value: string | number | boolean | object, options?: { ttl?: number; lease?: string }): Promise<void> {
-        if (typeof value === 'object') {
-            value = JSON.stringify(value);
+    async set(
+        key: string,
+        value: string | number | boolean | object,
+        options?: { ttl?: number; lease?: string },
+    ): Promise<void> {
+        const serialized = serializeValue(value);
+
+        if (options?.ttl && !options.lease) {
+            const lease = this.client.lease(options.ttl, { autoKeepAlive: false });
+            const leaseId = await lease.grant();
+            this.leases.set(String(leaseId), lease);
+            await lease.put(key).value(serialized).exec();
+            return;
         }
-        if (options?.ttl && !options?.lease) {
-            await this.client.put(key).value(value as string).ttl(options.ttl);
-        } else if (options?.lease) {
-            await this.client.put(key).value(value as string).lease(options.lease);
-        } else {
-            await this.client.put(key).value(value as string);
+
+        const builder = this.client.put(key).value(serialized);
+        if (options?.lease) {
+            builder.lease(options.lease);
         }
+        await builder.exec();
     }
 
     async delete(key: string): Promise<boolean> {
         const result = await this.client.delete().key(key).exec();
-        return result.deleted > 0;
+        return Number(result.deleted) > 0;
     }
 
     async deleteByPrefix(prefix: string): Promise<number> {
-        const result = await this.client.delete().key(prefix).prefix().exec();
-        return result.deleted;
+        const result = await this.client.delete().prefix(prefix).exec();
+        return Number(result.deleted);
     }
 
     async exists(key: string): Promise<boolean> {
-        return await this.client.get(key).exists();
+        return this.client.get(key).exists();
     }
 
     async getKeysByPrefix(prefix: string): Promise<string[]> {
-        return await this.client.getKeys(prefix);
+        return this.client.getAll().prefix(prefix).keys();
     }
 
-    // ==================== Directory Operations ====================
-
     async getEntries<T = string>(prefix: string): Promise<ConfigEntry<T>[]> {
-        const results: ConfigEntry<T>[] = [];
-        const pairs = await this.client.getPrefix(prefix);
-
-        for (const pair of pairs) {
-            results.push({
-                key: pair.key,
-                value: pair.value as T,
-                version: pair.version,
-                revision: pair.modRevision,
-                created: pair.created,
-            });
-        }
-
-        return results;
+        const response = await this.client.getAll().prefix(prefix).exec();
+        return response.kvs.map(kv => ({
+            key: decodeBuffer(kv.key),
+            value: decodeBuffer(kv.value) as T,
+            version: Number(kv.version),
+            revision: Number(kv.mod_revision),
+            created: kv.create_revision === kv.mod_revision,
+        }));
     }
 
     async getEntriesAsJSON<T = unknown>(prefix: string): Promise<Map<string, T>> {
@@ -141,113 +161,64 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         return result;
     }
 
-    // ==================== Lease Operations ====================
-
     async createLease(ttl: number): Promise<LeaseInfo> {
         const lease = this.client.lease(ttl);
-        const id = await lease.id();
-        return { id, ttl, remainingTTL: ttl };
+        const id = await lease.grant();
+        this.leases.set(String(id), lease);
+        return { id: String(id), ttl, remainingTTL: ttl };
     }
 
     async grantLease(ttl: number): Promise<string> {
-        const lease = await this.client.grant(ttl);
-        return lease;
+        return (await this.createLease(ttl)).id;
     }
 
     async keepAlive(leaseId: string): Promise<void> {
-        const lease = this.client.lease(0, { ID: leaseId });
-        await lease.refresh();
+        const lease = this.leases.get(String(leaseId));
+        if (!lease) {
+            throw new Error(`Lease ${leaseId} is not managed by this EtcdService instance`);
+        }
+        await lease.keepaliveOnce();
     }
 
     async revokeLease(leaseId: string): Promise<void> {
-        await this.client.revoke(leaseId);
+        const lease = this.leases.get(String(leaseId));
+        if (lease) {
+            await lease.revoke();
+            this.leases.delete(String(leaseId));
+            return;
+        }
+        await this.client.leaseClient.leaseRevoke({ ID: leaseId });
     }
 
-    // ==================== Watch Operations ====================
-
     watch<T = string>(key: string, callback: WatchCallback<T>): () => void {
-        const watcher = this.client.watch().key(key).create();
-
-        watcher.on('put', (event: { kv?: { key: string; value: string; version: number; mod_revision: number } }) => {
-            if (event.kv) {
-                callback({
-                    type: 'put',
-                    key: event.kv.key,
-                    value: event.kv.value as T,
-                    version: event.kv.version,
-                    modRevision: event.kv.mod_revision,
-                });
-            }
+        const watcher = this.client.watch().key(key).create().then(watcher => {
+            this.attachWatcherHandlers(watcher, key, callback);
+            return watcher;
         });
-
-        watcher.on('delete', (event: { kv?: { key: string; version: number; mod_revision: number } }) => {
-            if (event.kv) {
-                callback({
-                    type: 'delete',
-                    key: event.kv.key,
-                    value: null,
-                    version: event.kv.version,
-                    modRevision: event.kv.mod_revision,
-                });
-            }
-        });
-
-        watcher.on('error', (error: Error) => {
-            this.logger.error(`Watch error for key ${key}:`, error);
-        });
-
         this.watchers.set(key, watcher);
 
         return () => {
-            watcher.cancel();
+            void watcher.then(w => w.cancel()).catch(error => this.logger.error(`Cancel watcher failed: ${key}`, error));
             this.watchers.delete(key);
         };
     }
 
     watchPrefix<T = string>(prefix: string, callback: WatchCallback<T>): () => void {
-        const watcher = this.client.watch().prefix(prefix).create();
-
-        watcher.on('put', (event: { kv?: { key: string; value: string; version: number; mod_revision: number } }) => {
-            if (event.kv) {
-                callback({
-                    type: 'put',
-                    key: event.kv.key,
-                    value: event.kv.value as T,
-                    version: event.kv.version,
-                    modRevision: event.kv.mod_revision,
-                });
-            }
+        const watcher = this.client.watch().prefix(prefix).create().then(watcher => {
+            this.attachWatcherHandlers(watcher, prefix, callback);
+            return watcher;
         });
-
-        watcher.on('delete', (event: { kv?: { key: string; version: number; mod_revision: number } }) => {
-            if (event.kv) {
-                callback({
-                    type: 'delete',
-                    key: event.kv.key,
-                    value: null,
-                    version: event.kv.version,
-                    modRevision: event.kv.mod_revision,
-                });
-            }
-        });
-
-        watcher.on('error', (error: Error) => {
-            this.logger.error(`Watch error for prefix ${prefix}:`, error);
-        });
-
         this.watchers.set(prefix, watcher);
 
         return () => {
-            watcher.cancel();
+            void watcher.then(w => w.cancel()).catch(error => this.logger.error(`Cancel watcher failed: ${prefix}`, error));
             this.watchers.delete(prefix);
         };
     }
 
-    // ==================== Cluster Operations ====================
-
     async healthCheck(): Promise<HealthResult> {
         try {
-            const status = await this.client.status();
+            const status = await this.getStatus();
             return {
                 healthy: true,
                 leader: status.leader,
@@ -259,20 +230,18 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
     }
 
     async getMembers(): Promise<string[]> {
-        const memberList = await this.client.memberList();
-        return memberList.map((m) => m.name);
+        const memberList = await this.client.cluster.memberList({});
+        return memberList.members.map(member => member.name).filter((name): name is string => Boolean(name));
     }
 
     async getLeader(): Promise<string | null> {
         try {
-            const status = await this.client.status();
+            const status = await this.getStatus();
             return status.leader || null;
         } catch {
             return null;
         }
     }
-
-    // ==================== Transaction Operations ====================
 
     async compareAndSet(
         key: string,
@@ -280,25 +249,61 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         newValue: string,
         options?: { ttl?: number },
     ): Promise<boolean> {
-        const tx = this.client.transaction();
-
-        if (expectedValue === null) {
-            tx.compare.notExists(key);
-        } else {
-            tx.compare.value(key, '==', expectedValue);
-        }
-
-        tx.then(this.client.put(key).value(newValue));
-
-        if (options?.ttl) {
-            tx.then(this.client.put(key).value(newValue).ttl(options.ttl));
-        }
-
-        const result = await tx.exec();
+        const comparison = expectedValue === null
+            ? this.client.if(key, 'Create', '==', 0)
+            : this.client.if(key, 'Value', '==', expectedValue);
+        const put = options?.ttl
+            ? this.client.lease(options.ttl, { autoKeepAlive: false }).put(key).value(newValue)
+            : this.client.put(key).value(newValue);
+        const result = await comparison.then(put).commit();
         return result.succeeded;
     }
 
     getClient(): Etcd3 {
         return this.client;
     }
+
+    private async getStatus(): Promise<IStatusResponse> {
+        return this.client.maintenance.status();
+    }
+
+    private attachWatcherHandlers<T>(watcher: Watcher, label: string, callback: WatchCallback<T>): void {
+        watcher.on('put', kv => {
+            callback({
+                type: 'put',
+                key: decodeBuffer(kv.key),
+                value: decodeBuffer(kv.value) as T,
+                version: Number(kv.version),
+                modRevision: Number(kv.mod_revision),
+            });
+        });
+
+        watcher.on('delete', kv => {
+            callback({
+                type: 'delete',
+                key: decodeBuffer(kv.key),
+                value: null,
+                version: Number(kv.version),
+                modRevision: Number(kv.mod_revision),
+            });
+        });
+
+        watcher.on('error', error => {
+            this.logger.error(`Watch error for ${label}:`, error);
+        });
+    }
+}
+
+function serializeValue(value: string | number | boolean | object): string | number {
+    if (typeof value === 'object') {
+        return JSON.stringify(value);
+    }
+    if (typeof value === 'boolean') {
+        return String(value);
+    }
+    return value;
+}
+
+function decodeBuffer(value: IKeyValue['key']): string {
+    return Buffer.isBuffer(value) ? value.toString('utf8') : String(value);
 }

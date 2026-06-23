@@ -1,6 +1,8 @@
 /**
  * Etcd configuration options
  */
+export const ETCD_MODULE_OPTIONS = 'ETCD_MODULE_OPTIONS';
+
 export interface EtcdModuleOptions {
     /** Etcd endpoints */
     endpoints: string[];
@@ -58,7 +60,7 @@ export interface ConfigEntry<T = unknown> {
  * Lease info
  */
 export interface LeaseInfo {
-    id: number;
+    id: string;
     ttl: number;
     remainingTTL: number;
 }

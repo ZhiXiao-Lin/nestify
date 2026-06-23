@@ -4,17 +4,11 @@ import { OrderModule } from './modules/order/order.module';
 import { DatabaseModule } from './shared/database';
 import { RedisModule } from './shared/redis';
 
-// Shared infrastructure modules
-import { LoggerModule } from '@a3s-lab/logger';
 import { AuthModule } from './shared/auth';
 import { MetricsModule } from './shared/metrics';
-import { CacheModule } from './shared/cache';
-import { CircuitBreakerModule } from './shared/circuit-breaker';
-import { RetryModule } from './shared/retry';
 import { HealthModule } from './shared/health';
 import { ValidationModule } from './shared/validation';
 import { SerializationModule } from './shared/serialization';
-import { RateLimitingModule } from './shared/rate-limiting';
 import { TenantModule } from './shared/tenant';
 import { AuditModule } from './shared/audit';
 import { ApiResponseModule } from './shared/api-response';
@@ -25,6 +19,7 @@ import { TransformModule } from './shared/transform';
 import { ErrorsModule } from './shared/errors';
 import { OpenAPIModule } from './shared/openapi';
 import { TrackingModule } from './shared/tracking';
+import { ResilienceModule } from '@a3s-lab/resilience';
 
 @Module({
     imports: [
@@ -32,13 +27,6 @@ import { TrackingModule } from './shared/tracking';
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: '.env',
-        }),
-
-        // Logger (global JSON logging with request tracing)
-        LoggerModule.register({
-            level: process.env.LOG_LEVEL as any || 'info',
-            name: 'nestify-api',
-            json: true,
         }),
 
         // Database (Kysely + PostgreSQL)
@@ -53,14 +41,8 @@ import { TrackingModule } from './shared/tracking';
         // Metrics (Prometheus)
         MetricsModule,
 
-        // Cache
-        CacheModule,
-
-        // Circuit Breaker
-        CircuitBreakerModule,
-
-        // Retry with exponential backoff
-        RetryModule,
+        // Retry, circuit breaker, cache, rate limiting, distributed lock
+        ResilienceModule.register(),
 
         // Health checks
         HealthModule,
@@ -70,9 +52,6 @@ import { TrackingModule } from './shared/tracking';
 
         // Serialization (class-transformer)
         SerializationModule,
-
-        // Rate limiting
-        RateLimitingModule,
 
         // Tenant isolation
         TenantModule,

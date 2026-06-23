@@ -1,6 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KyselyModule, createKyselyLogger } from '@a3s-lab/kysely';
+import { recordSql } from '@a3s-lab/observability';
 import { PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 
@@ -21,9 +22,10 @@ import { Pool } from 'pg';
                             max: 10,
                         }),
                     }),
-                    log: configService.get('NODE_ENV') === 'development'
-                        ? createKyselyLogger()
-                        : undefined,
+                    log: createKyselyLogger({
+                        consoleOutput: configService.get('NODE_ENV') === 'development',
+                        onQuery: recordSql,
+                    }),
                 },
             }),
             inject: [ConfigService],

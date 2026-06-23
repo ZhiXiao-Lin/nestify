@@ -1,8 +1,10 @@
-// ============================================================================
-// Cache Module
-// ============================================================================
-
-export { CacheService } from './cache.service';
-export { CacheInterceptor } from './cache.interceptor';
-export { Cache, CachePrefix } from './cache.decorator';
-export type { CacheOptions, CacheStats, CacheDecoratorOptions } from './cache.service';
+export {
+    Cache,
+    CACHE_KEY,
+    CacheInterceptor,
+    CachePrefix,
+    CacheService,
+    ResilienceModule as CacheModule,
+    TtlCache,
+} from '@a3s-lab/resilience';
+export type { CacheDecoratorOptions, CacheOptions, CacheStats } from '@a3s-lab/resilience';

@@ -19,15 +19,24 @@ import {
     CompleteMultipartUploadCommand,
     AbortMultipartUploadCommand,
     ListPartsCommand,
+    type AccessControlPolicy,
+    type BucketCannedACL as AwsBucketCannedACL,
+    type ObjectCannedACL as AwsObjectCannedACL,
+    type Permission as AwsPermission,
+    type S3ClientConfig,
+    type StorageClass as AwsStorageClass,
+    type Type as AwsGranteeType,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
     RustFSPackageOptions,
     Bucket,
     CreateBucketOptions,
+    BucketCannedAcl,
     BucketAcl,
     StorageObject,
     PutObjectOptions,
+    ObjectCannedAcl,
     GetObjectOptions,
     CopyObjectOptions,
     ListObjectsOptions,
@@ -39,12 +48,93 @@ import {
     CompleteMultipartUploadOptions,
     ListPartsOptions,
     ListPartsResult,
-    UploadPart,
+    StorageClass,
     RustFSError,
-    BucketNotFoundError,
     ObjectNotFoundError,
     BucketAlreadyExistsError,
 } from './rustfs.types';
+
+function toBucketAcl(acl?: BucketCannedAcl): AwsBucketCannedACL | undefined {
+    return acl as AwsBucketCannedACL | undefined;
+}
+
+function toObjectAcl(acl?: ObjectCannedAcl): AwsObjectCannedACL | undefined {
+    return acl as AwsObjectCannedACL | undefined;
+}
+
+function toStorageClass(storageClass?: StorageClass): AwsStorageClass | undefined {
+    if (!storageClass) {
+        return undefined;
+    }
+
+    if (storageClass === 'ONEZONE_INFREQUENT_ACCESS') {
+        return 'ONEZONE_IA';
+    }
+
+    return storageClass as AwsStorageClass;
+}
+
+function fromStorageClass(storageClass?: string): StorageClass | undefined {
+    if (!storageClass) {
+        return undefined;
+    }
+
+    if (storageClass === 'ONEZONE_IA') {
+        return 'ONEZONE_INFREQUENT_ACCESS';
+    }
+
+    return storageClass as StorageClass;
+}
+
+function toAwsGranteeType(type?: BucketAcl['grants'][number]['grantee']['type']): AwsGranteeType | undefined {
+    switch (type) {
+        case 'canonical':
+            return 'CanonicalUser';
+        case 'group':
+            return 'Group';
+        case 'email':
+            return 'AmazonCustomerByEmail';
+        default:
+            return undefined;
+    }
+}
+
+function fromAwsGranteeType(type?: string): BucketAcl['grants'][number]['grantee']['type'] {
+    switch (type) {
+        case 'CanonicalUser':
+            return 'canonical';
+        case 'Group':
+            return 'group';
+        case 'AmazonCustomerByEmail':
+            return 'email';
+        default:
+            return 'canonical';
+    }
+}
+
+function toAccessControlPolicy(acl: BucketAcl): AccessControlPolicy {
+    return {
+        Owner: { ID: acl.owner },
+        Grants: acl.grants.map(grant => ({
+            Grantee: {
+                Type: toAwsGranteeType(grant.grantee.type),
+                ID: grant.grantee.id,
+                URI: grant.grantee.uri,
+                EmailAddress: grant.grantee.emailAddress,
+            },
+            Permission: grant.permission as AwsPermission,
+        })),
+    };
+}
+
+function toPartNumberMarker(marker?: string): number | undefined {
+    if (!marker) {
+        return undefined;
+    }
+
+    const value = Number(marker);
+    return Number.isFinite(value) ? value : undefined;
+}
 
 @Injectable()
 export class RustFSServiceImpl implements OnModuleInit {
@@ -90,7 +180,7 @@ export class RustFSServiceImpl implements OnModuleInit {
             config.maxAttempts = this.options.maxAttempts;
         }
 
-        return new S3Client(config as Parameters<typeof S3Client.create>[0]);
+        return new S3Client(config as S3ClientConfig);
     }
 
     // =========================================================================
@@ -101,7 +191,7 @@ export class RustFSServiceImpl implements OnModuleInit {
         try {
             const command = new CreateBucketCommand({
                 Bucket: options.name,
-                ACL: options.acl,
+                ACL: toBucketAcl(options.acl),
             });
 
             await this.client.send(command);
@@ -117,11 +207,7 @@ export class RustFSServiceImpl implements OnModuleInit {
             if (err.name === 'BucketAlreadyOwnedByYou' || err.name === 'BucketAlreadyExists') {
                 throw new BucketAlreadyExistsError(options.name);
             }
-            throw new RustFSError(
-                `Failed to create bucket: ${err.message}`,
-                'CREATE_BUCKET_ERROR',
-                500,
-            );
+            throw new RustFSError(`Failed to create bucket: ${err.message}`, 'CREATE_BUCKET_ERROR', 500);
         }
     }
 
@@ -129,7 +215,7 @@ export class RustFSServiceImpl implements OnModuleInit {
         const command = new ListBucketsCommand({});
         const response = await this.client.send(command);
 
-        return (response.Buckets || []).map((b) => ({
+        return (response.Buckets || []).map(b => ({
             name: b.Name || '',
             creationDate: b.CreationDate || new Date(),
         }));
@@ -141,9 +227,9 @@ export class RustFSServiceImpl implements OnModuleInit {
 
         return {
             owner: response.Owner?.ID || '',
-            grants: (response.Grants || []).map((g) => ({
+            grants: (response.Grants || []).map(g => ({
                 grantee: {
-                    type: g.Grantee?.Type as 'canonical' | 'group' | 'email',
+                    type: fromAwsGranteeType(g.Grantee?.Type),
                     id: g.Grantee?.ID,
                     uri: g.Grantee?.URI,
                     emailAddress: g.Grantee?.EmailAddress,
@@ -156,7 +242,7 @@ export class RustFSServiceImpl implements OnModuleInit {
     async setBucketAcl(bucketName: string, acl: BucketAcl): Promise<void> {
         const command = new PutBucketAclCommand({
             Bucket: bucketName,
-            ACL: acl as unknown as string,
+            AccessControlPolicy: toAccessControlPolicy(acl),
         });
 
         await this.client.send(command);
@@ -192,8 +278,8 @@ export class RustFSServiceImpl implements OnModuleInit {
             ContentDisposition: options.contentDisposition,
             ContentLanguage: options.contentLanguage,
             Metadata: options.metadata,
-            ACL: options.acl,
-            StorageClass: options.storageClass,
+            ACL: toObjectAcl(options.acl),
+            StorageClass: toStorageClass(options.storageClass),
             Expires: options.expires,
             CacheControl: options.cacheControl,
         });
@@ -208,7 +294,7 @@ export class RustFSServiceImpl implements OnModuleInit {
             lastModified: new Date(),
             contentType: options.contentType,
             metadata: options.metadata,
-            storageClass: options.storageClass as StorageObject['storageClass'],
+            storageClass: options.storageClass,
             versionId: response.VersionId,
         };
     }
@@ -217,9 +303,7 @@ export class RustFSServiceImpl implements OnModuleInit {
         const command = new GetObjectCommand({
             Bucket: bucketName,
             Key: options.key,
-            Range: options.range
-                ? `bytes=${options.range.start}-${options.range.end}`
-                : undefined,
+            Range: options.range ? `bytes=${options.range.start}-${options.range.end}` : undefined,
             IfMatch: options.ifMatch,
             IfNoneMatch: options.ifNoneMatch,
             IfModifiedSince: options.ifModifiedSince,
@@ -263,7 +347,7 @@ export class RustFSServiceImpl implements OnModuleInit {
                 lastModified: response.LastModified || new Date(),
                 contentType: response.ContentType,
                 metadata: response.Metadata || {},
-                storageClass: response.StorageClass as StorageObject['storageClass'],
+                storageClass: fromStorageClass(response.StorageClass),
                 versionId: response.VersionId,
             };
         } catch (error) {
@@ -283,9 +367,9 @@ export class RustFSServiceImpl implements OnModuleInit {
             Bucket: destinationBucket,
             Key: options.destinationKey,
             CopySource: `/${sourceBucket}/${options.sourceKey}`,
-            ACL: options.acl,
+            ACL: toObjectAcl(options.acl),
             Metadata: options.metadata,
-            StorageClass: options.storageClass,
+            StorageClass: toStorageClass(options.storageClass),
         });
 
         const response = await this.client.send(command);
@@ -293,10 +377,10 @@ export class RustFSServiceImpl implements OnModuleInit {
         return {
             key: options.destinationKey,
             bucket: destinationBucket,
-            etag: response.ETag || '',
+            etag: response.CopyObjectResult?.ETag || '',
             size: 0,
             lastModified: new Date(),
-            storageClass: options.storageClass as StorageObject['storageClass'],
+            storageClass: options.storageClass,
             versionId: response.VersionId,
         };
     }
@@ -315,7 +399,7 @@ export class RustFSServiceImpl implements OnModuleInit {
         const command = new DeleteObjectsCommand({
             Bucket: bucketName,
             Delete: {
-                Objects: keys.map((key) => ({ Key: key })),
+                Objects: keys.map(key => ({ Key: key })),
             },
         });
 
@@ -339,16 +423,15 @@ export class RustFSServiceImpl implements OnModuleInit {
         const response = await this.client.send(command);
 
         return {
-            objects: (response.Contents || []).map((obj) => ({
+            objects: (response.Contents || []).map(obj => ({
                 key: obj.Key || '',
                 bucket: bucketName,
                 etag: obj.ETag || '',
                 size: obj.Size || 0,
                 lastModified: obj.LastModified || new Date(),
-                storageClass: obj.StorageClass as StorageObject['storageClass'],
-                versionId: obj.VersionId,
+                storageClass: fromStorageClass(obj.StorageClass),
             })),
-            prefixes: (response.CommonPrefixes || []).map((p) => p.Prefix || ''),
+            prefixes: (response.CommonPrefixes || []).map(p => p.Prefix || ''),
             isTruncated: response.IsTruncated || false,
             nextContinuationToken: response.NextContinuationToken,
             keyCount: response.KeyCount || 0,
@@ -360,10 +443,7 @@ export class RustFSServiceImpl implements OnModuleInit {
     // Presigned URLs
     // =========================================================================
 
-    async getPresignedUrl(
-        bucketName: string,
-        options: PresignedUrlOptions,
-    ): Promise<string> {
+    async getPresignedUrl(bucketName: string, options: PresignedUrlOptions): Promise<string> {
         const command = new GetObjectCommand({
             Bucket: bucketName,
             Key: options.key,
@@ -402,17 +482,14 @@ export class RustFSServiceImpl implements OnModuleInit {
     // Multipart Upload
     // =========================================================================
 
-    async createMultipartUpload(
-        bucketName: string,
-        options: CreateMultipartUploadOptions,
-    ): Promise<string> {
+    async createMultipartUpload(bucketName: string, options: CreateMultipartUploadOptions): Promise<string> {
         const command = new CreateMultipartUploadCommand({
             Bucket: bucketName,
             Key: options.key,
             ContentType: options.contentType,
             Metadata: options.metadata,
-            ACL: options.acl,
-            StorageClass: options.storageClass,
+            ACL: toObjectAcl(options.acl),
+            StorageClass: toStorageClass(options.storageClass),
         });
 
         const response = await this.client.send(command);
@@ -439,16 +516,13 @@ export class RustFSServiceImpl implements OnModuleInit {
         return response.ETag || '';
     }
 
-    async completeMultipartUpload(
-        bucketName: string,
-        options: CompleteMultipartUploadOptions,
-    ): Promise<StorageObject> {
+    async completeMultipartUpload(bucketName: string, options: CompleteMultipartUploadOptions): Promise<StorageObject> {
         const command = new CompleteMultipartUploadCommand({
             Bucket: bucketName,
             Key: options.key,
             UploadId: options.uploadId,
             MultipartUpload: {
-                Parts: options.parts.map((p) => ({
+                Parts: options.parts.map(p => ({
                     PartNumber: p.partNumber,
                     ETag: p.etag,
                 })),
@@ -482,7 +556,7 @@ export class RustFSServiceImpl implements OnModuleInit {
             Key: options.key,
             UploadId: options.uploadId,
             MaxParts: options.maxParts,
-            PartNumberMarker: options.partNumberMarker,
+            PartNumberMarker: options.partNumberMarker?.toString(),
         });
 
         const response = await this.client.send(command);
@@ -490,13 +564,13 @@ export class RustFSServiceImpl implements OnModuleInit {
         return {
             key: options.key,
             uploadId: options.uploadId,
-            parts: (response.Parts || []).map((p) => ({
+            parts: (response.Parts || []).map(p => ({
                 partNumber: p.PartNumber || 0,
                 etag: p.ETag || '',
                 checksumSHA256: p.ChecksumSHA256,
             })),
             isTruncated: response.IsTruncated || false,
-            nextPartNumberMarker: response.NextPartNumberMarker,
+            nextPartNumberMarker: toPartNumberMarker(response.NextPartNumberMarker),
             maxParts: response.MaxParts || 1000,
         };
     }

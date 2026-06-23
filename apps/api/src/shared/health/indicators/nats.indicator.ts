@@ -4,7 +4,6 @@
 
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
-import { NatsServiceImpl } from '@a3s-lab/nats';
 import { IMessagingService } from '../../infrastructure/messaging/messaging.interface';
 
 @Injectable()

@@ -5,7 +5,6 @@ import {
     LoggerModuleOptions,
     LogLevel,
     LogContext,
-    LogEntry,
 } from './logger.types';
 
 // Async local storage for request context
@@ -32,10 +31,7 @@ export class LoggerServiceImpl implements NestLoggerService {
             formatters: {
                 level: (label: string) => ({ level: label }),
             },
-            ...(options.json !== false && {
-                // Default to JSON for K8s stdout
-                baseCrypter: options.redact ? pino.stdSerializers.noop : undefined,
-            }),
+            ...(options.redact ? { redact: options.redact } : {}),
         };
 
         if (options.prettyPrint || process.env.NODE_ENV === 'development') {
@@ -112,7 +108,7 @@ export class LoggerServiceImpl implements NestLoggerService {
     // Child Logger
     // =========================================================================
 
-    child(context: Partial<LogContext>): LoggerService {
+    child(context: Partial<LogContext>): LoggerServiceImpl {
         const childLogger = new LoggerServiceImpl({
             name: this.name,
             base: {

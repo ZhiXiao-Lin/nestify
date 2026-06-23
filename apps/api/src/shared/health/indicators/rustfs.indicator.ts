@@ -4,7 +4,6 @@
 
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
-import { RustFSServiceImpl } from '@a3s-lab/rustfs';
 import { IStorageService } from '../../infrastructure/storage/storage.interface';
 
 @Injectable()

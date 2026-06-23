@@ -1,6 +1,7 @@
-// ============================================================================
-// Validation - Common validation decorators and utilities
-// ============================================================================
+import { Global, Module } from '@nestjs/common';
 
-export * from './validation.pipe';
-export * from './validation-options';
+export * from '@a3s-lab/http';
+
+@Global()
+@Module({})
+export class ValidationModule {}

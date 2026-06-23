@@ -1,5 +1,17 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import { connect, NatsConnection, JetStreamClient, StringCodec, Msg, Subscription as NatsSubscription } from 'nats';
+import { Inject, Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import {
+    connect,
+    Events,
+    headers as createNatsHeaders,
+    type JetStreamClient,
+    type Msg,
+    type MsgHdrs,
+    type NatsConnection,
+    type PubAck,
+    StringCodec,
+    type Subscription as NatsSubscription,
+} from 'nats';
+import { MODULE_OPTIONS_TOKEN } from './nats.module-definition';
 import {
     NatsPackageOptions,
     NatsConnectionState,
@@ -10,7 +22,6 @@ import {
     SubscriptionHandler,
     JetStreamPublishOptions,
     JetStreamSubscribeOptions,
-    NatsError,
     NatsConnectionError,
     NatsPublishError,
     NatsSubscribeError,
@@ -35,7 +46,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(NatsServiceImpl.name);
     private readonly stringCodec = StringCodec();
 
-    constructor(private readonly options: NatsPackageOptions) {
+    constructor(@Inject(MODULE_OPTIONS_TOKEN) private readonly options: NatsPackageOptions) {
         this.connectionState = {
             connected: false,
             server: '',
@@ -63,7 +74,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 servers,
                 name: this.options.name || 'nestjs-nats',
                 user: this.options.user,
-                password: this.options.pass,
+                pass: this.options.pass,
                 token: this.options.token,
                 maxReconnectAttempts: this.options.maxReconnectAttempts ?? -1,
                 reconnectTimeWait: this.options.reconnectTimeWait ?? 2000,
@@ -75,7 +86,6 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                         certFile: this.options.tls.certFile,
                         keyFile: this.options.tls.keyFile,
                         caFile: this.options.tls.caFile,
-                        verify: this.options.tls.verify ?? true,
                     },
                 }),
             });
@@ -93,17 +103,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 this.connectionState.connected = false;
             });
 
-            this.connection.on('reconnect', () => {
-                this.connectionState.connected = true;
-                this.connectionState.server = this.connection?.getServer() || '';
-                this.connectionState.reconnectCount++;
-                this.logger.log(`NATS reconnected to ${this.connectionState.server}`);
-            });
-
-            this.connection.on('error', (err) => {
-                this.logger.error(`NATS connection error: ${err.message}`);
-                this.connectionState.lastError = err.message;
-            });
+            this.monitorStatus(this.connection);
 
             if (this.options.jetstream?.enabled !== false) {
                 this.jetStream = this.connection.jetstream();
@@ -179,7 +179,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
             const data = this.encodeData(options.data);
 
             conn.publish(options.subject, data, {
-                ...(options.headers && { headers: options.headers }),
+                ...(options.headers && { headers: this.toHeaders(options.headers) }),
                 ...(options.reply && { reply: options.reply }),
             });
 
@@ -211,7 +211,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
 
             const msg = await conn.request(options.subject, data, {
                 timeout,
-                ...(options.headers && { headers: options.headers }),
+                ...(options.headers && { headers: this.toHeaders(options.headers) }),
             });
 
             return this.convertMessage(msg);
@@ -245,25 +245,24 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
 
             const sub = conn.subscribe(options.subject, {
                 queue: options.queue,
-                ...(options.config && { config: options.config }),
-                ...(options.durable && { durable: options.durable }),
             });
 
-            this.subscriptions.set(sub.sid, sub);
+            const sid = sub.getID();
+            this.subscriptions.set(sid, sub);
 
             this.handleSubscription(sub, handler, options);
 
             this.logger.log(`Subscribed to ${options.subject}${options.queue ? ` (queue: ${options.queue})` : ''}`);
 
             return {
-                sid: sub.sid,
+                sid,
                 subject: options.subject,
                 queue: options.queue,
                 cancel: () => {
                     sub.unsubscribe();
-                    this.subscriptions.delete(sub.sid);
+                    this.subscriptions.delete(sid);
                 },
-                isCancelled: () => sub.isCancelled(),
+                isCancelled: () => sub.isClosed(),
             };
         } catch (error) {
             throw new NatsSubscribeError(
@@ -306,13 +305,15 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 try {
                     await handler(natsMsg);
 
-                    if (!options.manualAck) {
-                        msg.ack();
+                    const maybeAck = msg as Msg & { ack?: () => void };
+                    if (!options.manualAck && typeof maybeAck.ack === 'function') {
+                        maybeAck.ack();
                     }
                 } catch (error) {
                     this.logger.error(`Error handling message on ${options.subject}: ${(error as Error).message}`);
-                    if (!options.manualAck) {
-                        msg.ack();
+                    const maybeAck = msg as Msg & { ack?: () => void };
+                    if (!options.manualAck && typeof maybeAck.ack === 'function') {
+                        maybeAck.ack();
                     }
                 }
             }
@@ -334,16 +335,14 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                     data?: Uint8Array,
                     options?: {
                         timeout?: number;
-                        headers?: Record<string, string>;
-                        wait?: boolean;
+                        headers?: MsgHdrs;
                     },
                 ): Promise<PubAck>;
             };
 
             const pubAck = await jsm.publish(options.subject, data, {
                 timeout: options.timeout ?? 5000,
-                headers: options.headers,
-                wait: options.wait ?? true,
+                headers: this.toHeaders(options.headers),
             });
 
             this.logger.debug(`JetStream published to ${options.subject} in stream ${options.stream}`);
@@ -367,7 +366,7 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
             const opts = {
                 stream: options.stream,
                 ...(options.deliverSubject && { deliverSubject: options.deliverSubject }),
-                ...(options.config && { config: options.config }),
+                ...(options.config && { config: options.config as unknown as Record<string, unknown> }),
                 ...(options.durable && { durable: options.durable }),
                 ...(options.queue && { queue: options.queue }),
             };
@@ -385,21 +384,22 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
                 ): NatsSubscription;
             }).subscribe(options.subject, opts);
 
-            this.subscriptions.set(sub.sid, sub);
+            const sid = sub.getID();
+            this.subscriptions.set(sid, sub);
 
             this.handleSubscription(sub, handler, options);
 
             this.logger.log(`JetStream subscribed to ${options.subject} in stream ${options.stream}`);
 
             return {
-                sid: sub.sid,
+                sid,
                 subject: options.subject,
                 queue: options.queue,
                 cancel: () => {
                     sub.unsubscribe();
-                    this.subscriptions.delete(sub.sid);
+                    this.subscriptions.delete(sid);
                 },
-                isCancelled: () => sub.isCancelled(),
+                isCancelled: () => sub.isClosed(),
             };
         } catch (error) {
             throw new NatsSubscribeError(
@@ -449,18 +449,50 @@ export class NatsServiceImpl implements OnModuleInit, OnModuleDestroy {
     private convertMessage(msg: Msg): NatsMessage {
         const headers: Record<string, string> = {};
         if (msg.headers) {
-            msg.headers.forEach((value, key) => {
-                headers[key] = value;
-            });
+            for (const [key, values] of msg.headers) {
+                headers[key] = values.join(',');
+            }
         }
 
         return {
             subject: msg.subject,
-            sid: 0,
+            sid: msg.sid,
             data: msg.data,
             headers,
             reply: msg.reply,
             timestamp: Date.now(),
         };
+    }
+
+    private toHeaders(input?: Record<string, string>): MsgHdrs | undefined {
+        if (!input) {
+            return undefined;
+        }
+        const hdrs = createNatsHeaders();
+        for (const [key, value] of Object.entries(input)) {
+            hdrs.set(key, value);
+        }
+        return hdrs;
+    }
+
+    private async monitorStatus(connection: NatsConnection): Promise<void> {
+        try {
+            for await (const status of connection.status()) {
+                if (status.type === Events.Reconnect) {
+                    this.connectionState.connected = true;
+                    this.connectionState.server = connection.getServer() || '';
+                    this.connectionState.reconnectCount++;
+                    this.logger.log(`NATS reconnected to ${this.connectionState.server}`);
+                } else if (status.type === Events.Error) {
+                    const message = String(status.data ?? 'unknown error');
+                    this.logger.error(`NATS connection error: ${message}`);
+                    this.connectionState.lastError = message;
+                } else if (status.type === Events.Disconnect) {
+                    this.connectionState.connected = false;
+                }
+            }
+        } catch (error) {
+            this.logger.error(`NATS status monitor stopped: ${(error as Error).message}`);
+        }
     }
 }

@@ -2,9 +2,10 @@
 // BullMQ Service - Queue management and job processing
 // ============================================================================
 
-import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import { BullMQModuleOptions } from './bullmq.types';
+import type { BullMQModuleOptions } from './bullmq.types';
+import { BULLMQ_OPTIONS_TOKEN } from './bullmq.module-definition';
 
 export interface JobData {
     [key: string]: unknown;
@@ -36,7 +37,7 @@ export class BullMQService implements OnModuleDestroy {
     private readonly queueEvents: Map<string, QueueEvents> = new Map();
     private readonly logger = new Logger(BullMQService.name);
 
-    constructor(private readonly options: BullMQModuleOptions) {}
+    constructor(@Inject(BULLMQ_OPTIONS_TOKEN) private readonly options: BullMQModuleOptions) {}
 
     /**
      * Get or create a queue
@@ -136,7 +137,8 @@ export class BullMQService implements OnModuleDestroy {
                     }
                     return result;
                 } catch (error) {
-                    this.logger.error(`Job '${job.name}' failed: ${error.message}`);
+                    const message = error instanceof Error ? error.message : String(error);
+                    this.logger.error(`Job '${job.name}' failed: ${message}`);
                     throw error;
                 }
             },

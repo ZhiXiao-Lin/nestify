@@ -1,6 +1,2 @@
-// ============================================================================
-// Retry Module
-// ============================================================================
-
-export { RetryService, RetryExhaustedError, Retry, DEFAULT_RETRYABLE_HTTP_CODES } from './retry.service';
-export type { RetryOptions, RetryResult, RetryDecoratorOptions } from './retry.service';
+export { DEFAULT_RETRYABLE_HTTP_CODES, ResilienceModule as RetryModule, Retry, RetryExhaustedError, RetryService } from '@a3s-lab/resilience';
+export type { RetryDecoratorOptions, RetryOptions, RetryResult } from '@a3s-lab/resilience';

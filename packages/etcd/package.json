@@ -6,12 +6,12 @@
     "types": "./dist/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "test": "jest",
+        "test": "jest --passWithNoTests",
         "lint": "biome lint src",
         "format": "biome format --write src"
     },
     "dependencies": {
-        "etcd3": "^1.2.0",
+        "etcd3": "^1.1.2",
         "reflect-metadata": "^0.1.13"
     },
     "peerDependencies": {

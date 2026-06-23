@@ -1,8 +1,14 @@
-// ============================================================================
-// Rate Limiting Module
-// ============================================================================
-
-export { RateLimitingService, RateLimitExceededException } from './rate-limiting.service';
-export type { RateLimitConfig, RateLimitResult } from './rate-limiting.service';
-export { RateLimitingGuard } from './rate-limiting.guard';
-export { RateLimit, RateLimitAuth, RateLimitApi, RateLimitUpload } from './rate-limiting.decorator';
+export {
+    DEFAULT_RATE_LIMITS,
+    RATE_LIMIT_CONFIG_KEY,
+    RateLimit,
+    RateLimitApi,
+    RateLimitAuth,
+    RateLimitByName,
+    RateLimitExceededException,
+    RateLimitUpload,
+    RateLimitingGuard,
+    RateLimitingService,
+    ResilienceModule as RateLimitingModule,
+} from '@a3s-lab/resilience';
+export type { RateLimitConfig, RateLimitResult } from '@a3s-lab/resilience';

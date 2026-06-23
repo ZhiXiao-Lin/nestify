@@ -2,7 +2,32 @@
 // Storage Infrastructure Interface
 // ============================================================================
 
-import type { Bucket, StorageObject, CreateBucketOptions, BucketAcl, ListObjectsResult } from '@a3s-lab/rustfs';
+export interface Bucket {
+    name: string;
+    createdAt?: Date;
+}
+
+export interface StorageObject {
+    key: string;
+    size?: number;
+    etag?: string;
+    lastModified?: Date;
+    contentType?: string;
+    metadata?: Record<string, string>;
+}
+
+export interface CreateBucketOptions {
+    name: string;
+    acl?: BucketAcl;
+}
+
+export type BucketAcl = 'private' | 'public-read' | 'public-read-write' | string;
+
+export interface ListObjectsResult {
+    objects: StorageObject[];
+    nextContinuationToken?: string;
+    isTruncated?: boolean;
+}
 
 export interface IStorageService {
     // Bucket operations

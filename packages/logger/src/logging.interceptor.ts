@@ -8,6 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Request, Response } from 'express';
+import { randomUUID } from 'node:crypto';
 import { LoggerServiceImpl } from './logger.service';
 import { LogInterceptorOptions } from './logger.types';
 
@@ -33,7 +34,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const response = ctx.getResponse<Response>();
 
         const { method, url, headers, body } = request;
-        const requestId = (headers['x-request-id'] || headers['x-correlation-id'] || crypto.randomUUID()) as string;
+        const requestId = (headers['x-request-id'] || headers['x-correlation-id'] || randomUUID()) as string;
         const startTime = Date.now();
 
         // Skip excluded paths
@@ -93,10 +94,7 @@ export class LoggingInterceptor implements NestInterceptor {
             (request.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
             (request.headers['x-real-ip'] as string) ||
             request.socket?.remoteAddress ||
-            'unknown',
+            'unknown'
         );
     }
 }
-
-// Re-export
-export { LoggingInterceptor };

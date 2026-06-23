@@ -1,12 +1,10 @@
-// ============================================================================
-// Circuit Breaker Module
-// ============================================================================
-
 export {
-    CircuitBreakerService,
     CircuitBreaker,
+    CIRCUIT_BREAKER_OPTIONS,
+    CircuitBreakerInstance,
+    CircuitBreakerService,
     CircuitBreakerOpenError,
     CircuitState,
-} from './circuit-breaker.service';
-export type { CircuitBreakerOptions, CircuitBreakerStats } from './circuit-breaker.service';
-export { CircuitBreakerModule } from './circuit-breaker.module';
+    ResilienceModule as CircuitBreakerModule,
+} from '@a3s-lab/resilience';
+export type { CircuitBreakerOptions, CircuitBreakerStats } from '@a3s-lab/resilience';

@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Redisson } from 'node-redisson';
-import { RedissonModuleOptions } from './redisson-module-options.interface';
+import { Redisson, type RedissonRedis } from 'node-redisson';
+import type { RedissonModuleOptions } from './redisson-module-options.interface';
 import { MODULE_OPTIONS_TOKEN } from './redisson.module-definition';
 
 @Injectable()
@@ -298,7 +298,7 @@ export class RedissonService extends Redisson implements OnModuleInit, OnModuleD
      * 用于需要直接访问 Redis 的高级操作
      * @returns IORedis 客户端实例
      */
-    getRedis(): ReturnType<Redisson['getRedis']> {
+    getRedis(): RedissonRedis {
         return this.redis;
     }
 

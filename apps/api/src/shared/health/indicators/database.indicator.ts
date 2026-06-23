@@ -5,16 +5,17 @@
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
 import { KyselyService } from '@a3s-lab/kysely';
+import { sql } from 'kysely';
 
 @Injectable()
 export class DatabaseHealthIndicator extends HealthIndicator {
-    constructor(private readonly kysely: KyselyService) {
+    constructor(private readonly kysely: KyselyService<unknown>) {
         super();
     }
 
     async isHealthy(key: string): Promise<HealthIndicatorResult> {
         try {
-            await this.kysely.execute('SELECT 1');
+            await sql`SELECT 1`.execute(this.kysely);
             return this.getStatus(key, true);
         } catch (error) {
             throw new HealthCheckError(

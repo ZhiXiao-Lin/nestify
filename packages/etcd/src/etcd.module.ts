@@ -1,36 +1,36 @@
 import { Module, Global, DynamicModule, Provider } from '@nestjs/common';
-import { EtcdModuleOptions } from './etcd.types';
+import { ETCD_MODULE_OPTIONS, type EtcdModuleOptions } from './etcd.types';
 import { EtcdService } from './etcd.service';
 import { EtcdConfigService } from './config.service';
 
 @Global()
-@Module({
-    providers: [EtcdService, EtcdConfigService],
-    exports: [EtcdService, EtcdConfigService],
-})
+@Module({})
 export class EtcdModule {
     static register(options: EtcdModuleOptions): DynamicModule {
         return {
             module: EtcdModule,
             providers: [
                 {
-                    provide: EtcdModuleOptions,
+                    provide: ETCD_MODULE_OPTIONS,
                     useValue: options,
                 },
+                EtcdService,
+                EtcdConfigService,
             ],
             exports: [EtcdService, EtcdConfigService],
         };
     }
 
     static registerAsync(options: {
-        useFactory?: () => Promise<EtcdModuleOptions> | EtcdModuleOptions;
+        imports?: DynamicModule['imports'];
+        useFactory?: (...args: unknown[]) => Promise<EtcdModuleOptions> | EtcdModuleOptions;
         inject?: any[];
     }): DynamicModule {
         const asyncProviders: Provider[] = [];
 
         if (options.useFactory) {
             asyncProviders.push({
-                provide: EtcdModuleOptions,
+                provide: ETCD_MODULE_OPTIONS,
                 useFactory: options.useFactory,
                 inject: options.inject ?? [],
             });
@@ -38,8 +38,8 @@ export class EtcdModule {
 
         return {
             module: EtcdModule,
-            imports: [],
-            providers: asyncProviders,
+            imports: options.imports,
+            providers: [...asyncProviders, EtcdService, EtcdConfigService],
             exports: [EtcdService, EtcdConfigService],
         };
     }

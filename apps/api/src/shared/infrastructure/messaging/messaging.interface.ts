@@ -2,8 +2,30 @@
 // Messaging Infrastructure Interface
 // ============================================================================
 
-import type { JetStreamClient, NatsConnection } from 'nats';
-import type { PublishOptions, RequestOptions, SubscribeOptions, NatsMessage, SubscriptionHandler } from '@a3s-lab/nats';
+export interface PublishOptions {
+    subject: string;
+    data?: object;
+    reply?: string;
+    headers?: Record<string, string>;
+}
+
+export interface RequestOptions extends PublishOptions {
+    timeout?: number;
+}
+
+export interface SubscribeOptions {
+    subject: string;
+    queue?: string;
+}
+
+export interface NatsMessage<T = unknown> {
+    subject: string;
+    data: T;
+    reply?: string;
+    headers?: Record<string, string>;
+}
+
+export type SubscriptionHandler<T = unknown> = (message: NatsMessage<T>) => Promise<void> | void;
 
 export interface ISubscription {
     sid: number;
@@ -14,8 +36,8 @@ export interface ISubscription {
 }
 
 export interface IMessagingService {
-    getConnection(): Promise<NatsConnection>;
-    getJetStream(): Promise<JetStreamClient>;
+    getConnection(): Promise<unknown>;
+    getJetStream(): Promise<unknown>;
 
     publish(options: PublishOptions): Promise<void>;
     pubsub(subject: string, data: object): Promise<void>;

@@ -2,8 +2,16 @@
 // File Upload Service - Multipart handling and storage
 // ============================================================================
 
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
-import { RustFSService } from '../rustfs/rustfs.service';
+import { BadRequestException, Inject, Injectable, Logger, Optional } from '@nestjs/common';
+
+export interface FileStorageClient {
+    upload(key: string, body: Buffer, options?: { contentType?: string }): Promise<unknown>;
+    getSignedUrl(key: string, expiresInSeconds?: number): Promise<string>;
+    delete(key: string): Promise<unknown>;
+    exists(key: string): Promise<boolean>;
+}
+
+export const FILE_STORAGE_CLIENT = Symbol('FILE_STORAGE_CLIENT');
 
 export interface UploadedFile {
     /** Original filename */
@@ -54,7 +62,7 @@ export const DEFAULT_FILE_VALIDATION: FileValidationOptions = {
 export class FileUploadService {
     private readonly logger = new Logger(FileUploadService.name);
 
-    constructor(private readonly rustFsService: RustFSService) {}
+    constructor(@Optional() @Inject(FILE_STORAGE_CLIENT) private readonly rustFsService?: FileStorageClient) {}
 
     /**
      * Upload a single file
@@ -75,7 +83,8 @@ export class FileUploadService {
 
         // Upload to storage
         const key = `uploads/${storedName}`;
-        await this.rustFsService.upload(key, buffer, { contentType: mimeType });
+        const storage = this.getStorageClient();
+        await storage.upload(key, buffer, { contentType: mimeType });
 
         this.logger.log(`File uploaded: ${filename} -> ${storedName}`);
 
@@ -84,7 +93,7 @@ export class FileUploadService {
             storedName,
             mimeType,
             size: buffer.length,
-            url: await this.rustFsService.getSignedUrl(key),
+            url: await storage.getSignedUrl(key),
             uploadedAt: new Date(),
         };
     }
@@ -111,7 +120,7 @@ export class FileUploadService {
      */
     async deleteFile(storedName: string): Promise<void> {
         const key = `uploads/${storedName}`;
-        await this.rustFsService.delete(key);
+        await this.getStorageClient().delete(key);
         this.logger.log(`File deleted: ${storedName}`);
     }
 
@@ -120,7 +129,7 @@ export class FileUploadService {
      */
     async getFileUrl(storedName: string, expiresInSeconds = 3600): Promise<string> {
         const key = `uploads/${storedName}`;
-        return this.rustFsService.getSignedUrl(key, expiresInSeconds);
+        return this.getStorageClient().getSignedUrl(key, expiresInSeconds);
     }
 
     /**
@@ -128,7 +137,14 @@ export class FileUploadService {
      */
     async fileExists(storedName: string): Promise<boolean> {
         const key = `uploads/${storedName}`;
-        return this.rustFsService.exists(key);
+        return this.getStorageClient().exists(key);
+    }
+
+    private getStorageClient(): FileStorageClient {
+        if (!this.rustFsService) {
+            throw new Error('File storage client is not configured');
+        }
+        return this.rustFsService;
     }
 
     /**

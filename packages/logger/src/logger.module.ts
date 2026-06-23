@@ -2,6 +2,7 @@ import { Module, Global } from '@nestjs/common';
 import {
     ASYNC_OPTIONS_TYPE,
     ConfigurableModuleClass,
+    MODULE_OPTIONS_TOKEN,
     OPTIONS_TYPE,
 } from './logger.module-definition';
 import { LoggerServiceImpl, Logger } from './logger.service';
@@ -16,11 +17,14 @@ export class LoggerModule extends ConfigurableModuleClass {
             ...dynamicModule,
             providers: [
                 ...(dynamicModule.providers || []),
-                LoggerServiceImpl,
+                {
+                    provide: LoggerServiceImpl,
+                    useFactory: (opts: any) => new LoggerServiceImpl(opts),
+                    inject: [MODULE_OPTIONS_TOKEN],
+                },
                 {
                     provide: Logger,
-                    useFactory: (opts: any) => new LoggerServiceImpl(opts),
-                    inject: [OPTIONS_TYPE],
+                    useExisting: LoggerServiceImpl,
                 },
                 LoggingInterceptor,
             ],
@@ -34,11 +38,14 @@ export class LoggerModule extends ConfigurableModuleClass {
             ...dynamicModule,
             providers: [
                 ...(dynamicModule.providers || []),
-                LoggerServiceImpl,
+                {
+                    provide: LoggerServiceImpl,
+                    useFactory: (opts: any) => new LoggerServiceImpl(opts),
+                    inject: [MODULE_OPTIONS_TOKEN],
+                },
                 {
                     provide: Logger,
-                    useFactory: (opts: any) => new LoggerServiceImpl(opts),
-                    inject: [OPTIONS_TYPE],
+                    useExisting: LoggerServiceImpl,
                 },
                 LoggingInterceptor,
             ],

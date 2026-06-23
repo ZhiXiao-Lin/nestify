@@ -91,12 +91,14 @@ export class EtcdConfigService implements OnModuleInit {
         if (!this.subscribers.has(key)) {
             this.subscribers.set(key, new Set());
 
-            const unsubscribe = this.etcd.watch<T>(key, (event) => {
+            const unsubscribe = this.etcd.watch<T>(key, event => {
                 const subs = this.subscribers.get(key);
                 if (subs) {
                     if (event.value !== null) {
                         this.cache.set(key, { value: event.value, timestamp: Date.now() });
-                        subs.forEach((cb) => cb(event.value as T));
+                        subs.forEach(cb => {
+                            cb(event.value as T);
+                        });
                     }
                 }
             });
@@ -122,8 +124,11 @@ export class EtcdConfigService implements OnModuleInit {
         };
     }
 
-    subscribePrefix<T = string>(prefix: string, callback: (event: { key: string; value: T | null }) => void): () => void {
-        const unsubscribe = this.etcd.watchPrefix<T>(prefix, (event) => {
+    subscribePrefix<T = string>(
+        prefix: string,
+        callback: (event: { key: string; value: T | null }) => void,
+    ): () => void {
+        const unsubscribe = this.etcd.watchPrefix<T>(prefix, event => {
             callback({ key: event.key, value: event.value });
         });
 

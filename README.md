@@ -6,6 +6,7 @@ A production-ready NestJS monorepo template with pnpm workspace, implementing Do
 
 ### Core Architecture
 - **Monorepo Architecture**: pnpm workspace for managing multiple packages and applications
+- **Reusable API Framework Core**: Capability-based packages for DDD, HTTP contracts, security, observability, resilience, analytics, and migrations
 - **Clean Architecture**: Clear separation of concerns with Domain, Application, Infrastructure, and Presentation layers
 - **Domain-Driven Design**: Rich domain models with entities, value objects, aggregates, and domain events
 - **CQRS Pattern**: Separate command and query handlers using @nestjs/cqrs
@@ -77,6 +78,13 @@ nestify/
 └── packages/
     ├── kysely/                    # @a3s-lab/kysely - Type-safe SQL
     ├── redisson/                  # @a3s-lab/redisson - Redis client
+    ├── ddd/                       # @a3s-lab/ddd - DDD primitives
+    ├── http/                      # @a3s-lab/http - API contracts
+    ├── security/                  # @a3s-lab/security - API security primitives
+    ├── observability/             # @a3s-lab/observability - Tracking and metrics
+    ├── resilience/                # @a3s-lab/resilience - Retry, cache, circuit breaker
+    ├── clickhouse/                # @a3s-lab/clickhouse - ClickHouse client module
+    ├── migrations/                # @a3s-lab/migrations - Kysely migration helpers
     ├── logger/                    # @a3s-lab/logger - Structured logging
     ├── bullmq/                    # @a3s-lab/bullmq - Task queue
     ├── nats/                      # @a3s-lab/nats - Message broker
@@ -85,6 +93,84 @@ nestify/
 ```
 
 ## Packages
+
+See [Framework Core](docs/framework-core.md) for the reusable DDD/API packages extracted from the application shared layer.
+
+### @a3s-lab/ddd
+
+Framework-independent DDD primitives.
+
+```typescript
+class Order extends AggregateRoot<string> {
+    confirm() {
+        this.addDomainEvent(new OrderConfirmedEvent(this.id));
+    }
+}
+
+const result = Guard.againstNullOrUndefined(orderId, 'orderId');
+```
+
+### @a3s-lab/http
+
+API envelopes, errors, validation, pagination, request ids, and OpenAPI helpers.
+
+```typescript
+throw new BusinessException({
+    code: StatusCode.BUSINESS_RULE_VIOLATION,
+    message: 'Order cannot be confirmed',
+});
+```
+
+### @a3s-lab/security
+
+Default-deny guard primitives and reusable API security helpers.
+
+```typescript
+@Public()
+@Get('health')
+health() {
+    return { ok: true };
+}
+```
+
+### @a3s-lab/observability
+
+Request tracking, SQL/external-call collectors, and Prometheus-style metrics.
+
+```typescript
+const requestId = getRequestId();
+recordExternalCall({ kind: 'http', target: 'billing', op: 'POST /charges', durationMs });
+```
+
+### @a3s-lab/resilience
+
+Retry, circuit breaker, cache, rate limiting, and distributed lock utilities.
+
+```typescript
+const value = await retryService.executeOrThrow(fetchRemote, {
+    maxAttempts: 3,
+    initialDelay: 100,
+});
+```
+
+### @a3s-lab/clickhouse
+
+NestJS wrapper for the official ClickHouse client.
+
+```typescript
+const result = await clickhouse.queryJson<{ id: string }>('select id from events limit 10');
+```
+
+### @a3s-lab/migrations
+
+Kysely migration helpers with support for non-transactional concurrent migrations.
+
+```typescript
+MigrationModule.register({
+    migrationFolder: path.join(__dirname, 'migrations'),
+    autoRun: true,
+});
+```
 
 ### @a3s-lab/kysely
 

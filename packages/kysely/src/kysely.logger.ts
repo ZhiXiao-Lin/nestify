@@ -159,12 +159,27 @@ const isError = (error: unknown): error is Error => {
     return error instanceof Error;
 };
 
+export interface KyselyLoggerOptions {
+    consoleOutput?: boolean;
+    onQuery?: (event: LogEvent) => void;
+}
+
 /**
  * Creates a Kysely logger function with enhanced formatting and syntax highlighting
  * @returns Logger function compatible with Kysely's log configuration
  */
-export const createKyselyLogger = () => {
+export const createKyselyLogger = (options: KyselyLoggerOptions = {}) => {
     return (event: LogEvent) => {
+        try {
+            options.onQuery?.(event);
+        } catch (error) {
+            console.error('[KYSELY LOGGER HOOK ERROR]', error);
+        }
+
+        if (options.consoleOutput === false) {
+            return;
+        }
+
         const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss');
         const formattedTimestamp = pc.dim(`[${timestamp}]`);
 
