@@ -61,8 +61,11 @@ the sample API for now because they encode application choices rather than stabl
 | `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. |
 | `audit`, `feature-flags` | Keep app-local | They depend on app persistence/cache conventions and default flag/audit semantics. |
 | `database`, `health`, `redis` | Keep app-local compatibility/integration | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
-| `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
-| `file-upload` | Package-backed | Generic upload validation, storage contracts, decorators, and interceptors now live in `@a3s-lab/files`; app files are compatibility wrappers. |
+| `application/dto.base`, `base` | Defer | `BaseDto` has no current consumers, and `BaseService` couples a CRUD template to Kysely plus a pagination shape that differs from `@a3s-lab/http`; extract only after a smaller generic contract is used outside the sample app. |
+| `testing` | Defer | Test helpers currently include sample user, organization, Redis, and Kysely mock conventions; split out only framework-neutral builders later. |
+| `infrastructure/messaging/messaging.interface` | Keep app-local compatibility/integration | This is a decoded NATS-style service facade for the sample health/integration layer, not the DDD domain event publisher. The generic domain event publisher lives in `@a3s-lab/cqrs`; concrete broker APIs remain in `@a3s-lab/nats`. |
+| `infrastructure/storage/storage.interface` | Keep app-local compatibility/integration | This is a RustFS/S3-level bucket/object service facade used by sample infrastructure health checks. Generic upload contracts live in `@a3s-lab/files`; concrete object storage APIs remain in `@a3s-lab/rustfs`. |
+| `file-upload` | Package-backed | Generic upload validation, storage client contracts, decorators, and interceptors now live in `@a3s-lab/files`; app files are compatibility wrappers. |
 | `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `messaging/event-bus` | Package-backed | Generic DDD domain event publishing through Nest CQRS now lives in `@a3s-lab/cqrs`; app files are compatibility wrappers. |
