@@ -35,6 +35,9 @@ jobs:
       - name: Check framework core release
         run: pnpm release:check
 
+      - name: Smoke install framework core packages
+        run: pnpm smoke:core-install
+
       - name: Build workspace
         run: pnpm build
 

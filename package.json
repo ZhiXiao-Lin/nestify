@@ -29,11 +29,12 @@
         "test:core": "node scripts/run-core-packages.mjs test",
         "pack:core": "node scripts/run-core-packages.mjs pack",
         "verify:core-packages": "node scripts/verify-core-packages.mjs",
+        "smoke:core-install": "node scripts/smoke-core-install.mjs",
         "changeset": "changeset",
         "version-packages": "changeset version",
         "publish:core:dry-run": "node scripts/publish-core-dry-run.mjs",
         "release:check": "pnpm format:check && pnpm lint:check && pnpm build:core && pnpm test:core && pnpm pack:core && pnpm verify:core-packages",
-        "release:publish:dry-run": "pnpm release:check && pnpm publish:core:dry-run",
+        "release:publish:dry-run": "pnpm release:check && pnpm smoke:core-install && pnpm publish:core:dry-run",
         "release:publish": "changeset publish"
     },
     "devDependencies": {
