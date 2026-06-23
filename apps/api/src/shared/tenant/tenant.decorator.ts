@@ -3,7 +3,6 @@
 // ============================================================================
 
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { TenantService } from './tenant.service';
 
 /**
  * Get current organization ID

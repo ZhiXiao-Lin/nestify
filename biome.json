@@ -9,14 +9,14 @@
     "files": {
         "maxSize": 10240000,
         "ignoreUnknown": false,
-        "experimentalScannerIgnores": [
-            "**/dist/**",
-            ".vscode/**/*",
-            "node_modules/**",
-            "dist/**",
-            "build/**",
-            "coverage/**",
-            "tsconfig.*"
+        "includes": [
+            "**",
+            "!!**/.vscode",
+            "!!**/node_modules",
+            "!!**/dist",
+            "!!**/build",
+            "!!**/coverage",
+            "!!**/tsconfig.*"
         ]
     },
     "formatter": {

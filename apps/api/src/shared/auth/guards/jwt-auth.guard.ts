@@ -5,7 +5,6 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, SetMetadata } from '@nestjs/common';
 import { JwtService } from '../jwt/jwt.service';
 import { Request } from 'express';
-import { JwtPayload } from '../jwt/jwt.types';
 
 /**
  * Metadata key for public routes (skip auth)
@@ -35,7 +34,7 @@ export class JwtAuthGuard implements CanActivate {
             (request as any).user = payload;
             (request as any).userId = payload.sub;
             (request as any).organizationId = payload.organizationId;
-        } catch (error) {
+        } catch {
             throw new UnauthorizedException('Invalid or expired token');
         }
 

@@ -15,7 +15,7 @@ export async function createTestingModule(options: {
     mocks?: Map<any, any>;
     globalPipes?: any[];
 }): Promise<TestingModule> {
-    const { imports = [], controllers = [], providers = [], mocks = new Map(), globalPipes = [] } = options;
+    const { imports = [], controllers = [], providers = [], mocks = new Map() } = options;
 
     // Create mock providers from mocks map
     const mockProviders = Array.from(mocks.entries()).map(([token, mock]) => ({

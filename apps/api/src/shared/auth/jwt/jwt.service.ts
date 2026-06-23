@@ -55,7 +55,7 @@ export class JwtService {
     verifyAccessToken(token: string): JwtPayload {
         try {
             return jwt.verify(token, this.accessTokenSecret) as JwtPayload;
-        } catch (error) {
+        } catch {
             throw new UnauthorizedException('Invalid or expired access token');
         }
     }
@@ -66,7 +66,7 @@ export class JwtService {
     verifyRefreshToken(token: string): JwtPayload {
         try {
             return jwt.verify(token, this.refreshTokenSecret) as JwtPayload;
-        } catch (error) {
+        } catch {
             throw new UnauthorizedException('Invalid or expired refresh token');
         }
     }

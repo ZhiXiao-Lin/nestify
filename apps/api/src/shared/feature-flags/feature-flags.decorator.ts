@@ -3,14 +3,12 @@
 // ============================================================================
 
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { FeatureFlagsService } from './feature-flags.service';
 
 /**
  * Check if a feature flag is enabled
  */
 export const FeatureFlag = createParamDecorator(async (flagName: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    const user = request.user;
 
     const flagsService = request.featureFlagsService;
     if (!flagsService) {

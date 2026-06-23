@@ -2,10 +2,10 @@
 // Transform Interceptor - Global request/response transformation
 // ============================================================================
 
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 export interface TransformOptions {
     /** Enable request body transformation */
@@ -34,7 +34,6 @@ export interface ResponseMetadata {
  */
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {
-    private readonly logger = new Logger(TransformInterceptor.name);
     private readonly defaultOptions: Required<TransformOptions>;
 
     constructor(options: TransformOptions = {}) {
@@ -49,7 +48,6 @@ export class TransformInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const startTime = process.hrtime.bigint();
         const request = context.switchToHttp().getRequest<Request>();
-        const response = context.switchToHttp().getResponse<Response>();
 
         if (!this.defaultOptions.transformResponse) {
             return next.handle();
@@ -58,7 +56,7 @@ export class TransformInterceptor implements NestInterceptor {
         return next.handle().pipe(
             map(data => {
                 const duration = this.getDuration(startTime);
-                const metadata = this.buildMetadata(request, response, duration);
+                const metadata = this.buildMetadata(request, duration);
 
                 // If data is already wrapped or is a primitive, return as-is or wrap
                 if (this.isPrimitive(data)) {
@@ -82,7 +80,7 @@ export class TransformInterceptor implements NestInterceptor {
     /**
      * Build response metadata
      */
-    private buildMetadata(request: Request, response: Response, duration: bigint): ResponseMetadata {
+    private buildMetadata(request: Request, duration: bigint): ResponseMetadata {
         return {
             timestamp: new Date().toISOString(),
             path: request.path,

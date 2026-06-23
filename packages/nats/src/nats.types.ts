@@ -2,7 +2,7 @@
 // NATS Types - Re-exported from module-definition for convenience
 // ============================================================================
 
-import type { JetStreamClient, NatsConnection, PubAck } from 'nats';
+import type { PubAck } from 'nats';
 
 export interface NatsPackageOptions {
     servers?: string[];
@@ -120,9 +120,7 @@ export interface NatsMessage {
     timestamp: number;
 }
 
-export interface SubscriptionHandler {
-    (message: NatsMessage): Promise<void> | void;
-}
+export type SubscriptionHandler = (message: NatsMessage) => Promise<void> | void;
 
 // ============================================================================
 // JetStream Types

@@ -7,10 +7,7 @@ import { MODULE_OPTIONS_TOKEN } from './redisson.module-definition';
 export class RedissonService extends Redisson implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(RedissonService.name);
 
-    constructor(
-        @Inject(MODULE_OPTIONS_TOKEN)
-        private readonly options: RedissonModuleOptions,
-    ) {
+    constructor(@Inject(MODULE_OPTIONS_TOKEN) options: RedissonModuleOptions) {
         if (!options) {
             throw new Error('RedissonModuleOptions is not defined');
         }

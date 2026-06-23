@@ -1,4 +1,4 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Request, Response } from 'express';
@@ -49,7 +49,6 @@ export class LoggingInterceptor implements NestInterceptor {
 
         const logRequest = () => {
             const statusCode = response.statusCode;
-            const responseTime = Date.now() - startTime;
 
             this.logger.logRequest({
                 method,
@@ -78,7 +77,7 @@ export class LoggingInterceptor implements NestInterceptor {
     }
 
     private isExcludedPath(url: string): boolean {
-        return this.options.excludePaths.some(path => url === path || url.startsWith(path + '/'));
+        return this.options.excludePaths.some(path => url === path || url.startsWith(`${path}/`));
     }
 
     private getClientIp(request: Request): string {

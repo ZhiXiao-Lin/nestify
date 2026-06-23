@@ -1,6 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { RedissonModule } from '../redisson.module';
-import { MODULE_OPTIONS_TOKEN } from '../redisson.module-definition';
 
 describe('RedissonModule', () => {
     describe('register', () => {

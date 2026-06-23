@@ -2,9 +2,7 @@
 // Tenant Service - Multi-tenancy context management
 // ============================================================================
 
-import { Injectable, Scope, Inject, Optional } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { Injectable, Scope } from '@nestjs/common';
 
 /**
  * Tenant context - contains current tenant information
@@ -22,8 +20,6 @@ export interface TenantContext {
 @Injectable({ scope: Scope.REQUEST })
 export class TenantService {
     private context: TenantContext | null = null;
-
-    constructor(@Optional() @Inject(REQUEST) private readonly request: Request) {}
 
     /**
      * Set tenant context

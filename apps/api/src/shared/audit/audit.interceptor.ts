@@ -2,7 +2,7 @@
 // Audit Interceptor - Automatically logs operations
 // ============================================================================
 
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { AuditService } from './audit.service';
@@ -15,7 +15,7 @@ export const AUDIT_RESOURCE_KEY = 'audit_resource';
  * Decorator to mark endpoint for audit logging
  */
 export function AuditedAction(action: string) {
-    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
         Reflect.defineMetadata(AUDIT_ACTION_KEY, action, descriptor.value);
         return descriptor;
     };
@@ -25,7 +25,7 @@ export function AuditedAction(action: string) {
  * Decorator to specify audit resource
  */
 export function AuditedResource(resource: string) {
-    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
         Reflect.defineMetadata(AUDIT_RESOURCE_KEY, resource, descriptor.value);
         return descriptor;
     };
@@ -33,8 +33,6 @@ export function AuditedResource(resource: string) {
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
-    private readonly logger = new Logger(AuditInterceptor.name);
-
     constructor(private readonly auditService: AuditService) {}
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {

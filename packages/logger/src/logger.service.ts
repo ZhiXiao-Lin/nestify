@@ -1,5 +1,5 @@
 import { Injectable, LoggerService as NestLoggerService, Scope } from '@nestjs/common';
-import pino, { Logger as PinoLogger, BaseLogger } from 'pino';
+import pino, { BaseLogger } from 'pino';
 import { AsyncLocalStorage } from 'async_hooks';
 import { LoggerModuleOptions, LogLevel, LogContext } from './logger.types';
 
@@ -55,12 +55,11 @@ export class LoggerServiceImpl implements NestLoggerService {
             // overload: (level, message, context?)
             const level = levelOrMessage;
             const message = messageOrContext as string;
-            this.logAtLevel(level, message);
+            this.logAtLevel(level, message, this.normalizeContext(context));
         } else if (typeof levelOrMessage === 'string') {
             // overload: (message, context?)
             const message = levelOrMessage;
-            const ctx = messageOrContext as LogContext | undefined;
-            this.logAtLevel('info', message, ctx);
+            this.logAtLevel('info', message, this.normalizeContext(messageOrContext));
         } else {
             this.logAtLevel('info', levelOrMessage);
         }
@@ -145,7 +144,7 @@ export class LoggerServiceImpl implements NestLoggerService {
         statusCode?: number;
         error?: Error;
     }): void {
-        const { method, url, requestId, startTime, statusCode, error, body } = options;
+        const { method, url, requestId, startTime, statusCode, error } = options;
 
         const context: Partial<LogContext> = {
             requestId,
@@ -203,6 +202,10 @@ export class LoggerServiceImpl implements NestLoggerService {
             ...storeContext,
             ...context,
         };
+    }
+
+    private normalizeContext(context?: string | LogContext): Partial<LogContext> | undefined {
+        return typeof context === 'string' ? { context } : context;
     }
 
     private isLogLevel(value: string): value is LogLevel {

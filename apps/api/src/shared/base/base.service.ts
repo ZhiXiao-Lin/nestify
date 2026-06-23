@@ -4,7 +4,7 @@
 
 import { KyselyService } from '@a3s-lab/kysely';
 import { NotFoundException } from '@nestjs/common';
-import { parsePaginationOptions, PaginationOptions, PaginationQueryDto } from './pagination.dto';
+import { parsePaginationOptions, PaginationQueryDto } from './pagination.dto';
 
 export interface FindOptions<FilterDto, SortDto> {
     filter?: FilterDto;
@@ -189,7 +189,7 @@ export abstract class BaseService<
      * Delete entity by ID (hard delete)
      */
     async delete(id: string): Promise<void> {
-        const existing = await this.findByIdOrThrow(id);
+        await this.findByIdOrThrow(id);
 
         await (this.kysely as any).deleteFrom(this.tableName).where('id', '=', id).executeTakeFirst();
     }
@@ -279,7 +279,7 @@ export abstract class BaseService<
      * Apply filters to query (override in subclasses)
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected applyFilters(qb: any, filter: FilterDto): any {
+    protected applyFilters(qb: any, _filter: FilterDto): any {
         return qb;
     }
 
@@ -287,7 +287,7 @@ export abstract class BaseService<
      * Apply sorting to query (override in subclasses)
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected applySort(qb: any, sort: SortDto): any {
+    protected applySort(qb: any, _sort: SortDto): any {
         return qb;
     }
 }
