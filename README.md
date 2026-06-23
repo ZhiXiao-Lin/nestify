@@ -6,7 +6,7 @@ A production-ready NestJS monorepo template with pnpm workspace, implementing Do
 
 ### Core Architecture
 - **Monorepo Architecture**: pnpm workspace for managing multiple packages and applications
-- **Reusable API Framework Core**: Capability-based packages for DDD, HTTP contracts, security, observability, resilience, analytics, and migrations
+- **Reusable API Framework Core**: Capability-based packages for DDD, HTTP contracts, security, observability, resilience, analytics, migrations, and files
 - **Clean Architecture**: Clear separation of concerns with Domain, Application, Infrastructure, and Presentation layers
 - **Domain-Driven Design**: Rich domain models with entities, value objects, aggregates, and domain events
 - **CQRS Pattern**: Separate command and query handlers using @nestjs/cqrs
@@ -85,6 +85,7 @@ nestify/
     ├── resilience/                # @a3s-lab/resilience - Retry, cache, circuit breaker
     ├── clickhouse/                # @a3s-lab/clickhouse - ClickHouse client module
     ├── migrations/                # @a3s-lab/migrations - Kysely migration helpers
+    ├── files/                     # @a3s-lab/files - File upload contracts
     ├── logger/                    # @a3s-lab/logger - Structured logging
     ├── bullmq/                    # @a3s-lab/bullmq - Task queue
     ├── nats/                      # @a3s-lab/nats - Message broker
@@ -169,6 +170,17 @@ Kysely migration helpers with support for non-transactional concurrent migration
 MigrationModule.register({
     migrationFolder: path.join(__dirname, 'migrations'),
     autoRun: true,
+});
+```
+
+### @a3s-lab/files
+
+File upload validation, storage client contracts, and NestJS upload interceptors.
+
+```typescript
+FileUploadModule.register({
+    keyPrefix: 'uploads',
+    signedUrlExpiresInSeconds: 900,
 });
 ```
 

@@ -13,6 +13,7 @@ const corePackages = [
     { name: '@a3s-lab/resilience', dir: 'packages/resilience' },
     { name: '@a3s-lab/clickhouse', dir: 'packages/clickhouse' },
     { name: '@a3s-lab/migrations', dir: 'packages/migrations' },
+    { name: '@a3s-lab/files', dir: 'packages/files' },
 ];
 
 const requiredFiles = ['README.md', 'dist/**/*.js', 'dist/**/*.d.ts', 'dist/**/*.js.map'];

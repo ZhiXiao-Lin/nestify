@@ -36,6 +36,7 @@
         "@a3s-lab/resilience": "workspace:*",
         "@a3s-lab/clickhouse": "workspace:*",
         "@a3s-lab/migrations": "workspace:*",
+        "@a3s-lab/files": "workspace:*",
         "@nestjs/common": "^10.0.0",
         "@nestjs/config": "^3.0.0",
         "@nestjs/core": "^10.0.0",

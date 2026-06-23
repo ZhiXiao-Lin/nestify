@@ -1,13 +1,23 @@
-import { Module } from '@nestjs/common';
-import { FileUploadInterceptor, SingleFileUploadInterceptor } from './file-upload.interceptor';
-import { FileUploadService } from './file-upload.service';
-
-export { FILE_STORAGE_CLIENT, FileUploadService } from './file-upload.service';
-export type { FileStorageClient, UploadedFile, FileValidationOptions } from './file-upload.service';
-export { FileUploadInterceptor, SingleFileUploadInterceptor } from './file-upload.interceptor';
-
-@Module({
-    providers: [FileUploadService, FileUploadInterceptor, SingleFileUploadInterceptor],
-    exports: [FileUploadService, FileUploadInterceptor, SingleFileUploadInterceptor],
-})
-export class FileUploadModule {}
+export {
+    DEFAULT_FILE_UPLOAD_OPTIONS,
+    DEFAULT_FILE_VALIDATION,
+    FILE_STORAGE_CLIENT,
+    FILE_UPLOAD_OPTIONS,
+    FileUploadInterceptor,
+    FileUploadModule,
+    FileUploadService,
+    SingleFileUploadInterceptor,
+    extractFiles,
+    getExtension,
+} from '@a3s-lab/files';
+export type {
+    FileStorageClient,
+    FileUploadMetadata,
+    FileUploadOptions,
+    FileUploadRequest,
+    FileValidationOptions,
+    MultipartFile,
+    StoredNameInput,
+    StoredUploadedFile as UploadedFile,
+    StoredUploadedFile,
+} from '@a3s-lab/files';

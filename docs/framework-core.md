@@ -13,6 +13,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
+| `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 
 Each package has a package-level README with install notes, import examples, exported capabilities, and boundary notes:
 
@@ -23,6 +24,7 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/resilience`](../packages/resilience/README.md)
 - [`@a3s-lab/clickhouse`](../packages/clickhouse/README.md)
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
+- [`@a3s-lab/files`](../packages/files/README.md)
 
 ## Application Compatibility Layer
 
@@ -57,7 +59,8 @@ the sample API for now because they encode application choices rather than stabl
 | `auth`, `tenant` | Keep app-local | JWT secret names, request user shape, role/resource defaults, and organization semantics are application policy. |
 | `audit`, `feature-flags` | Keep app-local | They depend on app persistence/cache conventions and default flag/audit semantics. |
 | `database`, `health`, `redis` | Keep app-local compatibility/integration | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
-| `file-upload`, `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
+| `base`, `testing` | Defer | These can become packages later, but need a smaller generic contract and use cases outside this app first. |
+| `file-upload` | Package-backed | Generic upload validation, storage contracts, decorators, and interceptors now live in `@a3s-lab/files`; app files are compatibility wrappers. |
 | `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; app files are compatibility wrappers. |
 | `cache`, `retry`, `rate-limiting`, `circuit-breaker`, `metrics`, `tracking`, `openapi`, `validation`, `errors`, `domain`, `utils` | Already package-backed | These are now package exports or compatibility wrappers over package exports. |
 
@@ -90,6 +93,7 @@ The framework core is covered by package tests for:
 - Resilience module registration and interceptor metadata execution
 - ClickHouse client routing and lifecycle
 - Migration provider wrapping and module registration
+- File upload validation, storage key handling, module registration, and upload interceptors
 
 Run:
 
