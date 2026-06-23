@@ -10,7 +10,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
-| `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, and HTTP metrics interceptor. |
+| `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
@@ -30,7 +30,7 @@ Each package has a package-level README with install notes, import examples, exp
 
 ## Sample API Wiring
 
-Reusable API framework capabilities now live in packages and are imported directly by the sample API. The remaining `apps/api/src/shared/*` files are concrete sample-app wiring for PostgreSQL, Redis, and health checks; they are not compatibility re-export layers.
+Reusable API framework capabilities now live in packages and are imported directly by the sample API. The remaining `apps/api/src/shared/*` files are concrete sample-app wiring for PostgreSQL and Redis; they are not compatibility re-export layers.
 
 ## Design Rules
 
@@ -48,7 +48,8 @@ The remaining `apps/api/src/shared/*` implementations were reviewed after the fr
 | --- | --- | --- |
 | `auth`, `tenant` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level guards/decorators/services. Generic JWT token helpers, route metadata, and role-permission checks live in `@a3s-lab/security`. |
 | `audit`, `feature-flags` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level audit or feature-flag services, and their defaults encoded application policy rather than framework contracts. |
-| `database`, `health`, `redis` | Keep app-local wiring | Database schema types, health indicators, and concrete infrastructure wiring belong to the example API. |
+| `database`, `redis` | Keep app-local wiring | Database schema types, environment-variable mapping, and concrete infrastructure wiring belong to the example API. |
+| `health` | Package-backed | Generic health endpoints and check registration live in `@a3s-lab/observability`; AppModule provides concrete database and Redis probes. |
 | `application/dto.base`, `base` | Removed unused app template code | `BaseDto` had no consumers, and `BaseService` coupled a CRUD template to Kysely plus a pagination shape that differs from `@a3s-lab/http`. Generic `IQuery` and `IUseCase` contracts live in `@a3s-lab/ddd`; no stable extra framework contract remained. |
 | `testing` | Removed unused app template code | Test helpers had no consumers and included sample user, organization, Redis, and Kysely mock conventions. Add framework-neutral builders later only when a package-level use case appears. |
 | `infrastructure/messaging/messaging.interface` | Removed unused app integration interface | The NATS-style service facade had no active consumers after the DDD event publisher moved to `@a3s-lab/cqrs`; concrete broker APIs remain in `@a3s-lab/nats`. |
@@ -90,6 +91,7 @@ The framework core is covered by package tests for:
 - Security role-permission checker behavior
 - Observability collectors and metrics formatting
 - Observability request tracking with SQL and external-call request stores
+- Observability health check endpoint registration
 - Resilience retry, circuit breaker, and TTL cache
 - Resilience module registration and interceptor metadata execution
 - ClickHouse client routing and lifecycle

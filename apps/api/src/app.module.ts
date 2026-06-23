@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { FileUploadModule } from '@a3s-lab/files';
+import { KyselyService } from '@a3s-lab/kysely';
 import {
     ApiResponseModule,
     ApiVersioningModule,
@@ -8,13 +9,13 @@ import {
     SerializationModule,
     TransformModule,
 } from '@a3s-lab/http';
-import { MetricsModule, TrackingModule } from '@a3s-lab/observability';
+import { HealthModule, MetricsModule, TrackingModule, createHealthCheck } from '@a3s-lab/observability';
+import { RedissonService } from '@a3s-lab/redisson';
 import { ResilienceModule } from '@a3s-lab/resilience';
+import { sql } from 'kysely';
 import { OrderModule } from './modules/order/order.module';
 import { DatabaseModule } from './shared/database';
 import { RedisModule } from './shared/redis';
-
-import { HealthModule } from './shared/health';
 
 @Module({
     imports: [
@@ -37,7 +38,22 @@ import { HealthModule } from './shared/health';
         ResilienceModule.register(),
 
         // Health checks
-        HealthModule,
+        HealthModule.register({
+            checks: [
+                {
+                    name: 'database',
+                    inject: [KyselyService],
+                    useFactory: (kysely: KyselyService<unknown>) =>
+                        createHealthCheck('database', () => sql`SELECT 1`.execute(kysely), 'Database check failed'),
+                },
+                {
+                    name: 'redis',
+                    inject: [RedissonService],
+                    useFactory: (redis: RedissonService) =>
+                        createHealthCheck('redis', () => redis.getRedis().ping(), 'Redis check failed'),
+                },
+            ],
+        }),
 
         // Serialization (class-transformer)
         SerializationModule,

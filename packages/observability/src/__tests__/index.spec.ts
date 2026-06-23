@@ -1,9 +1,12 @@
 import type { LogEvent } from 'kysely';
 import {
+    HealthController,
+    HealthModule,
     MetricsController,
     MetricsModule,
     MetricsService,
     TrackingModule,
+    createHealthCheck,
     configureExternalCallCollector,
     configureSqlQueryCollector,
     externalCallCollectorStorage,
@@ -104,5 +107,39 @@ describe('observability helpers', () => {
         expect(controller.getMetricsJson()).toMatchObject({
             counters: expect.objectContaining({ 'http_requests_total{method=GET,path=/resources/:id,status=200}': 1 }),
         });
+    });
+
+    it('creates health checks and exports a configurable health module', async () => {
+        const check = createHealthCheck('database', async () => undefined);
+        await expect(check()).resolves.toEqual({ database: { status: 'up' } });
+
+        const failingCheck = createHealthCheck('redis', async () => {
+            throw new Error('connection refused');
+        });
+        await expect(failingCheck()).rejects.toThrow('redis check failed');
+
+        const health = {
+            check: jest.fn(async checks => ({
+                status: 'ok',
+                info: Object.assign({}, ...(await Promise.all(checks.map((fn: () => Promise<unknown>) => fn())))),
+                error: {},
+                details: {},
+            })),
+        };
+        const controller = new HealthController(health as never, [check], { status: 'alive' });
+
+        await expect(controller.check()).resolves.toMatchObject({
+            status: 'ok',
+            info: { database: { status: 'up' } },
+        });
+        expect(controller.live()).toEqual({ status: 'alive' });
+        await controller.ready();
+        expect(health.check).toHaveBeenCalledTimes(2);
+
+        const module = HealthModule.register({
+            checks: [{ name: 'database', useFactory: () => check }],
+        });
+        expect(module.module).toBe(HealthModule);
+        expect(module.providers?.length).toBeGreaterThan(0);
     });
 });

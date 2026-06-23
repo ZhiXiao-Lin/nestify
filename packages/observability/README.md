@@ -1,18 +1,26 @@
 # @a3s-lab/observability
 
-Request tracking, diagnostic collectors, and Prometheus-style metrics for NestJS APIs.
+Request tracking, diagnostic collectors, Prometheus-style metrics, and health check endpoints for NestJS APIs.
 
 ## Install
 
 ```bash
 pnpm add @a3s-lab/observability @a3s-lab/http
-pnpm add @nestjs/common @nestjs/core express kysely rxjs
+pnpm add @nestjs/common @nestjs/core @nestjs/terminus express kysely rxjs
 ```
 
 ## Use
 
 ```ts
-import { MetricsModule, MetricsService, TrackingModule, getRequestId, recordExternalCall } from '@a3s-lab/observability';
+import {
+    HealthModule,
+    MetricsModule,
+    MetricsService,
+    TrackingModule,
+    createHealthCheck,
+    getRequestId,
+    recordExternalCall,
+} from '@a3s-lab/observability';
 
 recordExternalCall({
     kind: 'http',
@@ -26,11 +34,24 @@ const metrics = new MetricsService();
 metrics.recordHttpRequest('GET', '/resources/:id', 200, 0.12);
 ```
 
-Register the modules when request-scoped tracking, HTTP metrics, and a `/metrics` scrape endpoint should be enabled automatically.
+Register the modules when request-scoped tracking, HTTP metrics, a `/metrics` scrape endpoint, and health endpoints should be enabled automatically.
 
 ```ts
 @Module({
-    imports: [TrackingModule, MetricsModule],
+    imports: [
+        TrackingModule,
+        MetricsModule,
+        HealthModule.register({
+            checks: [
+                {
+                    name: 'database',
+                    inject: [DatabaseService],
+                    useFactory: (database: DatabaseService) =>
+                        createHealthCheck('database', () => database.ping(), 'Database check failed'),
+                },
+            ],
+        }),
+    ],
 })
 export class AppModule {}
 ```
@@ -43,6 +64,7 @@ export class AppModule {}
 - Prometheus text output
 - Tracking and metrics interceptors
 - Nest modules for request tracking and metrics endpoints
+- Health module and health check factory helpers
 
 ## Notes
 

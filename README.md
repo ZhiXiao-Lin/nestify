@@ -304,7 +304,7 @@ etcd.watch('config/runtime', (event) => {
 
 ## API Wiring
 
-Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API keeps only concrete app wiring under `apps/api/src/shared`: database, Redis, and health checks.
+Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API keeps only concrete app wiring under `apps/api/src/shared`: database and Redis.
 
 ```typescript
 GET /health       // Full health check
@@ -336,8 +336,7 @@ apps/api/src/
 │           └── order.controller.ts
 └── shared/                         # App-local infrastructure wiring
     ├── database/                  # Kysely + PostgreSQL wiring and schema types
-    ├── redis/                     # Redisson wiring
-    └── health/                    # Health checks for app infrastructure
+    └── redis/                     # Redisson wiring
 ```
 
 ## Getting Started
