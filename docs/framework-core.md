@@ -147,6 +147,6 @@ pnpm release:publish:dry-run
 pnpm release:publish
 ```
 
-`pnpm release:publish:dry-run` runs the full release check first, smoke-installs the packed tarballs, then dry-runs `pnpm publish` for every core package from the shared package list. It does not publish packages.
+`pnpm release:publish:dry-run` runs the full release check first, smoke-installs the packed tarballs, then dry-runs `pnpm publish` for every core package from the shared package list, including package publish lifecycle scripts. It does not publish packages.
 
 GitHub release automation runs on pushes to `main`. When pending changesets exist, it opens or updates a version PR. When the version PR is merged, it runs `pnpm release:publish:dry-run` and then `pnpm release:publish`. This requires an `NPM_TOKEN` repository secret with publish access for the `@a3s-lab` scope.

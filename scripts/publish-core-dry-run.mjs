@@ -22,18 +22,14 @@ for (const corePackage of corePackages) {
 
     console.log(`\nDry-running npm publish for ${corePackage.name} from ${corePackage.dir}`);
 
-    const result = spawnSync(
-        'pnpm',
-        ['publish', '--dry-run', '--ignore-scripts', '--access', 'public', '--registry', registry],
-        {
-            cwd: packageDir,
-            env: {
-                ...process.env,
-                ...(dirtyWorktree ? { npm_config_git_checks: 'false' } : {}),
-            },
-            stdio: 'inherit',
+    const result = spawnSync('pnpm', ['publish', '--dry-run', '--access', 'public', '--registry', registry], {
+        cwd: packageDir,
+        env: {
+            ...process.env,
+            ...(dirtyWorktree ? { npm_config_git_checks: 'false' } : {}),
         },
-    );
+        stdio: 'inherit',
+    });
 
     if (result.status !== 0) {
         failures.push(corePackage.name);
