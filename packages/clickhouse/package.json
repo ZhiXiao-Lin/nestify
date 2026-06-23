@@ -4,6 +4,23 @@
     "description": "NestJS wrapper for the official ClickHouse JavaScript client",
     "author": "A3S Lab",
     "license": "MIT",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/clickhouse#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
+        "directory": "packages/clickhouse"
+    },
+    "bugs": {
+        "url": "https://github.com/A3S-Lab/nestify/issues"
+    },
+    "keywords": [
+        "nestjs",
+        "clickhouse",
+        "database",
+        "analytics",
+        "sql",
+        "typescript"
+    ],
     "source": "./src/index.ts",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -16,12 +33,18 @@
         }
     },
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts",
+        "dist/**/*.js.map",
+        "!dist/**/__tests__/**",
+        "!dist/**/*.spec.*",
+        "!dist/**/*.tsbuildinfo"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "rimraf dist && tsc",
         "test": "jest --passWithNoTests",
-        "clean": "rimraf dist && rimraf node_modules"
+        "clean": "rimraf dist && rimraf node_modules",
+        "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
         "@clickhouse/client": "^1.18.5"

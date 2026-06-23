@@ -23,7 +23,11 @@
         "test:kysely": "pnpm --filter @a3s-lab/kysely test",
         "test:redisson": "pnpm --filter @a3s-lab/redisson test",
         "test:cov": "pnpm -r test:cov",
-        "clean": "pnpm -r clean && rm -rf node_modules"
+        "clean": "pnpm -r clean && rm -rf node_modules",
+        "build:core": "pnpm --filter @a3s-lab/ddd --filter @a3s-lab/http --filter @a3s-lab/security --filter @a3s-lab/observability --filter @a3s-lab/resilience --filter @a3s-lab/clickhouse --filter @a3s-lab/migrations build",
+        "test:core": "pnpm --filter @a3s-lab/ddd --filter @a3s-lab/http --filter @a3s-lab/security --filter @a3s-lab/observability --filter @a3s-lab/resilience --filter @a3s-lab/clickhouse --filter @a3s-lab/migrations test",
+        "pack:core": "rm -rf .artifacts/core-packages && mkdir -p .artifacts/core-packages && pnpm --filter @a3s-lab/ddd --filter @a3s-lab/http --filter @a3s-lab/security --filter @a3s-lab/observability --filter @a3s-lab/resilience --filter @a3s-lab/clickhouse --filter @a3s-lab/migrations pack --pack-destination $PWD/.artifacts/core-packages",
+        "release:check": "pnpm format:check && pnpm lint:check && pnpm build:core && pnpm test:core && pnpm pack:core"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.14",

@@ -4,6 +4,25 @@
     "description": "HTTP API contracts, envelopes, validation, errors, and OpenAPI helpers for NestJS",
     "author": "A3S Lab",
     "license": "MIT",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/http#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
+        "directory": "packages/http"
+    },
+    "bugs": {
+        "url": "https://github.com/A3S-Lab/nestify/issues"
+    },
+    "keywords": [
+        "nestjs",
+        "http",
+        "api",
+        "openapi",
+        "validation",
+        "errors",
+        "pagination",
+        "typescript"
+    ],
     "source": "./src/index.ts",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -16,12 +35,18 @@
         }
     },
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts",
+        "dist/**/*.js.map",
+        "!dist/**/__tests__/**",
+        "!dist/**/*.spec.*",
+        "!dist/**/*.tsbuildinfo"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "rimraf dist && tsc",
         "test": "jest --passWithNoTests",
-        "clean": "rimraf dist && rimraf node_modules"
+        "clean": "rimraf dist && rimraf node_modules",
+        "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
         "@a3s-lab/ddd": "workspace:*"
