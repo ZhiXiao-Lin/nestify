@@ -1,6 +1,9 @@
 import type { LogEvent } from 'kysely';
 import {
+    MetricsController,
+    MetricsModule,
     MetricsService,
+    TrackingModule,
     configureExternalCallCollector,
     configureSqlQueryCollector,
     externalCallCollectorStorage,
@@ -88,5 +91,18 @@ describe('observability helpers', () => {
             'http_requests_total{method="GET",path="/orders/:id",status="200"} 1',
         );
         expect(metrics.toPrometheusFormat()).toContain('queue_depth{queue="orders"} 7');
+    });
+
+    it('exports Nest modules and a metrics controller', () => {
+        const metrics = new MetricsService();
+        metrics.recordHttpRequest('GET', '/resources/:id', 200, 0.15);
+        const controller = new MetricsController(metrics);
+
+        expect(MetricsModule).toBeDefined();
+        expect(TrackingModule).toBeDefined();
+        expect(controller.getMetrics()).toContain('http_requests_total');
+        expect(controller.getMetricsJson()).toMatchObject({
+            counters: expect.objectContaining({ 'http_requests_total{method=GET,path=/resources/:id,status=200}': 1 }),
+        });
     });
 });

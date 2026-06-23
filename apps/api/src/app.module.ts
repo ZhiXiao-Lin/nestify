@@ -1,22 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { FileUploadModule } from '@a3s-lab/files';
-import { SerializationModule, TransformModule } from '@a3s-lab/http';
+import {
+    ApiResponseModule,
+    ApiVersioningModule,
+    ErrorsModule,
+    SerializationModule,
+    TransformModule,
+} from '@a3s-lab/http';
+import { MetricsModule, TrackingModule } from '@a3s-lab/observability';
 import { ResilienceModule } from '@a3s-lab/resilience';
 import { OrderModule } from './modules/order/order.module';
 import { DatabaseModule } from './shared/database';
 import { RedisModule } from './shared/redis';
 
 import { AuthModule } from './shared/auth';
-import { MetricsModule } from './shared/metrics';
 import { HealthModule } from './shared/health';
 import { TenantModule } from './shared/tenant';
 import { AuditModule } from './shared/audit';
-import { ApiResponseModule } from './shared/api-response';
-import { ApiVersioningModule } from './shared/api-versioning';
 import { FeatureFlagsModule } from './shared/feature-flags';
-import { ErrorsModule } from './shared/errors';
-import { TrackingModule } from './shared/tracking';
 
 @Module({
     imports: [

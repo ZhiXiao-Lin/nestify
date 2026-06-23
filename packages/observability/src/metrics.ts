@@ -1,4 +1,16 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, OnModuleDestroy } from '@nestjs/common';
+import {
+    CallHandler,
+    Controller,
+    ExecutionContext,
+    Get,
+    Global,
+    Header,
+    Injectable,
+    Module,
+    NestInterceptor,
+    OnModuleDestroy,
+} from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import type { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { finalize, tap } from 'rxjs/operators';
@@ -194,6 +206,22 @@ function escapeLabel(value: string): string {
     return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
 }
 
+@Controller('metrics')
+export class MetricsController {
+    constructor(private readonly metricsService: MetricsService) {}
+
+    @Get()
+    @Header('Content-Type', 'text/plain')
+    getMetrics(): string {
+        return this.metricsService.toPrometheusFormat();
+    }
+
+    @Get('json')
+    getMetricsJson(): Record<string, unknown> {
+        return this.metricsService.toJSON();
+    }
+}
+
 @Injectable()
 export class MetricsInterceptor implements NestInterceptor {
     constructor(private readonly metricsService: MetricsService) {}
@@ -239,3 +267,11 @@ export class MetricsInterceptor implements NestInterceptor {
             .replace(/\/\d+/g, '/:id');
     }
 }
+
+@Global()
+@Module({
+    controllers: [MetricsController],
+    providers: [MetricsService, { provide: APP_INTERCEPTOR, useClass: MetricsInterceptor }],
+    exports: [MetricsService],
+})
+export class MetricsModule {}

@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Global, Injectable, Module, NestInterceptor } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import type { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import {
@@ -50,6 +51,12 @@ export class TrackingInterceptor implements NestInterceptor {
         );
     }
 }
+
+@Global()
+@Module({
+    providers: [{ provide: APP_INTERCEPTOR, useClass: TrackingInterceptor }],
+})
+export class TrackingModule {}
 
 export function getTrackingContext(): TrackingContext | undefined {
     return trackingStorage.getStore();

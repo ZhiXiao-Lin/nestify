@@ -1,5 +1,13 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, SetMetadata } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import {
+    CallHandler,
+    ExecutionContext,
+    Global,
+    Injectable,
+    Module,
+    NestInterceptor,
+    SetMetadata,
+} from '@nestjs/common';
+import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
 import { BusinessException, StatusCode } from './exceptions';
@@ -161,3 +169,9 @@ export class ApiVersioningInterceptor implements NestInterceptor {
         return next.handle();
     }
 }
+
+@Global()
+@Module({
+    providers: [{ provide: APP_INTERCEPTOR, useClass: ApiVersioningInterceptor }],
+})
+export class ApiVersioningModule {}

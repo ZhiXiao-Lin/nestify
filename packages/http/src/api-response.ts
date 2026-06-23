@@ -1,5 +1,13 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, SetMetadata } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import {
+    CallHandler,
+    ExecutionContext,
+    Global,
+    Injectable,
+    Module,
+    NestInterceptor,
+    SetMetadata,
+} from '@nestjs/common';
+import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
@@ -229,3 +237,10 @@ export class ApiResponseInterceptor implements NestInterceptor {
         );
     }
 }
+
+@Global()
+@Module({
+    providers: [ApiResponseService, { provide: APP_INTERCEPTOR, useClass: ApiResponseInterceptor }],
+    exports: [ApiResponseService],
+})
+export class ApiResponseModule {}

@@ -4,9 +4,12 @@ import { validate } from 'class-validator';
 import {
     API_SUCCESS_MESSAGE,
     API_SUCCESS_STATUS,
+    ApiResponseModule,
     ApiResponseDto,
     ApiResponseService,
+    ApiVersioningModule,
     BusinessException,
+    ErrorsModule,
     IsInRange,
     IsJsonString,
     IsSlug,
@@ -178,6 +181,12 @@ describe('http api helpers', () => {
             { id: 'two', label: 'Second' },
         ]);
         expect(SerializationModule).toBeDefined();
+    });
+
+    it('exports Nest modules for common API middleware', () => {
+        expect(ApiResponseModule).toBeDefined();
+        expect(ApiVersioningModule).toBeDefined();
+        expect(ErrorsModule).toBeDefined();
     });
 
     it('transforms plain values and class instances with class-transformer defaults', () => {

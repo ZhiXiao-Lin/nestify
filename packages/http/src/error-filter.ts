@@ -1,4 +1,5 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Global, HttpException, Logger, Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { DomainValidationError } from '@a3s-lab/ddd';
 import type { Request, Response } from 'express';
 import { BusinessException, getStatusMessage, StatusCode, StatusCodeHttpStatus } from './exceptions';
@@ -177,3 +178,9 @@ export class GlobalErrorFilter implements ExceptionFilter {
         }
     }
 }
+
+@Global()
+@Module({
+    providers: [{ provide: APP_FILTER, useClass: GlobalErrorFilter }],
+})
+export class ErrorsModule {}

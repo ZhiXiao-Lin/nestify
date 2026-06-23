@@ -12,7 +12,14 @@ pnpm add @nestjs/common @nestjs/core @nestjs/swagger class-transformer class-val
 ## Use
 
 ```ts
-import { ApiResponseInterceptor, BusinessException, StatusCode, parsePaginationOptions } from '@a3s-lab/http';
+import {
+    ApiResponseModule,
+    ApiVersioningModule,
+    BusinessException,
+    ErrorsModule,
+    StatusCode,
+    parsePaginationOptions,
+} from '@a3s-lab/http';
 
 const page = parsePaginationOptions({ page: 1, limit: 20 });
 
@@ -24,7 +31,14 @@ if (page.limit > 100) {
 }
 ```
 
-Register `ApiResponseInterceptor`, `GlobalErrorFilter`, and validation pipes using the NestJS provider style that fits your API.
+Register the common HTTP modules in a NestJS module, or wire the exported interceptors and filters manually when you need custom behavior.
+
+```ts
+@Module({
+    imports: [ApiResponseModule, ApiVersioningModule, ErrorsModule],
+})
+export class AppModule {}
+```
 
 ```ts
 import { DomainException, GlobalErrorFilter, LoggingInterceptor } from '@a3s-lab/http';
@@ -53,6 +67,7 @@ const input = transformKeysToCamelCase({ resource_id: 'resource-1' });
 - Business exceptions and error filter
 - Validation pipes and DTO helpers
 - Request/correlation ID helpers
+- Nest modules for API responses, API versioning, errors, serialization, and transforms
 - Domain/http exception filters and request logging interceptor
 - Serializer, mapper, and class-transformer helpers
 - Key transform helpers and transform interceptors
