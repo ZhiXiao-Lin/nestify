@@ -4,6 +4,15 @@
     "description": "NestJS module for structured logging with request tracing and JSON format",
     "author": "A3S Lab",
     "license": "MIT",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/logger#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
+        "directory": "packages/logger"
+    },
+    "bugs": {
+        "url": "https://github.com/A3S-Lab/nestify/issues"
+    },
     "keywords": [
         "nestjs",
         "logger",

@@ -57,8 +57,25 @@ function verifyPackage(corePackage) {
     const packageDir = path.join(rootDir, corePackage.dir);
     const packageJsonPath = path.join(packageDir, 'package.json');
     const manifest = readJson(packageJsonPath);
+    const expectedHomepage = `https://github.com/A3S-Lab/nestify/tree/main/${corePackage.dir}#readme`;
 
     expect(manifest.name === corePackage.name, `${corePackage.dir}: package name must be ${corePackage.name}`);
+    expect(manifest.author === 'A3S Lab', `${corePackage.name}: author must be A3S Lab`);
+    expect(manifest.license === 'MIT', `${corePackage.name}: license must be MIT`);
+    expect(manifest.homepage === expectedHomepage, `${corePackage.name}: homepage must be ${expectedHomepage}`);
+    expect(manifest.repository?.type === 'git', `${corePackage.name}: repository.type must be git`);
+    expect(
+        manifest.repository?.url === 'git+https://github.com/A3S-Lab/nestify.git',
+        `${corePackage.name}: repository.url must point to the nestify repository`,
+    );
+    expect(
+        manifest.repository?.directory === corePackage.dir,
+        `${corePackage.name}: repository.directory must be ${corePackage.dir}`,
+    );
+    expect(
+        manifest.bugs?.url === 'https://github.com/A3S-Lab/nestify/issues',
+        `${corePackage.name}: bugs.url must point to the nestify issue tracker`,
+    );
     expect(manifest.main === './dist/index.js', `${corePackage.name}: main must point to ./dist/index.js`);
     expect(manifest.types === './dist/index.d.ts', `${corePackage.name}: types must point to ./dist/index.d.ts`);
     expect(

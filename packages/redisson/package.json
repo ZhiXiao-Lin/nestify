@@ -2,16 +2,16 @@
     "name": "@a3s-lab/redisson",
     "version": "1.0.0",
     "description": "NestJS module for Redis distributed locks and caching using Redisson",
-    "author": "ZhiXiao-Lin",
+    "author": "A3S Lab",
     "license": "MIT",
-    "homepage": "https://github.com/ZhiXiao-Lin/nestify/tree/main/packages/redisson#readme",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/redisson#readme",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ZhiXiao-Lin/nestify.git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
         "directory": "packages/redisson"
     },
     "bugs": {
-        "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+        "url": "https://github.com/A3S-Lab/nestify/issues"
     },
     "keywords": [
         "nestjs",

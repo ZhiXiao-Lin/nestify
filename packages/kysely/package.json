@@ -2,16 +2,16 @@
     "name": "@a3s-lab/kysely",
     "version": "1.0.0",
     "description": "NestJS module for Kysely SQL query builder with syntax-highlighted logging",
-    "author": "ZhiXiao-Lin",
+    "author": "A3S Lab",
     "license": "MIT",
-    "homepage": "https://github.com/ZhiXiao-Lin/nestify/tree/main/packages/kysely#readme",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/kysely#readme",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ZhiXiao-Lin/nestify.git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
         "directory": "packages/kysely"
     },
     "bugs": {
-        "url": "https://github.com/ZhiXiao-Lin/nestify/issues"
+        "url": "https://github.com/A3S-Lab/nestify/issues"
     },
     "keywords": [
         "nestjs",

@@ -4,6 +4,15 @@
     "description": "NestJS module for RustFS S3-compatible storage - object storage with bucket and file operations",
     "author": "A3S Lab",
     "license": "MIT",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/rustfs#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
+        "directory": "packages/rustfs"
+    },
+    "bugs": {
+        "url": "https://github.com/A3S-Lab/nestify/issues"
+    },
     "keywords": [
         "nestjs",
         "rustfs",

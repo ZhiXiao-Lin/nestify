@@ -4,6 +4,15 @@
     "description": "NestJS module and service helpers for BullMQ task queues",
     "author": "A3S Lab",
     "license": "MIT",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/bullmq#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
+        "directory": "packages/bullmq"
+    },
+    "bugs": {
+        "url": "https://github.com/A3S-Lab/nestify/issues"
+    },
     "keywords": [
         "nestjs",
         "bullmq",
