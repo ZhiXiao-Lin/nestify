@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { KyselyService } from '@a3s-lab/kysely';
-import { Database, NewOrder, NewOrderItem } from '@/shared/database/database.types';
 import { IOrderRepository } from '../../domain/repositories/order.repository.interface';
 import { Order } from '../../domain/entities/order.entity';
 import { OrderItem } from '../../domain/entities/order-item.entity';
@@ -8,6 +7,7 @@ import { OrderId } from '../../domain/value-objects/order-id.vo';
 import { OrderStatus, OrderStatusEnum } from '../../domain/value-objects/order-status.vo';
 import { Money } from '../../domain/value-objects/money.vo';
 import { Quantity } from '../../domain/value-objects/quantity.vo';
+import { Database, NewOrder, NewOrderItem } from './order-database.types';
 
 @Injectable()
 export class OrderRepository implements IOrderRepository {

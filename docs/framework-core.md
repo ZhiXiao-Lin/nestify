@@ -30,7 +30,7 @@ Each package has a package-level README with install notes, import examples, exp
 
 ## Sample API Wiring
 
-Reusable API framework capabilities now live in packages and are imported directly by the sample API. The remaining `apps/api/src/shared/*` files are concrete sample-app wiring for PostgreSQL and Redis; they are not compatibility re-export layers.
+Reusable API framework capabilities now live in packages and are imported directly by the sample API. `apps/api/src/app.module.ts` composes the package modules, including Kysely PostgreSQL and Redisson Redis registration helpers; order-specific database schema types stay inside the order persistence adapter.
 
 ## Design Rules
 
@@ -40,15 +40,15 @@ Reusable API framework capabilities now live in packages and are imported direct
 - Keep NestJS dependencies in packages that need Nest integration; keep DDD primitives framework-independent.
 - Keep package names short and capability-based, for example `@a3s-lab/http`.
 
-## Remaining Shared App Scope
+## Reviewed App Scope
 
-The remaining `apps/api/src/shared/*` implementations were reviewed after the framework extraction. They stay in the sample API because they encode concrete application wiring rather than stable framework contracts:
+The former `apps/api/src/shared/*` implementations were reviewed after the framework extraction. Stable cross-cutting API behavior moved into packages; business-specific schema and policy stayed with the sample order module or was removed when unused:
 
 | Area | Current decision | Reason |
 | --- | --- | --- |
 | `auth`, `tenant` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level guards/decorators/services. Generic JWT token helpers, route metadata, and role-permission checks live in `@a3s-lab/security`. |
 | `audit`, `feature-flags` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level audit or feature-flag services, and their defaults encoded application policy rather than framework contracts. |
-| `database`, `redis` | Keep app-local wiring | Database schema types, environment-variable mapping, and concrete infrastructure wiring belong to the example API. |
+| `database`, `redis` | Package-backed module registration | Generic PostgreSQL and Redis option builders live in `@a3s-lab/kysely` and `@a3s-lab/redisson`; AppModule supplies concrete environment variable values. Order table schema types stay in the order persistence adapter. |
 | `health` | Package-backed | Generic health endpoints and check registration live in `@a3s-lab/observability`; AppModule provides concrete database and Redis probes. |
 | `application/dto.base`, `base` | Removed unused app template code | `BaseDto` had no consumers, and `BaseService` coupled a CRUD template to Kysely plus a pagination shape that differs from `@a3s-lab/http`. Generic `IQuery` and `IUseCase` contracts live in `@a3s-lab/ddd`; no stable extra framework contract remained. |
 | `testing` | Removed unused app template code | Test helpers had no consumers and included sample user, organization, Redis, and Kysely mock conventions. Add framework-neutral builders later only when a package-level use case appears. |

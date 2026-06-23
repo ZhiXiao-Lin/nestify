@@ -69,8 +69,7 @@ nestify/
 │       ├── src/
 │       │   ├── app.module.ts      # Root application module
 │       │   ├── main.ts            # Application entry point
-│       │   ├── modules/          # Business modules (DDD)
-│       │   └── shared/            # Shared infrastructure modules
+│       │   └── modules/          # Business modules (DDD)
 │       └── package.json
 └── packages/
     ├── kysely/                    # @a3s-lab/kysely - Type-safe SQL
@@ -304,7 +303,7 @@ etcd.watch('config/runtime', (event) => {
 
 ## API Wiring
 
-Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API keeps only concrete app wiring under `apps/api/src/shared`: database and Redis.
+Reusable API capabilities are exposed through packages such as `@a3s-lab/http`, `@a3s-lab/security`, `@a3s-lab/observability`, and `@a3s-lab/resilience`. The sample API imports package modules directly from `apps/api/src/app.module.ts`; order-specific database schema types stay inside the order persistence adapter.
 
 ```typescript
 GET /health       // Full health check
@@ -331,12 +330,9 @@ apps/api/src/
 │       │   ├── queries/        # GetOrder, ListOrders
 │       │   └── event-handlers/ # HandleOrderCreated
 │       ├── infrastructure/
-│       │   └── persistence/     # KyselyOrderRepository
+│       │   └── persistence/     # KyselyOrderRepository and schema types
 │       └── presentation/
 │           └── order.controller.ts
-└── shared/                         # App-local infrastructure wiring
-    ├── database/                  # Kysely + PostgreSQL wiring and schema types
-    └── redis/                     # Redisson wiring
 ```
 
 ## Getting Started

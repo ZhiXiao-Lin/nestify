@@ -1,3 +1,4 @@
+import { createRedissonModuleOptions } from '../redisson-options';
 import { RedissonModule } from '../redisson.module';
 
 describe('RedissonModule', () => {
@@ -58,6 +59,33 @@ describe('RedissonModule', () => {
             });
 
             expect(dynamicModule).toBeDefined();
+        });
+    });
+});
+
+describe('createRedissonModuleOptions', () => {
+    it('creates single-node options from connection values', () => {
+        expect(
+            createRedissonModuleOptions({
+                host: 'cache',
+                port: '6380',
+                password: '',
+                db: '2',
+                keyPrefix: 'api:',
+                eventAdapter: 'pubsub',
+                lockWatchdogTimeout: '5000',
+            }),
+        ).toEqual({
+            redis: {
+                options: {
+                    host: 'cache',
+                    port: 6380,
+                    db: 2,
+                    keyPrefix: 'api:',
+                },
+            },
+            eventAdapter: 'pubsub',
+            lockWatchdogTimeout: 5000n,
         });
     });
 });

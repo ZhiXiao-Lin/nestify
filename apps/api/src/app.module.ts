@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FileUploadModule } from '@a3s-lab/files';
-import { KyselyService } from '@a3s-lab/kysely';
+import { KyselyModule, KyselyService, createPostgresKyselyModuleOptions } from '@a3s-lab/kysely';
 import {
     ApiResponseModule,
     ApiVersioningModule,
@@ -9,13 +9,11 @@ import {
     SerializationModule,
     TransformModule,
 } from '@a3s-lab/http';
-import { HealthModule, MetricsModule, TrackingModule, createHealthCheck } from '@a3s-lab/observability';
-import { RedissonService } from '@a3s-lab/redisson';
+import { HealthModule, MetricsModule, TrackingModule, createHealthCheck, recordSql } from '@a3s-lab/observability';
+import { RedissonModule, RedissonService, createRedissonModuleOptions } from '@a3s-lab/redisson';
 import { ResilienceModule } from '@a3s-lab/resilience';
 import { sql } from 'kysely';
 import { OrderModule } from './modules/order/order.module';
-import { DatabaseModule } from './shared/database';
-import { RedisModule } from './shared/redis';
 
 @Module({
     imports: [
@@ -26,10 +24,36 @@ import { RedisModule } from './shared/redis';
         }),
 
         // Database (Kysely + PostgreSQL)
-        DatabaseModule,
+        KyselyModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) =>
+                createPostgresKyselyModuleOptions({
+                    host: configService.get<string>('DB_HOST', 'localhost'),
+                    port: configService.get<number>('DB_PORT', 5432),
+                    user: configService.get<string>('DB_USERNAME', 'postgres'),
+                    password: configService.get<string>('DB_PASSWORD', 'postgres'),
+                    database: configService.get<string>('DB_DATABASE', 'nestify'),
+                    max: 10,
+                    logger: {
+                        consoleOutput: configService.get<string>('NODE_ENV') === 'development',
+                        onQuery: recordSql,
+                    },
+                }),
+        }),
 
         // Redis (Redisson)
-        RedisModule,
+        RedissonModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) =>
+                createRedissonModuleOptions({
+                    host: configService.get<string>('REDIS_HOST', 'localhost'),
+                    port: configService.get<number>('REDIS_PORT', 6379),
+                    password: configService.get<string>('REDIS_PASSWORD'),
+                    db: configService.get<number>('REDIS_DB', 0),
+                }),
+        }),
 
         // Metrics (Prometheus)
         MetricsModule,

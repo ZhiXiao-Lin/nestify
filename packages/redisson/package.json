@@ -36,10 +36,16 @@
         }
     },
     "files": [
-        "dist"
+        "README.md",
+        "dist/**/*.js",
+        "dist/**/*.d.ts",
+        "dist/**/*.js.map",
+        "!dist/**/__tests__/**",
+        "!dist/**/*.spec.*",
+        "!dist/**/*.tsbuildinfo"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "rimraf dist && tsc",
         "test": "jest",
         "test:cov": "jest --coverage",
         "clean": "rimraf dist && rimraf node_modules",

@@ -1,16 +1,10 @@
 import type { ColumnType, Generated, Insertable, Selectable, Updateable } from 'kysely';
 
-/**
- * Database schema types for Kysely
- */
 export interface Database {
     orders: OrderTable;
     order_items: OrderItemTable;
 }
 
-/**
- * Order table schema
- */
 export interface OrderTable {
     id: Generated<string>;
     customer_id: string;
@@ -20,9 +14,6 @@ export interface OrderTable {
     updated_at: ColumnType<Date, string | undefined, string>;
 }
 
-/**
- * Order item table schema
- */
 export interface OrderItemTable {
     id: Generated<string>;
     order_id: string;
@@ -33,9 +24,6 @@ export interface OrderItemTable {
     created_at: ColumnType<Date, string | undefined, never>;
 }
 
-/**
- * Type helpers for database operations
- */
 export type Order = Selectable<OrderTable>;
 export type NewOrder = Insertable<OrderTable>;
 export type OrderUpdate = Updateable<OrderTable>;

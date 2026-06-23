@@ -37,10 +37,16 @@
         }
     },
     "files": [
-        "dist"
+        "README.md",
+        "dist/**/*.js",
+        "dist/**/*.d.ts",
+        "dist/**/*.js.map",
+        "!dist/**/__tests__/**",
+        "!dist/**/*.spec.*",
+        "!dist/**/*.tsbuildinfo"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "rimraf dist && tsc",
         "test": "jest",
         "test:cov": "jest --coverage",
         "clean": "rimraf dist && rimraf node_modules",
@@ -49,6 +55,7 @@
     "dependencies": {
         "dayjs": "^1.11.13",
         "kysely": "^0.28.9",
+        "pg": "^8.18.0",
         "picocolors": "^1.1.1"
     },
     "devDependencies": {
@@ -56,6 +63,7 @@
         "@nestjs/common": "^10.0.0",
         "@nestjs/testing": "^10.0.0",
         "@types/jest": "^29.5.0",
+        "@types/pg": "^8.16.0",
         "jest": "^29.5.0",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^6.0.1",
