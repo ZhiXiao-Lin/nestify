@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { FileUploadModule } from '@a3s-lab/files';
+import { SerializationModule, TransformModule } from '@a3s-lab/http';
+import { ResilienceModule } from '@a3s-lab/resilience';
 import { OrderModule } from './modules/order/order.module';
 import { DatabaseModule } from './shared/database';
 import { RedisModule } from './shared/redis';
@@ -7,19 +10,13 @@ import { RedisModule } from './shared/redis';
 import { AuthModule } from './shared/auth';
 import { MetricsModule } from './shared/metrics';
 import { HealthModule } from './shared/health';
-import { ValidationModule } from './shared/validation';
-import { SerializationModule } from './shared/serialization';
 import { TenantModule } from './shared/tenant';
 import { AuditModule } from './shared/audit';
 import { ApiResponseModule } from './shared/api-response';
 import { ApiVersioningModule } from './shared/api-versioning';
 import { FeatureFlagsModule } from './shared/feature-flags';
-import { FileUploadModule } from './shared/file-upload';
-import { TransformModule } from './shared/transform';
 import { ErrorsModule } from './shared/errors';
-import { OpenAPIModule } from './shared/openapi';
 import { TrackingModule } from './shared/tracking';
-import { ResilienceModule } from '@a3s-lab/resilience';
 
 @Module({
     imports: [
@@ -47,9 +44,6 @@ import { ResilienceModule } from '@a3s-lab/resilience';
         // Health checks
         HealthModule,
 
-        // Validation
-        ValidationModule,
-
         // Serialization (class-transformer)
         SerializationModule,
 
@@ -76,9 +70,6 @@ import { ResilienceModule } from '@a3s-lab/resilience';
 
         // Error handling
         ErrorsModule,
-
-        // OpenAPI decorators
-        OpenAPIModule,
 
         // Request tracking
         TrackingModule,
