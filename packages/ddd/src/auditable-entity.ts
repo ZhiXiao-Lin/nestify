@@ -34,8 +34,8 @@ export abstract class AuditableEntity<T = string> extends Entity<T> {
         return this.updatedAt > date;
     }
 
-    isUpdatedBy(userId: string): boolean {
-        return this.updatedBy === userId;
+    isUpdatedBy(actorId: string): boolean {
+        return this.updatedBy === actorId;
     }
 }
 
@@ -61,8 +61,8 @@ export abstract class SoftDeletableEntity<T = string> extends AuditableEntity<T>
         return this.deletedAt !== undefined && this.deletedAt !== null;
     }
 
-    isDeletedBy(userId: string): boolean {
-        return this.deletedBy === userId;
+    isDeletedBy(actorId: string): boolean {
+        return this.deletedBy === actorId;
     }
 
     daysSinceDeletion(): number | null {

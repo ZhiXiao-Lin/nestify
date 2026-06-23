@@ -17,15 +17,21 @@ export const trackingStorage = new AsyncLocalStorage<TrackingContext>();
 export interface TrackingContext {
     requestId: string;
     correlationId?: string;
-    userId?: string;
-    organizationId?: string;
+    actorId?: string;
+    subjectId?: string;
     startTime: number;
 }
 
 @Injectable()
 export class TrackingInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-        const request = context.switchToHttp().getRequest<Request & { user?: Record<string, unknown> }>();
+        const request = context.switchToHttp().getRequest<
+            Request & {
+                actor?: Record<string, unknown>;
+                principal?: Record<string, unknown>;
+                user?: Record<string, unknown>;
+            }
+        >();
         const response = context.switchToHttp().getResponse<Response>();
 
         const requestId = getOrCreateRequestId(request);
@@ -33,12 +39,12 @@ export class TrackingInterceptor implements NestInterceptor {
         attachRequestIdHeader(response, requestId);
         attachCorrelationIdHeader(response, correlationId);
 
-        const user = request.user ?? {};
+        const principal = request.principal ?? request.actor ?? request.user ?? {};
         const trackingContext: TrackingContext = {
             requestId,
             correlationId,
-            userId: firstString(user.id, user.sub),
-            organizationId: firstString(user.organizationId),
+            actorId: firstString(principal.actorId, principal.id, principal.sub),
+            subjectId: firstString(principal.subjectId),
             startTime: Date.now(),
         };
 

@@ -3,8 +3,10 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "composite": true
+        "composite": true,
+        "isolatedModules": true,
+        "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
     },
     "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist", "**/__tests__"]
+    "exclude": ["src/**/*.spec.ts", "src/__tests__/**/*"]
 }

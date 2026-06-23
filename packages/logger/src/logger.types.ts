@@ -15,10 +15,10 @@ export type LogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' |
 
 export interface LogContext {
     requestId?: string;
-    userId?: string;
-    organizationId?: string;
+    actorId?: string;
+    subjectId?: string;
     correlationId?: string;
-    userAgent?: string;
+    clientAgent?: string;
     ip?: string;
     method?: string;
     url?: string;

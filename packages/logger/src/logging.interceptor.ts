@@ -1,10 +1,10 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Injectable, type NestInterceptor, type ExecutionContext, type CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { LoggerServiceImpl } from './logger.service';
-import { LogInterceptorOptions } from './logger.types';
+import type { LogInterceptorOptions } from './logger.types';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -41,7 +41,7 @@ export class LoggingInterceptor implements NestInterceptor {
             requestId,
             method,
             url,
-            userAgent: headers['user-agent'] as string,
+            clientAgent: headers['user-agent'] as string,
             ip: this.getClientIp(request),
             ...(this.options.logRequestHeaders && { headers }),
             ...(this.options.logRequestBody && body && { requestBody: body }),

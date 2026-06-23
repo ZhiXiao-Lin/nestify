@@ -1,7 +1,7 @@
 import { Injectable, LoggerService as NestLoggerService, Scope } from '@nestjs/common';
-import pino, { BaseLogger } from 'pino';
+import pino, { type BaseLogger } from 'pino';
 import { AsyncLocalStorage } from 'async_hooks';
-import { LoggerModuleOptions, LogLevel, LogContext } from './logger.types';
+import type { LoggerModuleOptions, LogLevel, LogContext } from './logger.types';
 
 // Async local storage for request context
 const asyncLocalStorage = new AsyncLocalStorage<LogContext>();
@@ -30,7 +30,7 @@ export class LoggerServiceImpl implements NestLoggerService {
             ...(options.redact ? { redact: options.redact } : {}),
         };
 
-        if (options.prettyPrint || process.env.NODE_ENV === 'development') {
+        if (options.prettyPrint || (options.json !== true && process.env.NODE_ENV === 'development')) {
             pinoOptions.transport = {
                 target: 'pino-pretty',
                 options: {
@@ -60,8 +60,6 @@ export class LoggerServiceImpl implements NestLoggerService {
             // overload: (message, context?)
             const message = levelOrMessage;
             this.logAtLevel('info', message, this.normalizeContext(messageOrContext));
-        } else {
-            this.logAtLevel('info', levelOrMessage);
         }
     }
 

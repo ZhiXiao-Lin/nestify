@@ -11,6 +11,7 @@ const corePackages = [
     { name: '@a3s-lab/http', dir: 'packages/http' },
     { name: '@a3s-lab/security', dir: 'packages/security' },
     { name: '@a3s-lab/observability', dir: 'packages/observability' },
+    { name: '@a3s-lab/logger', dir: 'packages/logger' },
     { name: '@a3s-lab/resilience', dir: 'packages/resilience' },
     { name: '@a3s-lab/kysely', dir: 'packages/kysely' },
     { name: '@a3s-lab/redisson', dir: 'packages/redisson' },
