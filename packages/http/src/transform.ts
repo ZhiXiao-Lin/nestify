@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, Module, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Inject, Injectable, Module, NestInterceptor, Optional } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import type { Request } from 'express';
 import { Observable } from 'rxjs';
@@ -19,11 +19,13 @@ export interface ResponseMetadata {
     requestId?: string;
 }
 
+export const TRANSFORM_OPTIONS = Symbol('TRANSFORM_OPTIONS');
+
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {
     private readonly defaultOptions: Required<TransformOptions>;
 
-    constructor(options: TransformOptions = {}) {
+    constructor(@Optional() @Inject(TRANSFORM_OPTIONS) options: TransformOptions = {}) {
         this.defaultOptions = {
             transformRequest: options.transformRequest ?? true,
             transformResponse: options.transformResponse ?? true,
@@ -120,7 +122,10 @@ export class KeyTransformInterceptor implements NestInterceptor {
 }
 
 @Module({
-    providers: [{ provide: APP_INTERCEPTOR, useClass: TransformInterceptor }],
+    providers: [
+        { provide: TRANSFORM_OPTIONS, useValue: {} },
+        { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
+    ],
 })
 export class TransformModule {}
 
