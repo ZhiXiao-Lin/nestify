@@ -154,3 +154,5 @@ pnpm release:publish
 `pnpm release:publish` publishes the same shared core package list in dependency order, skips package versions that already exist on the configured npm endpoint, and then creates Changesets git tags for the published package versions.
 
 GitHub release automation runs on pushes to `main`. When pending changesets exist, it opens or updates a version PR. When the version PR is merged, it runs `pnpm release:publish:dry-run` and then `pnpm release:publish`. This requires an `NPM_TOKEN` repository secret with publish access for the `@a3s-lab` scope.
+
+CI checks pull requests with `pnpm changeset status --since=origin/<base-branch>` so publishable core package changes must include a changeset or an explicit empty changeset. Changesets-generated version PRs are skipped for that status check because they already consume the pending changesets into package versions and changelogs.
