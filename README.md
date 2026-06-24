@@ -377,7 +377,12 @@ pnpm start:dev           # Development mode
 pnpm test                # Run tests
 pnpm lint                # Lint code
 pnpm format             # Format code
+pnpm release:check       # Verify core package build, tests, pack output, and metadata
+pnpm smoke:core-install  # Install packed core packages in a temporary consumer project
+pnpm release:publish:dry-run # Run the full core package publish rehearsal
 ```
+
+Core package versioning and publish commands are documented in [Framework Core](docs/framework-core.md).
 
 ## Key Design Patterns
 
