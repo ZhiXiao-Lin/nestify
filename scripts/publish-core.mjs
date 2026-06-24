@@ -4,10 +4,21 @@ import path from 'node:path';
 import { corePackages } from './core-packages.mjs';
 
 const rootDir = process.cwd();
+const args = process.argv.slice(2);
+const dryRun = args.includes('--dry-run');
+const unknownArgs = args.filter(arg => arg !== '--dry-run');
+
+if (unknownArgs.length > 0) {
+    console.error(`Usage: node scripts/publish-core.mjs [--dry-run]; unknown args: ${unknownArgs.join(' ')}`);
+    process.exit(1);
+}
+
 const registry = process.env.PUBLISH_REGISTRY ?? 'https://registry.npmjs.org';
+const tag = process.env.PUBLISH_TAG ?? 'latest';
+const otp = process.env.PUBLISH_OTP ?? process.env.NPM_CONFIG_OTP;
 const dirtyWorktree = isWorktreeDirty();
 const failures = [];
-let dryRunCount = 0;
+let publishCount = 0;
 let skipCount = 0;
 
 for (const corePackage of corePackages) {
@@ -20,9 +31,17 @@ for (const corePackage of corePackages) {
         continue;
     }
 
-    console.log(`\nDry-running npm publish for ${corePackage.name} from ${corePackage.dir}`);
+    const publishArgs = ['publish', '--access', 'public', '--tag', tag, '--registry', registry];
+    if (dryRun) {
+        publishArgs.push('--dry-run');
+    }
+    if (otp) {
+        publishArgs.push('--otp', otp);
+    }
 
-    const result = spawnSync('pnpm', ['publish', '--dry-run', '--access', 'public', '--registry', registry], {
+    console.log(`\n${dryRun ? 'Dry-running npm publish' : 'Publishing'} for ${manifest.name} from ${corePackage.dir}`);
+
+    const result = spawnSync('pnpm', publishArgs, {
         cwd: packageDir,
         env: {
             ...process.env,
@@ -32,18 +51,20 @@ for (const corePackage of corePackages) {
     });
 
     if (result.status !== 0) {
-        failures.push(corePackage.name);
+        failures.push(manifest.name);
     } else {
-        dryRunCount += 1;
+        publishCount += 1;
     }
 }
 
 if (failures.length > 0) {
-    console.error(`\nPublish dry-run failed for: ${failures.join(', ')}`);
+    console.error(`\n${dryRun ? 'Publish dry-run' : 'Publish'} failed for: ${failures.join(', ')}`);
     process.exit(1);
 }
 
-console.log(`\nDry-ran npm publish for ${dryRunCount} core packages; skipped ${skipCount} already-published versions.`);
+console.log(
+    `\n${dryRun ? 'Dry-ran npm publish' : 'Published'} for ${publishCount} core packages; skipped ${skipCount} already-published versions.`,
+);
 
 function readPackageJson(packageDir) {
     return JSON.parse(readFileSync(path.join(packageDir, 'package.json'), 'utf8'));

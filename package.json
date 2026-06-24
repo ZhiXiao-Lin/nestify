@@ -32,10 +32,11 @@
         "smoke:core-install": "node scripts/smoke-core-install.mjs",
         "changeset": "changeset",
         "version-packages": "changeset version",
-        "publish:core:dry-run": "node scripts/publish-core-dry-run.mjs",
+        "publish:core": "node scripts/publish-core.mjs",
+        "publish:core:dry-run": "node scripts/publish-core.mjs --dry-run",
         "release:check": "pnpm format:check && pnpm lint:check && pnpm build:core && pnpm test:core && pnpm pack:core && pnpm verify:core-packages",
         "release:publish:dry-run": "pnpm release:check && pnpm smoke:core-install && pnpm publish:core:dry-run",
-        "release:publish": "changeset publish"
+        "release:publish": "pnpm publish:core && changeset tag"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.14",

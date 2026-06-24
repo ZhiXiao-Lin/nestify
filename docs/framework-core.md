@@ -151,4 +151,6 @@ pnpm release:publish
 
 `pnpm release:publish:dry-run` runs the full release check first, smoke-installs the packed tarballs, then dry-runs `pnpm publish` for every core package from the shared package list, including package publish lifecycle scripts. It does not publish packages.
 
+`pnpm release:publish` publishes the same shared core package list in dependency order, skips package versions that already exist on the configured npm endpoint, and then creates Changesets git tags for the published package versions.
+
 GitHub release automation runs on pushes to `main`. When pending changesets exist, it opens or updates a version PR. When the version PR is merged, it runs `pnpm release:publish:dry-run` and then `pnpm release:publish`. This requires an `NPM_TOKEN` repository secret with publish access for the `@a3s-lab` scope.
