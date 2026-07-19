@@ -45,7 +45,7 @@ try {
             'reflect-metadata': '^0.1.13',
         }),
         devDependencies: sortObject({
-            '@types/express': '^4.17.17',
+            '@types/express': '^5.0.0',
             '@types/node': '^20.0.0',
             typescript: '^5.1.3',
         }),

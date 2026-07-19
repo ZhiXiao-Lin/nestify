@@ -83,9 +83,11 @@ GET /api/metrics/json
 
 ## Requirements
 
-- Node.js 20+
+- Node.js 20.11+
 - pnpm 10.30.3
 - Docker and Docker Compose for the local PostgreSQL and Redis setup
+
+The published NestJS integration packages accept NestJS 10 and 11 peers. The workspace and sample API are built and tested against NestJS 11 and Express 5.
 
 ## Quick Start
 
