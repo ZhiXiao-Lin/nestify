@@ -49,12 +49,10 @@ try {
             '@types/node': '^20.0.0',
             typescript: '^5.1.3',
         }),
-        pnpm: {
-            overrides: sortObject(packageDependencies),
-        },
     };
 
     writeJson(path.join(consumerDir, 'package.json'), packageJson);
+    writeFileSync(path.join(consumerDir, 'pnpm-workspace.yaml'), pnpmWorkspaceSource(packageDependencies));
     writeJson(path.join(consumerDir, 'tsconfig.json'), {
         compilerOptions: {
             module: 'Node16',
@@ -112,6 +110,16 @@ function writeJson(filePath, value) {
 
 function sortObject(value) {
     return Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)));
+}
+
+function pnpmWorkspaceSource(overrides) {
+    const lines = ['packages:', "  - '.'", 'overrides:'];
+
+    for (const [packageName, packagePath] of Object.entries(sortObject(overrides))) {
+        lines.push(`  ${JSON.stringify(packageName)}: ${JSON.stringify(packagePath)}`);
+    }
+
+    return `${lines.join('\n')}\n`;
 }
 
 function smokeTypescriptSource() {
