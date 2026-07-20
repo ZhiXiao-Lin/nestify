@@ -75,8 +75,8 @@ importers:
         specifier: ^0.14.0
         version: 0.14.3
       kysely:
-        specifier: ^0.28.11
-        version: 0.28.11
+        specifier: ^0.28.14
+        version: 0.28.17
       pg:
         specifier: ^8.18.0
         version: 8.18.0
@@ -384,8 +384,8 @@ importers:
         specifier: ^1.11.13
         version: 1.11.19
       kysely:
-        specifier: ^0.28.9
-        version: 0.28.11
+        specifier: ^0.28.14
+        version: 0.28.17
       pg:
         specifier: ^8.18.0
         version: 8.18.0
@@ -495,8 +495,8 @@ importers:
         specifier: ^29.5.0
         version: 29.7.0(@types/node@20.19.31)(ts-node@10.9.2(@swc/core@1.15.11)(@types/node@20.19.31)(typescript@5.9.3))
       kysely:
-        specifier: ^0.28.11
-        version: 0.28.11
+        specifier: ^0.28.14
+        version: 0.28.17
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14
@@ -572,8 +572,8 @@ importers:
         specifier: ^29.5.0
         version: 29.7.0(@types/node@20.19.31)(ts-node@10.9.2(@swc/core@1.15.11)(@types/node@20.19.31)(typescript@5.9.3))
       kysely:
-        specifier: ^0.28.11
-        version: 0.28.11
+        specifier: ^0.28.14
+        version: 0.28.17
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.14
@@ -3365,8 +3365,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  kysely@0.28.11:
-    resolution: {integrity: sha512-zpGIFg0HuoC893rIjYX1BETkVWdDnzTzF5e0kWXJFg5lE0k1/LfNWBejrcnOFu8Q2Rfq/hTDTU7XLUM8QOrpzg==}
+  kysely@0.28.17:
+    resolution: {integrity: sha512-nbD8lB9EB3wNdMhOCdx5Li8DxnLbvKByylRLcJ1h+4SkrowVeECAyZlyiKMThF7xFdRz0jSQ2MoJr+wXux2y0Q==}
     engines: {node: '>=20.0.0'}
 
   leven@3.1.0:
@@ -7873,7 +7873,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  kysely@0.28.11: {}
+  kysely@0.28.17: {}
 
   leven@3.1.0: {}
 
