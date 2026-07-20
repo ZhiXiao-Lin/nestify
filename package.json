@@ -5,6 +5,9 @@
     "author": "",
     "private": true,
     "packageManager": "pnpm@10.30.3",
+    "engines": {
+        "node": ">=20.11.0"
+    },
     "license": "MIT",
     "scripts": {
         "build": "pnpm -r build",

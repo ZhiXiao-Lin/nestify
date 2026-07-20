@@ -42,6 +42,10 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
 - [`@a3s-lab/files`](../packages/files/README.md)
 
+## Runtime Compatibility
+
+The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds, tests, packed declarations, and the sample API run against NestJS 11; HTTP-facing package tests use Express 5 while their peer ranges continue to accept Express 4 and 5. Repository development requires Node.js 20.11 or newer.
+
 ## Sample API Wiring
 
 Reusable API framework capabilities now live in packages and are imported directly by the sample API. `apps/api/src/app.module.ts` composes the package modules, including Kysely PostgreSQL and Redisson Redis registration helpers; order-specific database schema types stay inside the order persistence adapter.
