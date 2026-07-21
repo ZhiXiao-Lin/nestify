@@ -1,11 +1,13 @@
-import { MODULE_OPTIONS_TOKEN } from '../rustfs.module-definition';
-import { RustFSModule } from '../rustfs.module';
-import { ObjectNotFoundError } from '../rustfs.types';
 import { RustFSService, RustFSServiceImpl } from '../index';
+import { RustFSModule } from '../rustfs.module';
+import { MODULE_OPTIONS_TOKEN } from '../rustfs.module-definition';
+import { ObjectNotFoundError } from '../rustfs.types';
 
 const mockSend = jest.fn();
 const mockS3Client = jest.fn();
+const mockDestroy = jest.fn();
 const mockGetSignedUrl = jest.fn();
+const mockCreatePresignedPost = jest.fn();
 
 jest.mock('@aws-sdk/client-s3', () => {
     const createCommand = (commandName: string) =>
@@ -20,6 +22,7 @@ jest.mock('@aws-sdk/client-s3', () => {
             return {
                 config,
                 send: mockSend,
+                destroy: mockDestroy,
             };
         }),
         CreateBucketCommand: createCommand('CreateBucketCommand'),
@@ -47,6 +50,10 @@ jest.mock('@aws-sdk/s3-request-presigner', () => ({
     getSignedUrl: (...args: unknown[]) => mockGetSignedUrl(...args),
 }));
 
+jest.mock('@aws-sdk/s3-presigned-post', () => ({
+    createPresignedPost: (...args: unknown[]) => mockCreatePresignedPost(...args),
+}));
+
 async function* chunks(...values: string[]) {
     for (const value of values) {
         yield Buffer.from(value);
@@ -61,6 +68,10 @@ describe('rustfs package', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockGetSignedUrl.mockResolvedValue('https://storage.example/presigned');
+        mockCreatePresignedPost.mockResolvedValue({
+            url: 'https://storage.example/upload',
+            fields: { key: 'resources/file.txt', policy: 'signed-policy' },
+        });
         mockSend.mockImplementation(async command => {
             switch (command.commandName) {
                 case 'ListBucketsCommand':
@@ -171,11 +182,16 @@ describe('rustfs package', () => {
                     secretAccessKey: 'secret-key',
                 },
                 forcePathStyle: true,
-                requestTimeout: 3000,
+                requestHandler: {
+                    connectionTimeout: 3000,
+                    requestTimeout: 3000,
+                    throwOnRequestTimeout: true,
+                },
                 maxAttempts: 2,
             }),
         );
         expect(mockS3Client.mock.calls[0][0]).not.toHaveProperty('tls');
+        expect(mockS3Client.mock.calls[0][0]).not.toHaveProperty('requestTimeout');
         expect(findCommand('CreateBucketCommand').input).toEqual({
             Bucket: 'objects',
             ACL: 'private',
@@ -215,6 +231,7 @@ describe('rustfs package', () => {
             key: 'resources/file.txt',
             bucket: 'objects',
             etag: '"etag-1"',
+            size: 11,
             versionId: 'version-1',
         });
         expect(body.toString('utf8')).toBe('hello world');
@@ -252,18 +269,133 @@ describe('rustfs package', () => {
         });
     });
 
-    it('creates presigned URLs and handles multipart uploads', async () => {
+    it('creates method-specific presigned URLs', async () => {
         const service = new RustFSServiceImpl({
             endpoint: 'http://storage:9000',
             accessKeyId: 'access-key',
             secretAccessKey: 'secret-key',
         });
 
-        const url = await service.getPresignedUrl('objects', {
+        const getUrl = await service.getPresignedUrl('objects', {
             key: 'resources/file.txt',
             expiresIn: 900,
+            queryParams: {
+                versionId: 'version-1',
+                'response-content-disposition': 'attachment; filename="file.txt"',
+            },
+        });
+        const putUrl = await service.getPresignedUrl('objects', {
+            key: 'resources/file.txt',
+            method: 'PUT',
             contentType: 'text/plain',
         });
+        const deleteUrl = await service.getPresignedUrl('objects', {
+            key: 'resources/file.txt',
+            method: 'DELETE',
+            queryParams: { versionId: 'version-1' },
+        });
+
+        expect([getUrl, putUrl, deleteUrl]).toEqual([
+            'https://storage.example/presigned',
+            'https://storage.example/presigned',
+            'https://storage.example/presigned',
+        ]);
+        expect(mockGetSignedUrl.mock.calls.map(([, command]) => command)).toEqual([
+            expect.objectContaining({
+                commandName: 'GetObjectCommand',
+                input: {
+                    Bucket: 'objects',
+                    Key: 'resources/file.txt',
+                    VersionId: 'version-1',
+                    ResponseContentDisposition: 'attachment; filename="file.txt"',
+                },
+            }),
+            expect.objectContaining({
+                commandName: 'PutObjectCommand',
+                input: {
+                    Bucket: 'objects',
+                    Key: 'resources/file.txt',
+                    ContentType: 'text/plain',
+                },
+            }),
+            expect.objectContaining({
+                commandName: 'DeleteObjectCommand',
+                input: {
+                    Bucket: 'objects',
+                    Key: 'resources/file.txt',
+                    VersionId: 'version-1',
+                },
+            }),
+        ]);
+        expect(mockGetSignedUrl.mock.calls.map(([, , options]) => options)).toEqual([
+            { expiresIn: 900 },
+            { expiresIn: 3600 },
+            { expiresIn: 3600 },
+        ]);
+
+        await expect(
+            service.getPresignedUrl('objects', {
+                key: 'resources/file.txt',
+                contentType: 'text/plain',
+            }),
+        ).rejects.toMatchObject({ code: 'INVALID_PRESIGNED_URL_OPTIONS', statusCode: 400 });
+        await expect(
+            service.getPresignedUrl('objects', {
+                key: 'resources/file.txt',
+                expiresIn: 0,
+            }),
+        ).rejects.toMatchObject({ code: 'INVALID_PRESIGNED_URL_OPTIONS', statusCode: 400 });
+        await expect(
+            service.getPresignedUrl('objects', {
+                key: 'resources/file.txt',
+                queryParams: { unsupported: 'value' },
+            }),
+        ).rejects.toMatchObject({ code: 'INVALID_PRESIGNED_URL_OPTIONS', statusCode: 400 });
+    });
+
+    it('creates policy-backed presigned POST forms', async () => {
+        const service = new RustFSServiceImpl({
+            endpoint: 'http://storage:9000',
+            accessKeyId: 'access-key',
+            secretAccessKey: 'secret-key',
+        });
+
+        const result = await service.getPresignedPostUrl('objects', {
+            key: 'resources/file.txt',
+            expiresIn: 600,
+            conditions: {
+                contentLengthRange: { min: 1, max: 10_000 },
+                contentType: 'text/plain',
+                acl: 'private',
+            },
+        });
+
+        expect(result).toEqual({
+            url: 'https://storage.example/upload',
+            fields: { key: 'resources/file.txt', policy: 'signed-policy' },
+        });
+        expect(mockCreatePresignedPost).toHaveBeenCalledWith(expect.objectContaining({ send: mockSend }), {
+            Bucket: 'objects',
+            Key: 'resources/file.txt',
+            Expires: 600,
+            Fields: { 'Content-Type': 'text/plain', acl: 'private' },
+            Conditions: [['content-length-range', 1, 10_000], { 'Content-Type': 'text/plain' }, { acl: 'private' }],
+        });
+        await expect(
+            service.getPresignedPostUrl('objects', {
+                key: 'resources/file.txt',
+                conditions: { contentLengthRange: { min: 10, max: 1 } },
+            }),
+        ).rejects.toMatchObject({ code: 'INVALID_PRESIGNED_URL_OPTIONS', statusCode: 400 });
+    });
+
+    it('handles multipart uploads', async () => {
+        const service = new RustFSServiceImpl({
+            endpoint: 'http://storage:9000',
+            accessKeyId: 'access-key',
+            secretAccessKey: 'secret-key',
+        });
+
         const uploadId = await service.createMultipartUpload('objects', {
             key: 'resources/file.txt',
             contentType: 'text/plain',
@@ -288,19 +420,6 @@ describe('rustfs package', () => {
             partNumberMarker: 1,
         });
 
-        expect(url).toBe('https://storage.example/presigned');
-        expect(mockGetSignedUrl).toHaveBeenCalledWith(
-            expect.objectContaining({ send: mockSend }),
-            expect.objectContaining({
-                commandName: 'GetObjectCommand',
-                input: expect.objectContaining({
-                    Bucket: 'objects',
-                    Key: 'resources/file.txt',
-                    ContentType: 'text/plain',
-                }),
-            }),
-            { expiresIn: 900 },
-        );
         expect(findCommand('CreateMultipartUploadCommand').input).toMatchObject({
             Bucket: 'objects',
             Key: 'resources/file.txt',
@@ -321,5 +440,58 @@ describe('rustfs package', () => {
             nextPartNumberMarker: 2,
             maxParts: 100,
         });
+    });
+
+    it('waits for active response streams before closing and rejects new work', async () => {
+        let markStreamStarted: (() => void) | undefined;
+        let releaseStream: (() => void) | undefined;
+        const streamStarted = new Promise<void>(resolve => {
+            markStreamStarted = resolve;
+        });
+        const streamReleased = new Promise<void>(resolve => {
+            releaseStream = resolve;
+        });
+        async function* delayedBody() {
+            markStreamStarted?.();
+            await streamReleased;
+            yield Buffer.from('complete');
+        }
+        mockSend.mockResolvedValueOnce({ Body: delayedBody() });
+        const service = new RustFSServiceImpl({
+            endpoint: 'http://storage:9000',
+            accessKeyId: 'access-key',
+            secretAccessKey: 'secret-key',
+        });
+
+        const request = service.getObject('objects', { key: 'resources/file.txt' });
+        await streamStarted;
+        const shutdown = service.onModuleDestroy();
+
+        expect(mockDestroy).not.toHaveBeenCalled();
+        releaseStream?.();
+        await expect(request).resolves.toEqual(Buffer.from('complete'));
+        await shutdown;
+        await service.onModuleDestroy();
+
+        expect(mockDestroy).toHaveBeenCalledTimes(1);
+        await expect(service.listBuckets()).rejects.toMatchObject({ code: 'CLIENT_CLOSED', statusCode: 503 });
+    });
+
+    it('rejects contradictory endpoint and timeout configuration', () => {
+        const baseOptions = {
+            endpoint: 'http://storage:9000',
+            accessKeyId: 'access-key',
+            secretAccessKey: 'secret-key',
+        };
+
+        expect(() => new RustFSServiceImpl({ ...baseOptions, sslEnabled: true })).toThrow(
+            'sslEnabled must match the endpoint URL protocol',
+        );
+        expect(() => new RustFSServiceImpl({ ...baseOptions, requestTimeout: 0 })).toThrow(
+            'requestTimeout must be a positive integer',
+        );
+        expect(() => new RustFSServiceImpl({ ...baseOptions, endpoint: 'storage:9000' })).toThrow(
+            'endpoint must use the HTTP or HTTPS protocol',
+        );
     });
 });
