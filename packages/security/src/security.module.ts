@@ -1,4 +1,5 @@
-import { Module, Provider, Type } from '@nestjs/common';
+import { DynamicModule, Module, Provider, Type } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import {
     AUTH_GUARD_DELEGATE,
     AuthGuardDelegate,
@@ -10,11 +11,12 @@ import {
 export interface SecurityModuleOptions {
     authGuardDelegate?: Type<AuthGuardDelegate>;
     defaultDenyOptions?: DefaultDenyAuthGuardOptions;
+    installGlobally?: boolean;
 }
 
 @Module({})
 export class SecurityModule {
-    static register(options: SecurityModuleOptions = {}) {
+    static register(options: SecurityModuleOptions = {}): DynamicModule {
         const providers: Provider[] = [
             DefaultDenyAuthGuard,
             {
@@ -22,6 +24,14 @@ export class SecurityModule {
                 useValue: options.defaultDenyOptions ?? {},
             },
         ];
+        const exports: DynamicModule['exports'] = [DefaultDenyAuthGuard, DEFAULT_DENY_AUTH_GUARD_OPTIONS];
+
+        if (options.installGlobally !== false) {
+            providers.push({
+                provide: APP_GUARD,
+                useExisting: DefaultDenyAuthGuard,
+            });
+        }
 
         if (options.authGuardDelegate) {
             providers.push({
@@ -29,12 +39,13 @@ export class SecurityModule {
                 useExisting: options.authGuardDelegate,
             });
             providers.push(options.authGuardDelegate);
+            exports.push(AUTH_GUARD_DELEGATE);
         }
 
         return {
             module: SecurityModule,
             providers,
-            exports: [DefaultDenyAuthGuard, AUTH_GUARD_DELEGATE, DEFAULT_DENY_AUTH_GUARD_OPTIONS],
+            exports,
         };
     }
 }

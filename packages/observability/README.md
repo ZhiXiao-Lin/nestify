@@ -40,7 +40,10 @@ Register the modules when request-scoped tracking, HTTP metrics, a `/metrics` sc
 @Module({
     imports: [
         TrackingModule,
-        MetricsModule,
+        MetricsModule.register({
+            maxSeriesPerMetric: 1000,
+            maxLabelValueLength: 200,
+        }),
         HealthModule.register({
             checks: [
                 {
@@ -67,6 +70,14 @@ export class AppModule {}
 - Health module and health check factory helpers
 
 ## Notes
+
+Histograms retain cumulative bucket counts, count, and sum instead of raw observations, so memory use does not grow
+with request volume. Every metric also has a bounded number of label series; excess labels are aggregated into a
+`cardinality_limited="true"` series. Long label values use a fixed sentinel.
+
+HTTP metrics use the Express route template (including `baseUrl`) rather than the raw request path. Unmatched or
+non-string routes use the fixed `__unmatched__` label, preventing user-controlled URL slugs from creating unbounded
+series. Applications should keep custom metric labels similarly low-cardinality.
 
 This package exposes generic telemetry building blocks. Storage, alerting, and user identity conventions belong in the consuming API.
 

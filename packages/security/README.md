@@ -34,9 +34,13 @@ class HealthController {
 }
 ```
 
+`SecurityModule.register()` installs `DefaultDenyAuthGuard` as an application guard by default. Routes without
+`@Public()` are therefore denied unless an `authGuardDelegate` authorizes them. Set `installGlobally: false` only when
+the application will install the exported guard itself with `APP_GUARD` or `@UseGuards()`.
+
 ## Exports
 
-- Default-deny authentication guard and delegate token
+- Globally installed default-deny authentication guard and optional delegate token
 - `@Public()` metadata
 - Role and permission metadata
 - Development-only guard helpers

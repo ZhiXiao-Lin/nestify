@@ -1,13 +1,15 @@
 import 'reflect-metadata';
-import { Reflector } from '@nestjs/core';
+import { APP_GUARD, Reflector } from '@nestjs/core';
 import { lastValueFrom, of, throwError } from 'rxjs';
 import {
     CIRCUIT_BREAKER_OPTIONS,
-    RETRY_OPTIONS,
     CircuitBreakerInterceptor,
     CircuitBreakerService,
     DistributedLockInterceptor,
     DistributedLockService,
+    RATE_LIMITING_OPTIONS,
+    RateLimitingGuard,
+    RETRY_OPTIONS,
     ResilienceModule,
     RetryInterceptor,
     RetryService,
@@ -26,6 +28,8 @@ describe('resilience Nest integrations', () => {
                 expect.objectContaining({ provide: expect.anything(), useClass: RetryInterceptor }),
                 expect.objectContaining({ provide: expect.anything(), useClass: CircuitBreakerInterceptor }),
                 expect.objectContaining({ provide: expect.anything(), useClass: DistributedLockInterceptor }),
+                expect.objectContaining({ provide: RATE_LIMITING_OPTIONS, useValue: {} }),
+                expect.objectContaining({ provide: APP_GUARD, useExisting: RateLimitingGuard }),
             ]),
         );
         expect(module.exports).toEqual(expect.arrayContaining([RetryService, CircuitBreakerService]));

@@ -1,14 +1,17 @@
 import {
     CallHandler,
     Controller,
+    DynamicModule,
     ExecutionContext,
     Get,
     Global,
     Header,
+    Inject,
     Injectable,
     Module,
     NestInterceptor,
     OnModuleDestroy,
+    Optional,
 } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import type { Request, Response } from 'express';
@@ -31,19 +34,58 @@ export interface HistogramMetric {
     buckets?: number[];
 }
 
+export interface MetricsOptions {
+    maxSeriesPerMetric?: number;
+    maxLabelValueLength?: number;
+}
+
+interface HistogramState {
+    boundaries: number[];
+    bucketCounts: number[];
+    count: number;
+    sum: number;
+}
+
+interface ParsedMetricKey {
+    name: string;
+    labels: Record<string, string>;
+}
+
+export const METRICS_OPTIONS = Symbol('METRICS_OPTIONS');
+export const DEFAULT_METRICS_OPTIONS = Object.freeze({
+    maxSeriesPerMetric: 1000,
+    maxLabelValueLength: 200,
+});
 export const DEFAULT_HISTOGRAM_BUCKETS = [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10];
 export const DEFAULT_SIZE_BUCKETS = [100, 1000, 10000, 100000, 1000000, 10000000];
+export const UNKNOWN_HTTP_ROUTE = '__unmatched__';
+
+const METRIC_NAME_PATTERN = /^[a-zA-Z_:][a-zA-Z0-9_:]*$/;
+const LABEL_NAME_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+const CARDINALITY_LABELS = { cardinality_limited: 'true' };
 
 @Injectable()
 export class MetricsService implements OnModuleDestroy {
     private readonly counters = new Map<string, number>();
     private readonly gauges = new Map<string, number>();
-    private readonly histograms = new Map<string, number[]>();
+    private readonly histograms = new Map<string, HistogramState>();
     private readonly counterDefs = new Map<string, CounterMetric>();
     private readonly gaugeDefs = new Map<string, GaugeMetric>();
     private readonly histogramDefs = new Map<string, HistogramMetric>();
+    private readonly seriesCounts = new Map<string, number>();
+    private readonly maxSeriesPerMetric: number;
+    private readonly maxLabelValueLength: number;
 
-    constructor() {
+    constructor(
+        @Optional()
+        @Inject(METRICS_OPTIONS)
+        options: MetricsOptions = {},
+    ) {
+        this.maxSeriesPerMetric = options.maxSeriesPerMetric ?? DEFAULT_METRICS_OPTIONS.maxSeriesPerMetric;
+        this.maxLabelValueLength = options.maxLabelValueLength ?? DEFAULT_METRICS_OPTIONS.maxLabelValueLength;
+        assertPositiveSafeInteger(this.maxSeriesPerMetric, 'maxSeriesPerMetric');
+        assertPositiveSafeInteger(this.maxLabelValueLength, 'maxLabelValueLength');
+
         this.registerCounter({ name: 'http_requests_total', help: 'Total HTTP requests' });
         this.registerCounter({ name: 'http_errors_total', help: 'Total HTTP errors' });
         this.registerGauge({ name: 'http_active_requests', help: 'Active HTTP requests' });
@@ -65,35 +107,53 @@ export class MetricsService implements OnModuleDestroy {
     }
 
     registerCounter(metric: CounterMetric): void {
+        this.assertMetricDefinition(metric.name, 'counter');
         this.counterDefs.set(metric.name, metric);
-        if (!this.counters.has(metric.name)) this.counters.set(metric.name, 0);
+        const key = this.allocateSeriesKey(metric.name, undefined, this.counters);
+        if (key !== undefined && !this.counters.has(key)) this.counters.set(key, 0);
     }
 
     registerGauge(metric: GaugeMetric): void {
+        this.assertMetricDefinition(metric.name, 'gauge');
         this.gaugeDefs.set(metric.name, metric);
-        if (!this.gauges.has(metric.name)) this.gauges.set(metric.name, 0);
+        const key = this.allocateSeriesKey(metric.name, undefined, this.gauges);
+        if (key !== undefined && !this.gauges.has(key)) this.gauges.set(key, 0);
     }
 
     registerHistogram(metric: HistogramMetric): void {
-        this.histogramDefs.set(metric.name, metric);
+        this.assertMetricDefinition(metric.name, 'histogram');
+        const buckets = normalizeBuckets(metric.buckets ?? DEFAULT_HISTOGRAM_BUCKETS);
+        const current = this.histogramDefs.get(metric.name);
+        if (current && !sameBuckets(current.buckets ?? DEFAULT_HISTOGRAM_BUCKETS, buckets)) {
+            const hasObservations = [...this.histograms.keys()].some(key => this.parseKey(key).name === metric.name);
+            if (hasObservations) {
+                throw new Error(`cannot change buckets after observing histogram ${metric.name}`);
+            }
+        }
+        this.histogramDefs.set(metric.name, { ...metric, buckets });
     }
 
     incCounter(name: string, labels?: Record<string, string>, value = 1): void {
-        const key = this.getKey(name, labels);
-        this.counters.set(key, (this.counters.get(key) ?? 0) + value);
+        assertFiniteNumber(value, 'counter increment');
+        if (value < 0) throw new RangeError('counter increment must not be negative');
+        const key = this.allocateSeriesKey(name, labels, this.counters);
+        if (key !== undefined) this.counters.set(key, (this.counters.get(key) ?? 0) + value);
     }
 
     getCounter(name: string, labels?: Record<string, string>): number {
-        return this.counters.get(this.getKey(name, labels)) ?? 0;
+        return this.counters.get(this.createKey(name, labels)) ?? 0;
     }
 
     setGauge(name: string, value: number, labels?: Record<string, string>): void {
-        this.gauges.set(this.getKey(name, labels), value);
+        assertFiniteNumber(value, 'gauge value');
+        const key = this.allocateSeriesKey(name, labels, this.gauges);
+        if (key !== undefined) this.gauges.set(key, value);
     }
 
     incGauge(name: string, labels?: Record<string, string>, value = 1): void {
-        const key = this.getKey(name, labels);
-        this.gauges.set(key, (this.gauges.get(key) ?? 0) + value);
+        assertFiniteNumber(value, 'gauge increment');
+        const key = this.allocateSeriesKey(name, labels, this.gauges);
+        if (key !== undefined) this.gauges.set(key, (this.gauges.get(key) ?? 0) + value);
     }
 
     decGauge(name: string, labels?: Record<string, string>, value = 1): void {
@@ -101,14 +161,26 @@ export class MetricsService implements OnModuleDestroy {
     }
 
     getGauge(name: string, labels?: Record<string, string>): number {
-        return this.gauges.get(this.getKey(name, labels)) ?? 0;
+        return this.gauges.get(this.createKey(name, labels)) ?? 0;
     }
 
     observeHistogram(name: string, value: number, labels?: Record<string, string>): void {
-        const key = this.getKey(name, labels);
-        const values = this.histograms.get(key) ?? [];
-        values.push(value);
-        this.histograms.set(key, values);
+        assertFiniteNumber(value, 'histogram observation');
+        if (labels?.le !== undefined) throw new Error('histogram labels must not define the reserved le label');
+        const key = this.allocateSeriesKey(name, labels, this.histograms);
+        if (key === undefined) return;
+
+        let state = this.histograms.get(key);
+        if (!state) {
+            const boundaries = normalizeBuckets(this.histogramDefs.get(name)?.buckets ?? DEFAULT_HISTOGRAM_BUCKETS);
+            state = { boundaries, bucketCounts: boundaries.map(() => 0), count: 0, sum: 0 };
+            this.histograms.set(key, state);
+        }
+        state.count += 1;
+        state.sum += value;
+        for (const [index, boundary] of state.boundaries.entries()) {
+            if (value <= boundary) state.bucketCounts[index] += 1;
+        }
     }
 
     recordHttpRequest(method: string, path: string, statusCode: number, durationSeconds: number): void {
@@ -120,48 +192,48 @@ export class MetricsService implements OnModuleDestroy {
 
     toJSON(): Record<string, unknown> {
         return {
-            counters: Object.fromEntries(this.counters),
-            gauges: Object.fromEntries(this.gauges),
-            histograms: Object.fromEntries(this.histograms),
+            counters: this.numericSeriesToJSON(this.counters),
+            gauges: this.numericSeriesToJSON(this.gauges),
+            histograms: Object.fromEntries(
+                [...this.histograms].map(([key, state]) => [
+                    this.displayKey(key),
+                    {
+                        buckets: Object.fromEntries([
+                            ...state.boundaries.map((boundary, index) => [String(boundary), state.bucketCounts[index]]),
+                            ['+Inf', state.count],
+                        ]),
+                        count: state.count,
+                        sum: state.sum,
+                    },
+                ]),
+            ),
         };
     }
 
     toPrometheusFormat(): string {
         const lines: string[] = [];
+        const emittedTypes = new Set<string>();
         for (const [key, value] of this.counters) {
             const parsed = this.parseKey(key);
-            const def = this.counterDefs.get(parsed.name);
-            if (def && !lines.includes(`# TYPE ${parsed.name} counter`)) {
-                lines.push(`# HELP ${parsed.name} ${def.help}`, `# TYPE ${parsed.name} counter`);
-            }
+            this.addDefinition(lines, emittedTypes, parsed.name, 'counter', this.counterDefs.get(parsed.name));
             lines.push(`${parsed.name}${formatLabels(parsed.labels)} ${value}`);
         }
         for (const [key, value] of this.gauges) {
             const parsed = this.parseKey(key);
-            const def = this.gaugeDefs.get(parsed.name);
-            if (def && !lines.includes(`# TYPE ${parsed.name} gauge`)) {
-                lines.push(`# HELP ${parsed.name} ${def.help}`, `# TYPE ${parsed.name} gauge`);
-            }
+            this.addDefinition(lines, emittedTypes, parsed.name, 'gauge', this.gaugeDefs.get(parsed.name));
             lines.push(`${parsed.name}${formatLabels(parsed.labels)} ${value}`);
         }
-        for (const [key, values] of this.histograms) {
-            if (values.length === 0) continue;
+        for (const [key, state] of this.histograms) {
             const parsed = this.parseKey(key);
-            const def = this.histogramDefs.get(parsed.name);
-            const buckets = def?.buckets ?? DEFAULT_HISTOGRAM_BUCKETS;
-            if (def && !lines.includes(`# TYPE ${parsed.name} histogram`)) {
-                lines.push(`# HELP ${parsed.name} ${def.help}`, `# TYPE ${parsed.name} histogram`);
+            this.addDefinition(lines, emittedTypes, parsed.name, 'histogram', this.histogramDefs.get(parsed.name));
+            for (const [index, boundary] of state.boundaries.entries()) {
+                lines.push(
+                    `${parsed.name}_bucket${formatLabels({ ...parsed.labels, le: String(boundary) })} ${state.bucketCounts[index]}`,
+                );
             }
-            const sorted = [...values].sort((a, b) => a - b);
-            for (const bucket of buckets) {
-                const count = sorted.filter(v => v <= bucket).length;
-                lines.push(`${parsed.name}_bucket${formatLabels({ ...parsed.labels, le: String(bucket) })} ${count}`);
-            }
-            lines.push(`${parsed.name}_bucket${formatLabels({ ...parsed.labels, le: '+Inf' })} ${values.length}`);
-            lines.push(`${parsed.name}_count${formatLabels(parsed.labels)} ${values.length}`);
-            lines.push(
-                `${parsed.name}_sum${formatLabels(parsed.labels)} ${values.reduce((sum, value) => sum + value, 0)}`,
-            );
+            lines.push(`${parsed.name}_bucket${formatLabels({ ...parsed.labels, le: '+Inf' })} ${state.count}`);
+            lines.push(`${parsed.name}_count${formatLabels(parsed.labels)} ${state.count}`);
+            lines.push(`${parsed.name}_sum${formatLabels(parsed.labels)} ${state.sum}`);
         }
         return `${lines.join('\n')}\n`;
     }
@@ -170,29 +242,86 @@ export class MetricsService implements OnModuleDestroy {
         this.counters.clear();
         this.gauges.clear();
         this.histograms.clear();
+        this.seriesCounts.clear();
     }
 
-    private getKey(name: string, labels?: Record<string, string>): string {
-        if (!labels || Object.keys(labels).length === 0) return name;
-        const labelStr = Object.entries(labels)
-            .filter(([, value]) => value !== undefined && value !== null)
-            .map(([key, value]) => [key, String(value)] as const)
-            .sort(([left], [right]) => left.localeCompare(right))
-            .map(([key, value]) => `${key}=${value}`)
-            .join(',');
-        return labelStr ? `${name}{${labelStr}}` : name;
-    }
+    private allocateSeriesKey<T>(
+        name: string,
+        labels: Record<string, string> | undefined,
+        store: Map<string, T>,
+    ): string | undefined {
+        assertMetricName(name);
+        const key = this.createKey(name, labels);
+        if (store.has(key)) return key;
 
-    private parseKey(key: string): { name: string; labels: Record<string, string> } {
-        const openIndex = key.indexOf('{');
-        if (openIndex < 0 || !key.endsWith('}')) return { name: key, labels: {} };
-        const labels: Record<string, string> = {};
-        const inner = key.slice(openIndex + 1, -1);
-        for (const pair of inner.split(',')) {
-            const eq = pair.indexOf('=');
-            if (eq > 0) labels[pair.slice(0, eq)] = pair.slice(eq + 1);
+        const currentCount = this.seriesCounts.get(name) ?? 0;
+        const overflowKey = this.createKey(name, CARDINALITY_LABELS);
+        if (currentCount < this.maxSeriesPerMetric - 1 || Object.keys(labels ?? {}).length === 0) {
+            if (currentCount >= this.maxSeriesPerMetric) return store.has(overflowKey) ? overflowKey : undefined;
+            this.seriesCounts.set(name, currentCount + 1);
+            return key;
         }
-        return { name: key.slice(0, openIndex), labels };
+        if (store.has(overflowKey)) return overflowKey;
+        if (currentCount < this.maxSeriesPerMetric) {
+            this.seriesCounts.set(name, currentCount + 1);
+            return overflowKey;
+        }
+        return undefined;
+    }
+
+    private createKey(name: string, labels?: Record<string, string>): string {
+        assertMetricName(name);
+        const entries = Object.entries(labels ?? {})
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => {
+                if (!LABEL_NAME_PATTERN.test(key)) throw new TypeError(`invalid metric label name: ${key}`);
+                const stringValue = String(value);
+                return [
+                    key,
+                    stringValue.length <= this.maxLabelValueLength ? stringValue : '__label_value_too_long__',
+                ] as const;
+            })
+            .sort(([left], [right]) => left.localeCompare(right));
+        return `${name}\0${JSON.stringify(entries)}`;
+    }
+
+    private parseKey(key: string): ParsedMetricKey {
+        const separator = key.indexOf('\0');
+        if (separator < 0) throw new Error('invalid internal metric key');
+        const entries = JSON.parse(key.slice(separator + 1)) as Array<[string, string]>;
+        return { name: key.slice(0, separator), labels: Object.fromEntries(entries) };
+    }
+
+    private displayKey(key: string): string {
+        const parsed = this.parseKey(key);
+        const entries = Object.entries(parsed.labels);
+        if (entries.length === 0) return parsed.name;
+        return `${parsed.name}{${entries.map(([name, value]) => `${name}=${escapeStorageKey(value)}`).join(',')}}`;
+    }
+
+    private numericSeriesToJSON(series: Map<string, number>): Record<string, number> {
+        return Object.fromEntries([...series].map(([key, value]) => [this.displayKey(key), value]));
+    }
+
+    private assertMetricDefinition(name: string, type: 'counter' | 'gauge' | 'histogram'): void {
+        assertMetricName(name);
+        const conflictingType =
+            (type !== 'counter' && this.counterDefs.has(name) && 'counter') ||
+            (type !== 'gauge' && this.gaugeDefs.has(name) && 'gauge') ||
+            (type !== 'histogram' && this.histogramDefs.has(name) && 'histogram');
+        if (conflictingType) throw new Error(`metric ${name} is already registered as ${conflictingType}`);
+    }
+
+    private addDefinition(
+        lines: string[],
+        emittedTypes: Set<string>,
+        name: string,
+        type: 'counter' | 'gauge' | 'histogram',
+        definition?: { help: string },
+    ): void {
+        if (!definition || emittedTypes.has(name)) return;
+        lines.push(`# HELP ${name} ${definition.help}`, `# TYPE ${name} ${type}`);
+        emittedTypes.add(name);
     }
 }
 
@@ -204,6 +333,38 @@ function formatLabels(labels: Record<string, string>): string {
 
 function escapeLabel(value: string): string {
     return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+}
+
+function escapeStorageKey(value: string): string {
+    return value.replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/=/g, '\\=').replace(/[{}]/g, '_');
+}
+
+function assertMetricName(name: string): void {
+    if (!METRIC_NAME_PATTERN.test(name)) throw new TypeError(`invalid metric name: ${name}`);
+}
+
+function assertPositiveSafeInteger(value: number, name: string): void {
+    if (!Number.isSafeInteger(value) || value < 1) throw new RangeError(`${name} must be a positive safe integer`);
+}
+
+function assertFiniteNumber(value: number, name: string): void {
+    if (!Number.isFinite(value)) throw new TypeError(`${name} must be finite`);
+}
+
+function normalizeBuckets(buckets: readonly number[]): number[] {
+    if (buckets.length === 0) throw new RangeError('histogram buckets must not be empty');
+    const normalized = [...new Set(buckets)];
+    for (const bucket of normalized) assertFiniteNumber(bucket, 'histogram bucket');
+    return normalized.sort((left, right) => left - right);
+}
+
+function sameBuckets(left: readonly number[], right: readonly number[]): boolean {
+    const normalizedLeft = normalizeBuckets(left);
+    const normalizedRight = normalizeBuckets(right);
+    return (
+        normalizedLeft.length === normalizedRight.length &&
+        normalizedLeft.every((boundary, index) => boundary === normalizedRight[index])
+    );
 }
 
 @Controller('metrics')
@@ -230,26 +391,24 @@ export class MetricsInterceptor implements NestInterceptor {
         const startTime = process.hrtime.bigint();
         const request = context.switchToHttp().getRequest<Request>();
         const response = context.switchToHttp().getResponse<Response>();
+        let errorStatus: number | undefined;
         this.metricsService.incGauge('http_active_requests');
 
         return next.handle().pipe(
-            tap({
-                next: () => this.recordMetrics(request, response, Number(process.hrtime.bigint() - startTime)),
-                error: (error: { status?: number }) =>
-                    this.recordMetrics(
-                        request,
-                        response,
-                        Number(process.hrtime.bigint() - startTime),
-                        error.status || 500,
-                    ),
+            tap({ error: (error: { status?: number }) => (errorStatus = error.status || 500) }),
+            finalize(() => {
+                try {
+                    this.recordMetrics(request, response, Number(process.hrtime.bigint() - startTime), errorStatus);
+                } finally {
+                    this.metricsService.decGauge('http_active_requests');
+                }
             }),
-            finalize(() => this.metricsService.decGauge('http_active_requests')),
         );
     }
 
     private recordMetrics(request: Request, response: Response, durationNs: number, status?: number): void {
         const method = request.method;
-        const path = this.normalizePath(request.route?.path || request.path);
+        const path = resolveHttpRouteTemplate(request);
         const statusCode = status ?? response.statusCode;
         this.metricsService.recordHttpRequest(method, path, statusCode, durationNs / 1e9);
 
@@ -260,18 +419,31 @@ export class MetricsInterceptor implements NestInterceptor {
         if (responseSize > 0)
             this.metricsService.observeHistogram('http_response_size_bytes', responseSize, { method, path });
     }
+}
 
-    private normalizePath(path: string): string {
-        return path
-            .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, ':id')
-            .replace(/\/\d+/g, '/:id');
-    }
+export function resolveHttpRouteTemplate(request: Pick<Request, 'baseUrl' | 'route'>): string {
+    const routePath = (request.route as { path?: unknown } | undefined)?.path;
+    if (typeof routePath !== 'string' || routePath.length === 0) return UNKNOWN_HTTP_ROUTE;
+    const baseUrl = typeof request.baseUrl === 'string' ? request.baseUrl : '';
+    const combined = `${baseUrl}/${routePath}`.replace(/\/{2,}/g, '/').replace(/\/$/, '');
+    return combined.startsWith('/') ? combined : `/${combined}`;
 }
 
 @Global()
 @Module({
     controllers: [MetricsController],
-    providers: [MetricsService, { provide: APP_INTERCEPTOR, useClass: MetricsInterceptor }],
+    providers: [
+        { provide: METRICS_OPTIONS, useValue: {} },
+        MetricsService,
+        { provide: APP_INTERCEPTOR, useClass: MetricsInterceptor },
+    ],
     exports: [MetricsService],
 })
-export class MetricsModule {}
+export class MetricsModule {
+    static register(options: MetricsOptions = {}): DynamicModule {
+        return {
+            module: MetricsModule,
+            providers: [{ provide: METRICS_OPTIONS, useValue: options }],
+        };
+    }
+}

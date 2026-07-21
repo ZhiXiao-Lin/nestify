@@ -52,6 +52,18 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
 
 `@a3s-lab/ai` delegates coding-agent execution to `@a3s-lab/code` and keeps native runtime loading behind its configured service boundary. `@a3s-lab/sandbox` lazily loads both runtime values and types from the first-party `@a3s-lab/box@3.0.11` TypeScript SDK, so importing the Nestify package does not eagerly evaluate its ESM dependency. Until `@a3s-lab/box` is published to npm, the package consumes the verified GitHub Release tarball; that dependency should switch to a semver range after npm publication without changing the Nestify API.
 
+## Runtime Safety Defaults
+
+- `SecurityModule.register()` globally installs a default-deny guard. `@Public()` is the explicit bypass, and all other
+  routes require the configured authentication delegate unless global installation is deliberately disabled.
+- The resilience rate-limit guard is global but only acts on decorated routes. It uses authenticated subjects or
+  Express's trust-proxy-aware `request.ip`, hashes identities, isolates policies, and executes one atomic Redis script.
+  Redis outage behavior is explicit (`local`, `allow`, or `deny`), and the local fallback has a hard entry limit.
+- Metrics store cumulative histogram buckets rather than request samples. Each metric has a configurable series cap,
+  excess labels aggregate into a fixed overflow series, and HTTP paths come only from route templates or a fixed
+  unmatched label.
+- Automatic migrations are fail-closed and require an explicit module or environment opt-in in production.
+
 ## Sample API Wiring
 
 Reusable API framework capabilities now live in packages and are imported directly by the sample API. `apps/api/src/app.module.ts` composes the package modules, including Kysely PostgreSQL and Redisson Redis registration helpers; order-specific database schema types stay inside the order persistence adapter.
@@ -110,14 +122,14 @@ The framework core is covered by package tests for:
 - HTTP envelopes, errors, request ids, and pagination
 - HTTP interceptors and filters with Nest `Reflector` metadata
 - HTTP presentation filters and logging interceptor
-- Security path validation, metadata decorators, and default-deny behavior
+- Security path validation, metadata decorators, global default-deny behavior, and delegate integration
 - Security JWT token helper behavior
 - Security role-permission checker behavior
-- Observability collectors and metrics formatting
+- Observability collectors, cumulative histograms, bounded label cardinality, route-template labels, and metrics formatting
 - Observability request tracking with SQL and external-call request stores
 - Observability health check endpoint registration
 - Logger structured output, async context merging, and module registration
-- Resilience retry, circuit breaker, and TTL cache
+- Resilience retry, circuit breaker, TTL cache, atomic rate limiting, and bounded Redis outage policies
 - Resilience module registration and interceptor metadata execution
 - Kysely PostgreSQL option builders and module registration
 - Redisson Redis option builders and module registration
@@ -161,10 +173,14 @@ pnpm release:publish:dry-run
 pnpm release:publish
 ```
 
-`pnpm release:publish:dry-run` runs the full release check first, smoke-installs the packed tarballs, then dry-runs `pnpm publish` for every core package from the shared package list, including package publish lifecycle scripts. It does not publish packages.
+`pnpm release:publish:dry-run` runs the full release check first, smoke-installs the packed tarballs, then dry-runs
+publishing those exact verified tarballs. It does not publish packages.
 
-`pnpm release:publish` publishes the same shared core package list in dependency order, skips package versions that already exist on the configured npm endpoint, and then creates Changesets git tags for the published package versions.
+`pnpm release:publish` publishes those same artifacts in dependency order, skips package versions that already exist on
+the configured npm endpoint, and then creates Changesets git tags for the published package versions.
 
-GitHub release automation runs on pushes to `main`. When pending changesets exist, it opens or updates a version PR. When the version PR is merged, it runs `pnpm release:publish:dry-run` and then `pnpm release:publish`. This requires an `NPM_TOKEN` repository secret with publish access for the `@a3s-lab` scope.
+GitHub release automation starts only after CI succeeds for the same current `main` commit. When pending changesets
+exist, it opens or updates a version PR. When the version PR is merged, it runs `pnpm release:publish:dry-run` and then
+`pnpm release:publish`. This requires an `NPM_TOKEN` repository secret with publish access for the `@a3s-lab` scope.
 
 CI checks pull requests with `pnpm changeset status --since=origin/<base-branch>` so publishable core package changes must include a changeset or an explicit empty changeset. Changesets-generated version PRs are skipped for that status check because they already consume the pending changesets into package versions and changelogs.

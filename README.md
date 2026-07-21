@@ -166,6 +166,17 @@ PRs. Release automation starts only after the CI workflow succeeds for the same 
 updates a version PR when changesets are pending, and publishes after that version PR is merged. Publishing requires
 an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 
+## Runtime Safety Defaults
+
+- `SecurityModule.register()` installs the default-deny guard globally. Only `@Public()` routes bypass authentication;
+  protected routes require an explicit delegate unless the application deliberately disables global installation.
+- Resilience rate-limit decorators are enforced by a global guard. The limiter uses authenticated subjects or Express
+  `request.ip`, hashes identities in Redis keys, isolates named policies, executes an atomic sliding-window script, and
+  bounds its configurable local outage fallback.
+- HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
+  and histograms cap label cardinality with an explicit overflow series.
+- Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+
 ## Design Boundaries
 
 Use these rules when moving code from the sample API into packages:

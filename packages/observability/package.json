@@ -63,6 +63,7 @@
         "@nestjs/common": "^11.1.28",
         "@nestjs/core": "^11.1.28",
         "@nestjs/terminus": "^11.1.1",
+        "@nestjs/testing": "^11.1.28",
         "@types/express": "^5.0.6",
         "@types/jest": "^29.5.0",
         "@types/node": "^20.0.0",
