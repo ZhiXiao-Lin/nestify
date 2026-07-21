@@ -13,7 +13,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
-| `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
+| `@a3s-lab/kysely` | Validated Kysely NestJS lifecycle, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
@@ -101,6 +101,12 @@ The former `apps/api/src/shared/*` implementations were reviewed after the frame
 Future extraction should only happen when an area has a package-level contract that does not depend on sample API
 tables, request user conventions, environment variable names, or default business resources.
 
+## Database Lifecycle
+
+`@a3s-lab/kysely` validates dialects and PostgreSQL pool numbers before creating a service. Connections created from module configuration are module-owned and close through one idempotent destroy operation. An `instance` supplied by the application is exposed unchanged and remains caller-owned.
+
+The optional console logger renders bounded single-line output. Bound parameter values and error stacks are omitted unless explicitly enabled; the raw `onQuery` hook remains an application-owned sensitive-data boundary.
+
 ## Migration Naming
 
 `@a3s-lab/migrations` treats migration names matching `/(^|_)concurrent(_|$)/i` as non-transactional. These migrations are wrapped so `up` and `down` run against the outer Kysely instance instead of Kysely's transactional migration connection.
@@ -131,7 +137,7 @@ The framework core is covered by package tests for:
 - Logger structured output, async context merging, and module registration
 - Resilience retry, circuit breaker, TTL cache, atomic rate limiting, and bounded Redis outage policies
 - Resilience module registration and interceptor metadata execution
-- Kysely PostgreSQL option builders and module registration
+- Kysely option validation, PostgreSQL builders, owned/external lifecycle behavior, bounded logger output, and sync/async module registration
 - Redisson Redis option builders and module registration
 - BullMQ queue creation, worker lifecycle, metrics, and module registration
 - NATS module registration, publish/request encoding, subscriptions, JetStream publishing, and lifecycle cleanup

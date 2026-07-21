@@ -148,7 +148,13 @@ import { JwtTokenHelper, PathSecurityValidator, Public } from '@a3s-lab/security
 import { DEFAULT_HISTOGRAM_BUCKETS, createHealthCheck, MetricsService } from '@a3s-lab/observability';
 import { LoggerServiceImpl } from '@a3s-lab/logger';
 import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
-import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
+import {
+    createKyselyLogger,
+    createPostgresPoolConfig,
+    KyselyConfigurationError,
+    KyselyModule,
+    type ConfiguredKyselyModuleOptions,
+} from '@a3s-lab/kysely';
 import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
 import { BullMQModule } from '@a3s-lab/bullmq';
 import { NatsModule } from '@a3s-lab/nats';
@@ -178,6 +184,8 @@ const metrics = new MetricsService();
 const logger = new LoggerServiceImpl({ json: true });
 const retry = new RetryService();
 const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
+const queryLogger = createKyselyLogger({ consoleOutput: false });
+const configuredKyselyOptions = null as unknown as ConfiguredKyselyModuleOptions;
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
 const provider = createNestCqrsDomainEventPublisherProvider();
 const sandboxConnection = createA3SBoxConnectionConfig({
@@ -210,6 +218,9 @@ void metrics;
 void logger;
 void retry;
 void pool;
+void queryLogger;
+void configuredKyselyOptions;
+void KyselyConfigurationError;
 void redis;
 void provider;
 void moduleRefs;
@@ -247,7 +258,15 @@ const expectedExports = {
     '@a3s-lab/observability': ['MetricsService', 'DEFAULT_HISTOGRAM_BUCKETS', 'createHealthCheck'],
     '@a3s-lab/logger': ['LoggerServiceImpl', 'LoggerModule'],
     '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
-    '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
+    '@a3s-lab/kysely': [
+        'KyselyModule',
+        'KyselyService',
+        'KyselyConfigurationError',
+        'normalizeKyselyModuleOptions',
+        'createPostgresPoolConfig',
+        'createKyselyLogger',
+        'DEFAULT_KYSELY_LOGGER_MAX_SQL_LENGTH',
+    ],
     '@a3s-lab/redisson': ['RedissonModule', 'createRedissonModuleOptions'],
     '@a3s-lab/bullmq': ['BullMQModule', 'BullMQService'],
     '@a3s-lab/nats': ['NatsModule', 'NatsServiceImpl'],

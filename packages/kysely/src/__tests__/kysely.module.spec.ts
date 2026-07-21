@@ -1,129 +1,86 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PostgresDialect } from 'kysely';
-import { createPostgresKyselyModuleOptions, createPostgresPoolConfig } from '../postgres';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { Kysely } from 'kysely';
 import { KyselyModule } from '../kysely.module';
+import { ASYNC_OPTIONS_TYPE, MODULE_OPTIONS_TOKEN } from '../kysely.module-definition';
 import { KyselyService } from '../kysely.service';
-import { MODULE_OPTIONS_TOKEN } from '../kysely.module-definition';
-
-// Mock Kysely
-jest.mock('kysely', () => {
-    return {
-        Kysely: jest.fn().mockImplementation(() => ({
-            destroy: jest.fn().mockResolvedValue(undefined),
-            selectFrom: jest.fn().mockReturnThis(),
-            insertInto: jest.fn().mockReturnThis(),
-            updateTable: jest.fn().mockReturnThis(),
-            deleteFrom: jest.fn().mockReturnThis(),
-        })),
-        PostgresDialect: jest.fn().mockImplementation(options => ({ kind: 'postgres', options })),
-    };
-});
+import { KyselyConfigurationError } from '../kysely-module-options.interface';
+import { createDialect, createExternalInstance } from './test-helpers';
 
 describe('KyselyModule', () => {
-    let module: TestingModule;
-
-    const mockOptions = {
-        config: {
-            dialect: {} as any,
-        },
-    };
-
-    beforeEach(async () => {
-        module = await Test.createTestingModule({
-            imports: [KyselyModule.register(mockOptions)],
-        }).compile();
-    });
+    const baseDestroy = jest.spyOn(Kysely.prototype, 'destroy').mockResolvedValue(undefined);
+    const config = { dialect: createDialect() };
+    const modules: TestingModule[] = [];
 
     afterEach(async () => {
-        if (module) {
-            await module.close();
-        }
+        await Promise.all(modules.splice(0).map(module => module.close()));
+        baseDestroy.mockClear();
     });
 
-    it('should be defined', () => {
-        expect(module).toBeDefined();
+    afterAll(() => {
+        baseDestroy.mockRestore();
     });
 
-    it('should provide KyselyService', () => {
-        const service = module.get<KyselyService<any>>(KyselyService);
-        expect(service).toBeDefined();
+    it('registers a globally scoped owned service by default', async () => {
+        const dynamicModule = KyselyModule.register({ config });
+        const module = await compile(dynamicModule);
+
+        expect(dynamicModule.global).toBe(true);
+        expect(module.get(KyselyService)).toBeInstanceOf(KyselyService);
+        expect(module.get(MODULE_OPTIONS_TOKEN)).toEqual({ config });
     });
 
-    it('should inject module options', () => {
-        const options = module.get(MODULE_OPTIONS_TOKEN);
-        expect(options).toEqual(mockOptions);
-    });
-});
+    it('supports scoped registration and destroys an owned service once', async () => {
+        const dynamicModule = KyselyModule.register({ config, isGlobal: false });
+        const module = await compile(dynamicModule);
+        const service = module.get(KyselyService);
 
-describe('KyselyModule.registerAsync', () => {
-    let module: TestingModule;
+        expect(dynamicModule.global).toBe(false);
+        await service.destroy();
+        await module.close();
+        modules.splice(modules.indexOf(module), 1);
 
-    const mockOptions = {
-        config: {
-            dialect: {} as any,
-        },
-    };
-
-    beforeEach(async () => {
-        module = await Test.createTestingModule({
-            imports: [
-                KyselyModule.registerAsync({
-                    useFactory: () => mockOptions,
-                }),
-            ],
-        }).compile();
+        expect(baseDestroy).toHaveBeenCalledTimes(1);
     });
 
-    afterEach(async () => {
-        if (module) {
-            await module.close();
-        }
+    it('resolves async options through the same validated provider', async () => {
+        const factory = jest.fn(() => ({ config }));
+        const dynamicModule = KyselyModule.registerAsync({ useFactory: factory });
+        const module = await compile(dynamicModule);
+
+        expect(dynamicModule.global).toBe(true);
+        expect(module.get(KyselyService)).toBeInstanceOf(KyselyService);
+        expect(factory).toHaveBeenCalledTimes(1);
     });
 
-    it('should be defined', () => {
-        expect(module).toBeDefined();
+    it('supports scoped async registration', () => {
+        expect(KyselyModule.registerAsync({ useFactory: () => ({ config }), isGlobal: false }).global).toBe(false);
     });
 
-    it('should provide KyselyService with async config', () => {
-        const service = module.get<KyselyService<any>>(KyselyService);
-        expect(service).toBeDefined();
-    });
-});
+    it('exposes but does not destroy an externally owned instance', async () => {
+        const instance = createExternalInstance();
+        const module = await compile(KyselyModule.register({ instance }));
 
-describe('Postgres Kysely options', () => {
-    it('creates pool config from explicit connection values', () => {
-        expect(
-            createPostgresPoolConfig({
-                host: 'db',
-                port: '5433',
-                user: 'app',
-                password: '',
-                database: 'orders',
-                max: '12',
-                pool: { application_name: 'api' },
-            }),
-        ).toEqual({
-            application_name: 'api',
-            host: 'db',
-            port: 5433,
-            user: 'app',
-            database: 'orders',
-            max: 12,
-        });
+        expect(module.get(KyselyService)).toBe(instance);
+        await module.close();
+        modules.splice(modules.indexOf(module), 1);
+
+        expect(instance.destroy).not.toHaveBeenCalled();
+        expect(baseDestroy).not.toHaveBeenCalled();
     });
 
-    it('creates module options with a postgres dialect and optional logger', () => {
-        const options = createPostgresKyselyModuleOptions({
-            host: 'db',
-            logger: { consoleOutput: false },
-        });
+    it('validates sync options immediately and async options during resolution', async () => {
+        expect(() => KyselyModule.register({})).toThrow(KyselyConfigurationError);
 
-        expect(PostgresDialect).toHaveBeenCalledWith({
-            pool: expect.objectContaining({
-                options: expect.objectContaining({ host: 'db' }),
-            }),
-        });
-        expect(options.config.dialect).toEqual(expect.objectContaining({ kind: 'postgres' }));
-        expect(options.config.log).toEqual(expect.any(Function));
+        await expect(
+            Test.createTestingModule({
+                imports: [KyselyModule.registerAsync({ useFactory: () => ({}) } as typeof ASYNC_OPTIONS_TYPE)],
+            }).compile(),
+        ).rejects.toThrow(KyselyConfigurationError);
     });
+
+    async function compile(dynamicModule: ReturnType<typeof KyselyModule.register>): Promise<TestingModule> {
+        const module = await Test.createTestingModule({ imports: [dynamicModule] }).compile();
+        modules.push(module);
+        return module;
+    }
 });

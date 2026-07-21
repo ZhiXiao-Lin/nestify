@@ -1,7 +1,7 @@
-import { PostgresDialect, type KyselyConfig } from 'kysely';
+import { type KyselyConfig, PostgresDialect } from 'kysely';
 import { Pool, type PoolConfig } from 'pg';
 import { createKyselyLogger, type KyselyLoggerOptions } from './kysely.logger';
-import type { KyselyModuleOptions } from './kysely-module-options.interface';
+import { type ConfiguredKyselyModuleOptions, KyselyConfigurationError } from './kysely-module-options.interface';
 
 export interface PostgresKyselyOptions {
     host?: string;
@@ -15,22 +15,14 @@ export interface PostgresKyselyOptions {
     logger?: KyselyLoggerOptions;
 }
 
-const hasValue = <T>(value: T | null | undefined): value is T => value !== undefined && value !== null && value !== '';
-
-const toNumber = (value: number | string | undefined): number | undefined => {
-    if (!hasValue(value)) {
-        return undefined;
-    }
-
-    return typeof value === 'number' ? value : Number(value);
-};
-
 export const createPostgresPoolConfig = (options: PostgresKyselyOptions = {}): PoolConfig => {
+    validatePostgresOptions(options);
     const pool: PoolConfig = { ...(options.pool ?? {}) };
-    const port = toNumber(options.port);
-    const max = toNumber(options.max);
+    const port = optionalInteger(options.port, 'port', 1, 65_535) ?? optionalInteger(pool.port, 'pool.port', 1, 65_535);
+    const max = optionalInteger(options.max, 'max', 1) ?? optionalInteger(pool.max, 'pool.max', 1);
+    const min = optionalInteger(pool.min, 'pool.min', 0);
 
-    if (hasValue(options.host)) {
+    if (hasText(options.host)) {
         pool.host = options.host;
     }
 
@@ -38,20 +30,26 @@ export const createPostgresPoolConfig = (options: PostgresKyselyOptions = {}): P
         pool.port = port;
     }
 
-    if (hasValue(options.user)) {
+    if (hasText(options.user)) {
         pool.user = options.user;
     }
 
-    if (hasValue(options.password)) {
+    if (hasText(options.password)) {
         pool.password = options.password;
     }
 
-    if (hasValue(options.database)) {
+    if (hasText(options.database)) {
         pool.database = options.database;
     }
 
     if (max !== undefined) {
         pool.max = max;
+    }
+    if (min !== undefined) {
+        pool.min = min;
+    }
+    if (min !== undefined && max !== undefined && min > max) {
+        throw new KyselyConfigurationError('pool.min must be less than or equal to max.');
     }
 
     return pool;
@@ -68,6 +66,48 @@ export const createPostgresKyselyConfig = (options: PostgresKyselyOptions = {}):
     };
 };
 
-export const createPostgresKyselyModuleOptions = (options: PostgresKyselyOptions = {}): KyselyModuleOptions => ({
+export const createPostgresKyselyModuleOptions = (
+    options: PostgresKyselyOptions = {},
+): ConfiguredKyselyModuleOptions => ({
     config: createPostgresKyselyConfig(options),
 });
+
+function validatePostgresOptions(options: PostgresKyselyOptions): void {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+        throw new KyselyConfigurationError('PostgreSQL options must be an object.');
+    }
+    if (
+        options.pool !== undefined &&
+        (!options.pool || typeof options.pool !== 'object' || Array.isArray(options.pool))
+    ) {
+        throw new KyselyConfigurationError('pool must be a PostgreSQL PoolConfig object.');
+    }
+
+    for (const field of ['host', 'user', 'password', 'database'] as const) {
+        const value = options[field];
+        if (value !== undefined && value !== null && typeof value !== 'string') {
+            throw new KyselyConfigurationError(`${field} must be a string.`);
+        }
+    }
+}
+
+function hasText(value: string | null | undefined): value is string {
+    return value !== undefined && value !== null && value !== '';
+}
+
+function optionalInteger(
+    value: number | string | null | undefined,
+    name: string,
+    minimum: number,
+    maximum = Number.MAX_SAFE_INTEGER,
+): number | undefined {
+    if (value === undefined || value === null || value === '') {
+        return undefined;
+    }
+
+    const number = typeof value === 'number' ? value : /^[+]?[0-9]+$/.test(value) ? Number(value) : Number.NaN;
+    if (!Number.isSafeInteger(number) || number < minimum || number > maximum) {
+        throw new KyselyConfigurationError(`${name} must be an integer between ${minimum} and ${maximum}.`);
+    }
+    return number;
+}

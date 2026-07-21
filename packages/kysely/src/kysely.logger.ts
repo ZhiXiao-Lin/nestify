@@ -1,14 +1,18 @@
+import dayjs = require('dayjs');
+
 import type { LogEvent } from 'kysely';
-import * as dayjsModule from 'dayjs';
-import * as pcModule from 'picocolors';
 
-// Handle both ESM and CJS imports
-const dayjs = (dayjsModule as any).default || dayjsModule;
-const pc = (pcModule as any).default || pcModule;
+import pc = require('picocolors');
 
-/**
- * SQL keywords for syntax highlighting
- */
+import { KyselyConfigurationError } from './kysely-module-options.interface';
+
+export const DEFAULT_KYSELY_LOGGER_MAX_SQL_LENGTH = 10_000;
+export const DEFAULT_KYSELY_LOGGER_MAX_PARAMETER_COUNT = 20;
+export const DEFAULT_KYSELY_LOGGER_MAX_PARAMETER_LENGTH = 256;
+
+const MAX_KYSELY_LOGGER_TEXT_LENGTH = 1_000_000;
+const MAX_KYSELY_LOGGER_PARAMETER_COUNT = 1_000;
+
 const SQL_KEYWORDS = [
     'SELECT',
     'FROM',
@@ -60,59 +64,147 @@ const SQL_KEYWORDS = [
     'END',
 ] as const;
 
-/**
- * Regular expressions cache for better performance
- */
-const regexCache = new Map<string, RegExp>();
+const SQL_KEYWORD_PATTERNS = SQL_KEYWORDS.map(keyword => new RegExp(`\\b${keyword}\\b`, 'gi'));
 
-/**
- * Get or create a cached regex pattern
- */
-const getCachedRegex = (pattern: string, flags: string): RegExp => {
-    const key = `${pattern}:${flags}`;
-    let regex = regexCache.get(key);
-    if (!regex) {
-        regex = new RegExp(pattern, flags);
-        regexCache.set(key, regex);
+export interface KyselyLoggerOptions {
+    /** Write formatted events to the console. Defaults to true. */
+    consoleOutput?: boolean;
+    /** Receives the original Kysely event before console formatting. */
+    onQuery?: (event: LogEvent) => void;
+    /** Include bound parameter values in console output. Defaults to false. */
+    logParameters?: boolean;
+    /** Include error stacks in console output. Defaults to false. */
+    logErrorStack?: boolean;
+    maxSqlLength?: number;
+    maxParameterCount?: number;
+    maxParameterLength?: number;
+}
+
+interface NormalizedKyselyLoggerOptions {
+    readonly consoleOutput: boolean;
+    readonly onQuery?: (event: LogEvent) => void;
+    readonly logParameters: boolean;
+    readonly logErrorStack: boolean;
+    readonly maxSqlLength: number;
+    readonly maxParameterCount: number;
+    readonly maxParameterLength: number;
+}
+
+/** Creates a bounded logger callback compatible with Kysely's `log` option. */
+export function createKyselyLogger(options: KyselyLoggerOptions = {}): (event: LogEvent) => void {
+    const normalized = normalizeKyselyLoggerOptions(options);
+
+    return event => {
+        try {
+            normalized.onQuery?.(event);
+        } catch (error) {
+            console.error('[KYSELY LOGGER HOOK ERROR]', formatUnknownError(error, normalized.maxParameterLength));
+        }
+
+        if (!normalized.consoleOutput) {
+            return;
+        }
+
+        try {
+            writeLogEvent(event, normalized);
+        } catch (error) {
+            console.error('[KYSELY LOGGER ERROR]', formatUnknownError(error, normalized.maxParameterLength));
+        }
+    };
+}
+
+function normalizeKyselyLoggerOptions(options: KyselyLoggerOptions): NormalizedKyselyLoggerOptions {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+        throw new KyselyConfigurationError('Kysely logger options must be an object.');
     }
-    return regex;
-};
-
-/**
- * Highlights SQL query with color-coded syntax
- * @param sql - The SQL query string to highlight
- * @returns Highlighted SQL string with ANSI color codes
- */
-const highlightSql = (sql: string): string => {
-    let highlightedSql = sql;
-
-    // Highlight keywords
-    for (const keyword of SQL_KEYWORDS) {
-        const regex = getCachedRegex(`\\b${keyword}\\b`, 'gi');
-        highlightedSql = highlightedSql.replace(regex, pc.bold(pc.blue(keyword.toUpperCase())));
+    for (const field of ['consoleOutput', 'logParameters', 'logErrorStack'] as const) {
+        if (options[field] !== undefined && typeof options[field] !== 'boolean') {
+            throw new KyselyConfigurationError(`logger.${field} must be a boolean.`);
+        }
+    }
+    if (options.onQuery !== undefined && typeof options.onQuery !== 'function') {
+        throw new KyselyConfigurationError('logger.onQuery must be a function.');
     }
 
-    // Highlight string literals
-    highlightedSql = highlightedSql.replace(/'([^'\\]|\\.)*'/g, pc.green('$&'));
+    return Object.freeze({
+        consoleOutput: options.consoleOutput ?? true,
+        onQuery: options.onQuery,
+        logParameters: options.logParameters ?? false,
+        logErrorStack: options.logErrorStack ?? false,
+        maxSqlLength: boundedInteger(
+            options.maxSqlLength,
+            'logger.maxSqlLength',
+            DEFAULT_KYSELY_LOGGER_MAX_SQL_LENGTH,
+            1,
+            MAX_KYSELY_LOGGER_TEXT_LENGTH,
+        ),
+        maxParameterCount: boundedInteger(
+            options.maxParameterCount,
+            'logger.maxParameterCount',
+            DEFAULT_KYSELY_LOGGER_MAX_PARAMETER_COUNT,
+            0,
+            MAX_KYSELY_LOGGER_PARAMETER_COUNT,
+        ),
+        maxParameterLength: boundedInteger(
+            options.maxParameterLength,
+            'logger.maxParameterLength',
+            DEFAULT_KYSELY_LOGGER_MAX_PARAMETER_LENGTH,
+            1,
+            MAX_KYSELY_LOGGER_TEXT_LENGTH,
+        ),
+    });
+}
 
-    // Highlight numbers
-    highlightedSql = highlightedSql.replace(/\b\d+(?:\.\d+)?\b/g, pc.yellow('$&'));
+function writeLogEvent(event: LogEvent, options: NormalizedKyselyLoggerOptions): void {
+    const timestamp = pc.dim(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}]`);
+    const duration = formatDuration(event.queryDurationMillis);
+    const sql = highlightSql(sanitizeAndTruncate(event.query.sql, options.maxSqlLength));
 
-    // Highlight identifiers with backticks
-    highlightedSql = highlightedSql.replace(/`([^`]+)`/g, pc.cyan('$&'));
+    if (event.level === 'query') {
+        console.log(`${timestamp} ${pc.bold(pc.cyan('[KYSELY QUERY]'))} ${duration}`);
+        console.log(`${pc.dim('SQL:')} ${sql}`);
+        writeParameters('log', event.query.parameters, options);
+        return;
+    }
 
-    return highlightedSql;
-};
+    console.error(`${timestamp} ${pc.bold(pc.red('[KYSELY ERROR]'))} ${duration}`);
+    console.error(`${pc.dim('SQL:')} ${sql}`);
+    writeParameters('error', event.query.parameters, options);
+    console.error(
+        `${pc.red('Error:')} ${pc.bold(pc.red(formatUnknownError(event.error, options.maxParameterLength)))}`,
+    );
 
-/**
- * Formats query execution duration with color coding based on performance
- * - Green: < 1ms (excellent)
- * - Yellow: 1-100ms (acceptable)
- * - Red: > 100ms (slow, needs optimization)
- * @param duration - Query duration in milliseconds
- * @returns Formatted duration string with color coding
- */
-const formatDuration = (duration: number): string => {
+    if (options.logErrorStack && event.error instanceof Error && event.error.stack) {
+        console.error(`${pc.red('Stack:')} ${pc.gray(sanitizeAndTruncate(event.error.stack, options.maxSqlLength))}`);
+    }
+}
+
+function writeParameters(
+    method: 'log' | 'error',
+    parameters: readonly unknown[],
+    options: NormalizedKyselyLoggerOptions,
+): void {
+    if (!options.logParameters || parameters.length === 0) {
+        return;
+    }
+    console[method](`${pc.dim('Parameters:')} ${formatParameters(parameters, options)}`);
+}
+
+function highlightSql(sql: string): string {
+    let highlighted = sql;
+    for (const regex of SQL_KEYWORD_PATTERNS) {
+        highlighted = highlighted.replace(regex, match => pc.bold(pc.blue(match)));
+    }
+    highlighted = highlighted.replace(/'([^'\\]|\\.)*'/g, match => pc.green(match));
+    highlighted = highlighted.replace(/\b\d+(?:\.\d+)?\b/g, match => pc.yellow(match));
+    highlighted = highlighted.replace(/`([^`]+)`/g, match => pc.cyan(match));
+    return highlighted;
+}
+
+function formatDuration(duration: number): string {
+    if (!Number.isFinite(duration) || duration < 0) {
+        return pc.gray('unknown');
+    }
     const formatted = `${duration.toFixed(2)}ms`;
     if (duration < 1) {
         return pc.green(formatted);
@@ -121,118 +213,93 @@ const formatDuration = (duration: number): string => {
         return pc.yellow(formatted);
     }
     return pc.red(pc.bold(formatted));
-};
-
-/**
- * Formats query parameters with type-specific color coding
- * @param params - Array of query parameters
- * @returns Formatted parameters string
- */
-const formatParameters = (params: readonly unknown[]): string => {
-    return params
-        .map((param, index) => {
-            let formattedParam: string;
-
-            if (param === null || param === undefined) {
-                formattedParam = pc.gray('NULL');
-            } else if (typeof param === 'string') {
-                formattedParam = pc.green(`'${param}'`);
-            } else if (typeof param === 'number') {
-                formattedParam = pc.yellow(String(param));
-            } else if (typeof param === 'boolean') {
-                formattedParam = pc.magenta(String(param));
-            } else if (param instanceof Date) {
-                formattedParam = pc.cyan(param.toISOString());
-            } else {
-                formattedParam = pc.white(JSON.stringify(param));
-            }
-
-            return `${pc.dim(`$${index + 1}:`)} ${formattedParam}`;
-        })
-        .join(', ');
-};
-
-/**
- * Type guard to check if error is an Error instance
- */
-const isError = (error: unknown): error is Error => {
-    return error instanceof Error;
-};
-
-export interface KyselyLoggerOptions {
-    consoleOutput?: boolean;
-    onQuery?: (event: LogEvent) => void;
 }
 
-/**
- * Creates a Kysely logger function with enhanced formatting and syntax highlighting
- * @returns Logger function compatible with Kysely's log configuration
- */
-export const createKyselyLogger = (options: KyselyLoggerOptions = {}) => {
-    return (event: LogEvent) => {
-        try {
-            options.onQuery?.(event);
-        } catch (error) {
-            console.error('[KYSELY LOGGER HOOK ERROR]', error);
-        }
+function formatParameters(parameters: readonly unknown[], options: NormalizedKyselyLoggerOptions): string {
+    const visible = parameters.slice(0, options.maxParameterCount).map((parameter, index) => {
+        const value = formatParameter(parameter, options.maxParameterLength);
+        return `${pc.dim(`$${index + 1}:`)} ${value}`;
+    });
+    const hiddenCount = parameters.length - visible.length;
+    if (hiddenCount > 0) {
+        visible.push(pc.dim(`[${hiddenCount} more parameter${hiddenCount === 1 ? '' : 's'} omitted]`));
+    }
+    return visible.join(', ');
+}
 
-        if (options.consoleOutput === false) {
-            return;
-        }
+function formatParameter(parameter: unknown, maxLength: number): string {
+    if (parameter === null || parameter === undefined) {
+        return pc.gray('NULL');
+    }
+    if (typeof parameter === 'string') {
+        return pc.green(JSON.stringify(sanitizeAndTruncate(parameter, maxLength)));
+    }
+    if (typeof parameter === 'number') {
+        return pc.yellow(Number.isFinite(parameter) ? String(parameter) : `[${String(parameter)}]`);
+    }
+    if (typeof parameter === 'bigint') {
+        return pc.yellow(`${parameter}n`);
+    }
+    if (typeof parameter === 'boolean') {
+        return pc.magenta(String(parameter));
+    }
+    if (parameter instanceof Date) {
+        return pc.cyan(Number.isNaN(parameter.getTime()) ? '[Invalid Date]' : parameter.toISOString());
+    }
+    if (typeof parameter === 'symbol') {
+        return pc.white(sanitizeAndTruncate(String(parameter), maxLength));
+    }
+    if (typeof parameter === 'function') {
+        return pc.white(`[Function${parameter.name ? ` ${parameter.name}` : ''}]`);
+    }
+    return pc.white(sanitizeAndTruncate(safeJsonStringify(parameter), maxLength));
+}
 
-        const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss');
-        const formattedTimestamp = pc.dim(`[${timestamp}]`);
-
-        if (event.level === 'query') {
-            const duration = formatDuration(event.queryDurationMillis);
-
-            // Query log header
-            console.log(`${formattedTimestamp} ${pc.bold(pc.cyan('[KYSELY QUERY]'))} ${duration}`);
-
-            // Highlighted SQL query
-            const formattedSql = highlightSql(event.query.sql);
-            console.log(`${pc.dim('┌─')} ${formattedSql}`);
-
-            // Parameters (if any)
-            if (event.query.parameters && event.query.parameters.length > 0) {
-                console.log(
-                    `${pc.dim('├─')} ${pc.bold(pc.magenta('Parameters:'))} ${formatParameters(event.query.parameters)}`,
-                );
-            }
-
-            // Footer
-            console.log(pc.dim('└─────────────────────────────────────────────────────────────────'));
-        } else if (event.level === 'error') {
-            const duration = formatDuration(event.queryDurationMillis);
-
-            // Error log header
-            console.error(`${formattedTimestamp} ${pc.bold(pc.red('[KYSELY ERROR]'))} ${duration}`);
-
-            // SQL query that caused the error
-            const formattedSql = highlightSql(event.query.sql);
-            console.error(`${pc.dim('┌─')} ${pc.red('Query:')} ${formattedSql}`);
-
-            // Parameters (if any)
-            if (event.query.parameters && event.query.parameters.length > 0) {
-                console.error(
-                    `${pc.dim('├─')} ${pc.bold(pc.magenta('Parameters:'))} ${formatParameters(event.query.parameters)}`,
-                );
-            }
-
-            // Error details
-            const error = event.error;
-            if (isError(error)) {
-                console.error(`${pc.dim('├─')} ${pc.red('Error:')} ${pc.bold(pc.red(error.message))}`);
-
-                if (error.stack) {
-                    console.error(`${pc.dim('├─')} ${pc.red('Stack Trace:')}`);
-                    console.error(`${pc.dim('│ ')} ${pc.gray(error.stack)}`);
+function safeJsonStringify(value: unknown): string {
+    const seen = new WeakSet<object>();
+    try {
+        return (
+            JSON.stringify(value, (_key, nested: unknown) => {
+                if (typeof nested === 'bigint') {
+                    return `${nested}n`;
                 }
-            } else {
-                console.error(`${pc.dim('├─')} ${pc.red('Error:')} ${pc.bold(pc.red(String(error)))}`);
-            }
+                if (nested && typeof nested === 'object') {
+                    if (seen.has(nested)) {
+                        return '[Circular]';
+                    }
+                    seen.add(nested);
+                }
+                return nested;
+            }) ?? '[Unserializable value]'
+        );
+    } catch {
+        return '[Unserializable value]';
+    }
+}
 
-            console.error(pc.dim('└─────────────────────────────────────────────────────────────────'));
-        }
-    };
-};
+function formatUnknownError(error: unknown, maxLength: number): string {
+    const message = error instanceof Error ? error.message : String(error);
+    return sanitizeAndTruncate(message, maxLength);
+}
+
+function sanitizeAndTruncate(value: string, maxLength: number): string {
+    const sanitized = value.replace(/[\u0000-\u001f\u007f]+/g, ' ');
+    if (sanitized.length <= maxLength) {
+        return sanitized;
+    }
+    return `${sanitized.slice(0, Math.max(0, maxLength - 1))}…`;
+}
+
+function boundedInteger(
+    value: number | undefined,
+    name: string,
+    fallback: number,
+    minimum: number,
+    maximum: number,
+): number {
+    const resolved = value ?? fallback;
+    if (!Number.isSafeInteger(resolved) || resolved < minimum || resolved > maximum) {
+        throw new KyselyConfigurationError(`${name} must be an integer between ${minimum} and ${maximum}.`);
+    }
+    return resolved;
+}

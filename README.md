@@ -20,7 +20,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
-| `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders. |
+| `@a3s-lab/kysely` | Validated NestJS lifecycle integration for Kysely, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, single-node Redis option builders, and public Redis/Redisson API re-exports. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, queue metrics, and cleanup helpers. |
@@ -175,6 +175,7 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
   bounds its configurable local outage fallback.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
+- Kysely configuration and PostgreSQL numeric options are validated before connection creation. Module-owned connections close idempotently, external instances stay caller-owned, and SQL diagnostics omit parameters and stacks by default.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
 
 ## Design Boundaries

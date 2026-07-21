@@ -1,7 +1,7 @@
 {
     "name": "@a3s-lab/kysely",
     "version": "1.0.0",
-    "description": "NestJS module for Kysely SQL query builder with syntax-highlighted logging",
+    "description": "Validated NestJS lifecycle integration for Kysely with bounded SQL logging",
     "author": "A3S Lab",
     "license": "MIT",
     "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/kysely#readme",
