@@ -6,7 +6,7 @@ export class PathSecurityValidator {
     }
 
     static normalizePath(pathStr: string): string {
-        const normalized = pathStr.replace(/\/+$/, '');
+        const normalized = pathStr.replace(/\\/g, '/').replace(/\/+$/, '');
         const parts = normalized.split('/');
         const resolved: string[] = [];
         for (const part of parts) {
@@ -20,19 +20,26 @@ export class PathSecurityValidator {
     }
 
     static isWithinRoot(pathStr: string, root: string): boolean {
-        const normalizedPath = nodePath.normalize(pathStr);
-        const normalizedRoot = nodePath.normalize(root);
-        return normalizedPath === normalizedRoot || normalizedPath.startsWith(`${normalizedRoot}${nodePath.sep}`);
+        const resolvedPath = nodePath.resolve(pathStr);
+        const resolvedRoot = nodePath.resolve(root);
+        const relative = nodePath.relative(resolvedRoot, resolvedPath);
+        return (
+            relative === '' ||
+            (!relative.startsWith(`..${nodePath.sep}`) && relative !== '..' && !nodePath.isAbsolute(relative))
+        );
     }
 
     static pathStartsWith(pathStr: string, prefix: string): boolean {
-        return pathStr === prefix || pathStr.startsWith(`${prefix}/`);
+        const normalizedPath = this.normalizePath(pathStr);
+        const normalizedPrefix = this.normalizePath(prefix);
+        return normalizedPath === normalizedPrefix || normalizedPath.startsWith(`${normalizedPrefix}/`);
     }
 
     static resolveAndValidate(baseRoot: string, relativePath: string): string {
-        const normalized = nodePath.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, '');
-        const absolutePath = nodePath.join(baseRoot, normalized);
-        if (!this.isWithinRoot(absolutePath, baseRoot)) {
+        const resolvedRoot = nodePath.resolve(baseRoot);
+        const sanitizedPath = this.sanitizePath(relativePath).replace(/^[\\/]+/, '');
+        const absolutePath = nodePath.resolve(resolvedRoot, sanitizedPath);
+        if (!this.isWithinRoot(absolutePath, resolvedRoot)) {
             throw new Error('Invalid path: path traversal detected');
         }
         return absolutePath;

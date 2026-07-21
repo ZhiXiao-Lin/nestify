@@ -11,7 +11,6 @@ if (!command) {
     process.exit(1);
 }
 
-const pnpmBin = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 const commandArgs = [...getCorePackageFilters(), command, ...args];
 
 if (command === 'pack' && !args.includes('--pack-destination')) {
@@ -21,7 +20,8 @@ if (command === 'pack' && !args.includes('--pack-destination')) {
     commandArgs.push('--pack-destination', artifactsDir);
 }
 
-execFileSync(pnpmBin, commandArgs, {
+execFileSync('pnpm', commandArgs, {
     cwd: rootDir,
     stdio: 'inherit',
+    shell: process.platform === 'win32',
 });

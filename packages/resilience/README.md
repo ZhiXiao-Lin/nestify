@@ -12,7 +12,7 @@ pnpm add @nestjs/common @nestjs/core express rxjs
 ## Use
 
 ```ts
-import { ResilienceModule, Retry, RetryService, TtlCache } from '@a3s-lab/resilience';
+import { Cache, ResilienceModule, Retry, RetryService, TtlCache } from '@a3s-lab/resilience';
 
 ResilienceModule.register({ globalInterceptors: true });
 
@@ -22,6 +22,17 @@ class RemoteClient {
     @Retry({ maxAttempts: 3, initialDelay: 100 })
     async load() {
         return this.retry.executeOrThrow(() => fetch('https://example.com').then(response => response.json()));
+    }
+}
+
+class CatalogController {
+    @Cache({
+        ttl: 60,
+        scope: 'private',
+        varyByHeaders: ['x-feature-variant'],
+    })
+    loadCatalog() {
+        return { available: true };
     }
 }
 
@@ -39,6 +50,19 @@ const localCache = new TtlCache<string>(30_000);
 
 ## Notes
 
-Redis-backed features require `@a3s-lab/redisson` in the consuming application. Keys, limits, and failure policies should be chosen by the API that owns the endpoint.
+Redis-backed features require `@a3s-lab/redisson` in the consuming application. Cache decorators are private by
+default: keys vary by route inputs, host, inferred tenant, common representation headers, authenticated identity,
+authorization, cookies, and API keys. Request-derived material is SHA-256 hashed and is not written verbatim to Redis
+keys or failure logs. Header names are case-normalized; use `varyByHeaders` for application-specific representation
+headers.
+
+Choose `scope: 'public'` only when a response is intentionally shared across authenticated identities. Public entries
+still vary by an inferred tenant (`request.tenant`, `tenantId`, `organizationId`, common user/auth claim fields, or
+`x-tenant-id`) and host. Applications with another tenancy model should expose a verified tenant through one of those
+request fields before enabling public caching.
+
+Cache key generation and Redis failures bypass caching by default so a cache outage does not fail a successful request;
+set `skipOnError: false` for strict behavior. Nest shutdown waits for Redis cache operations that have already started,
+then rejects new cache operations without closing the injected Redisson connection.
 
 See the [framework core guide](../../docs/framework-core.md) for package boundaries.

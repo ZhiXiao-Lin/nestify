@@ -8,6 +8,7 @@ import { corePackages } from './core-packages.mjs';
 const rootDir = process.cwd();
 const artifactsDir = path.join(rootDir, '.artifacts/core-packages');
 const packageManager = process.env.CORE_SMOKE_PACKAGE_MANAGER ?? 'pnpm';
+const rootPackageManager = readJson(path.join(rootDir, 'package.json')).packageManager;
 const keepSmokeWorkspace = process.env.KEEP_CORE_SMOKE === '1';
 const consumerDir = mkdtempSync(path.join(os.tmpdir(), 'core-package-consumer-'));
 let succeeded = false;
@@ -31,10 +32,20 @@ try {
         }
     }
 
+    const developmentDependencies = {
+        '@types/express': '^5.0.0',
+        '@types/node': '^20.0.0',
+        typescript: '5.3.3',
+    };
+    for (const developmentDependency of Object.keys(developmentDependencies)) {
+        delete peerDependencies[developmentDependency];
+    }
+
     const packageJson = {
         name: 'core-package-consumer-smoke',
         version: '0.0.0',
         private: true,
+        packageManager: rootPackageManager,
         scripts: {
             typecheck: 'tsc --noEmit',
             smoke: 'node smoke.cjs',
@@ -44,11 +55,7 @@ try {
             ...packageDependencies,
             'reflect-metadata': '^0.1.13',
         }),
-        devDependencies: sortObject({
-            '@types/express': '^5.0.0',
-            '@types/node': '^20.0.0',
-            typescript: '^5.1.3',
-        }),
+        devDependencies: sortObject(developmentDependencies),
     };
 
     writeJson(path.join(consumerDir, 'package.json'), packageJson);
@@ -70,6 +77,14 @@ try {
     writeFileSync(path.join(consumerDir, 'smoke.cjs'), smokeNodeSource());
 
     run(packageManager, ['install', '--ignore-scripts', '--config.strict-peer-dependencies=false']);
+    const installedTypeScriptVersion = readJson(
+        path.join(consumerDir, 'node_modules', 'typescript', 'package.json'),
+    ).version;
+    if (installedTypeScriptVersion !== developmentDependencies.typescript) {
+        throw new Error(
+            `Expected TypeScript ${developmentDependencies.typescript}, installed ${installedTypeScriptVersion}`,
+        );
+    }
     run(packageManager, ['exec', 'tsc', '--noEmit']);
     run('node', ['smoke.cjs']);
 
@@ -88,6 +103,7 @@ function run(command, args) {
         cwd: consumerDir,
         stdio: 'inherit',
         env: process.env,
+        shell: process.platform === 'win32',
     });
 }
 
@@ -124,6 +140,7 @@ function pnpmWorkspaceSource(overrides) {
 
 function smokeTypescriptSource() {
     return `import 'reflect-metadata';
+import { AiModule, AiService } from '@a3s-lab/ai';
 import { Result, type IDomainEvent } from '@a3s-lab/ddd';
 import { createNestCqrsDomainEventPublisherProvider, NestCqrsDomainEventPublisher } from '@a3s-lab/cqrs';
 import { ApiResponseDto, getOrCreateRequestId, StatusCode } from '@a3s-lab/http';
@@ -140,6 +157,11 @@ import { EtcdModule } from '@a3s-lab/etcd';
 import { CLICKHOUSE_OPTIONS_TOKEN, ClickHouseModule } from '@a3s-lab/clickhouse';
 import { MigrationModule, NON_TRANSACTIONAL_MIGRATION_NAME } from '@a3s-lab/migrations';
 import { FileUploadModule, getExtension } from '@a3s-lab/files';
+import {
+    SandboxModule,
+    SandboxService,
+    createA3SBoxConnectionConfig,
+} from '@a3s-lab/sandbox';
 
 const event: IDomainEvent = {
     occurredOn: new Date(),
@@ -158,7 +180,12 @@ const retry = new RetryService();
 const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
 const provider = createNestCqrsDomainEventPublisherProvider();
+const sandboxConnection = createA3SBoxConnectionConfig({
+    apiUrl: 'https://api.box.test',
+    domain: 'box.test',
+});
 const moduleRefs = [
+    AiModule,
     NestCqrsDomainEventPublisher,
     ResilienceModule,
     KyselyModule,
@@ -170,7 +197,9 @@ const moduleRefs = [
     ClickHouseModule,
     MigrationModule,
     FileUploadModule,
+    SandboxModule,
 ];
+const serviceRefs = [AiService, SandboxService];
 
 void event;
 void envelope;
@@ -184,6 +213,7 @@ void pool;
 void redis;
 void provider;
 void moduleRefs;
+void serviceRefs;
 void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
@@ -194,6 +224,14 @@ const extension: string = getExtension('file.txt');
 if (extension !== '.txt') {
     throw new Error('Unexpected file extension');
 }
+
+if (
+    sandboxConnection.apiUrl !== 'https://api.box.test' ||
+    sandboxConnection.domain !== 'box.test' ||
+    sandboxConnection.validateApiKey !== false
+) {
+    throw new Error('Unexpected A3S Box connection configuration');
+}
 `;
 }
 
@@ -201,6 +239,7 @@ function smokeNodeSource() {
     return `require('reflect-metadata');
 
 const expectedExports = {
+    '@a3s-lab/ai': ['AiModule', 'AiService'],
     '@a3s-lab/ddd': ['Result', 'Guard'],
     '@a3s-lab/cqrs': ['NestCqrsDomainEventPublisher', 'createNestCqrsDomainEventPublisherProvider'],
     '@a3s-lab/http': ['ApiResponseDto', 'StatusCode', 'getOrCreateRequestId'],
@@ -217,6 +256,7 @@ const expectedExports = {
     '@a3s-lab/clickhouse': ['CLICKHOUSE_OPTIONS_TOKEN', 'ClickHouseModule', 'ClickHouseService'],
     '@a3s-lab/migrations': ['MigrationModule', 'createFileMigrationProvider'],
     '@a3s-lab/files': ['FileUploadModule', 'FileUploadService', 'getExtension'],
+    '@a3s-lab/sandbox': ['SandboxModule', 'SandboxService', 'createA3SBoxConnectionConfig'],
 };
 
 for (const [packageName, exportNames] of Object.entries(expectedExports)) {

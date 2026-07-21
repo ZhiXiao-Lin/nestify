@@ -152,7 +152,10 @@ function verifyTarball(corePackage, manifest) {
         return;
     }
 
-    const entries = execFileSync('tar', ['-tf', tarballPath], { encoding: 'utf8' }).trim().split('\n').filter(Boolean);
+    const entries = execFileSync('tar', ['-tf', tarballPath], { encoding: 'utf8' })
+        .trim()
+        .split(/\r?\n/)
+        .filter(Boolean);
     const entrySet = new Set(entries);
 
     for (const entry of [

@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { corePackages } from './core-packages.mjs';
 
@@ -16,7 +16,7 @@ if (unknownArgs.length > 0) {
 const registry = process.env.PUBLISH_REGISTRY ?? 'https://registry.npmjs.org';
 const tag = process.env.PUBLISH_TAG ?? 'latest';
 const otp = process.env.PUBLISH_OTP ?? process.env.NPM_CONFIG_OTP;
-const dirtyWorktree = isWorktreeDirty();
+const artifactsDir = path.join(rootDir, '.artifacts/core-packages');
 const failures = [];
 let publishCount = 0;
 let skipCount = 0;
@@ -24,6 +24,13 @@ let skipCount = 0;
 for (const corePackage of corePackages) {
     const packageDir = path.join(rootDir, corePackage.dir);
     const manifest = readPackageJson(packageDir);
+    const tarballPath = expectedTarballPath(manifest);
+
+    if (!existsSync(tarballPath)) {
+        console.error(`Missing verified tarball ${tarballPath}; run pnpm release:check first.`);
+        failures.push(manifest.name);
+        continue;
+    }
 
     if (isAlreadyPublished(manifest.name, manifest.version)) {
         console.log(`Skipping ${manifest.name}@${manifest.version}; version already exists on ${registry}`);
@@ -31,7 +38,17 @@ for (const corePackage of corePackages) {
         continue;
     }
 
-    const publishArgs = ['publish', '--access', 'public', '--tag', tag, '--registry', registry];
+    const publishArgs = [
+        'publish',
+        tarballPath,
+        '--access',
+        'public',
+        '--tag',
+        tag,
+        '--registry',
+        registry,
+        '--no-git-checks',
+    ];
     if (dryRun) {
         publishArgs.push('--dry-run');
     }
@@ -39,15 +56,13 @@ for (const corePackage of corePackages) {
         publishArgs.push('--otp', otp);
     }
 
-    console.log(`\n${dryRun ? 'Dry-running npm publish' : 'Publishing'} for ${manifest.name} from ${corePackage.dir}`);
+    console.log(`\n${dryRun ? 'Dry-running npm publish' : 'Publishing'} verified ${path.basename(tarballPath)}`);
 
     const result = spawnSync('pnpm', publishArgs, {
-        cwd: packageDir,
-        env: {
-            ...process.env,
-            ...(dirtyWorktree ? { npm_config_git_checks: 'false' } : {}),
-        },
+        cwd: rootDir,
+        env: process.env,
         stdio: 'inherit',
+        shell: process.platform === 'win32',
     });
 
     if (result.status !== 0) {
@@ -70,31 +85,16 @@ function readPackageJson(packageDir) {
     return JSON.parse(readFileSync(path.join(packageDir, 'package.json'), 'utf8'));
 }
 
+function expectedTarballPath(manifest) {
+    const tarballName = `${manifest.name.replace(/^@/, '').replace(/\//g, '-')}-${manifest.version}.tgz`;
+    return path.join(artifactsDir, tarballName);
+}
+
 function isAlreadyPublished(packageName, version) {
     const result = spawnSync('npm', ['view', `${packageName}@${version}`, 'version', '--registry', registry], {
         encoding: 'utf8',
+        shell: process.platform === 'win32',
     });
 
     return result.status === 0 && result.stdout.trim() === version;
-}
-
-function isWorktreeDirty() {
-    const checks = [
-        ['diff', '--quiet'],
-        ['diff', '--cached', '--quiet'],
-    ];
-
-    for (const args of checks) {
-        const result = spawnSync('git', args, { cwd: rootDir, stdio: 'ignore' });
-        if (result.status !== 0) {
-            return true;
-        }
-    }
-
-    const untracked = spawnSync('git', ['ls-files', '--others', '--exclude-standard'], {
-        cwd: rootDir,
-        encoding: 'utf8',
-    });
-
-    return untracked.status !== 0 || untracked.stdout.trim().length > 0;
 }

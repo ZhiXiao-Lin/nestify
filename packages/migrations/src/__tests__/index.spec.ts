@@ -5,6 +5,7 @@ import {
     MigrationModule,
     MigrationRunner,
     NON_TRANSACTIONAL_MIGRATION_NAME,
+    shouldAutoRunMigrations,
 } from '../index';
 
 describe('migration helpers', () => {
@@ -60,6 +61,40 @@ describe('migration helpers', () => {
             module: MigrationModule,
             providers: [{ provide: MIGRATION_MODULE_OPTIONS, useValue: options }, MigrationRunner],
             exports: [MigrationRunner, MIGRATION_MODULE_OPTIONS],
+        });
+    });
+
+    describe('automatic migration policy', () => {
+        const options = { migrationFolder: 'src/migrations' };
+
+        it('is disabled by default, including in production', () => {
+            expect(shouldAutoRunMigrations(options, {})).toBe(false);
+            expect(shouldAutoRunMigrations(options, { NODE_ENV: 'production' })).toBe(false);
+        });
+
+        it('allows an explicit module option to enable or disable startup migrations', () => {
+            expect(shouldAutoRunMigrations({ ...options, autoRun: true }, {})).toBe(true);
+            expect(
+                shouldAutoRunMigrations(
+                    { ...options, autoRun: false, autoRunInProduction: true },
+                    { AUTO_MIGRATE: 'true', NODE_ENV: 'production' },
+                ),
+            ).toBe(false);
+        });
+
+        it('uses the exact AUTO_MIGRATE value when no module override is present', () => {
+            expect(shouldAutoRunMigrations(options, { AUTO_MIGRATE: 'true' })).toBe(true);
+            expect(shouldAutoRunMigrations(options, { AUTO_MIGRATE: 'false' })).toBe(false);
+            expect(shouldAutoRunMigrations(options, { AUTO_MIGRATE: 'TRUE' })).toBe(false);
+        });
+
+        it('requires an explicit production opt-in when no environment override is present', () => {
+            expect(shouldAutoRunMigrations({ ...options, autoRunInProduction: true }, { NODE_ENV: 'production' })).toBe(
+                true,
+            );
+            expect(
+                shouldAutoRunMigrations({ ...options, autoRunInProduction: true }, { NODE_ENV: 'development' }),
+            ).toBe(false);
         });
     });
 });

@@ -10,7 +10,7 @@ The first rule of this repository is separation:
 
 ## What Is Included
 
-Nestify currently contains 16 publishable framework packages:
+Nestify currently contains 18 publishable framework packages:
 
 | Package | Responsibility |
 | --- | --- |
@@ -30,6 +30,8 @@ Nestify currently contains 16 publishable framework packages:
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
+| `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
+| `@a3s-lab/sandbox` | NestJS integration for A3S Box sandbox and code-interpreter workflows through the lazily loaded first-party `@a3s-lab/box` TypeScript SDK. |
 
 The shared package list is dependency-ordered in `scripts/core-packages.mjs`. Build, test, pack, smoke install, and publish rehearsal commands all use that same list.
 
@@ -83,8 +85,9 @@ GET /api/metrics/json
 
 ## Requirements
 
-- Node.js 20.11+
+- Node.js 20.18.1, or Node.js 22+
 - pnpm 10.30.3
+- TypeScript 5.3.3 or newer
 - Docker and Docker Compose for the local PostgreSQL and Redis setup
 
 The published NestJS integration packages accept NestJS 10 and 11 peers. The workspace and sample API are built and tested against NestJS 11 and Express 5.
@@ -126,7 +129,7 @@ docker compose -f docker/docker-compose.yml up app
 | `pnpm format:check` | Check Biome formatting. |
 | `pnpm release:check` | Format, lint, build, test, pack, and verify every framework package. |
 | `pnpm smoke:core-install` | Install packed framework package tarballs in a temporary consumer project, type-check imports, and run a Node import smoke test. |
-| `pnpm release:publish:dry-run` | Run the full release check, smoke install, and per-package `pnpm publish --dry-run`. |
+| `pnpm release:publish:dry-run` | Run the full release check, smoke install, and dry-run publishing of the verified package tarballs. |
 
 ## Package Verification
 
@@ -140,7 +143,9 @@ docker compose -f docker/docker-compose.yml up app
 - dependency order for internal `@a3s-lab/*` package dependencies
 - workspace dependency rewriting in packed manifests
 
-`pnpm release:publish:dry-run` runs `release:check`, `smoke:core-install`, and the package publish lifecycle scripts without publishing packages.
+`pnpm release:publish:dry-run` runs `release:check`, `smoke:core-install`, and dry-run publishing against the exact
+tarballs that passed verification. The real publish command uploads those same artifacts rather than rebuilding from
+the source directories.
 
 ## Versioning And Publishing
 
@@ -153,9 +158,13 @@ pnpm release:publish:dry-run
 pnpm release:publish
 ```
 
-`pnpm release:publish` publishes the shared core package list in dependency order, skips package versions that already exist on the configured npm endpoint, and then creates Changesets git tags.
+`pnpm release:publish` publishes the verified shared-core tarballs in dependency order, skips package versions that
+already exist on the configured npm endpoint, and then creates Changesets git tags.
 
-CI checks pull requests with `pnpm changeset status --since=origin/<base-branch>`, except Changesets-generated version PRs. Release automation runs on pushes to `main`; it opens or updates a version PR when changesets are pending, and publishes after that version PR is merged. Publishing requires an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
+CI checks pull requests with `pnpm changeset status --since=origin/<base-branch>`, except Changesets-generated version
+PRs. Release automation starts only after the CI workflow succeeds for the same current `main` commit; it opens or
+updates a version PR when changesets are pending, and publishes after that version PR is merged. Publishing requires
+an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 
 ## Design Boundaries
 

@@ -22,6 +22,8 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
+| `@a3s-lab/ai` | NestJS module and service integration for the A3S coding-agent runtime provided by `@a3s-lab/code`. |
+| `@a3s-lab/sandbox` | NestJS module, service, and connection helpers that lazily load the first-party `@a3s-lab/box` TypeScript SDK. |
 
 Each package has a package-level README with install notes, import examples, exported capabilities, and boundary notes:
 
@@ -41,10 +43,14 @@ Each package has a package-level README with install notes, import examples, exp
 - [`@a3s-lab/clickhouse`](../packages/clickhouse/README.md)
 - [`@a3s-lab/migrations`](../packages/migrations/README.md)
 - [`@a3s-lab/files`](../packages/files/README.md)
+- [`@a3s-lab/ai`](../packages/ai/README.md)
+- [`@a3s-lab/sandbox`](../packages/sandbox/README.md)
 
 ## Runtime Compatibility
 
-The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds, tests, packed declarations, and the sample API run against NestJS 11; HTTP-facing package tests use Express 5 while their peer ranges continue to accept Express 4 and 5. Repository development requires Node.js 20.11 or newer.
+The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds, tests, packed declarations, and the sample API run against NestJS 11; HTTP-facing package tests use Express 5 while their peer ranges continue to accept Express 4 and 5. Repository development requires Node.js 20.18.1 within the Node 20 line, or Node.js 22 and newer; Node 21 is excluded by the pinned A3S Box SDK dependency graph. The packed consumer smoke test pins TypeScript 5.3.3, the minimum compiler line supported by `@a3s-lab/sandbox` declarations.
+
+`@a3s-lab/ai` delegates coding-agent execution to `@a3s-lab/code` and keeps native runtime loading behind its configured service boundary. `@a3s-lab/sandbox` lazily loads both runtime values and types from the first-party `@a3s-lab/box@3.0.11` TypeScript SDK, so importing the Nestify package does not eagerly evaluate its ESM dependency. Until `@a3s-lab/box` is published to npm, the package consumes the verified GitHub Release tarball; that dependency should switch to a semver range after npm publication without changing the Nestify API.
 
 ## Sample API Wiring
 
@@ -122,6 +128,8 @@ The framework core is covered by package tests for:
 - ClickHouse client routing and lifecycle
 - Migration provider wrapping and module registration
 - File upload validation, storage key handling, module registration, and upload interceptors
+- AI module registration, injected runtime access, session delegation, and lifecycle cleanup
+- Sandbox connection configuration, module registration, lazy SDK access, operation delegation, and lifecycle cleanup
 
 Run:
 

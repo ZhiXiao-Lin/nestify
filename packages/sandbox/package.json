@@ -1,0 +1,96 @@
+{
+    "name": "@a3s-lab/sandbox",
+    "version": "0.0.0",
+    "description": "NestJS integration for A3S Box sandbox and code-interpreter SDKs",
+    "author": "A3S Lab",
+    "license": "MIT",
+    "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/sandbox#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/A3S-Lab/nestify.git",
+        "directory": "packages/sandbox"
+    },
+    "bugs": {
+        "url": "https://github.com/A3S-Lab/nestify/issues"
+    },
+    "keywords": [
+        "nestjs",
+        "a3s-box",
+        "sandbox",
+        "code-interpreter",
+        "e2b"
+    ],
+    "engines": {
+        "node": ">=20.18.1 <21 || >=22"
+    },
+    "source": "./src/index.ts",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "README.md",
+        "dist/**/*.js",
+        "dist/**/*.d.ts",
+        "dist/**/*.js.map",
+        "!dist/**/__tests__/**",
+        "!dist/**/*.spec.*",
+        "!dist/**/*.tsbuildinfo"
+    ],
+    "scripts": {
+        "build": "rimraf dist && tsc",
+        "test": "jest --passWithNoTests",
+        "test:cov": "jest --coverage",
+        "clean": "rimraf dist && rimraf node_modules",
+        "prepublishOnly": "pnpm run build"
+    },
+    "dependencies": {
+        "@a3s-lab/box": "https://github.com/A3S-Lab/Box/releases/download/v3.0.11/a3s-lab-box-3.0.11.tgz"
+    },
+    "devDependencies": {
+        "@nestjs/common": "^11.1.28",
+        "@types/jest": "^29.5.0",
+        "@types/node": "^20.0.0",
+        "jest": "^29.5.0",
+        "reflect-metadata": "^0.1.13",
+        "rimraf": "^6.0.1",
+        "ts-jest": "^29.1.0",
+        "typescript": "^5.3.3"
+    },
+    "peerDependencies": {
+        "@nestjs/common": "^10.0.0 || ^11.0.0",
+        "typescript": ">=5.3"
+    },
+    "peerDependenciesMeta": {
+        "typescript": {
+            "optional": true
+        }
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "src",
+        "testRegex": ".*\\.spec\\.ts$",
+        "transform": {
+            "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "collectCoverageFrom": [
+            "**/*.(t|j)s",
+            "!**/__tests__/**"
+        ],
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
+    }
+}

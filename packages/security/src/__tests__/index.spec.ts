@@ -1,18 +1,19 @@
 import 'reflect-metadata';
+import * as nodePath from 'node:path';
 import { ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import {
     DefaultDenyAuthGuard,
     JwtTokenHelper,
     MarkSensitive,
-    Permissions,
-    PERMISSIONS_KEY,
     PathSecurityValidator,
-    Public,
+    PERMISSIONS_KEY,
+    Permissions,
     PUBLIC_ROUTE_KEY,
+    Public,
+    ROLES_KEY,
     RolePermissionChecker,
     Roles,
-    ROLES_KEY,
     SENSITIVE_OPERATION_KEY,
 } from '../index';
 
@@ -33,8 +34,14 @@ describe('security utilities', () => {
 
     it('sanitizes and resolves paths within a root directory', () => {
         expect(PathSecurityValidator.sanitizePath('../unsafe\npath')).toBe('unsafepath');
-        expect(PathSecurityValidator.resolveAndValidate('/tmp/root', '../file.txt')).toBe('/tmp/root/file.txt');
-        expect(PathSecurityValidator.isWithinRoot('/tmp/root/file.txt', '/tmp/root')).toBe(true);
+        const root = nodePath.resolve('/tmp/root');
+        expect(PathSecurityValidator.resolveAndValidate(root, '../file.txt')).toBe(nodePath.join(root, 'file.txt'));
+        expect(PathSecurityValidator.isWithinRoot(nodePath.join(root, 'file.txt'), root)).toBe(true);
+        expect(PathSecurityValidator.isWithinRoot(nodePath.resolve(root, '..', 'file.txt'), root)).toBe(false);
+        expect(PathSecurityValidator.validatePathAccess('\\admin\\settings', { blockedPaths: ['/admin'] })).toEqual({
+            valid: false,
+            violations: ['Access to blocked path: /admin'],
+        });
     });
 
     it('sets public and sensitive operation metadata', () => {

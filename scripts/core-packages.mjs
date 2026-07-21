@@ -15,6 +15,8 @@ export const corePackages = [
     { name: '@a3s-lab/clickhouse', dir: 'packages/clickhouse' },
     { name: '@a3s-lab/migrations', dir: 'packages/migrations' },
     { name: '@a3s-lab/files', dir: 'packages/files' },
+    { name: '@a3s-lab/ai', dir: 'packages/ai' },
+    { name: '@a3s-lab/sandbox', dir: 'packages/sandbox' },
 ];
 
 export function getCorePackageFilters() {

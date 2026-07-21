@@ -26,6 +26,11 @@ const migrator = createMigrator(db, {
 
 Migration names matching `/(^|_)concurrent(_|$)/i` run outside Kysely's transaction wrapper by default.
 
+Startup migrations are disabled by default, including in production. Enable them explicitly with
+`autoRun: true`, `autoRunInProduction: true`, or the exact environment value `AUTO_MIGRATE=true`.
+An explicit `autoRun` option takes precedence over the environment, and an explicit
+`AUTO_MIGRATE=false` disables the production opt-in.
+
 ## Exports
 
 - File migration provider factory
