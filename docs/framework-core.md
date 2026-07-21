@@ -14,7 +14,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
-| `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
+| `@a3s-lab/redisson` | Lifecycle-safe Redis cache and lock helpers, incremental pattern cleanup, managed lock ownership, and validated single-node option builders. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
@@ -48,7 +48,7 @@ Each package has a package-level README with install notes, import examples, exp
 
 ## Runtime Compatibility
 
-The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds, tests, packed declarations, and the sample API run against NestJS 11; HTTP-facing package tests use Express 5 while their peer ranges continue to accept Express 4 and 5. Repository development requires Node.js 20.18.1 within the Node 20 line, or Node.js 22 and newer; Node 21 is excluded by the pinned A3S Box SDK dependency graph. The packed consumer smoke test pins TypeScript 5.3.3, the minimum compiler line supported by `@a3s-lab/sandbox` declarations.
+The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds, tests, packed declarations, and the sample API run against NestJS 11; HTTP-facing package tests use Express 5 while their peer ranges continue to accept Express 4 and 5. Repository development requires Node.js 20.18.1 within the Node 20 line, or Node.js 22 and newer; Node 21 is excluded by the pinned A3S Box SDK dependency graph. The packed consumer smoke test pins TypeScript 5.7.2, matching the minimum compiler line required by the Redisson dependency graph.
 
 `@a3s-lab/ai` delegates coding-agent execution to `@a3s-lab/code` and keeps native runtime loading behind its configured service boundary. `@a3s-lab/sandbox` lazily loads both runtime values and types from the first-party `@a3s-lab/box@3.0.11` TypeScript SDK, so importing the Nestify package does not eagerly evaluate its ESM dependency. Until `@a3s-lab/box` is published to npm, the package consumes the verified GitHub Release tarball; that dependency should switch to a semver range after npm publication without changing the Nestify API.
 

@@ -1,51 +1,41 @@
-/**
- * Redis 键值对操作的通用类型
- */
+/** Common options for Redis cache operations. */
 export interface CacheOptions {
-    /** 过期时间（秒） */
+    /** Expiration time in seconds. */
     ttl?: number;
-    /** 键的前缀 */
+    /** Logical key prefix. */
     prefix?: string;
 }
 
-/**
- * 分布式锁配置选项
- */
+/** Distributed-lock timing options. */
 export interface LockOptions {
-    /** 等待获取锁的时间（毫秒） */
+    /** Maximum time to wait for the lock, in milliseconds. */
     waitTime?: number;
-    /** 锁的租期时间（毫秒） */
+    /** Lock lease duration, in milliseconds. */
     leaseTime?: number;
 }
 
-/**
- * 缓存装饰器元数据
- */
+/** Cache decorator metadata. */
 export interface CacheMetadata {
-    /** 缓存键 */
+    /** Cache key. */
     key: string;
-    /** 过期时间（秒） */
+    /** Expiration time in seconds. */
     ttl?: number;
 }
 
-/**
- * 分布式锁装饰器元数据
- */
+/** Distributed-lock decorator metadata. */
 export interface LockMetadata {
-    /** 锁的键名 */
+    /** Lock name. */
     key: string;
-    /** 等待时间（毫秒） */
+    /** Maximum wait time in milliseconds. */
     waitTime?: number;
-    /** 租期时间（毫秒） */
+    /** Lock lease duration in milliseconds. */
     leaseTime?: number;
 }
 
-/**
- * 批量操作结果
- */
+/** Result of a batch operation. */
 export interface BatchResult<T = any> {
-    /** 成功的项 */
+    /** Successfully processed items. */
     succeeded: T[];
-    /** 失败的项 */
+    /** Items that failed with their normalized error. */
     failed: Array<{ item: T; error: Error }>;
 }

@@ -1,5 +1,5 @@
-import { createRedissonModuleOptions } from '../redisson-options';
 import { RedissonModule } from '../redisson.module';
+import { createRedissonModuleOptions } from '../redisson-options';
 
 describe('RedissonModule', () => {
     describe('register', () => {
@@ -74,6 +74,9 @@ describe('createRedissonModuleOptions', () => {
                 keyPrefix: 'api:',
                 eventAdapter: 'pubsub',
                 lockWatchdogTimeout: '5000',
+                shutdownTimeoutMs: 5000,
+                patternScanCount: 100,
+                patternDeleteBatchSize: 20,
             }),
         ).toEqual({
             redis: {
@@ -86,6 +89,23 @@ describe('createRedissonModuleOptions', () => {
             },
             eventAdapter: 'pubsub',
             lockWatchdogTimeout: 5000n,
+            shutdownTimeoutMs: 5000,
+            patternScanCount: 100,
+            patternDeleteBatchSize: 20,
         });
+    });
+
+    it('rejects unsafe numeric connection and lifecycle options', () => {
+        expect(() => createRedissonModuleOptions({ port: 'invalid' })).toThrow('finite number');
+        expect(() => createRedissonModuleOptions({ port: 0 })).toThrow('between 1 and 65535');
+        expect(() => createRedissonModuleOptions({ db: -1 })).toThrow('at least 0');
+        expect(() => createRedissonModuleOptions({ lockWatchdogTimeout: 0 })).toThrow('must be positive');
+        expect(() => createRedissonModuleOptions({ lockWatchdogTimeout: 'invalid' })).toThrow('must be an integer');
+        expect(() => createRedissonModuleOptions({ shutdownTimeoutMs: 0 })).toThrow('positive integer');
+        expect(() =>
+            createRedissonModuleOptions({
+                options: { port: 70_000 },
+            }),
+        ).toThrow('between 1 and 65535');
     });
 });

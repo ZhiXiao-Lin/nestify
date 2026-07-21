@@ -1,4 +1,4 @@
-import { CacheOptions, LockOptions, CacheMetadata, LockMetadata, BatchResult } from '../types';
+import { BatchResult, CacheMetadata, CacheOptions, LockMetadata, LockOptions } from '../types';
 
 describe('Types', () => {
     describe('CacheOptions', () => {
