@@ -22,6 +22,15 @@ export interface EtcdModuleOptions {
         timeout?: number;
         retry?: number;
     };
+    /** Local configuration cache options */
+    configCache?: {
+        /** Cache lifetime in milliseconds. Set to 0 to disable caching. */
+        ttl?: number;
+        /** Maximum number of typed cache entries. Set to 0 to disable caching. */
+        maxEntries?: number;
+        /** Cache missing keys for the configured TTL. Defaults to true. */
+        cacheMissing?: boolean;
+    };
 }
 
 /**
@@ -43,7 +52,7 @@ export interface WatchEvent<T = unknown> {
 /**
  * Watch callback function
  */
-export type WatchCallback<T = unknown> = (event: WatchEvent<T>) => void;
+export type WatchCallback<T = unknown> = (event: WatchEvent<T>) => void | Promise<void>;
 
 /**
  * Configuration entry
