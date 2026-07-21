@@ -23,7 +23,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, single-node Redis option builders, and public Redis/Redisson API re-exports. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
-| `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, queue metrics, and cleanup helpers. |
+| `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup helpers. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
@@ -176,6 +176,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+- BullMQ preserves queue-level retry defaults, rejects new work during teardown, closes owned workers before queues under
+  one total timeout, and labels job-removal operations as destructive rather than implying that `drain` processes jobs.
 
 ## Design Boundaries
 

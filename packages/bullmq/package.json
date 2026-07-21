@@ -1,7 +1,7 @@
 {
     "name": "@a3s-lab/bullmq",
     "version": "0.0.1",
-    "description": "NestJS module and service helpers for BullMQ task queues",
+    "description": "Lifecycle-safe NestJS integration for BullMQ task queues",
     "author": "A3S Lab",
     "license": "MIT",
     "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/bullmq#readme",
@@ -48,7 +48,7 @@
         "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
-        "bullmq": "^5.0.0"
+        "bullmq": "^5.79.1"
     },
     "devDependencies": {
         "@nestjs/common": "^11.1.28",

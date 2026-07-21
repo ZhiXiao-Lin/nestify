@@ -15,7 +15,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
-| `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
+| `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup operations. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
@@ -133,7 +133,7 @@ The framework core is covered by package tests for:
 - Resilience module registration and interceptor metadata execution
 - Kysely PostgreSQL option builders and module registration
 - Redisson Redis option builders and module registration
-- BullMQ queue creation, worker lifecycle, metrics, and module registration
+- BullMQ option validation, queue defaults, multiple managed workers, cancellation-aware processors, metrics, health checks, destructive cleanup semantics, and bounded failure-safe shutdown
 - NATS module registration, publish/request encoding, subscriptions, JetStream publishing, and lifecycle cleanup
 - RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks
 - Etcd client registration, key-value operations, config cache, watches, leases, compare-and-set, health checks, and lifecycle cleanup
