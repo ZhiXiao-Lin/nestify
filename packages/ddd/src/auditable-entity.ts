@@ -1,37 +1,42 @@
+import { assertDateNotBefore, cloneValidDate, defineImmutableDateProperty } from './date-value';
 import { Entity } from './entity';
+import { DomainValidationError } from './errors';
 
 export interface IAuditableEntity {
-    createdAt: Date;
-    updatedAt: Date;
-    createdBy?: string;
-    updatedBy?: string;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
+    readonly createdBy?: string;
+    readonly updatedBy?: string;
 }
 
 export interface ISoftDeletable {
-    deletedAt?: Date;
-    deletedBy?: string;
+    readonly deletedAt?: Date;
+    readonly deletedBy?: string;
 }
 
 export abstract class AuditableEntity<T = string> extends Entity<T> {
-    public readonly createdAt: Date;
-    public readonly updatedAt: Date;
+    public declare readonly createdAt: Date;
+    public declare readonly updatedAt: Date;
     public readonly createdBy?: string;
     public readonly updatedBy?: string;
 
     constructor(id: T, createdAt: Date, updatedAt: Date, createdBy?: string, updatedBy?: string) {
         super(id);
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        const createdAtValue = cloneValidDate(createdAt, 'createdAt');
+        const updatedAtValue = cloneValidDate(updatedAt, 'updatedAt');
+        assertDateNotBefore(updatedAtValue, createdAtValue, 'updatedAt', 'createdAt');
+        defineImmutableDateProperty(this, 'createdAt', createdAtValue);
+        defineImmutableDateProperty(this, 'updatedAt', updatedAtValue);
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
 
     isCreatedAfter(date: Date): boolean {
-        return this.createdAt > date;
+        return this.createdAt.getTime() > cloneValidDate(date, 'date').getTime();
     }
 
     isUpdatedAfter(date: Date): boolean {
-        return this.updatedAt > date;
+        return this.updatedAt.getTime() > cloneValidDate(date, 'date').getTime();
     }
 
     isUpdatedBy(actorId: string): boolean {
@@ -40,7 +45,7 @@ export abstract class AuditableEntity<T = string> extends Entity<T> {
 }
 
 export abstract class SoftDeletableEntity<T = string> extends AuditableEntity<T> {
-    public readonly deletedAt?: Date;
+    public declare readonly deletedAt?: Date;
     public readonly deletedBy?: string;
 
     constructor(
@@ -53,7 +58,14 @@ export abstract class SoftDeletableEntity<T = string> extends AuditableEntity<T>
         updatedBy?: string,
     ) {
         super(id, createdAt, updatedAt, createdBy, updatedBy);
-        this.deletedAt = deletedAt;
+        const deletedAtValue = deletedAt ? cloneValidDate(deletedAt, 'deletedAt') : undefined;
+        if (deletedAtValue) {
+            assertDateNotBefore(deletedAtValue, this.updatedAt, 'deletedAt', 'updatedAt');
+        }
+        if (deletedBy !== undefined && !deletedAtValue) {
+            throw new DomainValidationError('deletedBy requires deletedAt.', { field: 'deletedBy' });
+        }
+        defineImmutableDateProperty(this, 'deletedAt', deletedAtValue);
         this.deletedBy = deletedBy;
     }
 
@@ -65,8 +77,11 @@ export abstract class SoftDeletableEntity<T = string> extends AuditableEntity<T>
         return this.deletedBy === actorId;
     }
 
-    daysSinceDeletion(): number | null {
+    daysSinceDeletion(asOf = new Date()): number | null {
         if (!this.deletedAt) return null;
-        return Math.floor((Date.now() - this.deletedAt.getTime()) / (1000 * 60 * 60 * 24));
+        const reference = cloneValidDate(asOf, 'asOf');
+        const deletedAt = this.deletedAt;
+        assertDateNotBefore(reference, deletedAt, 'asOf', 'deletedAt');
+        return Math.floor((reference.getTime() - deletedAt.getTime()) / 86_400_000);
     }
 }

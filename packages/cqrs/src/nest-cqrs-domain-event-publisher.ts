@@ -1,6 +1,6 @@
+import { DOMAIN_EVENT_PUBLISHER, type DomainEvent, type IDomainEventPublisher } from '@a3s-lab/ddd';
 import { Injectable, type Provider } from '@nestjs/common';
 import { EventBus as NestEventBus } from '@nestjs/cqrs';
-import { DOMAIN_EVENT_PUBLISHER, type DomainEvent, type IDomainEventPublisher } from '@a3s-lab/ddd';
 
 @Injectable()
 export class NestCqrsDomainEventPublisher implements IDomainEventPublisher {
@@ -10,7 +10,7 @@ export class NestCqrsDomainEventPublisher implements IDomainEventPublisher {
         await this.eventBus.publish(event);
     }
 
-    async publishAll(events: DomainEvent[]): Promise<void> {
+    async publishAll(events: readonly DomainEvent[]): Promise<void> {
         await Promise.all(events.map(event => this.publish(event)));
     }
 }

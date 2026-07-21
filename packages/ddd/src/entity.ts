@@ -1,7 +1,15 @@
+import { DomainValidationError } from './errors';
+
 export abstract class Entity<T = string> {
     protected readonly _id: T;
 
     constructor(id: T) {
+        if (id === null || id === undefined || (typeof id === 'string' && id.trim().length === 0)) {
+            throw new DomainValidationError('Entity id must be defined and non-empty.', { field: 'id' });
+        }
+        if (typeof id === 'number' && !Number.isFinite(id)) {
+            throw new DomainValidationError('Entity id must be a finite number.', { field: 'id' });
+        }
         this._id = id;
     }
 
@@ -16,14 +24,14 @@ export abstract class Entity<T = string> {
         if (this === entity) {
             return true;
         }
-        if (!(entity instanceof Entity)) {
+        if (!(entity instanceof Entity) || this.constructor !== entity.constructor) {
             return false;
         }
-        return this._id === entity._id;
+        return Object.is(this._id, entity._id);
     }
 
     equalsById(id: T): boolean {
-        return this._id === id;
+        return Object.is(this._id, id);
     }
 
     toString(): string {

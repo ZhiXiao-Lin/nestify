@@ -6,7 +6,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 
 | Package | Responsibility |
 | --- | --- |
-| `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
+| `@a3s-lab/ddd` | Framework-independent DDD primitives with validated identities, bounded structural value objects, read-only aggregate events, defensive audit time, finite guards, and explicit `Result` states. |
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
@@ -54,6 +54,8 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
 
 ## Runtime Safety Defaults
 
+- Entity equality is concrete-type-aware, value objects are bounded acyclic snapshots, aggregate events are exposed as
+  frozen copies, and audit/event dates cannot be mutated through public accessors.
 - `SecurityModule.register()` globally installs a default-deny guard. `@Public()` is the explicit bypass, and all other
   routes require the configured authentication delegate unless global installation is deliberately disabled.
 - The resilience rate-limit guard is global but only acts on decorated routes. It uses authenticated subjects or
@@ -117,7 +119,8 @@ export async function up(db: Kysely<unknown>) {
 
 The framework core is covered by package tests for:
 
-- DDD primitives, persistence contracts, and `Result`
+- DDD identity/time invariants, structural immutable value objects, read-only event ownership, finite guards, explicit
+  `Result` states, and persistence contracts
 - CQRS domain event publisher adapter
 - HTTP envelopes, errors, request ids, and pagination
 - HTTP interceptors and filters with Nest `Reflector` metadata

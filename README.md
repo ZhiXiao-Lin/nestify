@@ -14,7 +14,7 @@ Nestify currently contains 18 publishable framework packages:
 
 | Package | Responsibility |
 | --- | --- |
-| `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
+| `@a3s-lab/ddd` | Framework-independent DDD primitives with validated entity identities, structural immutable value objects, read-only aggregate event snapshots, defensive audit timestamps, finite guards, and explicit `Result` states. |
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | API envelopes, business errors, validation, request ids, pagination, DTO serialization, key transforms, filters, interceptors, API versioning, and OpenAPI helpers. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
@@ -168,6 +168,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 
 ## Runtime Safety Defaults
 
+- DDD entities reject missing identities and compare only within the same concrete type. Value objects take bounded,
+  acyclic deep snapshots; aggregate event queues and audit/event timestamps cannot be mutated through public accessors.
 - `SecurityModule.register()` installs the default-deny guard globally. Only `@Public()` routes bypass authentication;
   protected routes require an explicit delegate unless the application deliberately disables global installation.
 - Resilience rate-limit decorators are enforced by a global guard. The limiter uses authenticated subjects or Express
