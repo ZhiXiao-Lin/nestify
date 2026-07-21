@@ -1,10 +1,20 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { FILE_STORAGE_CLIENT, FILE_UPLOAD_OPTIONS, FileStorageClient, FileUploadOptions } from './file-upload.service';
+import { type DynamicModule, type FactoryProvider, Module, type ModuleMetadata, type Provider } from '@nestjs/common';
 import { FileUploadInterceptor, SingleFileUploadInterceptor } from './file-upload.interceptor';
-import { FileUploadService } from './file-upload.service';
+import {
+    FILE_STORAGE_CLIENT,
+    FILE_UPLOAD_OPTIONS,
+    FileStorageClient,
+    FileUploadOptions,
+    FileUploadService,
+} from './file-upload.service';
 
 export interface FileUploadModuleOptions extends FileUploadOptions {
     storageClient?: FileStorageClient;
+}
+
+export interface FileUploadModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
+    inject?: FactoryProvider['inject'];
+    useFactory: (...args: any[]) => FileUploadModuleOptions | Promise<FileUploadModuleOptions>;
 }
 
 @Module({
@@ -41,6 +51,29 @@ export class FileUploadModule {
         return {
             module: FileUploadModule,
             providers,
+            exports: [FileUploadService, FileUploadInterceptor, SingleFileUploadInterceptor],
+        };
+    }
+
+    static registerAsync(options: FileUploadModuleAsyncOptions): DynamicModule {
+        return {
+            module: FileUploadModule,
+            imports: options.imports,
+            providers: [
+                FileUploadService,
+                FileUploadInterceptor,
+                SingleFileUploadInterceptor,
+                {
+                    provide: FILE_UPLOAD_OPTIONS,
+                    inject: options.inject ?? [],
+                    useFactory: options.useFactory,
+                },
+                {
+                    provide: FILE_STORAGE_CLIENT,
+                    inject: [FILE_UPLOAD_OPTIONS],
+                    useFactory: (resolved: FileUploadModuleOptions) => resolved.storageClient,
+                },
+            ],
             exports: [FileUploadService, FileUploadInterceptor, SingleFileUploadInterceptor],
         };
     }
