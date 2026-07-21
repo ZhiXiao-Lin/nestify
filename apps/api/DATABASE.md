@@ -153,6 +153,10 @@ import { recordSql } from '@a3s-lab/observability';
 export class AppModule {}
 ```
 
+`recordSql` is privacy-preserving by default: it records a normalized query pattern, removes comments and literal
+values, and omits parameters plus detailed database errors. Raw SQL and parameter capture must only be enabled
+explicitly through `configureSqlQueryCollector` in a controlled diagnostic environment.
+
 Order table schema types live next to the order persistence adapter:
 
 ```typescript

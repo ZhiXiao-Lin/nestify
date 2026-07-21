@@ -18,7 +18,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | API envelopes, business errors, validation, request ids, pagination, DTO serialization, key transforms, filters, interceptors, API versioning, and OpenAPI helpers. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
-| `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
+| `@a3s-lab/observability` | Request tracking, privacy-aware bounded SQL/external-call collectors, cardinality-safe Prometheus metrics, reactive HTTP instrumentation, and timeout-bound dependency-aware health checks. |
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, single-node Redis option builders, and public Redis/Redisson API re-exports. |
@@ -173,8 +173,12 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - Resilience rate-limit decorators are enforced by a global guard. The limiter uses authenticated subjects or Express
   `request.ip`, hashes identities in Redis keys, isolates named policies, executes an atomic sliding-window script, and
   bounds its configurable local outage fallback.
-- HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
-  and histograms cap label cardinality with an explicit overflow series.
+- Observability collectors default to normalized SQL and omit parameters plus detailed failures. Raw SQL, parameters,
+  and error details require explicit opt-in; collector counts, serialized values, and request identity fields are bounded.
+- HTTP metrics start at Observable subscription, bypass non-HTTP transports, use route templates rather than raw URLs,
+  and cap metric count, label count/value size, histogram buckets, and series cardinality. Prometheus metadata is escaped.
+- Health probes have validated unique names, bounded liveness payloads, a default five-second timeout with cooperative
+  cancellation, private failure details, and explicit Nest module imports for injected dependencies.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
 
 ## Design Boundaries

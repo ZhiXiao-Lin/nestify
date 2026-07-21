@@ -145,7 +145,14 @@ import { Result, type IDomainEvent } from '@a3s-lab/ddd';
 import { createNestCqrsDomainEventPublisherProvider, NestCqrsDomainEventPublisher } from '@a3s-lab/cqrs';
 import { ApiResponseDto, getOrCreateRequestId, StatusCode } from '@a3s-lab/http';
 import { JwtTokenHelper, PathSecurityValidator, Public } from '@a3s-lab/security';
-import { DEFAULT_HISTOGRAM_BUCKETS, createHealthCheck, MetricsService } from '@a3s-lab/observability';
+import {
+    DEFAULT_HISTOGRAM_BUCKETS,
+    HealthProbeTimeoutError,
+    MetricsService,
+    createHealthCheck,
+    getExternalCallCollectorOptions,
+    getSqlQueryCollectorOptions,
+} from '@a3s-lab/observability';
 import { LoggerServiceImpl } from '@a3s-lab/logger';
 import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
 import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
@@ -174,6 +181,9 @@ const envelope = new ApiResponseDto({ data: { requestId, value: result.getValue(
 const tokenHelper = new JwtTokenHelper<{ sub: string }>();
 const access = PathSecurityValidator.validatePathAccess('/resources/file.txt');
 const healthCheck = createHealthCheck('ready', () => undefined);
+const healthTimeout = new HealthProbeTimeoutError('ready', 1000);
+const sqlCollectorOptions = getSqlQueryCollectorOptions();
+const externalCallCollectorOptions = getExternalCallCollectorOptions();
 const metrics = new MetricsService();
 const logger = new LoggerServiceImpl({ json: true });
 const retry = new RetryService();
@@ -206,6 +216,9 @@ void envelope;
 void tokenHelper;
 void access;
 void healthCheck;
+void healthTimeout;
+void sqlCollectorOptions;
+void externalCallCollectorOptions;
 void metrics;
 void logger;
 void retry;
@@ -244,7 +257,14 @@ const expectedExports = {
     '@a3s-lab/cqrs': ['NestCqrsDomainEventPublisher', 'createNestCqrsDomainEventPublisherProvider'],
     '@a3s-lab/http': ['ApiResponseDto', 'StatusCode', 'getOrCreateRequestId'],
     '@a3s-lab/security': ['JwtTokenHelper', 'PathSecurityValidator', 'Public'],
-    '@a3s-lab/observability': ['MetricsService', 'DEFAULT_HISTOGRAM_BUCKETS', 'createHealthCheck'],
+    '@a3s-lab/observability': [
+        'MetricsService',
+        'DEFAULT_HISTOGRAM_BUCKETS',
+        'createHealthCheck',
+        'HealthProbeTimeoutError',
+        'getSqlQueryCollectorOptions',
+        'getExternalCallCollectorOptions',
+    ],
     '@a3s-lab/logger': ['LoggerServiceImpl', 'LoggerModule'],
     '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
     '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
