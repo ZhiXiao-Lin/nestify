@@ -28,7 +28,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
-| `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
+| `@a3s-lab/migrations` | Validated Kysely migration lifecycle, sync/async NestJS registration, fail-closed startup policy, and named non-transactional operations. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
 | `@a3s-lab/sandbox` | NestJS integration for A3S Box sandbox and code-interpreter workflows through the lazily loaded first-party `@a3s-lab/box` TypeScript SDK. |
@@ -175,7 +175,7 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
   bounds its configurable local outage fallback.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
-- Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+- Startup database migrations remain disabled in every environment unless the application explicitly opts in. Configuration is validated before bootstrap, concurrent calls on one runner share their in-flight result, and Kysely's database lock coordinates separate instances.
 
 ## Design Boundaries
 
