@@ -30,30 +30,40 @@ REDIS_DB=0
 
 ### Module Setup
 
-The application registers `RedissonModule` directly in `src/app.module.ts`. The app owns the environment variable names, while `@a3s-lab/redisson` provides the reusable module and option builder:
+The application creates one configured `RedissonModule` in `src/app.module.ts` and reuses that same dynamic module as
+an explicit dependency of `ResilienceModule`. The app owns environment variable names; `@a3s-lab/redisson` owns the
+client module and option builder, while `@a3s-lab/resilience` owns cache, limiter, and lock policies:
 
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
+import { ResilienceModule } from '@a3s-lab/resilience';
+
+const redissonModule = RedissonModule.registerAsync({
+    imports: [ConfigModule],
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService) =>
+        createRedissonModuleOptions({
+            host: configService.get<string>('REDIS_HOST', 'localhost'),
+            port: configService.get<number>('REDIS_PORT', 6379),
+            password: configService.get<string>('REDIS_PASSWORD'),
+            db: configService.get<number>('REDIS_DB', 0),
+        }),
+});
 
 @Module({
     imports: [
-        RedissonModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) =>
-                createRedissonModuleOptions({
-                    host: configService.get<string>('REDIS_HOST', 'localhost'),
-                    port: configService.get<number>('REDIS_PORT', 6379),
-                    password: configService.get<string>('REDIS_PASSWORD'),
-                    db: configService.get<number>('REDIS_DB', 0),
-                }),
-        }),
+        redissonModule,
+        ResilienceModule.register({ imports: [redissonModule] }),
     ],
 })
 export class AppModule {}
 ```
+
+Passing the module through `ResilienceModule.register({ imports })` is required for Nest to resolve
+`RedissonService` inside the Redis-backed resilience providers; unrelated sibling imports do not create that provider
+visibility edge.
 
 ## Basic Usage
 

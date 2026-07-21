@@ -12,7 +12,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
-| `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
+| `@a3s-lab/resilience` | Validated retry, circuit breaker, cache, rate-limit, and distributed-lock state machines with NestJS decorators, guards, and interceptors. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
@@ -56,9 +56,10 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
 
 - `SecurityModule.register()` globally installs a default-deny guard. `@Public()` is the explicit bypass, and all other
   routes require the configured authentication delegate unless global installation is deliberately disabled.
-- The resilience rate-limit guard is global but only acts on decorated routes. It uses authenticated subjects or
-  Express's trust-proxy-aware `request.ip`, hashes identities, isolates policies, and executes one atomic Redis script.
-  Redis outage behavior is explicit (`local`, `allow`, or `deny`), and the local fallback has a hard entry limit.
+- Resilience retry waits honor cancellation, half-open circuit probes have a concurrency ceiling, cache factories are
+  single-flight and mutation-aware, and distributed-lock release errors cannot masquerade as success. The rate-limit
+  guard acts only on decorated routes; its atomic Redis window inserts admitted requests only, bounding each set by the
+  policy limit, while outage behavior remains explicit (`local`, `allow`, or `deny`).
 - Metrics store cumulative histogram buckets rather than request samples. Each metric has a configurable series cap,
   excess labels aggregate into a fixed overflow series, and HTTP paths come only from route templates or a fixed
   unmatched label.
@@ -129,8 +130,10 @@ The framework core is covered by package tests for:
 - Observability request tracking with SQL and external-call request stores
 - Observability health check endpoint registration
 - Logger structured output, async context merging, and module registration
-- Resilience retry, circuit breaker, TTL cache, atomic rate limiting, and bounded Redis outage policies
-- Resilience module registration and interceptor metadata execution
+- Resilience retry filtering/cancellation/backoff, consecutive-failure and half-open circuit transitions, single-flight
+  cache invalidation, bounded cache-key generation, ownership-safe lock cleanup, bounded atomic rate limiting, and
+  Redis outage policies
+- Resilience module dependency imports, Redis-free registration, provider toggles, and interceptor metadata execution
 - Kysely PostgreSQL option builders and module registration
 - Redisson Redis option builders and module registration
 - BullMQ queue creation, worker lifecycle, metrics, and module registration

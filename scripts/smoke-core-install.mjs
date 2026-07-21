@@ -147,7 +147,12 @@ import { ApiResponseDto, getOrCreateRequestId, StatusCode } from '@a3s-lab/http'
 import { JwtTokenHelper, PathSecurityValidator, Public } from '@a3s-lab/security';
 import { DEFAULT_HISTOGRAM_BUCKETS, createHealthCheck, MetricsService } from '@a3s-lab/observability';
 import { LoggerServiceImpl } from '@a3s-lab/logger';
-import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
+import {
+    DistributedLockCleanupError,
+    ResilienceModule,
+    RetryAbortedError,
+    RetryService,
+} from '@a3s-lab/resilience';
 import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
 import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
 import { BullMQModule } from '@a3s-lab/bullmq';
@@ -200,6 +205,7 @@ const moduleRefs = [
     SandboxModule,
 ];
 const serviceRefs = [AiService, SandboxService];
+const resilienceErrorRefs = [DistributedLockCleanupError, RetryAbortedError];
 
 void event;
 void envelope;
@@ -214,6 +220,7 @@ void redis;
 void provider;
 void moduleRefs;
 void serviceRefs;
+void resilienceErrorRefs;
 void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
@@ -246,7 +253,13 @@ const expectedExports = {
     '@a3s-lab/security': ['JwtTokenHelper', 'PathSecurityValidator', 'Public'],
     '@a3s-lab/observability': ['MetricsService', 'DEFAULT_HISTOGRAM_BUCKETS', 'createHealthCheck'],
     '@a3s-lab/logger': ['LoggerServiceImpl', 'LoggerModule'],
-    '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
+    '@a3s-lab/resilience': [
+        'CacheService',
+        'DistributedLockCleanupError',
+        'ResilienceModule',
+        'RetryAbortedError',
+        'RetryService',
+    ],
     '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
     '@a3s-lab/redisson': ['RedissonModule', 'createRedissonModuleOptions'],
     '@a3s-lab/bullmq': ['BullMQModule', 'BullMQService'],

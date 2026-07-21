@@ -60,7 +60,7 @@ describe('resilience utilities', () => {
             ),
         ).rejects.toThrow('provider down');
 
-        expect(service.getAllStats()[0]).toMatchObject({ name: 'default', state: CircuitState.OPEN, failures: 1 });
+        expect(service.getAllStats()[0]).toMatchObject({ name: 'payments', state: CircuitState.OPEN, failures: 1 });
         await expect(service.execute('payments', async () => 'ok')).rejects.toBeInstanceOf(CircuitBreakerOpenError);
     });
 

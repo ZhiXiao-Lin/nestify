@@ -22,7 +22,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, single-node Redis option builders, and public Redis/Redisson API re-exports. |
-| `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
+| `@a3s-lab/resilience` | Validated, cancellation-aware retry; concurrency-safe circuit breaking; single-flight cache; bounded sliding-window rate limiting; and ownership-safe distributed locks. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, queue metrics, and cleanup helpers. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
@@ -170,9 +170,9 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 
 - `SecurityModule.register()` installs the default-deny guard globally. Only `@Public()` routes bypass authentication;
   protected routes require an explicit delegate unless the application deliberately disables global installation.
-- Resilience rate-limit decorators are enforced by a global guard. The limiter uses authenticated subjects or Express
-  `request.ip`, hashes identities in Redis keys, isolates named policies, executes an atomic sliding-window script, and
-  bounds its configurable local outage fallback.
+- Resilience policies validate timing, capacity, key, and identity inputs. Retry backoff is cancellable; half-open
+  circuit probes are concurrency-bounded; cache misses are coalesced without stale-write races; lock cleanup failures
+  remain observable; and the atomic rate limiter bounds both Redis and local-fallback cardinality.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.

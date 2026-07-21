@@ -44,6 +44,25 @@ export const DEFAULT_RATE_LIMITING_OPTIONS = Object.freeze({
     maxLocalEntries: 10_000,
 });
 
+const MAX_RATE_LIMIT = 1_000_000;
+const MAX_RATE_LIMIT_WINDOW_SECONDS = 31_536_000;
+const MAX_RATE_LIMIT_IDENTIFIER_LENGTH = 4_096;
+const MAX_LOCAL_RATE_LIMIT_ENTRIES = 1_000_000;
+const MAX_DATE_TIMESTAMP = 8_640_000_000_000_000;
+
+interface NormalizedRateLimitingOptions {
+    readonly backendFailureMode: RateLimitBackendFailureMode;
+    readonly maxLocalEntries: number;
+    readonly identifierExtractor?: RateLimitIdentifierExtractor;
+}
+
+interface NormalizedRateLimitConfig {
+    readonly limit: number;
+    readonly windowSeconds: number;
+    readonly keyPrefix?: string;
+    readonly policy?: string;
+}
+
 export class RateLimitExceededException extends HttpException {
     constructor(retryAfter?: number) {
         super(
@@ -57,12 +76,12 @@ export class RateLimitExceededException extends HttpException {
     }
 }
 
-export const DEFAULT_RATE_LIMITS = {
-    default: { limit: 100, windowSeconds: 60, policy: 'default' },
-    auth: { limit: 10, windowSeconds: 60, policy: 'auth' },
-    api: { limit: 1000, windowSeconds: 3600, policy: 'api' },
-    upload: { limit: 100, windowSeconds: 60, policy: 'upload' },
-} satisfies Record<string, RateLimitConfig>;
+export const DEFAULT_RATE_LIMITS = Object.freeze({
+    default: Object.freeze({ limit: 100, windowSeconds: 60, policy: 'default' }),
+    auth: Object.freeze({ limit: 10, windowSeconds: 60, policy: 'auth' }),
+    api: Object.freeze({ limit: 1_000, windowSeconds: 3_600, policy: 'api' }),
+    upload: Object.freeze({ limit: 100, windowSeconds: 60, policy: 'upload' }),
+}) satisfies Readonly<Record<string, Readonly<RateLimitConfig>>>;
 
 const SLIDING_WINDOW_SCRIPT = `
 local key = KEYS[1]
@@ -70,10 +89,16 @@ local now = tonumber(ARGV[1])
 local window = tonumber(ARGV[2])
 local member = ARGV[3]
 local ttl = tonumber(ARGV[4])
+local limit = tonumber(ARGV[5])
 
 redis.call('ZREMRANGEBYSCORE', key, 0, now - window)
-redis.call('ZADD', key, now, member)
 local count = redis.call('ZCARD', key)
+local allowed = 0
+if count < limit then
+    redis.call('ZADD', key, now, member)
+    count = count + 1
+    allowed = 1
+end
 local oldest = redis.call('ZRANGE', key, 0, 0, 'WITHSCORES')
 redis.call('EXPIRE', key, ttl)
 
@@ -82,7 +107,7 @@ if #oldest >= 2 then
     oldestScore = tonumber(oldest[2])
 end
 
-return { count, oldestScore }
+return { count, oldestScore, allowed }
 `;
 
 @Injectable()
@@ -97,28 +122,23 @@ export class RateLimitingService implements OnModuleDestroy {
         @Inject(RATE_LIMITING_OPTIONS)
         options: RateLimitingOptions = {},
     ) {
-        this.backendFailureMode = options.backendFailureMode ?? DEFAULT_RATE_LIMITING_OPTIONS.backendFailureMode;
-        this.maxLocalEntries = options.maxLocalEntries ?? DEFAULT_RATE_LIMITING_OPTIONS.maxLocalEntries;
-        if (!Number.isSafeInteger(this.maxLocalEntries) || this.maxLocalEntries < 1) {
-            throw new RangeError('maxLocalEntries must be a positive safe integer');
-        }
+        const normalized = normalizeRateLimitingOptions(options);
+        this.backendFailureMode = normalized.backendFailureMode;
+        this.maxLocalEntries = normalized.maxLocalEntries;
     }
 
     async checkLimit(
         identifier: string,
         config: RateLimitConfig = DEFAULT_RATE_LIMITS.default,
     ): Promise<RateLimitResult> {
-        validateRateLimitConfig(config);
-        if (!identifier.trim()) {
-            throw new TypeError('rate limit identifier must not be empty');
-        }
-
-        const key = createRateLimitStorageKey(identifier, config);
+        const normalizedConfig = normalizeRateLimitConfig(config);
+        const normalizedIdentifier = normalizeIdentifier(identifier);
+        const key = createRateLimitStorageKey(normalizedIdentifier, normalizedConfig);
         const now = Date.now();
         try {
-            return await this.checkLimitRedis(key, config, now);
+            return await this.checkLimitRedis(key, normalizedConfig, now);
         } catch {
-            return this.handleBackendFailure(key, config, now);
+            return this.handleBackendFailure(key, normalizedConfig, now);
         }
     }
 
@@ -126,7 +146,11 @@ export class RateLimitingService implements OnModuleDestroy {
         this.localCache.clear();
     }
 
-    private async checkLimitRedis(key: string, config: RateLimitConfig, now: number): Promise<RateLimitResult> {
+    private async checkLimitRedis(
+        key: string,
+        config: NormalizedRateLimitConfig,
+        now: number,
+    ): Promise<RateLimitResult> {
         const windowMs = config.windowSeconds * 1000;
         const redisClient = (this.redis as unknown as { redis: RedisRateLimitClient }).redis;
         const result = await redisClient.eval(
@@ -137,15 +161,26 @@ export class RateLimitingService implements OnModuleDestroy {
             windowMs.toString(),
             `${now}:${randomUUID()}`,
             (config.windowSeconds + 1).toString(),
+            config.limit.toString(),
         );
-        if (!Array.isArray(result) || result.length < 2) {
+        if (!Array.isArray(result) || result.length < 3) {
             throw new TypeError('Redis returned an invalid rate limit result');
         }
 
-        const count = toFiniteNumber(result[0], 'count');
-        const oldestTime = toFiniteNumber(result[1], 'oldest timestamp');
+        const count = toNonNegativeSafeInteger(result[0], 'count');
+        const oldestTime = toNonNegativeSafeInteger(result[1], 'oldest timestamp');
+        const allowedValue = toNonNegativeSafeInteger(result[2], 'allowed flag');
+        if (allowedValue !== 0 && allowedValue !== 1) {
+            throw new TypeError('Redis returned an invalid rate limit allowed flag');
+        }
         const resetTime = Math.max(now, oldestTime + windowMs);
-        const allowed = count <= config.limit;
+        const allowed = allowedValue === 1;
+        if (!Number.isSafeInteger(resetTime) || resetTime > MAX_DATE_TIMESTAMP) {
+            throw new TypeError('Redis returned an invalid rate limit reset timestamp');
+        }
+        if ((allowed && count > config.limit) || (!allowed && count < config.limit)) {
+            throw new TypeError('Redis returned an inconsistent rate limit result');
+        }
         return {
             allowed,
             remaining: allowed ? Math.max(0, config.limit - count) : 0,
@@ -154,7 +189,7 @@ export class RateLimitingService implements OnModuleDestroy {
         };
     }
 
-    private handleBackendFailure(key: string, config: RateLimitConfig, now: number): RateLimitResult {
+    private handleBackendFailure(key: string, config: NormalizedRateLimitConfig, now: number): RateLimitResult {
         const resetAt = new Date(now + config.windowSeconds * 1000);
         if (this.backendFailureMode === 'allow') {
             return { allowed: true, remaining: config.limit, resetAt };
@@ -170,7 +205,7 @@ export class RateLimitingService implements OnModuleDestroy {
         return this.checkLimitLocal(key, config, now);
     }
 
-    private checkLimitLocal(key: string, config: RateLimitConfig, now: number): RateLimitResult {
+    private checkLimitLocal(key: string, config: NormalizedRateLimitConfig, now: number): RateLimitResult {
         const windowMs = config.windowSeconds * 1000;
         const cached = this.localCache.get(key);
         if (!cached || cached.resetAt <= now) {
@@ -179,7 +214,7 @@ export class RateLimitingService implements OnModuleDestroy {
             return { allowed: true, remaining: config.limit - 1, resetAt: new Date(now + windowMs) };
         }
 
-        cached.count += 1;
+        cached.count = Math.min(config.limit + 1, cached.count + 1);
         const allowed = cached.count <= config.limit;
         return {
             allowed,
@@ -199,10 +234,7 @@ export class RateLimitingService implements OnModuleDestroy {
             }
         }
         while (this.localCache.size >= this.maxLocalEntries) {
-            const oldestKey = this.localCache.keys().next().value;
-            if (oldestKey === undefined) {
-                break;
-            }
+            const oldestKey = this.localCache.keys().next().value as string;
             this.localCache.delete(oldestKey);
         }
     }
@@ -214,22 +246,29 @@ interface RedisRateLimitClient {
 
 export const RATE_LIMIT_CONFIG_KEY = 'resilience:rate_limit_config';
 export const RateLimit = (config?: RateLimitConfig) =>
-    SetMetadata(RATE_LIMIT_CONFIG_KEY, config ?? DEFAULT_RATE_LIMITS.default);
-export const RateLimitByName = (name: keyof typeof DEFAULT_RATE_LIMITS) =>
-    SetMetadata(RATE_LIMIT_CONFIG_KEY, DEFAULT_RATE_LIMITS[name]);
+    SetMetadata(RATE_LIMIT_CONFIG_KEY, normalizeRateLimitConfig(config ?? DEFAULT_RATE_LIMITS.default));
+export const RateLimitByName = (name: keyof typeof DEFAULT_RATE_LIMITS) => {
+    const config = DEFAULT_RATE_LIMITS[name];
+    if (!config) throw new TypeError(`Unknown rate limit policy: ${String(name)}`);
+    return SetMetadata(RATE_LIMIT_CONFIG_KEY, config);
+};
 export const RateLimitAuth = () => RateLimitByName('auth');
 export const RateLimitApi = () => RateLimitByName('api');
 export const RateLimitUpload = () => RateLimitByName('upload');
 
 @Injectable()
 export class RateLimitingGuard implements CanActivate {
+    private readonly options: NormalizedRateLimitingOptions;
+
     constructor(
         private readonly rateLimitingService: RateLimitingService,
         private readonly reflector: Reflector,
         @Optional()
         @Inject(RATE_LIMITING_OPTIONS)
-        private readonly options: RateLimitingOptions = {},
-    ) {}
+        options: RateLimitingOptions = {},
+    ) {
+        this.options = normalizeRateLimitingOptions(options);
+    }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const config = this.reflector.getAllAndOverride<RateLimitConfig | undefined>(RATE_LIMIT_CONFIG_KEY, [
@@ -245,6 +284,9 @@ export class RateLimitingGuard implements CanActivate {
             'X-RateLimit-Limit': config.limit,
             'X-RateLimit-Remaining': result.remaining,
             'X-RateLimit-Reset': result.resetAt.toISOString(),
+            'RateLimit-Limit': config.limit,
+            'RateLimit-Remaining': result.remaining,
+            'RateLimit-Reset': Math.max(0, Math.ceil((result.resetAt.getTime() - Date.now()) / 1_000)),
         });
         if (!result.allowed) {
             response.set({ 'Retry-After': result.retryAfter ?? config.windowSeconds });
@@ -255,51 +297,102 @@ export class RateLimitingGuard implements CanActivate {
 
     private async getIdentifier(request: RateLimitRequest): Promise<string> {
         if (this.options.identifierExtractor) {
-            const identifier = (await this.options.identifierExtractor(request)).trim();
-            if (!identifier) {
-                throw new TypeError('rate limit identifier extractor returned an empty value');
+            const identifier = await this.options.identifierExtractor(request);
+            if (typeof identifier !== 'string') {
+                throw new TypeError('rate limit identifier extractor must return a string');
             }
-            return `custom:${identifier}`;
+            return `custom:${normalizeIdentifier(identifier)}`;
         }
-        if (request.user?.sub?.trim()) {
-            return `user:${request.user.sub.trim()}`;
+        if (typeof request.user?.sub === 'string' && request.user.sub.trim()) {
+            return `user:${normalizeIdentifier(request.user.sub)}`;
         }
-        return `ip:${request.ip || request.socket.remoteAddress || 'unknown'}`;
+        const ip = request.ip || request.socket?.remoteAddress;
+        if (typeof ip !== 'string' || !ip.trim()) {
+            throw new TypeError('rate limit request does not expose a verified identifier');
+        }
+        return `ip:${normalizeIdentifier(ip)}`;
     }
 }
 
 export function createRateLimitStorageKey(identifier: string, config: RateLimitConfig): string {
-    validateRateLimitConfig(config);
-    const prefix = normalizeKeySegment(config.keyPrefix ?? 'ratelimit');
-    const policy = normalizeKeySegment(config.policy ?? `${config.limit}-${config.windowSeconds}`);
-    const identityHash = createHash('sha256').update(identifier).digest('hex');
+    const normalizedConfig = normalizeRateLimitConfig(config);
+    const prefix = normalizeKeySegment(normalizedConfig.keyPrefix ?? 'ratelimit');
+    const policy = normalizeKeySegment(
+        normalizedConfig.policy ?? `${normalizedConfig.limit}-${normalizedConfig.windowSeconds}`,
+    );
+    const identityHash = createHash('sha256').update(normalizeIdentifier(identifier)).digest('hex');
     return `${prefix}:${policy}:${identityHash}`;
 }
 
-function validateRateLimitConfig(config: RateLimitConfig): void {
-    if (!Number.isSafeInteger(config.limit) || config.limit < 1) {
-        throw new RangeError('rate limit must be a positive safe integer');
+function normalizeRateLimitConfig(config: RateLimitConfig): NormalizedRateLimitConfig {
+    if (!config || typeof config !== 'object') throw new TypeError('rate limit config must be an object');
+    if (!Number.isSafeInteger(config.limit) || config.limit < 1 || config.limit > MAX_RATE_LIMIT) {
+        throw new RangeError(`rate limit must be a positive safe integer no greater than ${MAX_RATE_LIMIT}`);
     }
-    if (!Number.isSafeInteger(config.windowSeconds) || config.windowSeconds < 1) {
-        throw new RangeError('rate limit windowSeconds must be a positive safe integer');
+    if (
+        !Number.isSafeInteger(config.windowSeconds) ||
+        config.windowSeconds < 1 ||
+        config.windowSeconds > MAX_RATE_LIMIT_WINDOW_SECONDS
+    ) {
+        throw new RangeError(
+            `rate limit windowSeconds must be a positive safe integer no greater than ${MAX_RATE_LIMIT_WINDOW_SECONDS}`,
+        );
     }
+    const keyPrefix = config.keyPrefix === undefined ? undefined : normalizeKeySegment(config.keyPrefix);
+    const policy = config.policy === undefined ? undefined : normalizeKeySegment(config.policy);
+    return Object.freeze({ limit: config.limit, windowSeconds: config.windowSeconds, keyPrefix, policy });
 }
 
 function normalizeKeySegment(value: string): string {
-    const normalized = value
-        .trim()
-        .replace(/[^a-zA-Z0-9:_-]/g, '_')
-        .slice(0, 128);
-    if (!normalized) {
-        throw new TypeError('rate limit key segment must not be empty');
+    if (typeof value !== 'string' || !value.trim()) throw new TypeError('rate limit key segment must not be empty');
+    const normalized = value.trim();
+    if (normalized.length > 128) throw new RangeError('rate limit key segment cannot exceed 128 characters');
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9:_-]*$/u.test(normalized)) {
+        throw new TypeError('rate limit key segment contains unsupported characters');
     }
     return normalized;
 }
 
-function toFiniteNumber(value: unknown, label: string): number {
+function toNonNegativeSafeInteger(value: unknown, label: string): number {
     const number = typeof value === 'number' ? value : Number(value);
-    if (!Number.isFinite(number) || number < 0) {
+    if (!Number.isSafeInteger(number) || number < 0) {
         throw new TypeError(`Redis returned an invalid rate limit ${label}`);
     }
     return number;
+}
+
+function normalizeIdentifier(identifier: string): string {
+    if (typeof identifier !== 'string' || !identifier.trim()) {
+        throw new TypeError('rate limit identifier must not be empty');
+    }
+    const normalized = identifier.trim();
+    if (normalized.length > MAX_RATE_LIMIT_IDENTIFIER_LENGTH) {
+        throw new RangeError(`rate limit identifier cannot exceed ${MAX_RATE_LIMIT_IDENTIFIER_LENGTH} characters`);
+    }
+    if (/[\u0000-\u001f\u007f]/u.test(normalized)) {
+        throw new TypeError('rate limit identifier cannot contain control characters');
+    }
+    return normalized;
+}
+
+function normalizeRateLimitingOptions(options: RateLimitingOptions): NormalizedRateLimitingOptions {
+    if (!options || typeof options !== 'object') throw new TypeError('rate limiting options must be an object');
+    const backendFailureMode = options.backendFailureMode ?? DEFAULT_RATE_LIMITING_OPTIONS.backendFailureMode;
+    if (backendFailureMode !== 'local' && backendFailureMode !== 'allow' && backendFailureMode !== 'deny') {
+        throw new TypeError('backendFailureMode must be local, allow, or deny');
+    }
+    const maxLocalEntries = options.maxLocalEntries ?? DEFAULT_RATE_LIMITING_OPTIONS.maxLocalEntries;
+    if (
+        !Number.isSafeInteger(maxLocalEntries) ||
+        maxLocalEntries < 1 ||
+        maxLocalEntries > MAX_LOCAL_RATE_LIMIT_ENTRIES
+    ) {
+        throw new RangeError(
+            `maxLocalEntries must be a positive safe integer no greater than ${MAX_LOCAL_RATE_LIMIT_ENTRIES}`,
+        );
+    }
+    if (options.identifierExtractor !== undefined && typeof options.identifierExtractor !== 'function') {
+        throw new TypeError('identifierExtractor must be a function');
+    }
+    return Object.freeze({ backendFailureMode, maxLocalEntries, identifierExtractor: options.identifierExtractor });
 }

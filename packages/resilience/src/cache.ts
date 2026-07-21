@@ -52,6 +52,25 @@ const DEFAULT_CACHE_OPTIONS: Required<CacheOptions> = {
 };
 
 const CACHE_VALUE_PREFIX = '\u0000nestify-cache:v1:';
+const MAX_CACHE_KEY_LENGTH = 1_024;
+const MAX_CACHE_PREFIX_LENGTH = 128;
+const MAX_CACHE_TTL_SECONDS = 2_147_483_647;
+
+interface NormalizedCacheOptions {
+    readonly ttl: number;
+    readonly prefix: string;
+    readonly touch: boolean;
+}
+
+interface CacheLookup<T> {
+    readonly hit: boolean;
+    readonly value?: T;
+}
+
+interface CacheLoadState {
+    revision: number;
+    pending: number;
+}
 
 export class CacheServiceClosedError extends Error {
     constructor() {
@@ -64,6 +83,8 @@ export class CacheServiceClosedError extends Error {
 export class CacheService implements OnModuleDestroy {
     private stats = { hits: 0, misses: 0, sets: 0, deletes: 0 };
     private readonly inFlight = new Set<Promise<unknown>>();
+    private readonly loads = new Map<string, Promise<unknown>>();
+    private readonly loadStates = new Map<string, CacheLoadState>();
     private shutdownPromise?: Promise<void>;
     private shuttingDown = false;
 
@@ -74,37 +95,45 @@ export class CacheService implements OnModuleDestroy {
     }
 
     private async getValue<T>(key: string, options?: CacheOptions): Promise<T | null> {
-        const fullKey = this.buildKey(key, options);
+        const entry = this.resolveEntry(key, options);
+        const lookup = await this.lookupValue<T>(entry.key, entry.options);
+        return lookup.hit ? (lookup.value as T) : null;
+    }
+
+    private async lookupValue<T>(fullKey: string, options: NormalizedCacheOptions): Promise<CacheLookup<T>> {
         const data = await this.redis.get(fullKey);
         if (data === null) {
             this.stats.misses += 1;
-            return null;
+            return { hit: false };
         }
         const value = deserializeCacheValue<T>(data);
-        if (options?.touch) {
-            await this.redis.expire(fullKey, options.ttl ?? DEFAULT_CACHE_OPTIONS.ttl);
+        if (options.touch) {
+            await this.redis.expire(fullKey, options.ttl);
         }
         this.stats.hits += 1;
-        return value;
+        return { hit: true, value };
     }
 
     set<T>(key: string, value: T, options?: CacheOptions): Promise<void> {
-        return this.execute(() => this.setValue(key, value, options));
+        return this.execute(() => {
+            const entry = this.resolveEntry(key, options);
+            this.invalidatePendingLoad(entry.key);
+            return this.writeValue(entry.key, value, entry.options);
+        });
     }
 
-    private async setValue<T>(key: string, value: T, options?: CacheOptions): Promise<void> {
-        const ttl = options?.ttl ?? DEFAULT_CACHE_OPTIONS.ttl;
-        await this.redis.set(this.buildKey(key, options), serializeCacheValue(value), ttl);
+    private async writeValue<T>(fullKey: string, value: T, options: NormalizedCacheOptions): Promise<void> {
+        await this.redis.set(fullKey, serializeCacheValue(value), options.ttl);
         this.stats.sets += 1;
     }
 
     delete(key: string, options?: CacheOptions): Promise<void> {
-        return this.execute(() => this.deleteValue(key, options));
-    }
-
-    private async deleteValue(key: string, options?: CacheOptions): Promise<void> {
-        await this.redis.delete(this.buildKey(key, options));
-        this.stats.deletes += 1;
+        return this.execute(async () => {
+            const entry = this.resolveEntry(key, options);
+            this.invalidatePendingLoad(entry.key);
+            await this.redis.delete(entry.key);
+            this.stats.deletes += 1;
+        });
     }
 
     getOrSet<T>(key: string, factory: () => Promise<T>, options?: CacheOptions): Promise<T> {
@@ -112,16 +141,39 @@ export class CacheService implements OnModuleDestroy {
     }
 
     private async loadValue<T>(key: string, factory: () => Promise<T>, options?: CacheOptions): Promise<T> {
-        const cached = await this.getValue<T>(key, options);
-        if (cached !== null) return cached;
+        if (typeof factory !== 'function') throw new TypeError('cache factory must be a function');
+        const entry = this.resolveEntry(key, options);
+        const existing = this.loads.get(entry.key);
+        if (existing) return existing as Promise<T>;
+
+        const state = this.startLoad(entry.key);
+        const revision = state.revision;
+        const promise = this.loadEntry<T>(entry.key, entry.options, factory, state, revision).finally(() => {
+            if (this.loads.get(entry.key) === promise) this.loads.delete(entry.key);
+            state.pending -= 1;
+            if (state.pending === 0) this.loadStates.delete(entry.key);
+        });
+        this.loads.set(entry.key, promise);
+        return promise;
+    }
+
+    private async loadEntry<T>(
+        fullKey: string,
+        options: NormalizedCacheOptions,
+        factory: () => Promise<T>,
+        state: CacheLoadState,
+        revision: number,
+    ): Promise<T> {
+        const cached = await this.lookupValue<T>(fullKey, options);
+        if (cached.hit) return cached.value as T;
         const value = await factory();
-        await this.setValue(key, value, options);
+        if (state.revision === revision) await this.writeValue(fullKey, value, options);
         return value;
     }
 
     getStats(): CacheStats {
         const total = this.stats.hits + this.stats.misses;
-        return { ...this.stats, hitRate: total > 0 ? this.stats.hits / total : 0 };
+        return Object.freeze({ ...this.stats, hitRate: total > 0 ? this.stats.hits / total : 0 });
     }
 
     resetStats(): void {
@@ -129,25 +181,59 @@ export class CacheService implements OnModuleDestroy {
     }
 
     onModuleDestroy(): Promise<void> {
+        return this.shutdown();
+    }
+
+    /** Stop accepting new operations and drain every cache operation that already started. */
+    shutdown(): Promise<void> {
         if (!this.shutdownPromise) {
             this.shuttingDown = true;
             const inFlight = [...this.inFlight];
             this.shutdownPromise = Promise.allSettled(inFlight).then(() => {
+                this.loads.clear();
+                this.loadStates.clear();
                 this.resetStats();
             });
         }
         return this.shutdownPromise;
     }
 
-    private buildKey(key: string, options?: CacheOptions): string {
-        return `cache:${options?.prefix ?? DEFAULT_CACHE_OPTIONS.prefix}:${key}`;
+    get isClosed(): boolean {
+        return this.shuttingDown;
     }
 
-    private execute<TResult>(operation: () => Promise<TResult>): Promise<TResult> {
+    private resolveEntry(key: string, options?: CacheOptions): { key: string; options: NormalizedCacheOptions } {
+        const normalizedKey = validateCacheKey(key);
+        const normalizedOptions = normalizeCacheOptions(options);
+        return {
+            key: `cache:${normalizedOptions.prefix}:${normalizedKey}`,
+            options: normalizedOptions,
+        };
+    }
+
+    private startLoad(key: string): CacheLoadState {
+        const state = this.loadStates.get(key) ?? { revision: 0, pending: 0 };
+        state.pending += 1;
+        this.loadStates.set(key, state);
+        return state;
+    }
+
+    private invalidatePendingLoad(key: string): void {
+        const state = this.loadStates.get(key);
+        if (state) state.revision = safeIncrement(state.revision);
+        this.loads.delete(key);
+    }
+
+    private execute<TResult>(operation: () => TResult | Promise<TResult>): Promise<TResult> {
         if (this.shuttingDown) {
             return Promise.reject(new CacheServiceClosedError());
         }
-        const pending = Promise.resolve().then(operation);
+        let pending: Promise<TResult>;
+        try {
+            pending = Promise.resolve(operation());
+        } catch (error) {
+            pending = Promise.reject(error);
+        }
         this.inFlight.add(pending);
         void pending.then(
             () => this.inFlight.delete(pending),
@@ -162,7 +248,12 @@ function serializeCacheValue(value: unknown): string {
         throw new TypeError('Cache value cannot be undefined');
     }
     const serialized = JSON.stringify({ value });
-    if (serialized === undefined) {
+    const envelope = JSON.parse(serialized) as unknown;
+    if (
+        envelope === null ||
+        typeof envelope !== 'object' ||
+        Object.getOwnPropertyDescriptor(envelope, 'value') === undefined
+    ) {
         throw new TypeError('Cache value cannot be serialized');
     }
     return `${CACHE_VALUE_PREFIX}${serialized}`;
@@ -187,9 +278,45 @@ function deserializeCacheValue<T>(data: string): T {
     }
 }
 
+function normalizeCacheOptions(options: CacheOptions | undefined): NormalizedCacheOptions {
+    if (options !== undefined && (!options || typeof options !== 'object')) {
+        throw new TypeError('cache options must be an object');
+    }
+    const ttl = options?.ttl ?? DEFAULT_CACHE_OPTIONS.ttl;
+    if (!Number.isSafeInteger(ttl) || ttl < 1 || ttl > MAX_CACHE_TTL_SECONDS) {
+        throw new RangeError(`cache ttl must be a positive safe integer no greater than ${MAX_CACHE_TTL_SECONDS}`);
+    }
+    const prefix = options?.prefix ?? DEFAULT_CACHE_OPTIONS.prefix;
+    if (typeof prefix !== 'string' || !prefix.trim()) throw new TypeError('cache prefix must not be empty');
+    const normalizedPrefix = prefix.trim();
+    if (normalizedPrefix.length > MAX_CACHE_PREFIX_LENGTH) {
+        throw new RangeError(`cache prefix cannot exceed ${MAX_CACHE_PREFIX_LENGTH} characters`);
+    }
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9:_-]*$/u.test(normalizedPrefix)) {
+        throw new TypeError('cache prefix may contain only letters, digits, colons, underscores, and hyphens');
+    }
+    const touch = options?.touch ?? DEFAULT_CACHE_OPTIONS.touch;
+    if (typeof touch !== 'boolean') throw new TypeError('cache touch must be a boolean');
+    return Object.freeze({ ttl, prefix: normalizedPrefix, touch });
+}
+
+function validateCacheKey(key: string): string {
+    if (typeof key !== 'string' || !key.trim()) throw new TypeError('cache key must not be empty');
+    if (key.length > MAX_CACHE_KEY_LENGTH) {
+        throw new RangeError(`cache key cannot exceed ${MAX_CACHE_KEY_LENGTH} characters`);
+    }
+    if (/[\u0000-\u001f\u007f]/u.test(key)) throw new TypeError('cache key cannot contain control characters');
+    return key;
+}
+
+function safeIncrement(value: number): number {
+    return Math.min(Number.MAX_SAFE_INTEGER, value + 1);
+}
+
 export const CACHE_KEY = 'resilience:cache_options';
-export const Cache = (options: CacheDecoratorOptions) => SetMetadata(CACHE_KEY, options);
-export const CachePrefix = (prefix: string) => SetMetadata(CACHE_KEY, { prefix });
+export const Cache = (options: CacheDecoratorOptions) =>
+    SetMetadata(CACHE_KEY, normalizeCacheDecoratorOptions(options));
+export const CachePrefix = (prefix: string) => Cache({ prefix });
 
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {
@@ -201,11 +328,12 @@ export class CacheInterceptor implements NestInterceptor {
     ) {}
 
     async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<unknown>> {
-        const cacheOptions = this.reflector.getAllAndOverride<CacheDecoratorOptions | undefined>(CACHE_KEY, [
+        const configuredOptions = this.reflector.getAllAndOverride<CacheDecoratorOptions | undefined>(CACHE_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
-        if (!cacheOptions) return next.handle();
+        if (!configuredOptions) return next.handle();
+        const cacheOptions = normalizeCacheDecoratorOptions(configuredOptions);
 
         const skipOnError = cacheOptions.skipOnError ?? true;
         let cacheKey: string;
@@ -312,6 +440,44 @@ export class CacheInterceptor implements NestInterceptor {
     }
 }
 
+function normalizeCacheDecoratorOptions(options: CacheDecoratorOptions): CacheDecoratorOptions {
+    if (!options || typeof options !== 'object') throw new TypeError('cache decorator options must be an object');
+    const cacheOptions = normalizeCacheOptions(options);
+    const scope = options.scope ?? 'private';
+    if (scope !== 'private' && scope !== 'public') throw new TypeError('cache scope must be private or public');
+    const skipOnError = options.skipOnError ?? true;
+    if (typeof skipOnError !== 'boolean') throw new TypeError('cache skipOnError must be a boolean');
+    const keyPrefix = options.keyPrefix === undefined ? undefined : normalizeCacheKeyPrefix(options.keyPrefix);
+    if (options.varyByHeaders !== undefined && !Array.isArray(options.varyByHeaders)) {
+        throw new TypeError('cache varyByHeaders must be an array');
+    }
+    const varyByHeaders = options.varyByHeaders?.map(header => {
+        if (typeof header !== 'string' || !normalizeHeaderName(header)) {
+            throw new TypeError('cache varyByHeaders must contain non-empty header names');
+        }
+        return normalizeHeaderName(header);
+    });
+    return Object.freeze({
+        ...cacheOptions,
+        scope,
+        skipOnError,
+        ...(keyPrefix === undefined ? {} : { keyPrefix }),
+        ...(varyByHeaders === undefined ? {} : { varyByHeaders: Object.freeze(varyByHeaders) as string[] }),
+    });
+}
+
+function normalizeCacheKeyPrefix(prefix: string): string {
+    if (typeof prefix !== 'string' || !prefix.trim()) throw new TypeError('cache keyPrefix must not be empty');
+    const normalized = prefix.trim();
+    if (normalized.length > MAX_CACHE_KEY_LENGTH) {
+        throw new RangeError(`cache keyPrefix cannot exceed ${MAX_CACHE_KEY_LENGTH} characters`);
+    }
+    if (/[\u0000-\u001f\u007f]/u.test(normalized)) {
+        throw new TypeError('cache keyPrefix cannot contain control characters');
+    }
+    return normalized;
+}
+
 function normalizeHeaders(headers: Request['headers'] | undefined, names: string[]): Record<string, string> {
     const requested = new Set(names.map(normalizeHeaderName).filter(name => name.length > 0));
     const normalized = Object.create(null) as Record<string, string>;
@@ -331,8 +497,18 @@ function normalizeHeaderName(name: string): string {
 function stableStringify(value: unknown): string {
     const references = new WeakMap<object, number>();
     let nextReference = 0;
+    let nodes = 0;
+    let materialSize = 0;
 
-    const serialize = (current: unknown): string => {
+    const consumeMaterial = (size: number): void => {
+        materialSize += size;
+        if (materialSize > 1_000_000) throw new RangeError('Cache key material is too large');
+    };
+
+    const serialize = (current: unknown, depth = 0): string => {
+        nodes += 1;
+        if (nodes > 10_000) throw new RangeError('Cache key material has too many values');
+        if (depth > 32) throw new RangeError('Cache key material is nested too deeply');
         if (current === null) return 'null';
         switch (typeof current) {
             case 'undefined':
@@ -340,6 +516,7 @@ function stableStringify(value: unknown): string {
             case 'boolean':
                 return `boolean:${current ? 'true' : 'false'}`;
             case 'string':
+                consumeMaterial(current.length);
                 return `string:${JSON.stringify(current)}`;
             case 'number':
                 if (Number.isNaN(current)) return 'number:NaN';
@@ -348,6 +525,7 @@ function stableStringify(value: unknown): string {
                 if (Object.is(current, -0)) return 'number:-0';
                 return `number:${current}`;
             case 'bigint':
+                consumeMaterial(current.toString().length);
                 return `bigint:${current}`;
             case 'symbol':
             case 'function':
@@ -365,26 +543,32 @@ function stableStringify(value: unknown): string {
             return `date:${reference}:${Number.isNaN(timestamp) ? 'invalid' : current.toISOString()}`;
         }
         if (current instanceof RegExp) {
+            consumeMaterial(current.source.length + current.flags.length);
             return `regexp:${reference}:${JSON.stringify(current.source)}:${current.flags}`;
         }
         if (current instanceof URL) {
+            consumeMaterial(current.href.length);
             return `url:${reference}:${JSON.stringify(current.href)}`;
         }
         if (ArrayBuffer.isView(current)) {
+            consumeMaterial(current.byteLength);
             const bytes = Buffer.from(current.buffer, current.byteOffset, current.byteLength).toString('base64');
             return `view:${reference}:${current.constructor.name}:${bytes}`;
         }
         if (current instanceof ArrayBuffer) {
+            consumeMaterial(current.byteLength);
             return `buffer:${reference}:${Buffer.from(current).toString('base64')}`;
         }
         if (Array.isArray(current)) {
-            return `array:${reference}:[${current.map(item => serialize(item)).join(',')}]`;
+            return `array:${reference}:[${current.map(item => serialize(item, depth + 1)).join(',')}]`;
         }
         if (current instanceof Map) {
-            return `map:${reference}:[${[...current].map(([key, item]) => `${serialize(key)}=>${serialize(item)}`).join(',')}]`;
+            return `map:${reference}:[${[...current]
+                .map(([key, item]) => `${serialize(key, depth + 1)}=>${serialize(item, depth + 1)}`)
+                .join(',')}]`;
         }
         if (current instanceof Set) {
-            return `set:${reference}:[${[...current].map(item => serialize(item)).join(',')}]`;
+            return `set:${reference}:[${[...current].map(item => serialize(item, depth + 1)).join(',')}]`;
         }
 
         const symbols = Object.getOwnPropertySymbols(current).filter(symbol =>
@@ -398,8 +582,12 @@ function stableStringify(value: unknown): string {
         const constructorName = typeof prototype?.constructor?.name === 'string' ? prototype.constructor.name : '';
         const properties = Object.getOwnPropertyNames(record)
             .sort()
-            .map(key => `${JSON.stringify(key)}:${serialize(record[key])}`)
+            .map(key => {
+                consumeMaterial(key.length);
+                return `${JSON.stringify(key)}:${serialize(record[key], depth + 1)}`;
+            })
             .join(',');
+        consumeMaterial(constructorName.length);
         return `object:${reference}:${JSON.stringify(constructorName)}:{${properties}}`;
     };
 
@@ -413,19 +601,20 @@ export class TtlCache<T> {
     private readonly pendingLoads = new Map<string, number>();
     private generation = 0;
 
-    constructor(
-        private readonly ttlMs: number,
-        private readonly maxKeys = 256,
-    ) {}
+    private readonly ttlMs: number;
+    private readonly maxKeys: number;
+
+    constructor(ttlMs: number, maxKeys = 256) {
+        if (!Number.isSafeInteger(ttlMs) || ttlMs < 1) throw new RangeError('ttlMs must be a positive safe integer');
+        if (!Number.isSafeInteger(maxKeys) || maxKeys < 1) {
+            throw new RangeError('maxKeys must be a positive safe integer');
+        }
+        this.ttlMs = ttlMs;
+        this.maxKeys = maxKeys;
+    }
 
     get(key: string): T | undefined {
-        const hit = this.store.get(key);
-        if (!hit) return undefined;
-        if (Date.now() - hit.at >= this.ttlMs) {
-            this.store.delete(key);
-            return undefined;
-        }
-        return hit.value;
+        return this.lookup(key)?.value;
     }
 
     set(key: string, value: T): void {
@@ -434,16 +623,19 @@ export class TtlCache<T> {
     }
 
     private storeValue(key: string, value: T): void {
+        this.store.delete(key);
         this.store.set(key, { at: Date.now(), value });
-        if (this.store.size > this.maxKeys) {
-            const oldest = [...this.store.entries()].sort((left, right) => left[1].at - right[1].at)[0]?.[0];
-            if (oldest) this.store.delete(oldest);
+        this.pruneExpired();
+        while (this.store.size > this.maxKeys) {
+            const oldest = this.store.keys().next().value;
+            if (oldest === undefined) break;
+            this.store.delete(oldest);
         }
     }
 
     async getOrLoad(key: string, factory: () => Promise<T>): Promise<T> {
-        const cached = this.get(key);
-        if (cached !== undefined) return cached;
+        const cached = this.lookup(key);
+        if (cached) return cached.value;
         const pending = this.inflight.get(key);
         if (pending) return pending;
         const generation = this.generation;
@@ -494,5 +686,22 @@ export class TtlCache<T> {
             this.bumpRevision(key);
         }
         this.inflight.delete(key);
+    }
+
+    private lookup(key: string): { at: number; value: T } | undefined {
+        const hit = this.store.get(key);
+        if (!hit) return undefined;
+        if (Date.now() - hit.at >= this.ttlMs) {
+            this.store.delete(key);
+            return undefined;
+        }
+        return hit;
+    }
+
+    private pruneExpired(): void {
+        const now = Date.now();
+        for (const [key, entry] of this.store) {
+            if (now - entry.at >= this.ttlMs) this.store.delete(key);
+        }
     }
 }

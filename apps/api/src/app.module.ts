@@ -1,7 +1,4 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FileUploadModule } from '@a3s-lab/files';
-import { KyselyModule, KyselyService, createPostgresKyselyModuleOptions } from '@a3s-lab/kysely';
 import {
     ApiResponseModule,
     ApiVersioningModule,
@@ -9,11 +6,26 @@ import {
     SerializationModule,
     TransformModule,
 } from '@a3s-lab/http';
-import { HealthModule, MetricsModule, TrackingModule, createHealthCheck, recordSql } from '@a3s-lab/observability';
-import { RedissonModule, RedissonService, createRedissonModuleOptions } from '@a3s-lab/redisson';
+import { createPostgresKyselyModuleOptions, KyselyModule, KyselyService } from '@a3s-lab/kysely';
+import { createHealthCheck, HealthModule, MetricsModule, recordSql, TrackingModule } from '@a3s-lab/observability';
+import { createRedissonModuleOptions, RedissonModule, RedissonService } from '@a3s-lab/redisson';
 import { ResilienceModule } from '@a3s-lab/resilience';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { sql } from 'kysely';
 import { OrderModule } from './modules/order/order.module';
+
+const redissonModule = RedissonModule.registerAsync({
+    imports: [ConfigModule],
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService) =>
+        createRedissonModuleOptions({
+            host: configService.get<string>('REDIS_HOST', 'localhost'),
+            port: configService.get<number>('REDIS_PORT', 6379),
+            password: configService.get<string>('REDIS_PASSWORD'),
+            db: configService.get<number>('REDIS_DB', 0),
+        }),
+});
 
 @Module({
     imports: [
@@ -43,23 +55,13 @@ import { OrderModule } from './modules/order/order.module';
         }),
 
         // Redis (Redisson)
-        RedissonModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) =>
-                createRedissonModuleOptions({
-                    host: configService.get<string>('REDIS_HOST', 'localhost'),
-                    port: configService.get<number>('REDIS_PORT', 6379),
-                    password: configService.get<string>('REDIS_PASSWORD'),
-                    db: configService.get<number>('REDIS_DB', 0),
-                }),
-        }),
+        redissonModule,
 
         // Metrics (Prometheus)
         MetricsModule,
 
         // Retry, circuit breaker, cache, rate limiting, distributed lock
-        ResilienceModule.register(),
+        ResilienceModule.register({ imports: [redissonModule] }),
 
         // Health checks
         HealthModule.register({
