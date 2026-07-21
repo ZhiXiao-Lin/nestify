@@ -1,75 +1,93 @@
-import { Injectable, LoggerService as NestLoggerService, Scope } from '@nestjs/common';
-import pino, { type BaseLogger } from 'pino';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import type { LoggerModuleOptions, LogLevel, LogContext } from './logger.types';
+import { Injectable, type LoggerService as NestLoggerService } from '@nestjs/common';
+import pino, { type LogFn, type Logger as PinoLogger } from 'pino';
+import {
+    type LogContext,
+    LoggerConfigurationError,
+    type LoggerModuleOptions,
+    type LogLevel,
+    type RequestLogInput,
+} from './logger.types';
+import { normalizeLoggerModuleOptions } from './logger-options';
 
-// Async local storage for request context
 const asyncLocalStorage = new AsyncLocalStorage<LogContext>();
 
-@Injectable({ scope: Scope.TRANSIENT })
+const RESERVED_LOG_FIELDS = new Set(['err', 'hostname', 'level', 'message', 'msg', 'name', 'pid', 'service', 'time']);
+
+@Injectable()
 export class LoggerServiceImpl implements NestLoggerService {
-    private logger: BaseLogger;
+    private logger: PinoLogger;
     private name: string;
-    private baseContext: Partial<LogContext>;
+    private baseContext: Record<string, unknown>;
 
     constructor(options: LoggerModuleOptions = {}) {
-        this.name = options.name || 'app';
-        this.baseContext = options.base || {};
+        const normalized = normalizeLoggerModuleOptions(options);
+        this.name = normalized.name;
+        this.baseContext = normalized.base;
 
         const pinoOptions: pino.LoggerOptions = {
-            level: options.level || 'info',
-            name: this.name,
+            level: normalized.level,
+            name: normalized.name,
             base: {
-                service: this.name,
-                ...this.baseContext,
+                ...normalized.base,
+                service: normalized.name,
             },
             timestamp: pino.stdTimeFunctions.isoTime,
             formatters: {
                 level: (label: string) => ({ level: label }),
             },
-            ...(options.redact ? { redact: options.redact } : {}),
+            ...(normalized.redact.length > 0 && {
+                redact: {
+                    paths: normalized.redact,
+                    censor: normalized.redactionCensor,
+                },
+            }),
+            ...(normalized.prettyPrint && {
+                transport: {
+                    target: 'pino-pretty',
+                    options: {
+                        colorize: true,
+                        translateTime: 'SYS:standard',
+                        ignore: 'pid,hostname',
+                    },
+                },
+            }),
         };
 
-        if (options.prettyPrint || (options.json !== true && process.env.NODE_ENV === 'development')) {
-            pinoOptions.transport = {
-                target: 'pino-pretty',
-                options: {
-                    colorize: true,
-                    translateTime: 'SYS:standard',
-                    ignore: 'pid,hostname',
-                },
-            };
+        try {
+            this.logger = pino(pinoOptions);
+        } catch (error) {
+            throw new LoggerConfigurationError('Failed to create the Pino logger', { cause: error });
         }
-
-        this.logger = pino(pinoOptions);
     }
 
-    // =========================================================================
-    // Basic Logging Methods
-    // =========================================================================
-
-    log(message: string, context?: string): void;
+    log(message: string, context?: string | LogContext): void;
     log(level: LogLevel, message: string, context?: string): void;
     log(levelOrMessage: string | LogLevel, messageOrContext?: string | LogContext, context?: string): void {
-        if (typeof levelOrMessage === 'string' && this.isLogLevel(levelOrMessage)) {
-            // overload: (level, message, context?)
-            const level = levelOrMessage;
-            const message = messageOrContext as string;
-            this.logAtLevel(level, message, this.normalizeContext(context));
-        } else if (typeof levelOrMessage === 'string') {
-            // overload: (message, context?)
-            const message = levelOrMessage;
-            this.logAtLevel('info', message, this.normalizeContext(messageOrContext));
+        if (this.isLogLevel(levelOrMessage) && typeof messageOrContext === 'string') {
+            this.logAtLevel(levelOrMessage, messageOrContext, this.normalizeContext(context));
+            return;
         }
+        this.logAtLevel('info', levelOrMessage, this.normalizeContext(messageOrContext));
     }
 
-    fatal(message: string, context?: Partial<LogContext>): void {
-        this.logAtLevel('fatal', message, context);
+    /** Unambiguous level-aware alternative to the overloaded Nest LoggerService.log method. */
+    write(level: LogLevel, message: string, context?: Partial<LogContext>): void {
+        this.logAtLevel(level, message, context);
     }
 
-    error(message: string, context?: Partial<LogContext>): void;
-    error(error: Error, context?: Partial<LogContext>): void;
-    error(errorOrMessage: Error | string, context?: Partial<LogContext>): void {
+    fatal(message: string, context?: Partial<LogContext> | string): void {
+        this.logAtLevel('fatal', message, this.normalizeContext(context));
+    }
+
+    error(message: string, context?: Partial<LogContext> | string): void;
+    error(message: string, trace: string, context: string): void;
+    error(error: Error, context?: Partial<LogContext> | string): void;
+    error(errorOrMessage: Error | string, contextOrTrace?: Partial<LogContext> | string, contextName?: string): void {
+        const context =
+            typeof contextOrTrace === 'string' && contextName !== undefined
+                ? { context: contextName, stack: contextOrTrace }
+                : this.normalizeContext(contextOrTrace);
         if (errorOrMessage instanceof Error) {
             this.logError(errorOrMessage, context);
         } else {
@@ -77,132 +95,130 @@ export class LoggerServiceImpl implements NestLoggerService {
         }
     }
 
-    warn(message: string, context?: Partial<LogContext>): void {
-        this.logAtLevel('warn', message, context);
+    warn(message: string, context?: Partial<LogContext> | string): void {
+        this.logAtLevel('warn', message, this.normalizeContext(context));
     }
 
-    info(message: string, context?: Partial<LogContext>): void {
-        this.logAtLevel('info', message, context);
+    info(message: string, context?: Partial<LogContext> | string): void {
+        this.logAtLevel('info', message, this.normalizeContext(context));
     }
 
-    debug(message: string, context?: Partial<LogContext>): void {
-        this.logAtLevel('debug', message, context);
+    debug(message: string, context?: Partial<LogContext> | string): void {
+        this.logAtLevel('debug', message, this.normalizeContext(context));
     }
 
-    trace(message: string, context?: Partial<LogContext>): void {
-        this.logAtLevel('trace', message, context);
+    trace(message: string, context?: Partial<LogContext> | string): void {
+        this.logAtLevel('trace', message, this.normalizeContext(context));
     }
 
-    verbose(message: string, context?: Partial<LogContext>): void {
-        this.logAtLevel('trace', message, context);
+    verbose(message: string, context?: Partial<LogContext> | string): void {
+        this.logAtLevel('trace', message, this.normalizeContext(context));
     }
-
-    // =========================================================================
-    // Child Logger
-    // =========================================================================
 
     child(context: Partial<LogContext>): LoggerServiceImpl {
-        const childLogger = new LoggerServiceImpl({
-            name: this.name,
-            base: {
-                ...this.baseContext,
-                ...this.getMergedContext(context),
-            },
-        });
-        return childLogger;
+        assertContext(context, 'child context');
+        const child = Object.create(LoggerServiceImpl.prototype) as LoggerServiceImpl;
+        child.logger = this.logger.child(
+            sanitizeContext({
+                ...asyncLocalStorage.getStore(),
+                ...context,
+            }),
+        );
+        child.name = this.name;
+        child.baseContext = {};
+        return child;
     }
 
-    // =========================================================================
-    // Request Context
-    // =========================================================================
-
     static getRequestContext(): LogContext | undefined {
-        return asyncLocalStorage.getStore();
+        const context = asyncLocalStorage.getStore();
+        return context ? { ...context } : undefined;
     }
 
     static runWithContext<T>(context: LogContext, fn: () => T): T {
-        return asyncLocalStorage.run(context, fn);
+        assertContext(context, 'request context');
+        if (typeof fn !== 'function') {
+            throw new TypeError('context callback must be a function');
+        }
+        return asyncLocalStorage.run(
+            {
+                ...asyncLocalStorage.getStore(),
+                ...context,
+            },
+            fn,
+        );
     }
 
+    /** @deprecated Prefer runWithContext so the context has an explicit lifetime. */
     static setRequestContext(context: LogContext): void {
-        asyncLocalStorage.enterWith(context);
+        assertContext(context, 'request context');
+        asyncLocalStorage.enterWith({
+            ...asyncLocalStorage.getStore(),
+            ...context,
+        });
     }
 
-    // =========================================================================
-    // HTTP Interceptor Support
-    // =========================================================================
-
-    logRequest(options: {
-        method: string;
-        url: string;
-        headers?: Record<string, string>;
-        body?: unknown;
-        requestId?: string;
-        startTime: number;
-        statusCode?: number;
-        error?: Error;
-    }): void {
-        const { method, url, requestId, startTime, statusCode, error } = options;
-
+    logRequest(options: RequestLogInput): void {
+        assertContext(options, 'request log input');
+        const duration =
+            options.durationMs ?? (options.startTime === undefined ? 0 : Math.max(0, Date.now() - options.startTime));
         const context: Partial<LogContext> = {
-            requestId,
-            method,
-            url,
-            statusCode,
-            responseTime: Date.now() - startTime,
+            ...options.context,
+            requestId: options.requestId,
+            method: options.method,
+            url: options.url,
+            statusCode: options.statusCode,
+            responseTime: Math.max(0, Math.round(duration)),
+            ...(options.headers && { requestHeaders: options.headers }),
+            ...(options.body !== undefined && { requestBody: options.body }),
+            ...(options.responseBody !== undefined && { responseBody: options.responseBody }),
         };
 
-        if (error) {
-            this.error(error, context);
-        } else if (statusCode && statusCode >= 400) {
-            this.warn(`${method} ${url} ${statusCode}`, context);
+        if (options.error !== undefined) {
+            this.error(toError(options.error), context);
+        } else if (options.statusCode !== undefined && options.statusCode >= 400) {
+            this.warn(`${options.method} ${options.url} ${options.statusCode}`, context);
         } else {
-            this.info(`${method} ${url} ${statusCode}`, context);
+            this.info(`${options.method} ${options.url} ${options.statusCode ?? 'unknown'}`, context);
         }
     }
 
-    // =========================================================================
-    // Private Methods
-    // =========================================================================
-
     private logAtLevel(level: LogLevel, message: string, context?: Partial<LogContext>): void {
+        if (level === 'silent') {
+            return;
+        }
         const mergedContext = this.getMergedContext(context);
-        const logFn = this.logger[level as keyof typeof this.logger] as (
-            msg: string,
-            obj?: Record<string, unknown>,
-        ) => void;
-
-        if (logFn) {
-            logFn.call(this.logger, message, mergedContext);
+        const logFn = this.logger[level] as LogFn | undefined;
+        if (typeof logFn === 'function') {
+            logFn.call(this.logger, mergedContext, String(message));
         } else {
-            this.logger.info({ ...mergedContext, msg: message, level });
+            this.logger.info({ ...mergedContext, requestedLevel: level }, String(message));
         }
     }
 
     private logError(error: Error, context?: Partial<LogContext>): void {
         const mergedContext = this.getMergedContext(context);
-
         const errorLog = {
             message: error.message,
             name: error.name,
             stack: error.stack,
-            code: (error as any).code,
-            cause: error.cause instanceof Error ? error.cause.message : undefined,
+            code: errorCode(error),
+            cause: errorCause(error),
         };
-
         this.logger.error({ ...mergedContext, err: errorLog }, error.message);
     }
 
     private getMergedContext(context?: Partial<LogContext>): Record<string, unknown> {
-        const storeContext = asyncLocalStorage.getStore();
-        return {
+        if (context !== undefined) {
+            assertContext(context, 'log context');
+        }
+        return sanitizeContext({
             ...this.baseContext,
-            ...storeContext,
+            ...asyncLocalStorage.getStore(),
             ...context,
-        };
+        });
     }
 
-    private normalizeContext(context?: string | LogContext): Partial<LogContext> | undefined {
+    private normalizeContext(context?: string | Partial<LogContext>): Partial<LogContext> | undefined {
         return typeof context === 'string' ? { context } : context;
     }
 
@@ -211,5 +227,46 @@ export class LoggerServiceImpl implements NestLoggerService {
     }
 }
 
-// Re-export for convenience
+function assertContext(value: unknown, name: string): asserts value is Record<string, unknown> {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+        throw new TypeError(`${name} must be an object`);
+    }
+}
+
+function errorCode(error: Error): string | undefined {
+    const code = (error as Error & { code?: unknown }).code;
+    return code === undefined ? undefined : String(code);
+}
+
+function errorCause(error: Error): string | undefined {
+    if (error.cause === undefined) {
+        return undefined;
+    }
+    return error.cause instanceof Error ? error.cause.message : String(error.cause);
+}
+
+function toError(error: unknown): Error {
+    return error instanceof Error ? error : new Error(String(error));
+}
+
+function sanitizeContext(context: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {};
+    const reserved: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(context)) {
+        if (RESERVED_LOG_FIELDS.has(key)) {
+            reserved[key] = value;
+        } else {
+            sanitized[key] = value;
+        }
+    }
+    if (Object.keys(reserved).length > 0) {
+        const existing = sanitized.contextFields;
+        sanitized.contextFields = {
+            ...(typeof existing === 'object' && existing !== null && !Array.isArray(existing) ? existing : {}),
+            ...reserved,
+        };
+    }
+    return sanitized;
+}
+
 export { LoggerServiceImpl as Logger };

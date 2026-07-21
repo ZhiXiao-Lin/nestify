@@ -11,7 +11,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
-| `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
+| `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, and single-node Redis option builders. |
@@ -128,7 +128,7 @@ The framework core is covered by package tests for:
 - Observability collectors, cumulative histograms, bounded label cardinality, route-template labels, and metrics formatting
 - Observability request tracking with SQL and external-call request stores
 - Observability health check endpoint registration
-- Logger structured output, async context merging, and module registration
+- Logger option validation, Pino field integrity, secret redaction, native child loggers, real Nest provider resolution, concurrent request-context isolation, and bounded HTTP metadata
 - Resilience retry, circuit breaker, TTL cache, atomic rate limiting, and bounded Redis outage policies
 - Resilience module registration and interceptor metadata execution
 - Kysely PostgreSQL option builders and module registration
