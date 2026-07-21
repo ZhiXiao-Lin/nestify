@@ -31,7 +31,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
-| `@a3s-lab/sandbox` | NestJS integration for A3S Box sandbox and code-interpreter workflows through the lazily loaded first-party `@a3s-lab/box` TypeScript SDK. |
+| `@a3s-lab/sandbox` | NestJS integration for the first-party `@a3s-lab/box` SDK with native instances, guarded connection configuration, managed scopes, and bounded observable shutdown. |
 
 The shared package list is dependency-ordered in `scripts/core-packages.mjs`. Build, test, pack, smoke install, and publish rehearsal commands all use that same list.
 
@@ -176,6 +176,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+- Sandbox shutdown rejects new work, drains complete managed callback and connection scopes, applies a 30-second
+  default bound, settles every owned instance, and reports final cleanup failures without discarding retry ownership.
 
 ## Design Boundaries
 

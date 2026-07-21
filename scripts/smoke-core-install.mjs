@@ -158,6 +158,8 @@ import { CLICKHOUSE_OPTIONS_TOKEN, ClickHouseModule } from '@a3s-lab/clickhouse'
 import { MigrationModule, NON_TRANSACTIONAL_MIGRATION_NAME } from '@a3s-lab/migrations';
 import { FileUploadModule, getExtension } from '@a3s-lab/files';
 import {
+    DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS,
+    SandboxCleanupError,
     SandboxModule,
     SandboxService,
     createA3SBoxConnectionConfig,
@@ -200,6 +202,7 @@ const moduleRefs = [
     SandboxModule,
 ];
 const serviceRefs = [AiService, SandboxService];
+const sandboxRuntimeRefs = [DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS, SandboxCleanupError];
 
 void event;
 void envelope;
@@ -214,6 +217,7 @@ void redis;
 void provider;
 void moduleRefs;
 void serviceRefs;
+void sandboxRuntimeRefs;
 void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
@@ -256,7 +260,14 @@ const expectedExports = {
     '@a3s-lab/clickhouse': ['CLICKHOUSE_OPTIONS_TOKEN', 'ClickHouseModule', 'ClickHouseService'],
     '@a3s-lab/migrations': ['MigrationModule', 'createFileMigrationProvider'],
     '@a3s-lab/files': ['FileUploadModule', 'FileUploadService', 'getExtension'],
-    '@a3s-lab/sandbox': ['SandboxModule', 'SandboxService', 'createA3SBoxConnectionConfig'],
+    '@a3s-lab/sandbox': [
+        'DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS',
+        'SandboxCleanupError',
+        'SandboxModule',
+        'SandboxService',
+        'SandboxShutdownTimeoutError',
+        'createA3SBoxConnectionConfig',
+    ],
 };
 
 for (const [packageName, exportNames] of Object.entries(expectedExports)) {
