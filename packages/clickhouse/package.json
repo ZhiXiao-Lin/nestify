@@ -1,7 +1,7 @@
 {
     "name": "@a3s-lab/clickhouse",
     "version": "0.1.0",
-    "description": "NestJS wrapper for the official ClickHouse JavaScript client",
+    "description": "Lifecycle-safe NestJS integration for the official ClickHouse JavaScript client",
     "author": "A3S Lab",
     "license": "MIT",
     "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/clickhouse#readme",
@@ -18,6 +18,8 @@
         "clickhouse",
         "database",
         "analytics",
+        "connection-pool",
+        "observability",
         "sql",
         "typescript"
     ],
@@ -48,7 +50,7 @@
         "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
-        "@clickhouse/client": "^1.18.5"
+        "@clickhouse/client": "^1.22.0"
     },
     "peerDependencies": {
         "@nestjs/common": "^10.0.0 || ^11.0.0"

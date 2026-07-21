@@ -27,7 +27,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
-| `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
+| `@a3s-lab/clickhouse` | Validated official ClickHouse client integration with cancellable requests, typed query/insert helpers, bounded database-client pooling, health reporting, and deterministic shutdown. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
@@ -176,6 +176,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+- ClickHouse database overrides use a bounded LRU client pool. New work is rejected during shutdown, request signals are
+  combined with timeouts, and failed eviction never silently grows the pool.
 
 ## Design Boundaries
 
