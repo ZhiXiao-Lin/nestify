@@ -171,12 +171,12 @@ The fundamental rule of Clean Architecture:
   - Return responses
 
 - **Filters**: Exception handling
-  - Example: `HttpExceptionFilter`, `DomainExceptionFilter`
+  - Example: `GlobalErrorFilter` installed through `ErrorsModule`
   - Transform exceptions to HTTP responses
   - Logging
 
 - **Interceptors**: Cross-cutting concerns
-  - Example: `LoggingInterceptor`
+  - Example: response wrapping and the structured logger package interceptor
   - Logging
   - Transformation
   - Caching

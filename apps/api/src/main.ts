@@ -1,7 +1,6 @@
+import { createValidationPipe } from '@a3s-lab/http';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { DomainExceptionFilter, HttpExceptionFilter, LoggingInterceptor } from '@a3s-lab/http';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -9,17 +8,7 @@ async function bootstrap() {
 
     app.setGlobalPrefix('api');
 
-    app.useGlobalPipes(
-        new ValidationPipe({
-            whitelist: true,
-            forbidNonWhitelisted: true,
-            transform: true,
-        }),
-    );
-
-    app.useGlobalFilters(new HttpExceptionFilter(), new DomainExceptionFilter());
-
-    app.useGlobalInterceptors(new LoggingInterceptor());
+    app.useGlobalPipes(createValidationPipe());
 
     const config = new DocumentBuilder()
         .setTitle('Nestify Sample API')

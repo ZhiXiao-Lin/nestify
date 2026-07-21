@@ -16,7 +16,7 @@ Nestify currently contains 18 publishable framework packages:
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
-| `@a3s-lab/http` | API envelopes, business errors, validation, request ids, pagination, DTO serialization, key transforms, filters, interceptors, API versioning, and OpenAPI helpers. |
+| `@a3s-lab/http` | Bounded API envelopes, business errors, strict validation, safe request ids, pagination, DTO serialization, collision-safe key transforms, configurable error handling/API versioning, and OpenAPI helpers. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Structured logging service, async request context, and request logging interceptor for NestJS APIs. |
@@ -61,7 +61,7 @@ Each package also has its own README with install notes, examples, exports, and 
 - Nest CQRS commands, queries, and domain event handlers
 - Kysely/PostgreSQL persistence
 - Redisson/Redis-backed cache wiring
-- Health, metrics, request tracking, validation, response wrapping, transforms, file upload, and error handling through framework packages
+- Health, metrics, request tracking, validation, response wrapping, serialization, file upload, and error handling through framework packages
 
 The API entry point sets the global prefix to `/api` and exposes Swagger at `/api/docs`. The order controller provides:
 
@@ -175,6 +175,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
   bounds its configurable local outage fallback.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
+- HTTP request and correlation IDs are syntax- and length-checked before reuse, logs omit query strings, generic 5xx
+  responses hide internal messages by default, and public error details and key transforms have depth/entry limits.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
 
 ## Design Boundaries
