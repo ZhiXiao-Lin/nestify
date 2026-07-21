@@ -24,7 +24,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/redisson` | NestJS Redisson module, Redis service helpers, single-node Redis option builders, and public Redis/Redisson API re-exports. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, queue metrics, and cleanup helpers. |
-| `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
+| `@a3s-lab/nats` | Lifecycle-safe NATS messaging with validated SDK options, connection single-flight, request-many helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded shutdown. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |

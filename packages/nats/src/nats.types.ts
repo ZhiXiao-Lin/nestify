@@ -5,7 +5,7 @@
 import type { PubAck } from 'nats';
 
 export interface NatsPackageOptions {
-    servers?: string[];
+    servers?: string | string[];
     name?: string;
     user?: string;
     pass?: string;
@@ -18,16 +18,29 @@ export interface NatsPackageOptions {
     tls?: TlsOptions;
     auth?: AuthOptions;
     jetstream?: JetStreamOptions;
+    /** Maximum total time spent draining operations and closing the connection. Defaults to 10 seconds. */
+    shutdownTimeoutMs?: number;
+    /** Drain buffered messages before closing. Defaults to true. */
+    drainOnShutdown?: boolean;
+    /** Default timeout for request/reply and health probes. Defaults to 5 seconds. */
+    requestTimeoutMs?: number;
 }
 
 /** @deprecated Use NatsPackageOptions instead */
 export type NatsModuleOptions = NatsPackageOptions;
 
 export interface TlsOptions {
+    handshakeFirst?: boolean;
     certFile?: string;
     keyFile?: string;
     caFile?: string;
+    cert?: string;
+    key?: string;
+    ca?: string;
+    /** Verify the server certificate. This compatibility alias defaults to true. */
     verify?: boolean;
+    /** Verify the server certificate. Prefer this explicit Node.js TLS name for new configurations. */
+    rejectUnauthorized?: boolean;
 }
 
 export interface AuthOptions {
@@ -58,12 +71,36 @@ export interface PublishOptions {
     data?: Uint8Array | string | object;
     headers?: Record<string, string>;
     reply?: string;
+    /** When set, flush the connection and require a server round trip within this duration. */
     timeout?: number;
 }
 
 export interface RequestOptions extends PublishOptions {
+    /** Maximum time to wait for the response. */
+    timeout?: number;
+    /** @deprecated Use `requestMany()` for more than one response. */
     expectedResponseCount?: number;
+    /** Use a dedicated response subscription. Requires `reply`. */
+    noMux?: boolean;
     headers?: Record<string, string>;
+}
+
+export type RequestManyStrategy = 'count' | 'timer' | 'jitter' | 'sentinel';
+
+export interface RequestManyOptions {
+    subject: string;
+    data?: Uint8Array | string | object;
+    headers?: Record<string, string>;
+    /** Maximum collection window. Defaults to the package request timeout. */
+    maxWait?: number;
+    /** Completion strategy. Defaults to `count` when a response count is supplied, otherwise `timer`. */
+    strategy?: RequestManyStrategy;
+    /** Required for the `count` strategy. */
+    expectedResponseCount?: number;
+    /** Jitter window for the `jitter` strategy. */
+    jitter?: number;
+    /** Use a dedicated response subscription rather than the shared request multiplexer. */
+    noMux?: boolean;
 }
 
 export interface PubAckPromise {
@@ -79,6 +116,10 @@ export interface PubAckPromise {
 export interface SubscribeOptions {
     subject: string;
     queue?: string;
+    /** Automatically stop after receiving this many messages. */
+    maxMessages?: number;
+    /** Fail the subscription iterator if no first message arrives within this duration. */
+    timeout?: number;
 }
 
 export interface SubscriptionConfig {
@@ -110,6 +151,8 @@ export interface NatsMessage {
     headers?: Record<string, string>;
     reply?: string;
     timestamp: number;
+    /** Respond to the message's reply subject. Returns false when no reply subject exists. */
+    respond(data?: Uint8Array | string | object, headers?: Record<string, string>): boolean;
 }
 
 export interface JetStreamMessage extends NatsMessage {
@@ -212,6 +255,13 @@ export interface PeerInfo {
     lag?: number;
 }
 
+export interface NatsHealthResult {
+    healthy: boolean;
+    server: string;
+    latencyMs: number;
+    error?: string;
+}
+
 // ============================================================================
 // Errors
 // ============================================================================
@@ -221,32 +271,85 @@ export class NatsError extends Error {
         message: string,
         public code: string,
         public statusCode: number = 500,
+        options?: ErrorOptions,
     ) {
-        super(message);
+        super(message, options);
         this.name = 'NatsError';
     }
 }
 
 export class NatsConnectionError extends NatsError {
-    constructor(server: string, reason?: string) {
-        super(`Failed to connect to NATS server ${server}: ${reason || 'Unknown error'}`, 'NATS_CONNECTION_ERROR', 503);
+    constructor(server: string, reason?: string, cause?: unknown) {
+        super(
+            `Failed to connect to NATS server ${server}: ${reason || 'Unknown error'}`,
+            'NATS_CONNECTION_ERROR',
+            503,
+            cause === undefined ? undefined : { cause },
+        );
+        this.name = 'NatsConnectionError';
     }
 }
 
 export class NatsPublishError extends NatsError {
-    constructor(subject: string, reason?: string) {
-        super(`Failed to publish to ${subject}: ${reason || 'Unknown error'}`, 'NATS_PUBLISH_ERROR', 500);
+    constructor(subject: string, reason?: string, cause?: unknown) {
+        super(
+            `Failed to publish to ${subject}: ${reason || 'Unknown error'}`,
+            'NATS_PUBLISH_ERROR',
+            500,
+            cause === undefined ? undefined : { cause },
+        );
+        this.name = 'NatsPublishError';
     }
 }
 
 export class NatsSubscribeError extends NatsError {
-    constructor(subject: string, reason?: string) {
-        super(`Failed to subscribe to ${subject}: ${reason || 'Unknown error'}`, 'NATS_SUBSCRIBE_ERROR', 500);
+    constructor(subject: string, reason?: string, cause?: unknown) {
+        super(
+            `Failed to subscribe to ${subject}: ${reason || 'Unknown error'}`,
+            'NATS_SUBSCRIBE_ERROR',
+            500,
+            cause === undefined ? undefined : { cause },
+        );
+        this.name = 'NatsSubscribeError';
     }
 }
 
 export class NatsRequestError extends NatsError {
-    constructor(subject: string, reason?: string) {
-        super(`Request to ${subject} failed: ${reason || 'Unknown error'}`, 'NATS_REQUEST_ERROR', 504);
+    constructor(subject: string, reason?: string, cause?: unknown) {
+        super(
+            `Request to ${subject} failed: ${reason || 'Unknown error'}`,
+            'NATS_REQUEST_ERROR',
+            504,
+            cause === undefined ? undefined : { cause },
+        );
+        this.name = 'NatsRequestError';
+    }
+}
+
+export class NatsConfigurationError extends NatsError {
+    constructor(reason: string) {
+        super(`Invalid NATS configuration: ${reason}`, 'NATS_CONFIGURATION_ERROR', 500);
+        this.name = 'NatsConfigurationError';
+    }
+}
+
+export class NatsServiceClosedError extends NatsError {
+    constructor() {
+        super('NATS service is shutting down', 'NATS_SERVICE_CLOSED', 503);
+        this.name = 'NatsServiceClosedError';
+    }
+}
+
+export class NatsJetStreamDisabledError extends NatsError {
+    constructor() {
+        super('JetStream is disabled by module configuration', 'NATS_JETSTREAM_DISABLED', 503);
+        this.name = 'NatsJetStreamDisabledError';
+    }
+}
+
+export class NatsSubscriptionOwnershipError extends NatsError {
+    constructor() {
+        super('The subscription is not managed by this NatsService instance', 'NATS_SUBSCRIPTION_OWNERSHIP_ERROR', 400);
+        this.name = 'NatsSubscriptionOwnershipError';
     }
 }

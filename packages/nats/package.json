@@ -1,7 +1,7 @@
 {
     "name": "@a3s-lab/nats",
     "version": "0.0.1",
-    "description": "NestJS module for NATS message queue - publish/subscribe and request/reply patterns",
+    "description": "Lifecycle-safe NestJS NATS and JetStream integration with validated configuration",
     "author": "A3S Lab",
     "license": "MIT",
     "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/nats#readme",
@@ -16,6 +16,7 @@
     "keywords": [
         "nestjs",
         "nats",
+        "jetstream",
         "message-queue",
         "messaging",
         "pubsub",
