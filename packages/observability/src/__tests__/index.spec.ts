@@ -1,22 +1,22 @@
 import type { LogEvent } from 'kysely';
 import {
+    configureExternalCallCollector,
+    configureSqlQueryCollector,
+    createHealthCheck,
+    externalCallCollectorStorage,
+    getRecordedExternalCallsOrEmpty,
+    getRecordedSqlsOrEmpty,
     HealthController,
     HealthModule,
     MetricsController,
     MetricsModule,
     MetricsService,
-    TrackingModule,
-    createHealthCheck,
-    configureExternalCallCollector,
-    configureSqlQueryCollector,
-    externalCallCollectorStorage,
-    getRecordedExternalCallsOrEmpty,
-    getRecordedSqlsOrEmpty,
     normalizeSqlPattern,
     recordExternalCall,
     recordSql,
     sqlQueryCollectorStorage,
     summarizeSqlPatterns,
+    TrackingModule,
     traceExternalCall,
 } from '../index';
 
@@ -75,7 +75,7 @@ describe('observability helpers', () => {
                         op: 'GET /orders',
                         durationMs: 12,
                     }),
-                    expect.objectContaining({ kind: 'redis', target: 'cache', op: 'get', error: 'cache down' }),
+                    expect.objectContaining({ kind: 'redis', target: 'cache', op: 'get', error: 'Error' }),
                 ]);
             }),
         ).resolves.toBeUndefined();

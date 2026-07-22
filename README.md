@@ -18,7 +18,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | Bounded API envelopes, business errors, strict validation, safe request ids, pagination, DTO serialization, collision-safe key transforms, configurable error handling/API versioning, and OpenAPI helpers. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
-| `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
+| `@a3s-lab/observability` | Request tracking, privacy-aware bounded SQL/external-call collectors, cardinality-safe Prometheus metrics, reactive HTTP instrumentation, and timeout-bound dependency-aware health checks. |
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
 | `@a3s-lab/kysely` | Validated NestJS lifecycle integration for Kysely, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis caching and lock helpers with local single-flight loads, managed lock ownership, cluster-aware SCAN/UNLINK cleanup, validated options, and bounded shutdown. |
@@ -175,8 +175,12 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - Resilience policies validate timing, capacity, key, and identity inputs. Retry backoff is cancellable; half-open
   circuit probes are concurrency-bounded; cache misses are coalesced without stale-write races; lock cleanup failures
   remain observable; and the atomic rate limiter bounds both Redis and local-fallback cardinality.
-- HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
-  and histograms cap label cardinality with an explicit overflow series.
+- Observability collectors default to normalized SQL and omit parameters plus detailed failures. Raw SQL, parameters,
+  and error details require explicit opt-in; collector counts, serialized values, and request identity fields are bounded.
+- HTTP metrics start at Observable subscription, bypass non-HTTP transports, use route templates rather than raw URLs,
+  and cap metric count, label count/value size, histogram buckets, and series cardinality. Prometheus metadata is escaped.
+- Health probes have validated unique names, bounded liveness payloads, a default five-second timeout with cooperative
+  cancellation, private failure details, and explicit Nest module imports for injected dependencies.
 - Logger request context is scoped to each Observable subscription; inbound ids and optional headers are bounded, query
   strings are excluded, proxy identity follows Express trust-proxy policy, and common secrets are redacted by default.
 - Kysely configuration and PostgreSQL numeric options are validated before connection creation. Module-owned connections

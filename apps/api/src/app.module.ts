@@ -15,7 +15,25 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { sql } from 'kysely';
 import { OrderModule } from './modules/order/order.module';
 
-const redissonModule = RedissonModule.registerAsync({
+const databaseModule = KyselyModule.registerAsync({
+    imports: [ConfigModule],
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService) =>
+        createPostgresKyselyModuleOptions({
+            host: configService.get<string>('DB_HOST', 'localhost'),
+            port: configService.get<number>('DB_PORT', 5432),
+            user: configService.get<string>('DB_USERNAME', 'postgres'),
+            password: configService.get<string>('DB_PASSWORD', 'postgres'),
+            database: configService.get<string>('DB_DATABASE', 'nestify'),
+            max: 10,
+            logger: {
+                consoleOutput: configService.get<string>('NODE_ENV') === 'development',
+                onQuery: recordSql,
+            },
+        }),
+});
+
+const redisModule = RedissonModule.registerAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService) =>
@@ -36,35 +54,20 @@ const redissonModule = RedissonModule.registerAsync({
         }),
 
         // Database (Kysely + PostgreSQL)
-        KyselyModule.registerAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) =>
-                createPostgresKyselyModuleOptions({
-                    host: configService.get<string>('DB_HOST', 'localhost'),
-                    port: configService.get<number>('DB_PORT', 5432),
-                    user: configService.get<string>('DB_USERNAME', 'postgres'),
-                    password: configService.get<string>('DB_PASSWORD', 'postgres'),
-                    database: configService.get<string>('DB_DATABASE', 'nestify'),
-                    max: 10,
-                    logger: {
-                        consoleOutput: configService.get<string>('NODE_ENV') === 'development',
-                        onQuery: recordSql,
-                    },
-                }),
-        }),
+        databaseModule,
 
         // Redis (Redisson)
-        redissonModule,
+        redisModule,
 
         // Metrics (Prometheus)
         MetricsModule,
 
         // Retry, circuit breaker, cache, rate limiting, distributed lock
-        ResilienceModule.register({ imports: [redissonModule] }),
+        ResilienceModule.register({ imports: [redisModule] }),
 
         // Health checks
         HealthModule.register({
+            imports: [databaseModule, redisModule],
             checks: [
                 {
                     name: 'database',

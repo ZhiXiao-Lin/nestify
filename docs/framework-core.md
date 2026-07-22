@@ -10,7 +10,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
 | `@a3s-lab/http` | Bounded API envelopes and errors, strict validation pipes, safe request/correlation ids, pagination helpers, DTO serialization, collision-safe key transforms, configurable error handling/API versioning, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
-| `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
+| `@a3s-lab/observability` | Request tracking, privacy-aware bounded SQL/external-call collectors, cardinality-safe Prometheus metrics, reactive HTTP instrumentation, and timeout-bound dependency-aware health checks. |
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
 | `@a3s-lab/resilience` | Validated retry, circuit breaker, cache, rate-limit, and distributed-lock state machines with NestJS decorators, guards, and interceptors. |
 | `@a3s-lab/kysely` | Validated Kysely NestJS lifecycle, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
@@ -96,7 +96,7 @@ The former `apps/api/src/shared/*` implementations were reviewed after the frame
 | `auth`, `tenant` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level guards/decorators/services. Generic JWT token helpers, route metadata, and role-permission checks live in `@a3s-lab/security`. |
 | `audit`, `feature-flags` | Removed unused app policy skeletons | The sample order API had no consumers for the app-level audit or feature-flag services, and their defaults encoded application policy rather than framework contracts. |
 | `database`, `redis` | Package-backed module registration | Generic PostgreSQL and Redis option builders live in `@a3s-lab/kysely` and `@a3s-lab/redisson`; AppModule supplies concrete environment variable values. Order table schema types stay in the order persistence adapter. |
-| `health` | Package-backed | Generic health endpoints and check registration live in `@a3s-lab/observability`; AppModule provides concrete database and Redis probes. |
+| `health` | Package-backed | Generic timeout-bound health endpoints and validated check registration live in `@a3s-lab/observability`; AppModule provides concrete database and Redis probes and passes their configured dynamic modules through `HealthModule.register({ imports })` so Nest can resolve factory dependencies. |
 | `application/dto.base`, `base` | Removed unused app scaffold code | `BaseDto` had no consumers, and `BaseService` coupled a CRUD scaffold to Kysely plus a pagination shape that differs from `@a3s-lab/http`. Generic `IQuery` and `IUseCase` contracts live in `@a3s-lab/ddd`; no stable extra framework contract remained. |
 | `testing` | Removed unused app scaffold code | Test helpers had no consumers and included sample user, organization, Redis, and Kysely mock conventions. Add framework-neutral builders later only when a package-level use case appears. |
 | `infrastructure/messaging/messaging.interface` | Removed unused app integration interface | The NATS-style service facade had no active consumers after the DDD event publisher moved to `@a3s-lab/cqrs`; concrete broker APIs remain in `@a3s-lab/nats`. |
@@ -145,9 +145,10 @@ The framework core is covered by package tests for:
 - Security path validation, metadata decorators, global default-deny behavior, and delegate integration
 - Security JWT token helper behavior
 - Security role-permission checker behavior
-- Observability collectors, cumulative histograms, bounded label cardinality, route-template labels, and metrics formatting
-- Observability request tracking with SQL and external-call request stores
-- Observability health check endpoint registration
+- Observability privacy defaults, bounded SQL/parameter/error serialization, literal normalization, request snapshots, and external-call tracing
+- Observability cumulative histograms, metric/type invariants, bounded metric and label cardinality, escaped Prometheus metadata, route-template labels, and reactive interceptor cleanup
+- Observability HTTP/non-HTTP request tracking isolation, bounded identity extraction, and collector teardown
+- Observability health timeouts, abort signals, private failures, validated liveness payloads, factory results, and imported Nest dependencies
 - Logger option validation, Pino field integrity, secret redaction, native child loggers, real Nest provider resolution, concurrent request-context isolation, and bounded HTTP metadata
 - Resilience retry filtering/cancellation/backoff, consecutive-failure and half-open circuit transitions, single-flight
   cache invalidation, bounded cache-key generation, ownership-safe lock cleanup, bounded atomic rate limiting, and
