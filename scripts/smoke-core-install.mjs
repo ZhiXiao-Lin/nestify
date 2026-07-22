@@ -35,7 +35,7 @@ try {
     const developmentDependencies = {
         '@types/express': '^5.0.0',
         '@types/node': '^20.0.0',
-        typescript: '5.3.3',
+        typescript: '5.7.2',
     };
     for (const developmentDependency of Object.keys(developmentDependencies)) {
         delete peerDependencies[developmentDependency];
@@ -149,7 +149,12 @@ import { DEFAULT_HISTOGRAM_BUCKETS, createHealthCheck, MetricsService } from '@a
 import { LoggerServiceImpl } from '@a3s-lab/logger';
 import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
 import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
-import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
+import {
+    type DeleteByPatternOptions,
+    RedissonModule,
+    RedissonPatternDeleteError,
+    createRedissonModuleOptions,
+} from '@a3s-lab/redisson';
 import { BullMQModule } from '@a3s-lab/bullmq';
 import { NatsModule } from '@a3s-lab/nats';
 import { RustFSModule } from '@a3s-lab/rustfs';
@@ -179,6 +184,8 @@ const logger = new LoggerServiceImpl({ json: true });
 const retry = new RetryService();
 const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
+const redisPatternOptions: DeleteByPatternOptions = { scanCount: 250, batchSize: 50 };
+const redisPatternError = new RedissonPatternDeleteError('cache:*', 0, []);
 const provider = createNestCqrsDomainEventPublisherProvider();
 const sandboxConnection = createA3SBoxConnectionConfig({
     apiUrl: 'https://api.box.test',
@@ -211,6 +218,8 @@ void logger;
 void retry;
 void pool;
 void redis;
+void redisPatternOptions;
+void redisPatternError;
 void provider;
 void moduleRefs;
 void serviceRefs;
@@ -248,7 +257,7 @@ const expectedExports = {
     '@a3s-lab/logger': ['LoggerServiceImpl', 'LoggerModule'],
     '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
     '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
-    '@a3s-lab/redisson': ['RedissonModule', 'createRedissonModuleOptions'],
+    '@a3s-lab/redisson': ['RedissonModule', 'RedissonPatternDeleteError', 'createRedissonModuleOptions'],
     '@a3s-lab/bullmq': ['BullMQModule', 'BullMQService'],
     '@a3s-lab/nats': ['NatsModule', 'NatsServiceImpl'],
     '@a3s-lab/rustfs': ['RustFSModule', 'RustFSServiceImpl'],
