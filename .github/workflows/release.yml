@@ -60,7 +60,7 @@ jobs:
         with:
           branch: main
           version: pnpm version-packages
-          publish: pnpm release:publish:dry-run && pnpm release:publish
+          publish: pnpm release:publish:ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
