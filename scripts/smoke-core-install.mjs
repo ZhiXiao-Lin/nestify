@@ -186,7 +186,13 @@ import {
     type ClickHouseRequestOptions,
     createClickHouseClientOptions,
 } from '@a3s-lab/clickhouse';
-import { MigrationModule, NON_TRANSACTIONAL_MIGRATION_NAME } from '@a3s-lab/migrations';
+import {
+    createMigrationModuleOptions,
+    MigrationConfigurationError,
+    MigrationModule,
+    NON_TRANSACTIONAL_MIGRATION_NAME,
+    type MigrationModuleAsyncOptions,
+} from '@a3s-lab/migrations';
 import { FileUploadModule, getExtension } from '@a3s-lab/files';
 import {
     SandboxModule,
@@ -259,6 +265,13 @@ const sandboxConnection = createA3SBoxConnectionConfig({
     apiUrl: 'https://api.box.test',
     domain: 'box.test',
 });
+const migrationOptions = createMigrationModuleOptions({
+    migrationFolder: './dist/migrations',
+    autoRun: false,
+});
+const migrationAsyncOptions: MigrationModuleAsyncOptions = {
+    useFactory: () => ({ migrationFolder: './dist/migrations' }),
+};
 const moduleRefs = [
     AiModule,
     NestCqrsDomainEventPublisher,
@@ -311,6 +324,9 @@ void DEFAULT_HISTOGRAM_BUCKETS;
 void CLICKHOUSE_OPTIONS_TOKEN;
 void ClickHouseClientPoolExhaustedError;
 void NON_TRANSACTIONAL_MIGRATION_NAME;
+void MigrationConfigurationError;
+void migrationOptions;
+void migrationAsyncOptions;
 
 const extension: string = getExtension('file.txt');
 if (extension !== '.txt') {
@@ -370,7 +386,14 @@ const expectedExports = {
         'ClickHouseService',
         'createClickHouseClientOptions',
     ],
-    '@a3s-lab/migrations': ['MigrationModule', 'createFileMigrationProvider'],
+    '@a3s-lab/migrations': [
+        'MigrationModule',
+        'MigrationRunner',
+        'createFileMigrationProvider',
+        'createMigrationModuleOptions',
+        'MigrationConfigurationError',
+        'MigrationExecutionError',
+    ],
     '@a3s-lab/files': ['FileUploadModule', 'FileUploadService', 'getExtension'],
     '@a3s-lab/sandbox': ['SandboxModule', 'SandboxService', 'createA3SBoxConnectionConfig'],
 };

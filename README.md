@@ -28,7 +28,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage with method-correct signed URLs, policy-backed POST forms, multipart uploads, health checks, and graceful client shutdown. |
 | `@a3s-lab/etcd` | NestJS etcd module with key-value operations, coherent bounded config caching, shared watches, leases, compare-and-set, retries, health checks, and failure-isolated cleanup. |
 | `@a3s-lab/clickhouse` | Validated official ClickHouse client integration with cancellable requests, typed query/insert helpers, bounded database-client pooling, health reporting, and deterministic shutdown. |
-| `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
+| `@a3s-lab/migrations` | Validated Kysely migration lifecycle, sync/async NestJS registration, fail-closed startup policy, and named non-transactional operations. |
 | `@a3s-lab/files` | Safe object-key validation, bounded and compensating batch uploads, route policies, request parameter decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
 | `@a3s-lab/sandbox` | NestJS integration for A3S Box sandbox and code-interpreter workflows through the lazily loaded first-party `@a3s-lab/box` TypeScript SDK. |
@@ -178,6 +178,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - Logger request context is scoped to each Observable subscription; inbound ids and optional headers are bounded, query
   strings are excluded, proxy identity follows Express trust-proxy policy, and common secrets are redacted by default.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+  Configuration is validated before bootstrap, concurrent calls on one runner share their in-flight result, and
+  Kysely's database lock coordinates separate instances.
 - ClickHouse database overrides use a bounded LRU client pool. New work is rejected during shutdown, request signals are
   combined with timeouts, and failed eviction never silently grows the pool.
 - BullMQ preserves queue-level retry defaults, rejects new work during teardown, closes owned workers before queues under

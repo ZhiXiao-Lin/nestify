@@ -20,7 +20,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
 | `@a3s-lab/clickhouse` | Validated official ClickHouse client integration with cancellable requests, typed helpers, bounded database-client pooling, health reporting, and deterministic shutdown. |
-| `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
+| `@a3s-lab/migrations` | Validated Kysely migration lifecycle, sync/async module integration, fail-closed startup policy, and named non-transactional operations. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS module and service integration for the A3S coding-agent runtime provided by `@a3s-lab/code`. |
 | `@a3s-lab/sandbox` | NestJS module, service, and connection helpers that lazily load the first-party `@a3s-lab/box` TypeScript SDK. |
@@ -107,7 +107,7 @@ tables, request user conventions, environment variable names, or default busines
 
 ## Migration Naming
 
-`@a3s-lab/migrations` treats migration names matching `/(^|_)concurrent(_|$)/i` as non-transactional. These migrations are wrapped so `up` and `down` run against the outer Kysely instance instead of Kysely's transactional migration connection.
+`@a3s-lab/migrations` treats migration names matching `/(^|_)concurrent(_|$)/i` as non-transactional. These migrations are wrapped so `up` and `down` run against the outer Kysely instance instead of Kysely's transactional migration connection. Custom global or sticky regular expressions are reset for every name, so `lastIndex` state cannot skip alternating migrations.
 
 Use this for database operations such as PostgreSQL concurrent index creation:
 
@@ -116,6 +116,8 @@ export async function up(db: Kysely<unknown>) {
     await sql`create index concurrently if not exists orders_created_at_idx on orders(created_at)`.execute(db);
 }
 ```
+
+Make non-transactional migrations idempotent: their database operation can succeed even if a later migration-table write fails. Concurrent calls on one `MigrationRunner` share an in-flight execution, while Kysely's dialect migration lock remains responsible for coordination across application instances. Startup execution is disabled unless explicitly enabled, and invalid configuration or inconsistent Kysely failure results stop bootstrap.
 
 ## Verification
 
@@ -143,7 +145,7 @@ The framework core is covered by package tests for:
 - RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks
 - Etcd client registration, key-value operations, config cache, watches, leases, compare-and-set, health checks, and lifecycle cleanup
 - ClickHouse option normalization, SQL/format routing, request cancellation, bounded LRU client pooling, health probes, and failure-safe lifecycle cleanup
-- Migration provider wrapping and module registration
+- Migration option validation, deterministic provider wrapping, in-flight execution coalescing, failure handling, and sync/async module registration
 - File upload validation, storage key handling, module registration, and upload interceptors
 - AI module registration, injected runtime access, session delegation, and lifecycle cleanup
 - Sandbox connection configuration, module registration, lazy SDK access, operation delegation, and lifecycle cleanup
