@@ -15,7 +15,7 @@ Nestify currently contains 18 publishable framework packages:
 | Package | Responsibility |
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
-| `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
+| `@a3s-lab/cqrs` | Deterministic NestJS CQRS adapter for `@a3s-lab/ddd` events, with validated batches, ordered defaults, bounded parallelism, native batch delegation, and configurable module wiring. |
 | `@a3s-lab/http` | API envelopes, business errors, validation, request ids, pagination, DTO serialization, key transforms, filters, interceptors, API versioning, and OpenAPI helpers. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
@@ -176,6 +176,9 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+- CQRS domain-event batches are validated and bounded before admission. Ordered publication is the default; parallel
+  publication requires an explicit concurrency limit and preserves every failure instead of leaving rejected work in
+  the background.
 
 ## Design Boundaries
 

@@ -7,7 +7,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | Package | Responsibility |
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
-| `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
+| `@a3s-lab/cqrs` | Deterministic NestJS CQRS adapter for `@a3s-lab/ddd` events, with validated bounded batches, ordered/parallel/native strategies, and configurable module wiring. |
 | `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
@@ -63,6 +63,8 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
   excess labels aggregate into a fixed overflow series, and HTTP paths come only from route templates or a fixed
   unmatched label.
 - Automatic migrations are fail-closed and require an explicit module or environment opt-in in production.
+- CQRS event batches default to ordered, fail-fast admission and a finite batch limit. Parallel mode is explicit,
+  concurrency-bounded, waits for all admitted publications, and preserves multiple failures with event indexes.
 
 ## Sample API Wiring
 
@@ -118,7 +120,8 @@ export async function up(db: Kysely<unknown>) {
 The framework core is covered by package tests for:
 
 - DDD primitives, persistence contracts, and `Result`
-- CQRS domain event publisher adapter
+- CQRS module/provider wiring, event validation, ordered fail-fast publication, bounded parallel scheduling, native
+  batch delegation, async publisher completion, and multi-failure preservation
 - HTTP envelopes, errors, request ids, and pagination
 - HTTP interceptors and filters with Nest `Reflector` metadata
 - HTTP presentation filters and logging interceptor
