@@ -1,6 +1,12 @@
 import { Inject, Injectable, type OnModuleDestroy } from '@nestjs/common';
 import { createA3SBoxConnectionConfig } from './sandbox.connection';
-import { SandboxConfigurationError, SandboxSdkError, SandboxServiceClosedError } from './sandbox.errors';
+import {
+    SandboxCleanupError,
+    SandboxConfigurationError,
+    SandboxSdkError,
+    SandboxServiceClosedError,
+    SandboxShutdownTimeoutError,
+} from './sandbox.errors';
 import { MODULE_OPTIONS_TOKEN } from './sandbox.module-definition';
 import type {
     A3SBoxConnectionConfig,
@@ -21,6 +27,10 @@ import type {
 
 const NO_ERROR = Symbol('no-error');
 const CONNECTION_OPTION_KEYS = ['apiUrl', 'domain', 'apiKey', 'sandboxUrl', 'validateApiKey'] as const;
+const MAX_IDENTIFIER_LENGTH = 512;
+const IDENTIFIER_CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/u;
+
+export const DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS = 30_000;
 
 const DEFAULT_SDK_LOADER: SandboxSdkLoader = {
     async loadSandboxSdk(): Promise<SandboxSdkModule> {
@@ -37,12 +47,15 @@ export class SandboxService implements OnModuleDestroy {
     private readonly defaultTemplate?: string;
     private readonly defaultTimeoutMs?: number;
     private readonly killOnShutdown: boolean;
+    private readonly cleanupFailurePolicy: 'throw' | 'ignore';
+    private readonly shutdownTimeoutMs: number;
     private readonly sdkLoader: SandboxSdkLoader;
     private readonly owned = new Set<OwnedSandboxInstance>();
     private readonly inFlight = new Set<Promise<unknown>>();
     private sandboxSdkPromise?: Promise<SandboxSdkModule>;
     private codeInterpreterSdkPromise?: Promise<CodeInterpreterSdkModule>;
     private shutdownPromise?: Promise<void>;
+    private readonly shutdownCleanupFailures: unknown[] = [];
     private shuttingDown = false;
 
     constructor(@Inject(MODULE_OPTIONS_TOKEN) options: SandboxModuleOptions) {
@@ -56,7 +69,12 @@ export class SandboxService implements OnModuleDestroy {
         if (typeof this.killOnShutdown !== 'boolean') {
             throw new SandboxConfigurationError('killOnShutdown must be a boolean');
         }
-        this.sdkLoader = options.sdkLoader ?? DEFAULT_SDK_LOADER;
+        this.cleanupFailurePolicy = validateCleanupFailurePolicy(options.cleanupFailurePolicy);
+        this.shutdownTimeoutMs = validateTimeout(
+            'shutdownTimeoutMs',
+            options.shutdownTimeoutMs ?? DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS,
+        );
+        this.sdkLoader = normalizeSdkLoader(options.sdkLoader ?? DEFAULT_SDK_LOADER);
     }
 
     create(options?: SandboxCreateOptions): Promise<SandboxInstance>;
@@ -89,8 +107,15 @@ export class SandboxService implements OnModuleDestroy {
     async connect(sandboxId: string, options?: SandboxConnectOptions): Promise<SandboxInstance> {
         this.assertActive();
         const resolvedId = requiredValue('sandboxId', sandboxId);
+        return this.trackInFlight(this.connectSandbox(resolvedId, options));
+    }
+
+    private async connectSandbox(sandboxId: string, options?: SandboxConnectOptions): Promise<SandboxInstance> {
         const sdk = await this.loadSandboxSdk();
-        return sdk.Sandbox.connect(resolvedId, this.withConnection(options));
+        return validateOwnedInstance(
+            await sdk.Sandbox.connect(sandboxId, this.withConnection(options)),
+            '@a3s-lab/box Sandbox.connect',
+        );
     }
 
     async createCodeInterpreter(options?: CodeInterpreterCreateOptions): Promise<CodeInterpreterInstance> {
@@ -112,8 +137,18 @@ export class SandboxService implements OnModuleDestroy {
     ): Promise<CodeInterpreterInstance> {
         this.assertActive();
         const resolvedId = requiredValue('sandboxId', sandboxId);
+        return this.trackInFlight(this.connectCodeInterpreterSandbox(resolvedId, options));
+    }
+
+    private async connectCodeInterpreterSandbox(
+        sandboxId: string,
+        options?: CodeInterpreterConnectOptions,
+    ): Promise<CodeInterpreterInstance> {
         const sdk = await this.loadCodeInterpreterSdk();
-        return sdk.Sandbox.connect(resolvedId, this.withConnection(options));
+        return validateOwnedInstance(
+            await sdk.Sandbox.connect(sandboxId, this.withConnection(options)),
+            '@a3s-lab/box/code-interpreter Sandbox.connect',
+        );
     }
 
     async withSandbox<TResult>(callback: SandboxCallback<TResult>, options?: SandboxCreateOptions): Promise<TResult>;
@@ -123,6 +158,16 @@ export class SandboxService implements OnModuleDestroy {
         options?: SandboxCreateOptions,
     ): Promise<TResult>;
     async withSandbox<TResult>(
+        templateOrCallback: string | SandboxCallback<TResult>,
+        callbackOrOptions?: SandboxCallback<TResult> | SandboxCreateOptions,
+        options?: SandboxCreateOptions,
+    ): Promise<TResult> {
+        this.assertActive();
+        const operation = this.withSandboxScope(templateOrCallback, callbackOrOptions, options);
+        return this.trackInFlight(operation);
+    }
+
+    private async withSandboxScope<TResult>(
         templateOrCallback: string | SandboxCallback<TResult>,
         callbackOrOptions?: SandboxCallback<TResult> | SandboxCreateOptions,
         options?: SandboxCreateOptions,
@@ -142,6 +187,14 @@ export class SandboxService implements OnModuleDestroy {
     }
 
     async withCodeInterpreter<TResult>(
+        callback: CodeInterpreterCallback<TResult>,
+        options?: CodeInterpreterCreateOptions,
+    ): Promise<TResult> {
+        this.assertActive();
+        return this.trackInFlight(this.withCodeInterpreterScope(callback, options));
+    }
+
+    private async withCodeInterpreterScope<TResult>(
         callback: CodeInterpreterCallback<TResult>,
         options?: CodeInterpreterCreateOptions,
     ): Promise<TResult> {
@@ -174,29 +227,58 @@ export class SandboxService implements OnModuleDestroy {
         try {
             return await sandbox.kill();
         } catch (error) {
-            if (!this.shuttingDown) {
-                this.owned.add(sandbox);
-            }
+            this.owned.add(sandbox);
             throw error;
         }
     }
 
     onModuleDestroy(): Promise<void> {
+        return this.shutdown();
+    }
+
+    /** Stop new operations, drain managed scopes, and dispose remaining owned instances exactly once. */
+    shutdown(): Promise<void> {
         if (!this.shutdownPromise) {
             this.shuttingDown = true;
-            const instances = [...this.owned];
-            const inFlight = [...this.inFlight];
-            this.owned.clear();
-            this.shutdownPromise = this.cleanupOnShutdown(instances, inFlight);
+            this.shutdownPromise = this.cleanupOnShutdown();
         }
         return this.shutdownPromise;
     }
 
-    private async cleanupOnShutdown(instances: OwnedSandboxInstance[], inFlight: Promise<unknown>[]): Promise<void> {
-        const shutdownKills = this.killOnShutdown
-            ? instances.map(instance => Promise.resolve().then(() => instance.kill()))
-            : [];
-        await Promise.allSettled([...inFlight, ...shutdownKills]);
+    /** Whether shutdown has started. A closed service never becomes active again. */
+    get isClosed(): boolean {
+        return this.shuttingDown;
+    }
+
+    private async cleanupOnShutdown(): Promise<void> {
+        try {
+            await withTimeout(this.drainInFlight(), this.shutdownTimeoutMs);
+        } catch (error) {
+            this.shutdownCleanupFailures.push(error);
+        }
+        const instances = [...this.owned];
+        this.owned.clear();
+        if (this.killOnShutdown) {
+            const results = await Promise.allSettled(
+                instances.map(instance => Promise.resolve().then(() => instance.kill())),
+            );
+            for (const [index, result] of results.entries()) {
+                if (result.status === 'rejected') {
+                    const instance = instances[index];
+                    if (instance) this.owned.add(instance);
+                    this.shutdownCleanupFailures.push(result.reason);
+                }
+            }
+        }
+        if (this.cleanupFailurePolicy === 'throw' && this.shutdownCleanupFailures.length > 0) {
+            throw new SandboxCleanupError(this.shutdownCleanupFailures);
+        }
+    }
+
+    private async drainInFlight(): Promise<void> {
+        while (this.inFlight.size > 0) {
+            await Promise.allSettled([...this.inFlight]);
+        }
     }
 
     private async runWithCleanup<TResult, TInstance extends OwnedSandboxInstance>(
@@ -234,11 +316,16 @@ export class SandboxService implements OnModuleDestroy {
     }
 
     private async trackCreated<TInstance extends OwnedSandboxInstance>(sandbox: TInstance): Promise<TInstance> {
+        validateOwnedInstance(sandbox, 'A3S Box create');
         if (!this.shuttingDown) {
             this.owned.add(sandbox);
             return sandbox;
         }
-        await Promise.allSettled([Promise.resolve().then(() => sandbox.kill())]);
+        const [cleanup] = await Promise.allSettled([Promise.resolve().then(() => sandbox.kill())]);
+        if (cleanup.status === 'rejected') {
+            this.owned.add(sandbox);
+            throw new SandboxServiceClosedError({ cause: cleanup.reason, unreleasedInstance: sandbox });
+        }
         throw new SandboxServiceClosedError();
     }
 
@@ -252,14 +339,22 @@ export class SandboxService implements OnModuleDestroy {
     }
 
     private withConnection<TOptions extends object>(options?: TOptions): TOptions {
-        const merged: Record<string, unknown> = options ? { ...(options as unknown as Record<string, unknown>) } : {};
+        let merged: Record<string, unknown>;
+        try {
+            merged = options ? { ...(options as unknown as Record<string, unknown>) } : {};
+        } catch (error) {
+            throw new SandboxConfigurationError('Sandbox operation options could not be read', { cause: error });
+        }
         for (const key of CONNECTION_OPTION_KEYS) {
             delete merged[key];
         }
         if (merged.timeoutMs === undefined && this.defaultTimeoutMs !== undefined) {
             merged.timeoutMs = this.defaultTimeoutMs;
         }
-        return { ...merged, ...this.connection } as unknown as TOptions;
+        if (merged.timeoutMs !== undefined) {
+            merged.timeoutMs = validateTimeout('timeoutMs', merged.timeoutMs);
+        }
+        return Object.freeze({ ...merged, ...this.connection }) as unknown as TOptions;
     }
 
     private assertActive(): void {
@@ -270,12 +365,11 @@ export class SandboxService implements OnModuleDestroy {
 
     private loadSandboxSdk(): Promise<SandboxSdkModule> {
         if (!this.sandboxSdkPromise) {
-            this.sandboxSdkPromise = this.sdkLoader
-                .loadSandboxSdk()
+            this.sandboxSdkPromise = invokeSdkLoader(() => this.sdkLoader.loadSandboxSdk())
                 .then(validateSandboxSdk)
                 .catch(error => {
                     this.sandboxSdkPromise = undefined;
-                    throw error;
+                    throw normalizeSdkLoadError('@a3s-lab/box', error);
                 });
         }
         return this.sandboxSdkPromise;
@@ -283,12 +377,11 @@ export class SandboxService implements OnModuleDestroy {
 
     private loadCodeInterpreterSdk(): Promise<CodeInterpreterSdkModule> {
         if (!this.codeInterpreterSdkPromise) {
-            this.codeInterpreterSdkPromise = this.sdkLoader
-                .loadCodeInterpreterSdk()
+            this.codeInterpreterSdkPromise = invokeSdkLoader(() => this.sdkLoader.loadCodeInterpreterSdk())
                 .then(validateCodeInterpreterSdk)
                 .catch(error => {
                     this.codeInterpreterSdkPromise = undefined;
-                    throw error;
+                    throw normalizeSdkLoadError('@a3s-lab/box/code-interpreter', error);
                 });
         }
         return this.codeInterpreterSdkPromise;
@@ -306,17 +399,87 @@ function validateDefaultTimeout(timeoutMs: number | undefined): number | undefin
     if (timeoutMs === undefined) {
         return undefined;
     }
-    if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) {
-        throw new SandboxConfigurationError('defaultTimeoutMs must be a positive safe integer');
-    }
-    return timeoutMs;
+    return validateTimeout('defaultTimeoutMs', timeoutMs);
 }
 
 function requiredValue(name: string, value: string | undefined): string {
     if (typeof value !== 'string' || !value.trim()) {
         throw new SandboxConfigurationError(`${name} cannot be empty`);
     }
-    return value;
+    const normalized = value.trim();
+    if (normalized.length > MAX_IDENTIFIER_LENGTH) {
+        throw new SandboxConfigurationError(`${name} cannot exceed ${MAX_IDENTIFIER_LENGTH} characters`);
+    }
+    if (IDENTIFIER_CONTROL_CHARACTERS.test(normalized)) {
+        throw new SandboxConfigurationError(`${name} cannot contain control characters`);
+    }
+    return normalized;
+}
+
+function validateTimeout(name: string, timeoutMs: unknown): number {
+    if (!Number.isSafeInteger(timeoutMs) || (timeoutMs as number) <= 0) {
+        throw new SandboxConfigurationError(`${name} must be a positive safe integer`);
+    }
+    return timeoutMs as number;
+}
+
+function validateCleanupFailurePolicy(policy: SandboxModuleOptions['cleanupFailurePolicy']): 'throw' | 'ignore' {
+    if (policy === undefined) return 'throw';
+    if (policy !== 'throw' && policy !== 'ignore') {
+        throw new SandboxConfigurationError('cleanupFailurePolicy must be either throw or ignore');
+    }
+    return policy;
+}
+
+function normalizeSdkLoader(loader: SandboxSdkLoader): SandboxSdkLoader {
+    if (
+        !loader ||
+        typeof loader !== 'object' ||
+        typeof loader.loadSandboxSdk !== 'function' ||
+        typeof loader.loadCodeInterpreterSdk !== 'function'
+    ) {
+        throw new SandboxConfigurationError('sdkLoader must provide loadSandboxSdk and loadCodeInterpreterSdk');
+    }
+    return Object.freeze({
+        loadSandboxSdk: loader.loadSandboxSdk.bind(loader),
+        loadCodeInterpreterSdk: loader.loadCodeInterpreterSdk.bind(loader),
+    });
+}
+
+function invokeSdkLoader<TModule>(loader: () => Promise<TModule>): Promise<TModule> {
+    try {
+        return Promise.resolve(loader());
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+
+async function withTimeout(operation: Promise<void>, timeoutMs: number): Promise<void> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new SandboxShutdownTimeoutError(timeoutMs)), timeoutMs);
+    });
+    try {
+        await Promise.race([operation, timeout]);
+    } finally {
+        if (timer !== undefined) clearTimeout(timer);
+    }
+}
+
+function normalizeSdkLoadError(entrypoint: string, error: unknown): SandboxSdkError {
+    return error instanceof SandboxSdkError
+        ? error
+        : new SandboxSdkError(`Failed to load the ${entrypoint} SDK entrypoint`, { cause: error });
+}
+
+function validateOwnedInstance<TInstance extends OwnedSandboxInstance>(
+    instance: TInstance,
+    operation: string,
+): TInstance {
+    if (!instance || typeof instance !== 'object' || typeof instance.kill !== 'function') {
+        throw new SandboxSdkError(`${operation} did not return a native sandbox instance with kill()`);
+    }
+    return instance;
 }
 
 function validateSandboxSdk(sdk: SandboxSdkModule): SandboxSdkModule {

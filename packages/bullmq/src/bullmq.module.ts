@@ -2,17 +2,10 @@
 // BullMQ Module - Distributed task queue
 // ============================================================================
 
-import {
-    Module,
-    Global,
-    type DynamicModule,
-    type FactoryProvider,
-    type ModuleMetadata,
-    type Provider,
-} from '@nestjs/common';
-import type { BullMQModuleOptions } from './bullmq.types';
+import { type DynamicModule, Global, Module, type Provider } from '@nestjs/common';
 import { BULLMQ_OPTIONS_TOKEN } from './bullmq.module-definition';
 import { BullMQService } from './bullmq.service';
+import type { BullMQAsyncOptions, BullMQModuleOptions } from './bullmq.types';
 
 @Global()
 @Module({})
@@ -37,20 +30,14 @@ export class BullMQModule {
     /**
      * Register BullMQ module asynchronously (for ConfigService-based config)
      */
-    static registerAsync(options: {
-        imports?: ModuleMetadata['imports'];
-        useFactory?: (...args: unknown[]) => Promise<BullMQModuleOptions> | BullMQModuleOptions;
-        inject?: FactoryProvider['inject'];
-    }): DynamicModule {
-        const asyncProviders: Provider[] = [];
-
-        if (options.useFactory) {
-            asyncProviders.push({
+    static registerAsync(options: BullMQAsyncOptions): DynamicModule {
+        const asyncProviders: Provider[] = [
+            {
                 provide: BULLMQ_OPTIONS_TOKEN,
                 useFactory: options.useFactory,
                 inject: options.inject ?? [],
-            });
-        }
+            },
+        ];
 
         return {
             module: BullMQModule,

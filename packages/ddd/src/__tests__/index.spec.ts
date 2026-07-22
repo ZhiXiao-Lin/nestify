@@ -3,12 +3,12 @@ import {
     DomainEvent,
     Entity,
     Guard,
+    type IRepository,
+    type IUnitOfWork,
     Result,
     UNIT_OF_WORK,
     ValueObject,
     voidOk,
-    type IRepository,
-    type IUnitOfWork,
 } from '../index';
 
 class TestEntity extends Entity<string> {}

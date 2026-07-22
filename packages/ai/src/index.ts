@@ -1,4 +1,11 @@
 export { AiModule } from './ai.module';
+export {
+    AiConfigurationError,
+    AiOperationAbortedError,
+    AiResourceCleanupError,
+    AiSdkContractError,
+    AiServiceClosedError,
+} from './ai.errors';
 export { AiService } from './ai.service';
 export {
     AI_MODULE_OPTIONS,
@@ -14,7 +21,9 @@ export {
     type AiRuntime,
     type AiRuntimeLoader,
     type AiSession,
+    type AiSessionCallback,
     type AiSessionOptions,
     type AiSessionRequest,
     type AiSessionRequestOptions,
+    type AiWorkerAgentSpec,
 } from './ai.types';

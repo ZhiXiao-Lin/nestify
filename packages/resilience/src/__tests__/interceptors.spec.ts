@@ -85,7 +85,7 @@ describe('resilience Nest integrations', () => {
         expect(result).toBe('locked');
         expect(next.handle).toHaveBeenCalledTimes(1);
         expect(lockService.withLock).toHaveBeenCalledWith(
-            'api:order:ord-1',
+            expect.stringMatching(/^api:order:[a-f0-9]{64}$/),
             expect.any(Function),
             expect.objectContaining({ waitTime: undefined, leaseTime: undefined }),
         );

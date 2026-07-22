@@ -4,4 +4,4 @@ export interface IUnitOfWork {
     rollback(): Promise<void>;
 }
 
-export const UNIT_OF_WORK = Symbol('UNIT_OF_WORK');
+export const UNIT_OF_WORK = Symbol.for('@a3s-lab/ddd/unit-of-work');

@@ -35,7 +35,7 @@ try {
     const developmentDependencies = {
         '@types/express': '^5.0.0',
         '@types/node': '^20.0.0',
-        typescript: '5.3.3',
+        typescript: '5.7.2',
     };
     for (const developmentDependency of Object.keys(developmentDependencies)) {
         delete peerDependencies[developmentDependency];
@@ -145,19 +145,76 @@ import { Result, type IDomainEvent } from '@a3s-lab/ddd';
 import { createNestCqrsDomainEventPublisherProvider, NestCqrsDomainEventPublisher } from '@a3s-lab/cqrs';
 import { ApiResponseDto, getOrCreateRequestId, StatusCode } from '@a3s-lab/http';
 import { JwtTokenHelper, PathSecurityValidator, Public } from '@a3s-lab/security';
-import { DEFAULT_HISTOGRAM_BUCKETS, createHealthCheck, MetricsService } from '@a3s-lab/observability';
-import { LoggerServiceImpl } from '@a3s-lab/logger';
-import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
-import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
-import { RedissonModule, createRedissonModuleOptions } from '@a3s-lab/redisson';
-import { BullMQModule } from '@a3s-lab/bullmq';
-import { NatsModule } from '@a3s-lab/nats';
+import {
+    DEFAULT_HISTOGRAM_BUCKETS,
+    HealthProbeTimeoutError,
+    MetricsService,
+    createHealthCheck,
+    getExternalCallCollectorOptions,
+    getSqlQueryCollectorOptions,
+} from '@a3s-lab/observability';
+import {
+    DEFAULT_LOG_REDACTION_PATHS,
+    LoggerConfigurationError,
+    LoggerServiceImpl,
+    createLoggerModuleOptions,
+    type LogInterceptorOptions,
+} from '@a3s-lab/logger';
+import {
+    DistributedLockCleanupError,
+    ResilienceModule,
+    RetryAbortedError,
+    RetryService,
+} from '@a3s-lab/resilience';
+import {
+    createKyselyLogger,
+    createPostgresPoolConfig,
+    KyselyConfigurationError,
+    KyselyModule,
+    type ConfiguredKyselyModuleOptions,
+} from '@a3s-lab/kysely';
+import {
+    type DeleteByPatternOptions,
+    RedissonModule,
+    RedissonPatternDeleteError,
+    createRedissonModuleOptions,
+} from '@a3s-lab/redisson';
+import {
+    BullMQModule,
+    BullMQService,
+    createBullMQModuleOptions,
+    type BullMQHealthResult,
+    type BullMQWorkerOptions,
+} from '@a3s-lab/bullmq';
+import {
+    type NatsConnectionOptions,
+    type NatsHealthResult,
+    NatsModule,
+    NatsServiceClosedError,
+    type RequestManyOptions,
+    createNatsConnectionOptions,
+} from '@a3s-lab/nats';
 import { RustFSModule } from '@a3s-lab/rustfs';
 import { EtcdModule } from '@a3s-lab/etcd';
-import { CLICKHOUSE_OPTIONS_TOKEN, ClickHouseModule } from '@a3s-lab/clickhouse';
-import { MigrationModule, NON_TRANSACTIONAL_MIGRATION_NAME } from '@a3s-lab/migrations';
+import {
+    CLICKHOUSE_OPTIONS_TOKEN,
+    ClickHouseClientPoolExhaustedError,
+    type ClickHouseHealthResult,
+    ClickHouseModule,
+    type ClickHouseRequestOptions,
+    createClickHouseClientOptions,
+} from '@a3s-lab/clickhouse';
+import {
+    createMigrationModuleOptions,
+    MigrationConfigurationError,
+    MigrationModule,
+    NON_TRANSACTIONAL_MIGRATION_NAME,
+    type MigrationModuleAsyncOptions,
+} from '@a3s-lab/migrations';
 import { FileUploadModule, getExtension } from '@a3s-lab/files';
 import {
+    DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS,
+    SandboxCleanupError,
     SandboxModule,
     SandboxService,
     createA3SBoxConnectionConfig,
@@ -174,16 +231,72 @@ const envelope = new ApiResponseDto({ data: { requestId, value: result.getValue(
 const tokenHelper = new JwtTokenHelper<{ sub: string }>();
 const access = PathSecurityValidator.validatePathAccess('/resources/file.txt');
 const healthCheck = createHealthCheck('ready', () => undefined);
+const healthTimeout = new HealthProbeTimeoutError('ready', 1000);
+const sqlCollectorOptions = getSqlQueryCollectorOptions();
+const externalCallCollectorOptions = getExternalCallCollectorOptions();
 const metrics = new MetricsService();
 const logger = new LoggerServiceImpl({ json: true });
+const loggerOptions = createLoggerModuleOptions({
+    name: 'smoke',
+    json: true,
+    interceptor: { maxRequestIdLength: 64 },
+});
+const loggerInterceptor: LogInterceptorOptions = { responseRequestIdHeader: false };
 const retry = new RetryService();
 const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
+const queryLogger = createKyselyLogger({ consoleOutput: false });
+const configuredKyselyOptions = null as unknown as ConfiguredKyselyModuleOptions;
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
+const redisPatternOptions: DeleteByPatternOptions = { scanCount: 250, batchSize: 50 };
+const redisPatternError = new RedissonPatternDeleteError('cache:*', 0, []);
+const natsConnection: NatsConnectionOptions = createNatsConnectionOptions({
+    servers: 'nats://localhost:4222',
+    auth: { token: 'smoke-token' },
+});
+const natsHealth: NatsHealthResult = {
+    healthy: true,
+    server: 'nats://localhost:4222',
+    latencyMs: 1,
+};
+const natsRequestMany: RequestManyOptions = {
+    subject: 'resources.lookup',
+    strategy: 'count',
+    expectedResponseCount: 2,
+};
+const natsClosedError = new NatsServiceClosedError();
+const clickhouseClient = createClickHouseClientOptions({
+    url: 'https://clickhouse.test:8443',
+    database: 'analytics',
+    requestTimeoutMs: 2_000,
+});
+const clickhouseRequest: ClickHouseRequestOptions = {
+    database: 'reporting',
+    queryParams: { tenant: 'a3s' },
+    timeoutMs: 1_000,
+};
+const clickhouseHealth: ClickHouseHealthResult = {
+    healthy: true,
+    database: 'analytics',
+    latencyMs: 1,
+};
+const bullmq = createBullMQModuleOptions({
+    connection: { host: 'localhost', port: 6379 },
+    workerOptions: { concurrency: 2 },
+});
+const bullmqWorker: BullMQWorkerOptions = { id: 'smoke-worker', concurrency: 1 };
+const bullmqHealth: BullMQHealthResult = { healthy: true, queue: 'smoke', latencyMs: 0 };
 const provider = createNestCqrsDomainEventPublisherProvider();
 const sandboxConnection = createA3SBoxConnectionConfig({
     apiUrl: 'https://api.box.test',
     domain: 'box.test',
 });
+const migrationOptions = createMigrationModuleOptions({
+    migrationFolder: './dist/migrations',
+    autoRun: false,
+});
+const migrationAsyncOptions: MigrationModuleAsyncOptions = {
+    useFactory: () => ({ migrationFolder: './dist/migrations' }),
+};
 const moduleRefs = [
     AiModule,
     NestCqrsDomainEventPublisher,
@@ -199,26 +312,56 @@ const moduleRefs = [
     FileUploadModule,
     SandboxModule,
 ];
-const serviceRefs = [AiService, SandboxService];
+const serviceRefs = [AiService, BullMQService, SandboxService];
+const sandboxRuntimeRefs = [DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS, SandboxCleanupError];
+const resilienceErrorRefs = [DistributedLockCleanupError, RetryAbortedError];
 
 void event;
 void envelope;
 void tokenHelper;
 void access;
 void healthCheck;
+void healthTimeout;
+void sqlCollectorOptions;
+void externalCallCollectorOptions;
 void metrics;
 void logger;
+void loggerOptions;
+void loggerInterceptor;
+void DEFAULT_LOG_REDACTION_PATHS;
+void LoggerConfigurationError;
 void retry;
 void pool;
+void queryLogger;
+void configuredKyselyOptions;
+void KyselyConfigurationError;
 void redis;
+void redisPatternOptions;
+void redisPatternError;
+void natsConnection;
+void natsHealth;
+void natsRequestMany;
+void natsClosedError;
+void clickhouseClient;
+void clickhouseRequest;
+void clickhouseHealth;
+void bullmq;
+void bullmqWorker;
+void bullmqHealth;
 void provider;
 void moduleRefs;
 void serviceRefs;
+void sandboxRuntimeRefs;
+void resilienceErrorRefs;
 void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
 void CLICKHOUSE_OPTIONS_TOKEN;
+void ClickHouseClientPoolExhaustedError;
 void NON_TRANSACTIONAL_MIGRATION_NAME;
+void MigrationConfigurationError;
+void migrationOptions;
+void migrationAsyncOptions;
 
 const extension: string = getExtension('file.txt');
 if (extension !== '.txt') {
@@ -244,19 +387,78 @@ const expectedExports = {
     '@a3s-lab/cqrs': ['NestCqrsDomainEventPublisher', 'createNestCqrsDomainEventPublisherProvider'],
     '@a3s-lab/http': ['ApiResponseDto', 'StatusCode', 'getOrCreateRequestId'],
     '@a3s-lab/security': ['JwtTokenHelper', 'PathSecurityValidator', 'Public'],
-    '@a3s-lab/observability': ['MetricsService', 'DEFAULT_HISTOGRAM_BUCKETS', 'createHealthCheck'],
-    '@a3s-lab/logger': ['LoggerServiceImpl', 'LoggerModule'],
-    '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
-    '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
-    '@a3s-lab/redisson': ['RedissonModule', 'createRedissonModuleOptions'],
-    '@a3s-lab/bullmq': ['BullMQModule', 'BullMQService'],
-    '@a3s-lab/nats': ['NatsModule', 'NatsServiceImpl'],
+    '@a3s-lab/observability': [
+        'MetricsService',
+        'DEFAULT_HISTOGRAM_BUCKETS',
+        'createHealthCheck',
+        'HealthProbeTimeoutError',
+        'getSqlQueryCollectorOptions',
+        'getExternalCallCollectorOptions',
+    ],
+    '@a3s-lab/logger': [
+        'LoggerServiceImpl',
+        'LoggerModule',
+        'LoggingInterceptor',
+        'createLoggerModuleOptions',
+        'DEFAULT_LOG_REDACTION_PATHS',
+        'LoggerConfigurationError',
+    ],
+    '@a3s-lab/resilience': [
+        'CacheService',
+        'DistributedLockCleanupError',
+        'ResilienceModule',
+        'RetryAbortedError',
+        'RetryService',
+    ],
+    '@a3s-lab/kysely': [
+        'KyselyModule',
+        'KyselyService',
+        'KyselyConfigurationError',
+        'normalizeKyselyModuleOptions',
+        'createPostgresPoolConfig',
+        'createKyselyLogger',
+        'DEFAULT_KYSELY_LOGGER_MAX_SQL_LENGTH',
+    ],
+    '@a3s-lab/redisson': ['RedissonModule', 'RedissonPatternDeleteError', 'createRedissonModuleOptions'],
+    '@a3s-lab/bullmq': [
+        'BullMQModule',
+        'BullMQService',
+        'createBullMQModuleOptions',
+        'BullMQServiceClosedError',
+        'BullMQShutdownError',
+    ],
+    '@a3s-lab/nats': [
+        'NatsModule',
+        'NatsServiceImpl',
+        'NatsServiceClosedError',
+        'createNatsConnectionOptions',
+    ],
     '@a3s-lab/rustfs': ['RustFSModule', 'RustFSServiceImpl'],
     '@a3s-lab/etcd': ['EtcdModule', 'EtcdService'],
-    '@a3s-lab/clickhouse': ['CLICKHOUSE_OPTIONS_TOKEN', 'ClickHouseModule', 'ClickHouseService'],
-    '@a3s-lab/migrations': ['MigrationModule', 'createFileMigrationProvider'],
+    '@a3s-lab/clickhouse': [
+        'CLICKHOUSE_OPTIONS_TOKEN',
+        'ClickHouseClientPoolExhaustedError',
+        'ClickHouseModule',
+        'ClickHouseService',
+        'createClickHouseClientOptions',
+    ],
+    '@a3s-lab/migrations': [
+        'MigrationModule',
+        'MigrationRunner',
+        'createFileMigrationProvider',
+        'createMigrationModuleOptions',
+        'MigrationConfigurationError',
+        'MigrationExecutionError',
+    ],
     '@a3s-lab/files': ['FileUploadModule', 'FileUploadService', 'getExtension'],
-    '@a3s-lab/sandbox': ['SandboxModule', 'SandboxService', 'createA3SBoxConnectionConfig'],
+    '@a3s-lab/sandbox': [
+        'DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS',
+        'SandboxCleanupError',
+        'SandboxModule',
+        'SandboxService',
+        'SandboxShutdownTimeoutError',
+        'createA3SBoxConnectionConfig',
+    ],
 };
 
 for (const [packageName, exportNames] of Object.entries(expectedExports)) {

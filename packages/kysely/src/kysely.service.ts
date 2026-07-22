@@ -1,10 +1,16 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Kysely } from 'kysely';
-import type { KyselyModuleOptions } from './kysely-module-options.interface';
+import { Kysely, type KyselyConfig } from 'kysely';
 import { MODULE_OPTIONS_TOKEN } from './kysely.module-definition';
+import {
+    KyselyConfigurationError,
+    type KyselyModuleOptions,
+    normalizeKyselyModuleOptions,
+} from './kysely-module-options.interface';
 
 @Injectable()
 export class KyselyService<T> extends Kysely<T> implements OnModuleDestroy {
+    private destroyInFlight?: Promise<void>;
+
     /**
      * Creates a new KyselyService instance
      * @param options - Kysely configuration options injected by NestJS
@@ -14,10 +20,13 @@ export class KyselyService<T> extends Kysely<T> implements OnModuleDestroy {
         @Inject(MODULE_OPTIONS_TOKEN)
         options: KyselyModuleOptions,
     ) {
-        if (!options) {
-            throw new Error('KyselyModuleOptions is not defined. Ensure KyselyModule is properly configured.');
+        const normalized = normalizeKyselyModuleOptions(options);
+        if (normalized.instance) {
+            throw new KyselyConfigurationError(
+                'Existing instances must be registered through KyselyModule instead of constructing KyselyService.',
+            );
         }
-        super(options.config);
+        super(normalized.config as KyselyConfig);
     }
 
     /**
@@ -26,5 +35,12 @@ export class KyselyService<T> extends Kysely<T> implements OnModuleDestroy {
      */
     async onModuleDestroy(): Promise<void> {
         await this.destroy();
+    }
+
+    override destroy(): Promise<void> {
+        if (!this.destroyInFlight) {
+            this.destroyInFlight = super.destroy();
+        }
+        return this.destroyInFlight;
     }
 }

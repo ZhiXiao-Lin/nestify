@@ -52,6 +52,10 @@ export interface SandboxModuleOptions {
     defaultTimeoutMs?: number;
     /** Kill service-owned instances during Nest shutdown. Defaults to `true`. */
     killOnShutdown?: boolean;
+    /** Surface settled shutdown cleanup failures. Defaults to `throw`; use `ignore` only for best-effort shutdown. */
+    cleanupFailurePolicy?: 'throw' | 'ignore';
+    /** Maximum time to drain managed operations before final cleanup. Defaults to 30 seconds. */
+    shutdownTimeoutMs?: number;
     /** Optional lazy loader override, primarily for isolated tests. */
     sdkLoader?: SandboxSdkLoader;
 }

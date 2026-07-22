@@ -1,11 +1,12 @@
 import { EtcdConfigService } from '../config.service';
-import { ETCD_MODULE_OPTIONS } from '../etcd.types';
 import { EtcdModule } from '../etcd.module';
 import { EtcdService } from '../etcd.service';
+import { ETCD_MODULE_OPTIONS } from '../etcd.types';
 
 const mockEtcd3 = jest.fn();
 let mockClient: any;
 let mockWatcher: any;
+let mockWatchers: any[];
 
 jest.mock('etcd3', () => ({
     Etcd3: jest.fn().mockImplementation((options: Record<string, unknown>) => {
@@ -25,13 +26,17 @@ function kv(key: string, value: string, version = 1) {
 }
 
 function createLease(id: string, store: Map<string, string>) {
-    const lease = {
+    const lease: any = {
         grant: jest.fn(async () => id),
         keepaliveOnce: jest.fn(async () => undefined),
         revoke: jest.fn(async () => undefined),
         release: jest.fn(),
         put: jest.fn((key: string) => createPutBuilder(key, store)),
     };
+    lease.once = jest.fn((_event: string, handler: () => void) => {
+        lease.lostHandler = handler;
+        return lease;
+    });
     return lease;
 }
 
@@ -66,13 +71,23 @@ function createWatcher() {
     };
 }
 
+function flushAsyncWork(): Promise<void> {
+    return new Promise(resolve => setImmediate(resolve));
+}
+
 function createClient() {
     const store = new Map<string, string>([
         ['settings/api', JSON.stringify({ enabled: true })],
         ['settings/name', 'api'],
     ]);
     const lease = createLease('lease-1', store);
-    mockWatcher = createWatcher();
+    mockWatchers = [];
+
+    const nextWatcher = () => {
+        mockWatcher = createWatcher();
+        mockWatchers.push(mockWatcher);
+        return mockWatcher;
+    };
 
     return {
         get: jest.fn((key: string) => ({
@@ -110,10 +125,10 @@ function createClient() {
         },
         watch: jest.fn(() => ({
             key: jest.fn(() => ({
-                create: jest.fn(async () => mockWatcher),
+                create: jest.fn(async () => nextWatcher()),
             })),
             prefix: jest.fn(() => ({
-                create: jest.fn(async () => mockWatcher),
+                create: jest.fn(async () => nextWatcher()),
             })),
         })),
         maintenance: {
@@ -171,7 +186,7 @@ describe('etcd package', () => {
             endpoints: ['http://etcd:2379'],
             auth: { username: 'user', password: 'pass' },
             tls: { ca: 'ca', cert: 'cert', key: 'key' },
-            requestOptions: { timeout: 5000 },
+            requestOptions: { timeout: 5000, retry: 2 },
         });
 
         await service.onModuleInit();
@@ -189,8 +204,12 @@ describe('etcd package', () => {
                     certChain: Buffer.from('cert'),
                 }),
                 defaultCallOptions: expect.any(Function),
+                faultHandling: { global: expect.any(Object) },
             }),
         );
+        const clientOptions = mockEtcd3.mock.calls[0][0];
+        expect(clientOptions.defaultCallOptions({ isStream: true })).toEqual({});
+        expect(clientOptions.defaultCallOptions({ isStream: false }).deadline).toBeGreaterThan(Date.now());
         expect(health).toEqual({ healthy: true, leader: 'node-1', etcdVersion: '3.5.0' });
         expect(members).toEqual(['node-1']);
         expect(leader).toBe('node-1');
@@ -229,7 +248,7 @@ describe('etcd package', () => {
 
         const handleChange = jest.fn();
         const unsubscribe = service.watch('settings/api', handleChange);
-        await Promise.resolve();
+        await flushAsyncWork();
         mockWatcher.handlers.get('put')?.(kv('settings/api', 'changed', 2));
         mockWatcher.handlers.get('delete')?.(kv('settings/api', '', 3));
 
@@ -249,7 +268,7 @@ describe('etcd package', () => {
         });
 
         unsubscribe();
-        await Promise.resolve();
+        await flushAsyncWork();
         await service.revokeLease(lease.id);
         await service.onModuleDestroy();
 
@@ -257,8 +276,51 @@ describe('etcd package', () => {
         expect(mockClient.close).toHaveBeenCalled();
     });
 
+    it('tracks duplicate watchers independently and always completes shutdown cleanup', async () => {
+        const service = new EtcdService({ endpoints: ['http://etcd:2379'] });
+        await service.createLease(30);
+        const failedSubscriber = jest.fn(() => {
+            throw new Error('subscriber failed');
+        });
+        const firstStop = service.watch('settings/api', failedSubscriber);
+        service.watch('settings/api', jest.fn());
+        await flushAsyncWork();
+
+        expect(mockWatchers).toHaveLength(2);
+        expect(() => mockWatchers[0].handlers.get('put')?.(kv('settings/api', 'changed'))).not.toThrow();
+        mockWatchers[0].cancel.mockRejectedValueOnce(new Error('cancel failed'));
+        firstStop();
+        mockWatchers[0].handlers.get('put')?.(kv('settings/api', 'ignored'));
+        await flushAsyncWork();
+        await service.onModuleDestroy();
+        await service.onModuleDestroy();
+
+        expect(mockWatchers[0].cancel).toHaveBeenCalledTimes(1);
+        expect(mockWatchers[1].cancel).toHaveBeenCalledTimes(1);
+        expect(failedSubscriber).toHaveBeenCalledTimes(1);
+        expect(mockClient.lease.mock.results[0].value.release).toHaveBeenCalled();
+        expect(mockClient.close).toHaveBeenCalledTimes(1);
+        expect(() => service.watch('settings/api', jest.fn())).toThrow('shutdown has started');
+    });
+
+    it('validates connection and lease options', async () => {
+        expect(() => new EtcdService({ endpoints: [] })).toThrow('At least one etcd endpoint');
+        expect(() => new EtcdService({ endpoints: ['http://etcd:2379'], auth: { username: 'user' } })).toThrow(
+            'both username and password',
+        );
+        expect(() => new EtcdService({ endpoints: ['http://etcd:2379'], requestOptions: { retry: -1 } })).toThrow(
+            'non-negative integer',
+        );
+
+        const service = new EtcdService({ endpoints: ['http://etcd:2379'] });
+        await expect(service.createLease(0)).rejects.toThrow('positive integer');
+        await expect(service.set('key', 'value', { ttl: 10, lease: 'lease-1' })).rejects.toThrow(
+            'cannot be used together',
+        );
+    });
+
     it('caches configuration values and forwards subscriptions', async () => {
-        let watchCallback: ((event: { value: unknown }) => void) | undefined;
+        let watchCallback: ((event: { key: string; value: unknown | null }) => void) | undefined;
         const unsubscribe = jest.fn();
         const etcd = {
             get: jest.fn(async () => 'cached-value'),
@@ -268,7 +330,7 @@ describe('etcd package', () => {
             delete: jest.fn(async () => true),
             deleteByPrefix: jest.fn(async () => 1),
             exists: jest.fn(async () => true),
-            watch: jest.fn((_key: string, callback: (event: { value: unknown }) => void) => {
+            watch: jest.fn((_key: string, callback: (event: { key: string; value: unknown | null }) => void) => {
                 watchCallback = callback;
                 return unsubscribe;
             }),
@@ -283,12 +345,170 @@ describe('etcd package', () => {
 
         const subscriber = jest.fn();
         const stop = config.subscribe('settings/api', subscriber);
-        watchCallback?.({ value: 'changed' });
+        watchCallback?.({ key: 'settings/api', value: 'changed' });
+        watchCallback?.({ key: 'settings/api', value: null });
         stop();
 
         expect(etcd.get).toHaveBeenCalledTimes(1);
         expect(etcd.set).toHaveBeenCalledWith('settings/api', { enabled: false }, undefined);
         expect(subscriber).toHaveBeenCalledWith('changed');
+        expect(subscriber).toHaveBeenCalledWith(null);
         expect(unsubscribe).toHaveBeenCalled();
+    });
+
+    it('separates raw and JSON caches, coalesces reads, and prevents stale cache races', async () => {
+        let resolveRead: ((value: string | null) => void) | undefined;
+        let watchCallback: ((event: { key: string; value: string | null }) => void) | undefined;
+        const get = jest.fn(
+            () =>
+                new Promise<string | null>(resolve => {
+                    resolveRead = resolve;
+                }),
+        );
+        const etcd = {
+            get,
+            getJSON: jest.fn(async () => ({ enabled: true })),
+            watch: jest.fn((_key: string, callback: (event: { key: string; value: string | null }) => void) => {
+                watchCallback = callback;
+                return jest.fn();
+            }),
+        } as unknown as EtcdService;
+        const config = new EtcdConfigService(etcd);
+        config.subscribe('settings/api', jest.fn());
+
+        const first = config.get('settings/api');
+        const second = config.get('settings/api');
+        expect(get).toHaveBeenCalledTimes(1);
+        watchCallback?.({ key: 'settings/api', value: '{"enabled":false}' });
+        resolveRead?.('{"enabled":true}');
+
+        await expect(first).resolves.toBe('{"enabled":true}');
+        await expect(second).resolves.toBe('{"enabled":true}');
+        await expect(config.get('settings/api')).resolves.toBe('{"enabled":false}');
+        await expect(config.getJSON<{ enabled: boolean }>('settings/api')).resolves.toEqual({ enabled: false });
+        expect(get).toHaveBeenCalledTimes(1);
+        expect(etcd.getJSON as jest.Mock).not.toHaveBeenCalled();
+    });
+
+    it('keeps write, delete, and prefix-watch cache entries coherent', async () => {
+        const values = new Map<string, string>([
+            ['settings/api', 'old'],
+            ['other/value', 'stable'],
+        ]);
+        let prefixCallback: ((event: { key: string; value: string | null }) => void) | undefined;
+        const prefixUnsubscribe = jest.fn();
+        const etcd = {
+            get: jest.fn(async (key: string) => values.get(key) ?? null),
+            getJSON: jest.fn(async (key: string) => {
+                const value = values.get(key);
+                return value === undefined ? null : JSON.parse(value);
+            }),
+            set: jest.fn(async (key: string, value: unknown) => {
+                values.set(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+            }),
+            delete: jest.fn(async (key: string) => values.delete(key)),
+            deleteByPrefix: jest.fn(async (prefix: string) => {
+                const keys = [...values.keys()].filter(key => key.startsWith(prefix));
+                for (const key of keys) values.delete(key);
+                return keys.length;
+            }),
+            watchPrefix: jest.fn(
+                (_prefix: string, callback: (event: { key: string; value: string | null }) => void) => {
+                    prefixCallback = callback;
+                    return prefixUnsubscribe;
+                },
+            ),
+        } as unknown as EtcdService;
+        const config = new EtcdConfigService(etcd);
+        const prefixSubscriber = jest.fn();
+        const stop = config.subscribePrefix('settings/', prefixSubscriber);
+
+        await expect(config.get('settings/api')).resolves.toBe('old');
+        await expect(config.get('other/value')).resolves.toBe('stable');
+        values.set('settings/api', 'new');
+        prefixCallback?.({ key: 'settings/api', value: 'new' });
+        await expect(config.get('settings/api')).resolves.toBe('new');
+        expect(etcd.get).toHaveBeenCalledTimes(2);
+
+        values.delete('settings/api');
+        prefixCallback?.({ key: 'settings/api', value: null });
+        await expect(config.get('settings/api')).resolves.toBeNull();
+        await expect(config.get('settings/api')).resolves.toBeNull();
+        expect(prefixSubscriber).toHaveBeenLastCalledWith({ key: 'settings/api', value: null });
+        expect(etcd.get).toHaveBeenCalledTimes(3);
+
+        await config.setJSON('settings/json', { enabled: true });
+        await expect(config.get('settings/json')).resolves.toBe('{"enabled":true}');
+        await expect(config.getJSON('settings/json')).resolves.toEqual({ enabled: true });
+        await config.deleteByPrefix('settings/');
+        await expect(config.get('settings/json')).resolves.toBeNull();
+        await expect(config.get('other/value')).resolves.toBe('stable');
+
+        stop();
+        expect(prefixUnsubscribe).toHaveBeenCalledTimes(1);
+    });
+
+    it('supports cache controls and validates cache configuration', async () => {
+        const etcd = {
+            get: jest.fn(async () => null),
+        } as unknown as EtcdService;
+        const config = new EtcdConfigService(etcd);
+
+        await config.get('missing');
+        await config.get('missing');
+        expect(etcd.get).toHaveBeenCalledTimes(1);
+
+        config.setCacheMissing(false);
+        await config.get('missing');
+        await config.get('missing');
+        expect(etcd.get).toHaveBeenCalledTimes(3);
+
+        config.setCacheTtl(0);
+        await config.get('missing');
+        await config.get('missing');
+        expect(etcd.get).toHaveBeenCalledTimes(5);
+        expect(() => config.setCacheTtl(-1)).toThrow('non-negative number');
+        expect(() => config.setCacheMaxEntries(-1)).toThrow('non-negative integer');
+        expect(
+            () =>
+                new EtcdConfigService(etcd, {
+                    endpoints: ['http://etcd:2379'],
+                    configCache: { maxEntries: 1.5 },
+                }),
+        ).toThrow('non-negative integer');
+    });
+
+    it('shares prefix watches, bounds the cache, and releases subscriptions on shutdown', async () => {
+        const exactUnsubscribe = jest.fn();
+        const prefixUnsubscribe = jest.fn();
+        const etcd = {
+            get: jest.fn(async (key: string) => key),
+            watch: jest.fn(() => exactUnsubscribe),
+            watchPrefix: jest.fn(() => prefixUnsubscribe),
+        } as unknown as EtcdService;
+        const config = new EtcdConfigService(etcd, {
+            endpoints: ['http://etcd:2379'],
+            configCache: { maxEntries: 1 },
+        });
+
+        await config.get('first');
+        await config.get('second');
+        await config.get('first');
+        expect(etcd.get).toHaveBeenCalledTimes(3);
+
+        const stopExactOne = config.subscribe('settings/api', jest.fn());
+        config.subscribe('settings/api', jest.fn());
+        config.subscribePrefix('settings/', jest.fn());
+        config.subscribePrefix('settings/', jest.fn());
+        expect(etcd.watch).toHaveBeenCalledTimes(1);
+        expect(etcd.watchPrefix).toHaveBeenCalledTimes(1);
+
+        stopExactOne();
+        expect(exactUnsubscribe).not.toHaveBeenCalled();
+        config.onModuleDestroy();
+        config.onModuleDestroy();
+        expect(exactUnsubscribe).toHaveBeenCalledTimes(1);
+        expect(prefixUnsubscribe).toHaveBeenCalledTimes(1);
+        expect(() => config.subscribe('settings/api', jest.fn())).toThrow('shutdown has started');
     });
 });

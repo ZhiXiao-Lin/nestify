@@ -1,322 +1,726 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Redisson, type RedissonRedis } from 'node-redisson';
-import type { RedissonModuleOptions } from './redisson-module-options.interface';
+import { type IRLock, Redisson, type RedissonRedis } from 'node-redisson';
 import { MODULE_OPTIONS_TOKEN } from './redisson.module-definition';
+import type { RedissonModuleOptions } from './redisson-module-options.interface';
+
+const DEFAULT_SHUTDOWN_TIMEOUT_MS = 10_000;
+const DEFAULT_SCAN_COUNT = 250;
+const DEFAULT_DELETE_BATCH_SIZE = 50;
+const CACHE_STRING_PREFIX = '\u0000nestify-redisson:string:v1:';
+
+export interface DeleteByPatternOptions {
+    /** Redis SCAN count hint. */
+    scanCount?: number;
+    /** Maximum number of delete commands executed concurrently. */
+    batchSize?: number;
+    /** Use non-blocking UNLINK instead of DEL. Defaults to true. */
+    useUnlink?: boolean;
+}
+
+export interface PatternDeleteFailure {
+    key: string;
+    error: Error;
+}
+
+export class RedissonServiceClosedError extends Error {
+    constructor() {
+        super('RedissonService is shutting down and cannot start new operations');
+        this.name = 'RedissonServiceClosedError';
+    }
+}
+
+export class RedissonLockAcquisitionError extends Error {
+    constructor(readonly lockKey: string) {
+        super(`Failed to acquire lock: ${lockKey}`);
+        this.name = 'RedissonLockAcquisitionError';
+    }
+}
+
+export class RedissonLockOwnershipError extends Error {
+    constructor(
+        readonly lockKey: string,
+        message: string,
+    ) {
+        super(`${message}: ${lockKey}`);
+        this.name = 'RedissonLockOwnershipError';
+    }
+}
+
+export class RedissonLockReleaseError extends Error {
+    constructor(
+        readonly lockKey: string,
+        cause: unknown,
+    ) {
+        super(`Failed to release lock: ${lockKey}`, { cause });
+        this.name = 'RedissonLockReleaseError';
+    }
+}
+
+export class RedissonPatternDeleteError extends Error {
+    readonly failures: PatternDeleteFailure[];
+
+    constructor(
+        readonly pattern: string,
+        readonly deletedCount: number,
+        failures: PatternDeleteFailure[],
+        cause?: unknown,
+    ) {
+        super(`Failed to finish deleting keys matching pattern: ${pattern}`, { cause });
+        this.name = 'RedissonPatternDeleteError';
+        this.failures = failures;
+    }
+}
 
 @Injectable()
 export class RedissonService extends Redisson implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(RedissonService.name);
+    private readonly inFlight = new Set<Promise<unknown>>();
+    private readonly cacheLoads = new Map<string, Promise<unknown>>();
+    private readonly managedLocks = new Map<string, IRLock>();
+    private readonly lockAttempts = new Set<string>();
+    private readonly shutdownTimeoutMs: number;
+    private readonly patternScanCount: number;
+    private readonly patternDeleteBatchSize: number;
+    private readonly keyPrefix: string;
+    private mutationEpoch = 0;
+    private shuttingDown = false;
+    private forceClosing = false;
+    private shutdownPromise?: Promise<void>;
+    private patternDeletePromise?: Promise<number>;
 
     constructor(@Inject(MODULE_OPTIONS_TOKEN) options: RedissonModuleOptions) {
-        if (!options) {
-            throw new Error('RedissonModuleOptions is not defined');
-        }
+        validateModuleOptions(options);
         super(options);
+        this.shutdownTimeoutMs = options.shutdownTimeoutMs ?? DEFAULT_SHUTDOWN_TIMEOUT_MS;
+        this.patternScanCount = options.patternScanCount ?? DEFAULT_SCAN_COUNT;
+        this.patternDeleteBatchSize = options.patternDeleteBatchSize ?? DEFAULT_DELETE_BATCH_SIZE;
+        this.keyPrefix = resolveKeyPrefix(options);
     }
 
-    async onModuleInit() {
+    async onModuleInit(): Promise<void> {
         try {
-            // Test connection by pinging Redis
             await this.redis.ping();
             this.logger.log('Successfully connected to Redis via Redisson');
         } catch (error) {
             this.logger.error('Failed to connect to Redis', error);
+            await this.shutdown();
             throw error;
         }
     }
 
-    async onModuleDestroy() {
-        try {
-            await this.quit();
-            this.logger.log('Redis connection closed');
-        } catch (error) {
-            this.logger.error('Error closing Redis connection', error);
-        }
+    onModuleDestroy(): Promise<void> {
+        return this.shutdown();
     }
 
-    /**
-     * 执行带锁的操作
-     * @param key 锁的键名
-     * @param callback 需要执行的回调函数
-     * @param waitTime 等待时间（毫秒）
-     * @param leaseTime 锁的租期（毫秒）
-     * @returns 回调函数的返回值
-     */
+    override quit(): Promise<void> {
+        return this.shutdown();
+    }
+
+    shutdown(): Promise<void> {
+        this.shutdownPromise ??= this.closeResources();
+        return this.shutdownPromise;
+    }
+
+    override getLock(name: string, clientId?: string): IRLock {
+        this.assertActive();
+        validateKey('lock name', name);
+        return super.getLock(name, clientId);
+    }
+
     async withLock<T>(key: string, callback: () => Promise<T> | T, waitTime = 5000, leaseTime = 10000): Promise<T> {
-        const lock = this.getLock(key);
-        const acquired = await lock.tryLock(waitTime, leaseTime);
-
-        if (!acquired) {
-            throw new Error(`Failed to acquire lock: ${key}`);
-        }
-
-        try {
-            this.logger.debug(`Lock acquired: ${key}`);
-            return await callback();
-        } finally {
-            await lock.unlock();
-            this.logger.debug(`Lock released: ${key}`);
-        }
-    }
-
-    /**
-     * 缓存装饰器辅助方法 - 获取缓存或执行函数
-     * @param key 缓存键
-     * @param factory 数据工厂函数
-     * @param ttl 过期时间（秒）
-     * @returns 缓存的数据或新数据
-     */
-    async getOrSet<T>(key: string, factory: () => Promise<T> | T, ttl?: number): Promise<T> {
-        // 尝试从缓存获取
-        const cached = await this.redis.get(key);
-        if (cached) {
-            try {
-                return JSON.parse(cached) as T;
-            } catch {
-                // 如果解析失败，返回原始值
-                return cached as unknown as T;
+        return this.execute(async () => {
+            validateKey('lock key', key);
+            validateWaitTime(waitTime);
+            validateLeaseTime(leaseTime);
+            const lock = super.getLock(key);
+            const acquired = await lock.tryLock(waitTime, leaseTime);
+            if (!acquired) {
+                throw new RedissonLockAcquisitionError(key);
             }
-        }
+            if (this.forceClosing) {
+                await releaseDuringShutdown(lock, key);
+                throw new RedissonServiceClosedError();
+            }
 
-        // 执行工厂函数获取数据
-        const data = await factory();
+            let result: T;
+            try {
+                this.logger.debug(`Lock acquired: ${key}`);
+                result = await callback();
+            } catch (error) {
+                try {
+                    await lock.unlock();
+                    this.logger.debug(`Lock released after callback error: ${key}`);
+                } catch (releaseError) {
+                    this.logger.error(`Lock release also failed after callback error: ${key}`, releaseError);
+                }
+                throw error;
+            }
 
-        // 存储到缓存
-        const value = typeof data === 'string' ? data : JSON.stringify(data);
-        if (ttl) {
-            await this.redis.setex(key, ttl, value);
-        } else {
-            await this.redis.set(key, value);
-        }
-
-        return data;
+            try {
+                await lock.unlock();
+                this.logger.debug(`Lock released: ${key}`);
+            } catch (error) {
+                throw new RedissonLockReleaseError(key, error);
+            }
+            return result;
+        });
     }
 
-    /**
-     * 批量删除匹配模式的键
-     * @param pattern 键的匹配模式
-     * @returns 删除的键数量
-     */
-    async deleteByPattern(pattern: string): Promise<number> {
-        const keys = await this.redis.keys(pattern);
+    getOrSet<T>(key: string, factory: () => Promise<T> | T, ttl?: number): Promise<T> {
+        return this.execute(async () => {
+            validateKey('cache key', key);
+            validateTtl(ttl);
 
-        if (keys.length === 0) {
-            return 0;
-        }
+            const existing = this.cacheLoads.get(key);
+            if (existing) {
+                return existing as Promise<T>;
+            }
 
-        await this.redis.del(...keys);
-        this.logger.debug(`Deleted ${keys.length} keys matching pattern: ${pattern}`);
-        return keys.length;
+            if (this.patternDeletePromise) {
+                await this.patternDeletePromise.catch(() => undefined);
+            }
+
+            const loading = this.loadCacheValue(key, factory, ttl);
+            this.cacheLoads.set(key, loading);
+            void loading.then(
+                () => {
+                    if (this.cacheLoads.get(key) === loading) this.cacheLoads.delete(key);
+                },
+                () => {
+                    if (this.cacheLoads.get(key) === loading) this.cacheLoads.delete(key);
+                },
+            );
+            return loading;
+        });
     }
 
-    /**
-     * 设置带过期时间的 JSON 数据
-     * @param key 键名
-     * @param value 值（会自动序列化为 JSON）
-     * @param ttl 过期时间（秒）
-     */
-    async setJSON<T>(key: string, value: T, ttl?: number): Promise<void> {
-        const serialized = JSON.stringify(value);
+    deleteByPattern(pattern: string, options: DeleteByPatternOptions = {}): Promise<number> {
+        return this.execute(async () => {
+            validatePattern(pattern);
+            const scanCount = options.scanCount ?? this.patternScanCount;
+            const batchSize = options.batchSize ?? this.patternDeleteBatchSize;
+            validatePositiveInteger('scanCount', scanCount);
+            validatePositiveInteger('batchSize', batchSize);
 
-        if (ttl) {
-            await this.redis.setex(key, ttl, serialized);
-        } else {
-            await this.redis.set(key, serialized);
-        }
+            while (this.patternDeletePromise) {
+                await this.patternDeletePromise.catch(() => undefined);
+            }
+
+            this.mutationEpoch += 1;
+            const deletion = this.scanAndDelete(pattern, scanCount, batchSize, options.useUnlink ?? true);
+            this.patternDeletePromise = deletion;
+            try {
+                return await deletion;
+            } finally {
+                this.mutationEpoch += 1;
+                if (this.patternDeletePromise === deletion) {
+                    this.patternDeletePromise = undefined;
+                }
+            }
+        });
     }
 
-    /**
-     * 获取 JSON 数据
-     * @param key 键名
-     * @returns 反序列化的数据或 null
-     */
-    async getJSON<T>(key: string): Promise<T | null> {
-        const value = await this.redis.get(key);
-
-        if (!value) {
-            return null;
-        }
-
-        try {
-            return JSON.parse(value) as T;
-        } catch (error) {
-            this.logger.error(`Failed to parse JSON for key: ${key}`, error);
-            return null;
-        }
+    setJSON<T>(key: string, value: T, ttl?: number): Promise<void> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateTtl(ttl);
+            const serialized = JSON.stringify(value);
+            if (serialized === undefined) {
+                throw new TypeError('JSON value cannot be undefined');
+            }
+            await this.writeValue(key, serialized, ttl);
+            this.mutationEpoch += 1;
+        });
     }
 
-    /**
-     * 检查键是否存在
-     * @param key 键名
-     * @returns 是否存在
-     */
-    async exists(key: string): Promise<boolean> {
-        const result = await this.redis.exists(key);
-        return result === 1;
+    getJSON<T>(key: string): Promise<T | null> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            const value = await this.redis.get(key);
+            if (value === null) return null;
+
+            try {
+                return JSON.parse(value) as T;
+            } catch (error) {
+                this.logger.error(`Failed to parse JSON for key: ${key}`, error);
+                return null;
+            }
+        });
     }
 
-    /**
-     * 设置键的过期时间
-     * @param key 键名
-     * @param ttl 过期时间（秒）
-     * @returns 是否成功
-     */
-    async expire(key: string, ttl: number): Promise<boolean> {
-        const result = await this.redis.expire(key, ttl);
-        return result === 1;
+    exists(key: string): Promise<boolean> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            return (await this.redis.exists(key)) === 1;
+        });
     }
 
-    /**
-     * 删除键
-     * @param keys 要删除的键
-     * @returns 删除的键数量
-     */
-    async delete(...keys: string[]): Promise<number> {
-        return await this.redis.del(...keys);
+    expire(key: string, ttl: number): Promise<boolean> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateTtl(ttl);
+            const result = await this.redis.expire(key, ttl);
+            if (result === 1) this.mutationEpoch += 1;
+            return result === 1;
+        });
     }
 
-    /**
-     * 增量操作
-     * @param key 键名
-     * @param increment 增量值（默认为 1）
-     * @returns 增量后的值
-     */
-    async increment(key: string, increment = 1): Promise<number> {
-        return await this.redis.incrby(key, increment);
+    delete(...keys: string[]): Promise<number> {
+        return this.execute(async () => {
+            if (keys.length === 0) return 0;
+            for (const key of keys) validateKey('Redis key', key);
+            const deleted = await this.redis.del(...keys);
+            if (deleted > 0) this.mutationEpoch += 1;
+            return deleted;
+        });
     }
 
-    /**
-     * 减量操作
-     * @param key 键名
-     * @param decrement 减量值（默认为 1）
-     * @returns 减量后的值
-     */
-    async decrement(key: string, decrement = 1): Promise<number> {
-        return await this.redis.decrby(key, decrement);
+    increment(key: string, increment = 1): Promise<number> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateSafeInteger('increment', increment);
+            const value = await this.redis.incrby(key, increment);
+            this.mutationEpoch += 1;
+            return value;
+        });
     }
 
-    /**
-     * 获取键值
-     * @param key 键名
-     * @returns 键值或 null
-     */
-    async get(key: string): Promise<string | null> {
-        return await this.redis.get(key);
+    decrement(key: string, decrement = 1): Promise<number> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateSafeInteger('decrement', decrement);
+            const value = await this.redis.decrby(key, decrement);
+            this.mutationEpoch += 1;
+            return value;
+        });
     }
 
-    /**
-     * 设置键值
-     * @param key 键名
-     * @param value 值
-     * @param ttl 过期时间（秒），可选
-     */
-    async set(key: string, value: string, ttl?: number): Promise<void> {
-        if (ttl) {
-            await this.redis.setex(key, ttl, value);
-        } else {
-            await this.redis.set(key, value);
-        }
+    get(key: string): Promise<string | null> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            return this.redis.get(key);
+        });
     }
 
-    /**
-     * 设置哈希字段
-     * @param key 哈希键
-     * @param field 字段名
-     * @param value 字段值
-     */
-    async hset(key: string, field: string, value: string): Promise<void> {
-        await this.redis.hset(key, field, value);
+    set(key: string, value: string, ttl?: number): Promise<void> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateTtl(ttl);
+            await this.writeValue(key, value, ttl);
+            this.mutationEpoch += 1;
+        });
     }
 
-    /**
-     * 获取哈希字段
-     * @param key 哈希键
-     * @param field 字段名
-     * @returns 字段值或 null
-     */
-    async hget(key: string, field: string): Promise<string | null> {
-        return await this.redis.hget(key, field);
+    hset(key: string, field: string, value: string): Promise<void> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateKey('hash field', field);
+            await this.redis.hset(key, field, value);
+            this.mutationEpoch += 1;
+        });
     }
 
-    /**
-     * 获取整个哈希
-     * @param key 哈希键
-     * @returns 哈希对象
-     */
-    async hgetall(key: string): Promise<Record<string, string>> {
-        return await this.redis.hgetall(key);
+    hget(key: string, field: string): Promise<string | null> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            validateKey('hash field', field);
+            return this.redis.hget(key, field);
+        });
     }
 
-    /**
-     * 删除哈希字段
-     * @param key 哈希键
-     * @param fields 要删除的字段
-     * @returns 删除的字段数量
-     */
-    async hdel(key: string, ...fields: string[]): Promise<number> {
-        return await this.redis.hdel(key, ...fields);
+    hgetall(key: string): Promise<Record<string, string>> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            return this.redis.hgetall(key);
+        });
     }
 
-    /**
-     * 执行 Lua 脚本
-     * @param script Lua 脚本内容
-     * @param keys 键数组
-     * @param args 参数数组
-     * @returns 脚本执行结果
-     */
-    async eval(script: string, keys: string[], args: string[]): Promise<any> {
-        const numKeys = keys.length;
-        return await this.redis.eval(script, numKeys, ...keys, ...args);
+    hdel(key: string, ...fields: string[]): Promise<number> {
+        return this.execute(async () => {
+            validateKey('Redis key', key);
+            if (fields.length === 0) return 0;
+            for (const field of fields) validateKey('hash field', field);
+            const deleted = await this.redis.hdel(key, ...fields);
+            if (deleted > 0) this.mutationEpoch += 1;
+            return deleted;
+        });
     }
 
-    /**
-     * 执行已缓存的 Lua 脚本（通过 SHA1）
-     * @param sha1 脚本的 SHA1 哈希
-     * @param keys 键数组
-     * @param args 参数数组
-     * @returns 脚本执行结果
-     */
-    async evalsha(sha1: string, keys: string[], args: string[]): Promise<any> {
-        const numKeys = keys.length;
-        return await this.redis.evalsha(sha1, numKeys, ...keys, ...args);
+    eval<T = any>(script: string, keys: string[], args: string[]): Promise<T> {
+        return this.execute(async () => {
+            if (script.length === 0) throw new TypeError('Lua script cannot be empty');
+            for (const key of keys) validateKey('Redis key', key);
+            const result = await this.redis.eval(script, keys.length, ...keys, ...args);
+            this.mutationEpoch += 1;
+            return result as T;
+        });
     }
 
-    /**
-     * 加载 Lua 脚本并返回 SHA1
-     * @param script Lua 脚本内容
-     * @returns 脚本的 SHA1 哈希
-     */
-    async scriptLoad(script: string): Promise<string> {
-        return (await this.redis.call('SCRIPT', 'LOAD', script)) as string;
+    evalsha<T = any>(sha1: string, keys: string[], args: string[]): Promise<T> {
+        return this.execute(async () => {
+            if (sha1.length === 0) throw new TypeError('Lua script SHA1 cannot be empty');
+            for (const key of keys) validateKey('Redis key', key);
+            const result = await this.redis.evalsha(sha1, keys.length, ...keys, ...args);
+            this.mutationEpoch += 1;
+            return result as T;
+        });
     }
 
-    /**
-     * 获取底层 Redis 客户端 (IORedis)
-     * 用于需要直接访问 Redis 的高级操作
-     * @returns IORedis 客户端实例
-     */
+    scriptLoad(script: string): Promise<string> {
+        return this.execute(async () => {
+            if (script.length === 0) throw new TypeError('Lua script cannot be empty');
+            return (await this.redis.call('SCRIPT', 'LOAD', script)) as string;
+        });
+    }
+
     getRedis(): RedissonRedis {
+        this.assertActive();
         return this.redis;
     }
 
-    /**
-     * 尝试获取分布式锁
-     * @param key 锁的键名
-     * @param waitTime 等待时间（毫秒）
-     * @param leaseTime 锁的租期（毫秒）
-     * @returns 是否成功获取锁
-     */
-    async tryLock(key: string, waitTime = 5000, leaseTime = 10000): Promise<boolean> {
-        const lock = this.getLock(key);
-        return await lock.tryLock(waitTime, leaseTime);
+    tryLock(key: string, waitTime = 5000, leaseTime = 10000): Promise<boolean> {
+        return this.execute(async () => {
+            validateKey('lock key', key);
+            validateWaitTime(waitTime);
+            validateLeaseTime(leaseTime);
+            if (this.managedLocks.has(key) || this.lockAttempts.has(key)) {
+                throw new RedissonLockOwnershipError(key, 'Lock is already managed by this service');
+            }
+
+            this.lockAttempts.add(key);
+            const lock = super.getLock(key);
+            try {
+                const acquired = await lock.tryLock(waitTime, leaseTime);
+                if (acquired && this.shuttingDown) {
+                    await releaseDuringShutdown(lock, key);
+                    throw new RedissonServiceClosedError();
+                }
+                if (acquired) this.managedLocks.set(key, lock);
+                return acquired;
+            } finally {
+                this.lockAttempts.delete(key);
+            }
+        });
     }
 
-    /**
-     * 释放分布式锁
-     * @param key 锁的键名
-     */
-    async unlock(key: string): Promise<void> {
-        const lock = this.getLock(key);
-        await lock.unlock();
+    unlock(key: string): Promise<void> {
+        return this.execute(async () => {
+            validateKey('lock key', key);
+            const lock = this.managedLocks.get(key);
+            if (!lock) {
+                throw new RedissonLockOwnershipError(key, 'Lock is not owned by this service');
+            }
+            try {
+                await lock.unlock();
+                this.managedLocks.delete(key);
+            } catch (error) {
+                throw new RedissonLockReleaseError(key, error);
+            }
+        });
     }
+
+    private async loadCacheValue<T>(key: string, factory: () => Promise<T> | T, ttl?: number): Promise<T> {
+        let revision = this.mutationEpoch;
+        while (true) {
+            const cached = await this.redis.get(key);
+            if (revision !== this.mutationEpoch) {
+                revision = this.mutationEpoch;
+                continue;
+            }
+            if (cached !== null) {
+                return deserializeCacheValue<T>(cached);
+            }
+
+            const value = await factory();
+            if (!this.shuttingDown && revision === this.mutationEpoch) {
+                await this.writeValue(key, serializeCacheValue(value), ttl);
+            }
+            return value;
+        }
+    }
+
+    private async writeValue(key: string, value: string, ttl?: number): Promise<void> {
+        if (ttl === undefined) {
+            await this.redis.set(key, value);
+        } else {
+            await this.redis.setex(key, ttl, value);
+        }
+    }
+
+    private async scanAndDelete(
+        pattern: string,
+        scanCount: number,
+        batchSize: number,
+        useUnlink: boolean,
+    ): Promise<number> {
+        const physicalPattern = `${escapeRedisGlob(this.keyPrefix)}${pattern}`;
+        const clients = getScanClients(this.redis);
+        let deletedCount = 0;
+
+        try {
+            for (const client of clients) {
+                let cursor = '0';
+                do {
+                    const [nextCursor, keys] = await client.scan(cursor, 'MATCH', physicalPattern, 'COUNT', scanCount);
+                    cursor = nextCursor;
+                    for (let index = 0; index < keys.length; index += batchSize) {
+                        const batch = keys.slice(index, index + batchSize);
+                        const results = await Promise.allSettled(
+                            batch.map(key =>
+                                client.call(useUnlink ? 'UNLINK' : 'DEL', removeKeyPrefix(key, this.keyPrefix)),
+                            ),
+                        );
+                        const failures: PatternDeleteFailure[] = [];
+                        for (let resultIndex = 0; resultIndex < results.length; resultIndex += 1) {
+                            const result = results[resultIndex];
+                            if (result.status === 'fulfilled') {
+                                deletedCount += Number(result.value);
+                            } else {
+                                failures.push({ key: batch[resultIndex], error: normalizeError(result.reason) });
+                            }
+                        }
+                        if (failures.length > 0) {
+                            throw new RedissonPatternDeleteError(pattern, deletedCount, failures);
+                        }
+                    }
+                } while (cursor !== '0');
+            }
+            return deletedCount;
+        } catch (error) {
+            if (error instanceof RedissonPatternDeleteError) throw error;
+            throw new RedissonPatternDeleteError(pattern, deletedCount, [], error);
+        }
+    }
+
+    private execute<T>(operation: () => Promise<T>): Promise<T> {
+        if (this.shuttingDown) {
+            return Promise.reject(new RedissonServiceClosedError());
+        }
+
+        const pending = Promise.resolve().then(operation);
+        this.inFlight.add(pending);
+        void pending.then(
+            () => this.inFlight.delete(pending),
+            () => this.inFlight.delete(pending),
+        );
+        return pending;
+    }
+
+    private assertActive(): void {
+        if (this.shuttingDown) {
+            throw new RedissonServiceClosedError();
+        }
+    }
+
+    private async closeResources(): Promise<void> {
+        this.shuttingDown = true;
+        this.logger.log('Closing Redisson connections...');
+        const drained = await settleWithin([...this.inFlight], this.shutdownTimeoutMs);
+        if (!drained) {
+            this.logger.warn(`Timed out after ${this.shutdownTimeoutMs}ms while draining Redis helper operations`);
+        }
+        this.forceClosing = true;
+
+        const lockEntries = [...this.managedLocks.entries()];
+        const lockReleases = lockEntries.map(async ([key, lock]) => {
+            try {
+                await lock.unlock();
+            } catch (error) {
+                this.logger.error(`Failed to release managed lock during shutdown: ${key}`, error);
+            }
+        });
+        const locksReleased = await settleWithin(lockReleases, this.shutdownTimeoutMs);
+        if (!locksReleased) {
+            this.logger.warn(`Timed out after ${this.shutdownTimeoutMs}ms while releasing managed Redis locks`);
+        }
+        this.managedLocks.clear();
+        this.lockAttempts.clear();
+        this.cacheLoads.clear();
+
+        await super.quit();
+        this.logger.log('Redisson connections closed');
+    }
+}
+
+interface RedisScanClient {
+    scan(cursor: string, ...args: Array<string | number>): Promise<[string, string[]]>;
+    call(command: string, ...args: string[]): Promise<unknown>;
+}
+
+function getScanClients(redis: RedissonRedis): RedisScanClient[] {
+    const candidate = redis as unknown as {
+        nodes?: (role: 'master') => unknown[];
+    };
+    if (typeof candidate.nodes === 'function') {
+        const nodes = candidate.nodes('master');
+        if (nodes.length === 0) {
+            throw new Error('Redis cluster has no available master nodes');
+        }
+        return nodes as RedisScanClient[];
+    }
+    return [redis as unknown as RedisScanClient];
+}
+
+function resolveKeyPrefix(options: RedissonModuleOptions): string {
+    const redis = options.redis as
+        | { options: { keyPrefix?: string } }
+        | { clusters: unknown[]; options?: { redisOptions?: { keyPrefix?: string } } };
+    return 'clusters' in redis ? (redis.options?.redisOptions?.keyPrefix ?? '') : (redis.options.keyPrefix ?? '');
+}
+
+function serializeCacheValue(value: unknown): string {
+    if (value === undefined) {
+        throw new TypeError('Cache value cannot be undefined');
+    }
+    if (typeof value === 'string') {
+        if (value.startsWith(CACHE_STRING_PREFIX) || isJson(value)) {
+            return `${CACHE_STRING_PREFIX}${value}`;
+        }
+        return value;
+    }
+
+    const serialized = JSON.stringify(value);
+    if (serialized === undefined) {
+        throw new TypeError('Cache value cannot be serialized');
+    }
+    return serialized;
+}
+
+function deserializeCacheValue<T>(value: string): T {
+    if (value.startsWith(CACHE_STRING_PREFIX)) {
+        return value.slice(CACHE_STRING_PREFIX.length) as T;
+    }
+    try {
+        return JSON.parse(value) as T;
+    } catch {
+        return value as T;
+    }
+}
+
+function isJson(value: string): boolean {
+    try {
+        JSON.parse(value);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function escapeRedisGlob(value: string): string {
+    return value.replace(/([*?[\]\\])/g, '\\$1');
+}
+
+function removeKeyPrefix(key: string, prefix: string): string {
+    return prefix.length > 0 && key.startsWith(prefix) ? key.slice(prefix.length) : key;
+}
+
+async function releaseDuringShutdown(lock: IRLock, key: string): Promise<void> {
+    try {
+        await lock.unlock();
+    } catch (error) {
+        throw new RedissonLockReleaseError(key, error);
+    }
+}
+
+async function settleWithin(promises: Promise<unknown>[], timeoutMs: number): Promise<boolean> {
+    if (promises.length === 0) return true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<false>(resolve => {
+        timer = setTimeout(() => resolve(false), timeoutMs);
+    });
+    const settled = Promise.allSettled(promises).then(() => true as const);
+    const result = await Promise.race([settled, timeout]);
+    if (timer) clearTimeout(timer);
+    return result;
+}
+
+function validateModuleOptions(options: RedissonModuleOptions | undefined): asserts options is RedissonModuleOptions {
+    if (!options?.redis) {
+        throw new TypeError('RedissonModuleOptions.redis is required');
+    }
+    const redis = options.redis as {
+        clusters?: unknown;
+        options?: { port?: number; db?: number; redisOptions?: { port?: number; db?: number } };
+    };
+    let redisOptions: { port?: number; db?: number } | undefined;
+    if ('clusters' in redis) {
+        if (!Array.isArray(redis.clusters) || redis.clusters.length === 0) {
+            throw new TypeError('Redisson cluster configuration requires at least one node');
+        }
+        if (redis.clusters.some(node => node === null || node === undefined || node === '')) {
+            throw new TypeError('Redisson cluster nodes must be non-empty');
+        }
+        redisOptions = redis.options?.redisOptions;
+    } else {
+        if (!redis.options || typeof redis.options !== 'object') {
+            throw new TypeError('Redisson single-node configuration requires Redis options');
+        }
+        redisOptions = redis.options;
+    }
+    validateIntegerRange('Redis port', redisOptions?.port, 1, 65535);
+    validateIntegerRange('Redis database', redisOptions?.db, 0);
+    if (
+        options.lockWatchdogTimeout !== undefined &&
+        (typeof options.lockWatchdogTimeout !== 'bigint' || options.lockWatchdogTimeout <= 0n)
+    ) {
+        throw new RangeError('lockWatchdogTimeout must be a positive bigint');
+    }
+    if (options.eventAdapter !== undefined && options.eventAdapter !== 'pubsub' && options.eventAdapter !== 'streams') {
+        throw new TypeError('eventAdapter must be either pubsub or streams');
+    }
+    validatePositiveInteger('shutdownTimeoutMs', options.shutdownTimeoutMs ?? DEFAULT_SHUTDOWN_TIMEOUT_MS);
+    validatePositiveInteger('patternScanCount', options.patternScanCount ?? DEFAULT_SCAN_COUNT);
+    validatePositiveInteger('patternDeleteBatchSize', options.patternDeleteBatchSize ?? DEFAULT_DELETE_BATCH_SIZE);
+}
+
+function validateKey(name: string, value: string): void {
+    if (typeof value !== 'string' || value.length === 0) {
+        throw new TypeError(`${name} must be a non-empty string`);
+    }
+}
+
+function validatePattern(pattern: string): void {
+    validateKey('Redis pattern', pattern);
+}
+
+function validateTtl(ttl: number | undefined): void {
+    if (ttl !== undefined && (!Number.isInteger(ttl) || ttl <= 0)) {
+        throw new RangeError('Redis TTL must be a positive integer in seconds');
+    }
+}
+
+function validateWaitTime(waitTime: number): void {
+    if (!Number.isFinite(waitTime) || waitTime < 0) {
+        throw new RangeError('Lock waitTime must be a non-negative finite number');
+    }
+}
+
+function validateLeaseTime(leaseTime: number): void {
+    if (!Number.isFinite(leaseTime) || leaseTime <= 0) {
+        throw new RangeError('Lock leaseTime must be a positive finite number');
+    }
+}
+
+function validateSafeInteger(name: string, value: number): void {
+    if (!Number.isSafeInteger(value)) {
+        throw new RangeError(`${name} must be a safe integer`);
+    }
+}
+
+function validatePositiveInteger(name: string, value: number): void {
+    if (!Number.isInteger(value) || value <= 0) {
+        throw new RangeError(`${name} must be a positive integer`);
+    }
+}
+
+function validateIntegerRange(name: string, value: number | undefined, minimum: number, maximum?: number): void {
+    if (value === undefined) return;
+    if (!Number.isInteger(value) || value < minimum || (maximum !== undefined && value > maximum)) {
+        const range = maximum === undefined ? `at least ${minimum}` : `between ${minimum} and ${maximum}`;
+        throw new RangeError(`${name} must be an integer ${range}`);
+    }
+}
+
+function normalizeError(error: unknown): Error {
+    return error instanceof Error ? error : new Error(String(error));
 }

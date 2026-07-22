@@ -1,10 +1,12 @@
+export const RESULT_ERROR_MAX_LENGTH = 4_096;
+
 export class Result<T> {
     public readonly isSuccess: boolean;
     public readonly isFailure: boolean;
     public readonly error: string | null;
-    private readonly _value: T | null;
+    private readonly _value: T | undefined;
 
-    private constructor(isSuccess: boolean, error: string | null, value: T | null) {
+    private constructor(isSuccess: boolean, error: string | null, value: T | undefined) {
         this.isSuccess = isSuccess;
         this.isFailure = !isSuccess;
         this.error = error;
@@ -28,7 +30,7 @@ export class Result<T> {
     }
 
     getValueOrNull(): T | null {
-        return this.isSuccess ? this._value : null;
+        return this.isSuccess ? (this._value as T) : null;
     }
 
     map<U>(mapper: (value: T) => U): Result<U> {
@@ -68,25 +70,27 @@ export class Result<T> {
     }
 
     tapError(fn: (error: string) => void): Result<T> {
-        if (this.isFailure && this.error) {
-            fn(this.error);
+        if (this.isFailure) {
+            fn(this.error ?? 'Unknown error');
         }
         return this;
     }
 
-    static ok<U>(value?: U): Result<U> {
-        return new Result<U>(true, null, value ?? null);
+    static ok(): Result<void>;
+    static ok<U>(value: U): Result<U>;
+    static ok<U>(value?: U): Result<U | void> {
+        return new Result<U | void>(true, null, value);
     }
 
-    static fail<U>(error: string): Result<U> {
-        return new Result<U>(false, error, null);
+    static fail<U = never>(error: unknown): Result<U> {
+        return new Result<U>(false, normalizeResultError(error), undefined);
     }
 
     static fromTry<U>(fn: () => U): Result<U> {
         try {
             return Result.ok(fn());
         } catch (error) {
-            return Result.fail(error instanceof Error ? error.message : String(error));
+            return Result.fail(error);
         }
     }
 
@@ -94,11 +98,13 @@ export class Result<T> {
         try {
             return Result.ok(await fn());
         } catch (error) {
-            return Result.fail(error instanceof Error ? error.message : String(error));
+            return Result.fail(error);
         }
     }
 
-    static combine<T extends Result<unknown>[]>(...results: T): Result<{ [K in keyof T]: UnwrapResult<T[K]> }> {
+    static combine<T extends readonly Result<unknown>[]>(
+        ...results: T
+    ): Result<{ [K in keyof T]: UnwrapResult<T[K]> }> {
         const failures = results.filter(result => result.isFailure).map(result => result.error ?? 'Unknown error');
         if (failures.length > 0) {
             return Result.fail(failures.join('; ')) as Result<{ [K in keyof T]: UnwrapResult<T[K]> }>;
@@ -125,19 +131,36 @@ export class Result<T> {
         return Result.ok(values);
     }
 
-    static firstFailure(results: Array<Result<unknown>>): Result<unknown> | undefined {
+    static firstFailure(results: readonly Result<unknown>[]): Result<unknown> | undefined {
         return results.find(result => result.isFailure);
     }
 
     static all<TValues extends readonly unknown[]>(
         results: { [K in keyof TValues]: Result<TValues[K]> },
     ): Result<TValues> {
-        const failed = Result.firstFailure(results as Array<Result<unknown>>);
+        const failed = Result.firstFailure(results as readonly Result<unknown>[]);
         if (failed?.isFailure) {
             return Result.fail<TValues>(failed.error ?? 'Unknown error');
         }
         return Result.ok(results.map(result => result.getValue()) as unknown as TValues);
     }
+}
+
+function normalizeResultError(error: unknown): string {
+    let message = '';
+    try {
+        if (typeof error === 'string') {
+            message = error.trim();
+        } else if (error instanceof Error) {
+            message = error.message.trim() || error.name;
+        } else if (error !== null && error !== undefined) {
+            message = String(error).trim();
+        }
+    } catch {
+        message = '';
+    }
+    if (!message) message = 'Unknown error';
+    return message.length <= RESULT_ERROR_MAX_LENGTH ? message : `${message.slice(0, RESULT_ERROR_MAX_LENGTH - 1)}…`;
 }
 
 export type UnwrapResult<T> = T extends Result<infer U> ? U : T;

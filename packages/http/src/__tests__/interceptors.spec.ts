@@ -7,13 +7,13 @@ import {
     DomainException,
     DomainExceptionFilter,
     GlobalErrorFilter,
+    getOrCreateRequestId,
     HttpExceptionFilter,
     KeyTransformInterceptor,
     LoggingInterceptor,
     SKIP_API_RESPONSE,
     StatusCode,
     TransformInterceptor,
-    getOrCreateRequestId,
     transformKeysToCamelCase,
     transformKeysToSnakeCase,
 } from '../index';
@@ -147,7 +147,7 @@ describe('http Nest integrations', () => {
             _meta: {
                 path: '/resources/1',
                 method: 'GET',
-                requestId: 'req-from-request',
+                requestId: 'req-transform',
             },
         });
     });

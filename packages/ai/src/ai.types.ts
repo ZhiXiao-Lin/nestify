@@ -8,6 +8,7 @@ import type {
     Session,
     SessionOptions,
     SessionRequestOptions,
+    WorkerAgentSpec,
 } from '@a3s-lab/code';
 import type { FactoryProvider, ModuleMetadata } from '@nestjs/common';
 
@@ -28,6 +29,9 @@ export type AiSessionRequestOptions = SessionRequestOptions;
 
 /** The durable prompt request accepted by A3S Code. */
 export type AiSessionRequest = string | AiSessionRequestOptions;
+
+/** Disposable worker definition accepted by the native SDK. */
+export type AiWorkerAgentSpec = WorkerAgentSpec;
 
 /** The complete result returned by a non-streaming run. */
 export type AiRunResult = AgentResult;
@@ -77,4 +81,9 @@ export interface AiInvocationOptions {
     workspace: string;
     request: AiSessionRequest;
     sessionOptions?: AiSessionOptions;
+    /** Cancels only the disposable session owned by this invocation. */
+    signal?: AbortSignal;
 }
+
+/** Callback used by `AiService.withSession`; the session is always closed afterwards. */
+export type AiSessionCallback<TResult> = (session: AiSession) => TResult | Promise<TResult>;

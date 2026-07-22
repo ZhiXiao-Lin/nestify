@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpConfigurationError, normalizeHttpText, normalizePublicDetails } from './http-boundary';
 
 export enum StatusCode {
     BAD_REQUEST = 'BAD_REQUEST',
@@ -103,7 +104,7 @@ export const StatusCodeHttpStatus: Record<StatusCode, number> = {
 };
 
 export function getStatusMessage(statusCode: string): string {
-    return StatusMessages[statusCode as StatusCode] || 'An error occurred';
+    return StatusMessages[statusCode as StatusCode] ?? 'An error occurred';
 }
 
 export interface BusinessExceptionOptions {
@@ -118,11 +119,13 @@ export class BusinessException extends HttpException {
     public readonly details?: Record<string, unknown>;
 
     constructor(options: BusinessExceptionOptions) {
-        const httpStatus = options.httpStatus || StatusCodeHttpStatus[options.code] || 400;
-        const message = options.message || getStatusMessage(options.code);
-        super({ status: options.code, message, details: options.details }, httpStatus);
-        this.code = options.code;
-        this.details = options.details;
+        const normalized = normalizeBusinessExceptionOptions(options);
+        super(
+            { status: normalized.code, message: normalized.message, details: normalized.details },
+            normalized.httpStatus,
+        );
+        this.code = normalized.code;
+        this.details = normalized.details;
     }
 
     override getResponse(): Record<string, unknown> {
@@ -132,6 +135,37 @@ export class BusinessException extends HttpException {
             details: this.details,
         };
     }
+}
+
+interface NormalizedBusinessExceptionOptions {
+    code: StatusCode;
+    message: string;
+    details?: Record<string, unknown>;
+    httpStatus: number;
+}
+
+function normalizeBusinessExceptionOptions(options: BusinessExceptionOptions): NormalizedBusinessExceptionOptions {
+    if (!options || typeof options !== 'object') {
+        throw new HttpConfigurationError('BusinessException options must be an object.');
+    }
+    if (!Object.values(StatusCode).includes(options.code)) {
+        throw new HttpConfigurationError('BusinessException code must be a valid StatusCode.');
+    }
+
+    const httpStatus = options.httpStatus ?? StatusCodeHttpStatus[options.code] ?? HttpStatus.BAD_REQUEST;
+    if (!Number.isInteger(httpStatus) || httpStatus < 400 || httpStatus > 599) {
+        throw new HttpConfigurationError('BusinessException httpStatus must be an integer between 400 and 599.');
+    }
+
+    return {
+        code: options.code,
+        message: normalizeHttpText(options.message, {
+            fallback: getStatusMessage(options.code),
+            maxLength: 1_024,
+        }),
+        details: normalizePublicDetails(options.details),
+        httpStatus,
+    };
 }
 
 export class ValidationException extends BusinessException {

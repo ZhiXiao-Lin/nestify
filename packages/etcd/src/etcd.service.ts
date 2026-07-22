@@ -1,8 +1,17 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Etcd3, type IKeyValue, type IOptions, type IStatusResponse, type Lease, type Watcher } from 'etcd3';
+import { retry as createRetryPolicy, handleWhen } from 'cockatiel';
 import {
-    ETCD_MODULE_OPTIONS,
+    Etcd3,
+    type IKeyValue,
+    type IOptions,
+    type IStatusResponse,
+    isRecoverableError,
+    type Lease,
+    type Watcher,
+} from 'etcd3';
+import {
     type ConfigEntry,
+    ETCD_MODULE_OPTIONS,
     type EtcdModuleOptions,
     type HealthResult,
     type LeaseInfo,
@@ -13,10 +22,16 @@ import {
 export class EtcdService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(EtcdService.name);
     private readonly client: Etcd3;
-    private readonly watchers = new Map<string, Promise<Watcher>>();
+    private readonly watchers = new Map<number, WatchRegistration>();
     private readonly leases = new Map<string, Lease>();
+    private nextWatcherId = 0;
+    private destroyPromise?: Promise<void>;
 
     constructor(@Inject(ETCD_MODULE_OPTIONS) private readonly options: EtcdModuleOptions) {
+        validateOptions(this.options);
+
+        const timeout = this.options.requestOptions?.timeout;
+        const retry = this.options.requestOptions?.retry;
         const etcdOptions: IOptions = {
             hosts: this.options.endpoints,
             credentials: this.options.tls
@@ -33,9 +48,15 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
                           password: this.options.auth.password,
                       }
                     : undefined,
-            defaultCallOptions: this.options.requestOptions?.timeout
-                ? () => ({ deadline: Date.now() + this.options.requestOptions!.timeout! })
+            defaultCallOptions: timeout
+                ? context => (context.isStream ? {} : { deadline: Date.now() + timeout })
                 : undefined,
+            faultHandling:
+                retry === undefined
+                    ? undefined
+                    : {
+                          global: createRetryPolicy(handleWhen(isRecoverableError), { maxAttempts: retry }),
+                      },
         };
 
         this.client = new Etcd3(etcdOptions);
@@ -55,23 +76,8 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
     }
 
     async onModuleDestroy(): Promise<void> {
-        try {
-            for (const [key, watcher] of this.watchers) {
-                this.logger.debug(`Canceling watcher: ${key}`);
-                await (await watcher).cancel();
-            }
-            this.watchers.clear();
-
-            for (const lease of this.leases.values()) {
-                lease.release();
-            }
-            this.leases.clear();
-
-            this.client.close();
-            this.logger.log('Etcd connection closed');
-        } catch (error) {
-            this.logger.error('Error closing etcd connection', error);
-        }
+        this.destroyPromise ??= this.destroyResources();
+        await this.destroyPromise;
     }
 
     async get<T = string>(key: string): Promise<T | null> {
@@ -96,11 +102,21 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
     ): Promise<void> {
         const serialized = serializeValue(value);
 
-        if (options?.ttl && !options.lease) {
+        if (options?.ttl !== undefined) {
+            validateTtl(options.ttl);
+        }
+        if (options?.ttl !== undefined && options.lease) {
+            throw new Error('ttl and lease cannot be used together');
+        }
+
+        if (options?.ttl !== undefined) {
             const lease = this.client.lease(options.ttl, { autoKeepAlive: false });
-            const leaseId = await lease.grant();
-            this.leases.set(String(leaseId), lease);
-            await lease.put(key).value(serialized).exec();
+            try {
+                await lease.grant();
+                await lease.put(key).value(serialized).exec();
+            } finally {
+                lease.release();
+            }
             return;
         }
 
@@ -136,7 +152,7 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
             value: decodeBuffer(kv.value) as T,
             version: Number(kv.version),
             revision: Number(kv.mod_revision),
-            created: kv.create_revision === kv.mod_revision,
+            created: Number(kv.create_revision) === Number(kv.mod_revision),
         }));
     }
 
@@ -156,10 +172,17 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
     }
 
     async createLease(ttl: number): Promise<LeaseInfo> {
+        validateTtl(ttl);
         const lease = this.client.lease(ttl);
         const id = await lease.grant();
-        this.leases.set(String(id), lease);
-        return { id: String(id), ttl, remainingTTL: ttl };
+        const leaseId = String(id);
+        this.leases.set(leaseId, lease);
+        lease.once('lost', () => {
+            if (this.leases.get(leaseId) === lease) {
+                this.leases.delete(leaseId);
+            }
+        });
+        return { id: leaseId, ttl, remainingTTL: ttl };
     }
 
     async grantLease(ttl: number): Promise<string> {
@@ -185,41 +208,11 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
     }
 
     watch<T = string>(key: string, callback: WatchCallback<T>): () => void {
-        const watcher = this.client
-            .watch()
-            .key(key)
-            .create()
-            .then(watcher => {
-                this.attachWatcherHandlers(watcher, key, callback);
-                return watcher;
-            });
-        this.watchers.set(key, watcher);
-
-        return () => {
-            void watcher
-                .then(w => w.cancel())
-                .catch(error => this.logger.error(`Cancel watcher failed: ${key}`, error));
-            this.watchers.delete(key);
-        };
+        return this.registerWatcher(key, () => this.client.watch().key(key).create(), callback);
     }
 
     watchPrefix<T = string>(prefix: string, callback: WatchCallback<T>): () => void {
-        const watcher = this.client
-            .watch()
-            .prefix(prefix)
-            .create()
-            .then(watcher => {
-                this.attachWatcherHandlers(watcher, prefix, callback);
-                return watcher;
-            });
-        this.watchers.set(prefix, watcher);
-
-        return () => {
-            void watcher
-                .then(w => w.cancel())
-                .catch(error => this.logger.error(`Cancel watcher failed: ${prefix}`, error));
-            this.watchers.delete(prefix);
-        };
+        return this.registerWatcher(prefix, () => this.client.watch().prefix(prefix).create(), callback);
     }
 
     async healthCheck(): Promise<HealthResult> {
@@ -255,15 +248,22 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         newValue: string,
         options?: { ttl?: number },
     ): Promise<boolean> {
+        if (options?.ttl !== undefined) {
+            validateTtl(options.ttl);
+        }
         const comparison =
             expectedValue === null
                 ? this.client.if(key, 'Create', '==', 0)
                 : this.client.if(key, 'Value', '==', expectedValue);
-        const put = options?.ttl
-            ? this.client.lease(options.ttl, { autoKeepAlive: false }).put(key).value(newValue)
-            : this.client.put(key).value(newValue);
-        const result = await comparison.then(put).commit();
-        return result.succeeded;
+        const lease = options?.ttl === undefined ? undefined : this.client.lease(options.ttl, { autoKeepAlive: false });
+        const put = lease ? lease.put(key).value(newValue) : this.client.put(key).value(newValue);
+
+        try {
+            const result = await comparison.then(put).commit();
+            return result.succeeded;
+        } finally {
+            lease?.release();
+        }
     }
 
     getClient(): Etcd3 {
@@ -274,9 +274,55 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         return this.client.maintenance.status();
     }
 
+    private registerWatcher<T>(label: string, create: () => Promise<Watcher>, callback: WatchCallback<T>): () => void {
+        if (this.destroyPromise) {
+            throw new Error('Cannot create an etcd watcher after shutdown has started');
+        }
+
+        const id = ++this.nextWatcherId;
+        let active = true;
+        let cancellation: Promise<void> | undefined;
+        const watcher = Promise.resolve()
+            .then(create)
+            .then(created => {
+                this.attachWatcherHandlers<T>(created, label, event => {
+                    if (active) {
+                        return callback(event);
+                    }
+                });
+                return created;
+            })
+            .catch(error => {
+                this.watchers.delete(id);
+                this.logger.error(`Create watcher failed: ${label}`, error);
+                return undefined;
+            });
+        const registration: WatchRegistration = {
+            label,
+            cancel: () => {
+                active = false;
+                cancellation ??= watcher
+                    .then(created => created?.cancel())
+                    .then(() => undefined)
+                    .finally(() => {
+                        this.watchers.delete(id);
+                    });
+                return cancellation;
+            },
+        };
+        this.watchers.set(id, registration);
+
+        let unsubscribed = false;
+        return () => {
+            if (unsubscribed) return;
+            unsubscribed = true;
+            void registration.cancel().catch(error => this.logger.error(`Cancel watcher failed: ${label}`, error));
+        };
+    }
+
     private attachWatcherHandlers<T>(watcher: Watcher, label: string, callback: WatchCallback<T>): void {
         watcher.on('put', kv => {
-            callback({
+            this.invokeWatchCallback(label, callback, {
                 type: 'put',
                 key: decodeBuffer(kv.key),
                 value: decodeBuffer(kv.value) as T,
@@ -286,7 +332,7 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
         });
 
         watcher.on('delete', kv => {
-            callback({
+            this.invokeWatchCallback(label, callback, {
                 type: 'delete',
                 key: decodeBuffer(kv.key),
                 value: null,
@@ -299,6 +345,56 @@ export class EtcdService implements OnModuleInit, OnModuleDestroy {
             this.logger.error(`Watch error for ${label}:`, error);
         });
     }
+
+    private invokeWatchCallback<T>(
+        label: string,
+        callback: WatchCallback<T>,
+        event: Parameters<WatchCallback<T>>[0],
+    ): void {
+        try {
+            void Promise.resolve(callback(event)).catch(error => {
+                this.logger.error(`Watch callback failed: ${label}`, error);
+            });
+        } catch (error) {
+            this.logger.error(`Watch callback failed: ${label}`, error);
+        }
+    }
+
+    private async destroyResources(): Promise<void> {
+        const watcherResults = await Promise.allSettled(
+            [...this.watchers.values()].map(async registration => {
+                this.logger.debug(`Canceling watcher: ${registration.label}`);
+                await registration.cancel();
+            }),
+        );
+        this.watchers.clear();
+        for (const result of watcherResults) {
+            if (result.status === 'rejected') {
+                this.logger.error('Error canceling etcd watcher', result.reason);
+            }
+        }
+
+        for (const lease of this.leases.values()) {
+            try {
+                lease.release();
+            } catch (error) {
+                this.logger.error('Error releasing etcd lease', error);
+            }
+        }
+        this.leases.clear();
+
+        try {
+            this.client.close();
+            this.logger.log('Etcd connection closed');
+        } catch (error) {
+            this.logger.error('Error closing etcd connection', error);
+        }
+    }
+}
+
+interface WatchRegistration {
+    label: string;
+    cancel: () => Promise<void>;
 }
 
 function serializeValue(value: string | number | boolean | object): string | number {
@@ -313,4 +409,34 @@ function serializeValue(value: string | number | boolean | object): string | num
 
 function decodeBuffer(value: IKeyValue['key']): string {
     return Buffer.isBuffer(value) ? value.toString('utf8') : String(value);
+}
+
+function validateOptions(options: EtcdModuleOptions): void {
+    if (!Array.isArray(options.endpoints) || options.endpoints.length === 0) {
+        throw new Error('At least one etcd endpoint is required');
+    }
+    if (options.endpoints.some(endpoint => typeof endpoint !== 'string' || endpoint.trim().length === 0)) {
+        throw new Error('Etcd endpoints must be non-empty strings');
+    }
+    if (Boolean(options.auth?.username) !== Boolean(options.auth?.password)) {
+        throw new Error('Etcd auth requires both username and password');
+    }
+    if (Boolean(options.tls?.cert) !== Boolean(options.tls?.key)) {
+        throw new Error('Etcd TLS client authentication requires both cert and key');
+    }
+
+    const timeout = options.requestOptions?.timeout;
+    if (timeout !== undefined && (!Number.isFinite(timeout) || timeout <= 0)) {
+        throw new Error('Etcd request timeout must be a positive number');
+    }
+    const retry = options.requestOptions?.retry;
+    if (retry !== undefined && (!Number.isInteger(retry) || retry < 0)) {
+        throw new Error('Etcd retry count must be a non-negative integer');
+    }
+}
+
+function validateTtl(ttl: number): void {
+    if (!Number.isInteger(ttl) || ttl <= 0) {
+        throw new Error('Etcd lease TTL must be a positive integer');
+    }
 }
