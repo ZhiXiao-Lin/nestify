@@ -1,56 +1,45 @@
-import { Module, Global } from '@nestjs/common';
-import type { DynamicModule } from '@nestjs/common';
+import { type DynamicModule, Module, type Provider } from '@nestjs/common';
 import {
     ASYNC_OPTIONS_TYPE,
     ConfigurableModuleClass,
     MODULE_OPTIONS_TOKEN,
     OPTIONS_TYPE,
 } from './logger.module-definition';
-import { LoggerServiceImpl, Logger } from './logger.service';
+import { LoggerServiceImpl } from './logger.service';
+import type { LoggerModuleOptions } from './logger.types';
 import { LoggingInterceptor } from './logging.interceptor';
 
-@Global()
 @Module({})
 export class LoggerModule extends ConfigurableModuleClass {
     static register(options: typeof OPTIONS_TYPE): DynamicModule {
-        const dynamicModule = super.register(options);
-        return {
-            ...dynamicModule,
-            providers: [
-                ...(dynamicModule.providers || []),
-                {
-                    provide: LoggerServiceImpl,
-                    useFactory: (opts: typeof OPTIONS_TYPE) => new LoggerServiceImpl(opts),
-                    inject: [MODULE_OPTIONS_TOKEN],
-                },
-                {
-                    provide: Logger,
-                    useExisting: LoggerServiceImpl,
-                },
-                LoggingInterceptor,
-            ],
-            exports: [LoggerServiceImpl, Logger, LoggingInterceptor],
-        };
+        return this.withProviders(super.register(options));
     }
 
     static registerAsync(options: typeof ASYNC_OPTIONS_TYPE): DynamicModule {
-        const dynamicModule = super.registerAsync(options);
+        return this.withProviders(super.registerAsync(options));
+    }
+
+    private static withProviders(dynamicModule: DynamicModule): DynamicModule {
         return {
             ...dynamicModule,
-            providers: [
-                ...(dynamicModule.providers || []),
-                {
-                    provide: LoggerServiceImpl,
-                    useFactory: (opts: typeof OPTIONS_TYPE) => new LoggerServiceImpl(opts),
-                    inject: [MODULE_OPTIONS_TOKEN],
-                },
-                {
-                    provide: Logger,
-                    useExisting: LoggerServiceImpl,
-                },
-                LoggingInterceptor,
-            ],
-            exports: [LoggerServiceImpl, Logger, LoggingInterceptor],
+            providers: [...(dynamicModule.providers ?? []), ...createLoggerProviders()],
+            exports: [LoggerServiceImpl, LoggingInterceptor],
         };
     }
+}
+
+function createLoggerProviders(): Provider[] {
+    return [
+        {
+            provide: LoggerServiceImpl,
+            useFactory: (options: LoggerModuleOptions) => new LoggerServiceImpl(options),
+            inject: [MODULE_OPTIONS_TOKEN],
+        },
+        {
+            provide: LoggingInterceptor,
+            useFactory: (logger: LoggerServiceImpl, options: LoggerModuleOptions) =>
+                new LoggingInterceptor(logger, options.interceptor),
+            inject: [LoggerServiceImpl, MODULE_OPTIONS_TOKEN],
+        },
+    ];
 }

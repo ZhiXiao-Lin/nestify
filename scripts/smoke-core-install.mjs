@@ -146,7 +146,13 @@ import { createNestCqrsDomainEventPublisherProvider, NestCqrsDomainEventPublishe
 import { ApiResponseDto, getOrCreateRequestId, StatusCode } from '@a3s-lab/http';
 import { JwtTokenHelper, PathSecurityValidator, Public } from '@a3s-lab/security';
 import { DEFAULT_HISTOGRAM_BUCKETS, createHealthCheck, MetricsService } from '@a3s-lab/observability';
-import { LoggerServiceImpl } from '@a3s-lab/logger';
+import {
+    DEFAULT_LOG_REDACTION_PATHS,
+    LoggerConfigurationError,
+    LoggerServiceImpl,
+    createLoggerModuleOptions,
+    type LogInterceptorOptions,
+} from '@a3s-lab/logger';
 import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
 import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
 import {
@@ -201,6 +207,12 @@ const access = PathSecurityValidator.validatePathAccess('/resources/file.txt');
 const healthCheck = createHealthCheck('ready', () => undefined);
 const metrics = new MetricsService();
 const logger = new LoggerServiceImpl({ json: true });
+const loggerOptions = createLoggerModuleOptions({
+    name: 'smoke',
+    json: true,
+    interceptor: { maxRequestIdLength: 64 },
+});
+const loggerInterceptor: LogInterceptorOptions = { responseRequestIdHeader: false };
 const retry = new RetryService();
 const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
@@ -271,6 +283,10 @@ void access;
 void healthCheck;
 void metrics;
 void logger;
+void loggerOptions;
+void loggerInterceptor;
+void DEFAULT_LOG_REDACTION_PATHS;
+void LoggerConfigurationError;
 void retry;
 void pool;
 void redis;
@@ -321,7 +337,14 @@ const expectedExports = {
     '@a3s-lab/http': ['ApiResponseDto', 'StatusCode', 'getOrCreateRequestId'],
     '@a3s-lab/security': ['JwtTokenHelper', 'PathSecurityValidator', 'Public'],
     '@a3s-lab/observability': ['MetricsService', 'DEFAULT_HISTOGRAM_BUCKETS', 'createHealthCheck'],
-    '@a3s-lab/logger': ['LoggerServiceImpl', 'LoggerModule'],
+    '@a3s-lab/logger': [
+        'LoggerServiceImpl',
+        'LoggerModule',
+        'LoggingInterceptor',
+        'createLoggerModuleOptions',
+        'DEFAULT_LOG_REDACTION_PATHS',
+        'LoggerConfigurationError',
+    ],
     '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
     '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
     '@a3s-lab/redisson': ['RedissonModule', 'RedissonPatternDeleteError', 'createRedissonModuleOptions'],
