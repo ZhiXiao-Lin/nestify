@@ -154,7 +154,13 @@ import {
     type LogInterceptorOptions,
 } from '@a3s-lab/logger';
 import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
-import { KyselyModule, createPostgresPoolConfig } from '@a3s-lab/kysely';
+import {
+    createKyselyLogger,
+    createPostgresPoolConfig,
+    KyselyConfigurationError,
+    KyselyModule,
+    type ConfiguredKyselyModuleOptions,
+} from '@a3s-lab/kysely';
 import {
     type DeleteByPatternOptions,
     RedissonModule,
@@ -221,6 +227,8 @@ const loggerOptions = createLoggerModuleOptions({
 const loggerInterceptor: LogInterceptorOptions = { responseRequestIdHeader: false };
 const retry = new RetryService();
 const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
+const queryLogger = createKyselyLogger({ consoleOutput: false });
+const configuredKyselyOptions = null as unknown as ConfiguredKyselyModuleOptions;
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
 const redisPatternOptions: DeleteByPatternOptions = { scanCount: 250, batchSize: 50 };
 const redisPatternError = new RedissonPatternDeleteError('cache:*', 0, []);
@@ -302,6 +310,9 @@ void DEFAULT_LOG_REDACTION_PATHS;
 void LoggerConfigurationError;
 void retry;
 void pool;
+void queryLogger;
+void configuredKyselyOptions;
+void KyselyConfigurationError;
 void redis;
 void redisPatternOptions;
 void redisPatternError;
@@ -362,7 +373,15 @@ const expectedExports = {
         'LoggerConfigurationError',
     ],
     '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
-    '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
+    '@a3s-lab/kysely': [
+        'KyselyModule',
+        'KyselyService',
+        'KyselyConfigurationError',
+        'normalizeKyselyModuleOptions',
+        'createPostgresPoolConfig',
+        'createKyselyLogger',
+        'DEFAULT_KYSELY_LOGGER_MAX_SQL_LENGTH',
+    ],
     '@a3s-lab/redisson': ['RedissonModule', 'RedissonPatternDeleteError', 'createRedissonModuleOptions'],
     '@a3s-lab/bullmq': [
         'BullMQModule',

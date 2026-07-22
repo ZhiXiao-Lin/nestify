@@ -13,7 +13,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
-| `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
+| `@a3s-lab/kysely` | Validated Kysely NestJS lifecycle, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis cache and lock helpers, incremental pattern cleanup, managed lock ownership, and validated single-node option builders. |
 | `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup operations. |
 | `@a3s-lab/nats` | Validated NATS SDK configuration, race-safe connection ownership, request-many and response helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded drain/close. |
@@ -105,6 +105,12 @@ The former `apps/api/src/shared/*` implementations were reviewed after the frame
 Future extraction should only happen when an area has a package-level contract that does not depend on sample API
 tables, request user conventions, environment variable names, or default business resources.
 
+## Database Lifecycle
+
+`@a3s-lab/kysely` validates dialects and PostgreSQL pool numbers before creating a service. Connections created from module configuration are module-owned and close through one idempotent destroy operation. An `instance` supplied by the application is exposed unchanged and remains caller-owned.
+
+The optional console logger renders bounded single-line output. Bound parameter values and error stacks are omitted unless explicitly enabled; the raw `onQuery` hook remains an application-owned sensitive-data boundary.
+
 ## Migration Naming
 
 `@a3s-lab/migrations` treats migration names matching `/(^|_)concurrent(_|$)/i` as non-transactional. These migrations are wrapped so `up` and `down` run against the outer Kysely instance instead of Kysely's transactional migration connection. Custom global or sticky regular expressions are reset for every name, so `lastIndex` state cannot skip alternating migrations.
@@ -137,7 +143,7 @@ The framework core is covered by package tests for:
 - Logger option validation, Pino field integrity, secret redaction, native child loggers, real Nest provider resolution, concurrent request-context isolation, and bounded HTTP metadata
 - Resilience retry, circuit breaker, TTL cache, atomic rate limiting, and bounded Redis outage policies
 - Resilience module registration and interceptor metadata execution
-- Kysely PostgreSQL option builders and module registration
+- Kysely option validation, PostgreSQL builders, owned/external lifecycle behavior, bounded logger output, and sync/async module registration
 - Redisson Redis option builders and module registration
 - BullMQ option validation, queue defaults, multiple managed workers, cancellation-aware processors, metrics, health checks, destructive cleanup semantics, and bounded failure-safe shutdown
 - NATS option validation, connection races and recovery, publish/request-many encoding, response helpers, owned

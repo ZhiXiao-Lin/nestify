@@ -20,7 +20,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
-| `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders. |
+| `@a3s-lab/kysely` | Validated NestJS lifecycle integration for Kysely, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis caching and lock helpers with local single-flight loads, managed lock ownership, cluster-aware SCAN/UNLINK cleanup, validated options, and bounded shutdown. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup helpers. |
@@ -177,6 +177,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
   and histograms cap label cardinality with an explicit overflow series.
 - Logger request context is scoped to each Observable subscription; inbound ids and optional headers are bounded, query
   strings are excluded, proxy identity follows Express trust-proxy policy, and common secrets are redacted by default.
+- Kysely configuration and PostgreSQL numeric options are validated before connection creation. Module-owned connections
+  close idempotently, external instances stay caller-owned, and SQL diagnostics omit parameters and stacks by default.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
   Configuration is validated before bootstrap, concurrent calls on one runner share their in-flight result, and
   Kysely's database lock coordinates separate instances.
