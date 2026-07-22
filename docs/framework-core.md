@@ -19,7 +19,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/nats` | Validated NATS SDK configuration, race-safe connection ownership, request-many and response helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded drain/close. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
-| `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
+| `@a3s-lab/clickhouse` | Validated official ClickHouse client integration with cancellable requests, typed helpers, bounded database-client pooling, health reporting, and deterministic shutdown. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS module and service integration for the A3S coding-agent runtime provided by `@a3s-lab/code`. |
@@ -65,6 +65,8 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
 - Automatic migrations are fail-closed and require an explicit module or environment opt-in in production.
 - NATS connection attempts are coalesced, stale connection events cannot overwrite active state, subscription handles are
   instance-owned, health checks perform bounded broker round trips, and shutdown has one total drain/close deadline.
+- ClickHouse request cancellation combines caller signals with timeouts; database override clients are LRU-bounded, and
+  shutdown rejects new operations before draining tracked work and closing every owned client.
 
 ## Sample API Wiring
 
@@ -140,7 +142,7 @@ The framework core is covered by package tests for:
   subscriptions, JetStream acknowledgement behavior, active health probes, and bounded lifecycle cleanup
 - RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks
 - Etcd client registration, key-value operations, config cache, watches, leases, compare-and-set, health checks, and lifecycle cleanup
-- ClickHouse client routing and lifecycle
+- ClickHouse option normalization, SQL/format routing, request cancellation, bounded LRU client pooling, health probes, and failure-safe lifecycle cleanup
 - Migration provider wrapping and module registration
 - File upload validation, storage key handling, module registration, and upload interceptors
 - AI module registration, injected runtime access, session delegation, and lifecycle cleanup

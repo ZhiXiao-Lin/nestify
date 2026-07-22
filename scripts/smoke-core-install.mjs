@@ -166,7 +166,14 @@ import {
 } from '@a3s-lab/nats';
 import { RustFSModule } from '@a3s-lab/rustfs';
 import { EtcdModule } from '@a3s-lab/etcd';
-import { CLICKHOUSE_OPTIONS_TOKEN, ClickHouseModule } from '@a3s-lab/clickhouse';
+import {
+    CLICKHOUSE_OPTIONS_TOKEN,
+    ClickHouseClientPoolExhaustedError,
+    type ClickHouseHealthResult,
+    ClickHouseModule,
+    type ClickHouseRequestOptions,
+    createClickHouseClientOptions,
+} from '@a3s-lab/clickhouse';
 import { MigrationModule, NON_TRANSACTIONAL_MIGRATION_NAME } from '@a3s-lab/migrations';
 import { FileUploadModule, getExtension } from '@a3s-lab/files';
 import {
@@ -208,6 +215,21 @@ const natsRequestMany: RequestManyOptions = {
     expectedResponseCount: 2,
 };
 const natsClosedError = new NatsServiceClosedError();
+const clickhouseClient = createClickHouseClientOptions({
+    url: 'https://clickhouse.test:8443',
+    database: 'analytics',
+    requestTimeoutMs: 2_000,
+});
+const clickhouseRequest: ClickHouseRequestOptions = {
+    database: 'reporting',
+    queryParams: { tenant: 'a3s' },
+    timeoutMs: 1_000,
+};
+const clickhouseHealth: ClickHouseHealthResult = {
+    healthy: true,
+    database: 'analytics',
+    latencyMs: 1,
+};
 const provider = createNestCqrsDomainEventPublisherProvider();
 const sandboxConnection = createA3SBoxConnectionConfig({
     apiUrl: 'https://api.box.test',
@@ -246,6 +268,9 @@ void natsConnection;
 void natsHealth;
 void natsRequestMany;
 void natsClosedError;
+void clickhouseClient;
+void clickhouseRequest;
+void clickhouseHealth;
 void provider;
 void moduleRefs;
 void serviceRefs;
@@ -253,6 +278,7 @@ void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
 void CLICKHOUSE_OPTIONS_TOKEN;
+void ClickHouseClientPoolExhaustedError;
 void NON_TRANSACTIONAL_MIGRATION_NAME;
 
 const extension: string = getExtension('file.txt');
@@ -293,7 +319,13 @@ const expectedExports = {
     ],
     '@a3s-lab/rustfs': ['RustFSModule', 'RustFSServiceImpl'],
     '@a3s-lab/etcd': ['EtcdModule', 'EtcdService'],
-    '@a3s-lab/clickhouse': ['CLICKHOUSE_OPTIONS_TOKEN', 'ClickHouseModule', 'ClickHouseService'],
+    '@a3s-lab/clickhouse': [
+        'CLICKHOUSE_OPTIONS_TOKEN',
+        'ClickHouseClientPoolExhaustedError',
+        'ClickHouseModule',
+        'ClickHouseService',
+        'createClickHouseClientOptions',
+    ],
     '@a3s-lab/migrations': ['MigrationModule', 'createFileMigrationProvider'],
     '@a3s-lab/files': ['FileUploadModule', 'FileUploadService', 'getExtension'],
     '@a3s-lab/sandbox': ['SandboxModule', 'SandboxService', 'createA3SBoxConnectionConfig'],
