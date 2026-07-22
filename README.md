@@ -15,7 +15,7 @@ Nestify currently contains 18 publishable framework packages:
 | Package | Responsibility |
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives with validated entity identities, structural immutable value objects, read-only aggregate event snapshots, defensive audit timestamps, finite guards, and explicit `Result` states. |
-| `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
+| `@a3s-lab/cqrs` | Deterministic NestJS CQRS adapter for `@a3s-lab/ddd` events, with validated batches, ordered defaults, bounded parallelism, native batch delegation, and configurable module wiring. |
 | `@a3s-lab/http` | Bounded API envelopes, business errors, strict validation, safe request ids, pagination, DTO serialization, collision-safe key transforms, configurable error handling/API versioning, and OpenAPI helpers. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission metadata, local/dev guard helpers, path validation, sensitive operation metadata, JWT helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking, privacy-aware bounded SQL/external-call collectors, cardinality-safe Prometheus metrics, reactive HTTP instrumentation, and timeout-bound dependency-aware health checks. |
@@ -199,6 +199,9 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - AI module options and native SDK contracts fail fast at the Nest boundary. Disposable AI sessions preserve operation
   and cleanup failures together, support request-scoped aborts, and session construction is drained before Agent
   shutdown.
+- CQRS domain-event batches are validated and bounded before admission. Ordered publication is the default; parallel
+  publication requires an explicit concurrency limit and preserves every failure instead of leaving rejected work in
+  the background.
 
 ## Design Boundaries
 

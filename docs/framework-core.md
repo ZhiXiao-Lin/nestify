@@ -7,7 +7,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | Package | Responsibility |
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives with validated identities, bounded structural value objects, read-only aggregate events, defensive audit time, finite guards, and explicit `Result` states. |
-| `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
+| `@a3s-lab/cqrs` | Deterministic NestJS CQRS adapter for `@a3s-lab/ddd` events, with validated bounded batches, ordered/parallel/native strategies, and configurable module wiring. |
 | `@a3s-lab/http` | Bounded API envelopes and errors, strict validation pipes, safe request/correlation ids, pagination helpers, DTO serialization, collision-safe key transforms, configurable error handling/API versioning, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking, privacy-aware bounded SQL/external-call collectors, cardinality-safe Prometheus metrics, reactive HTTP instrumentation, and timeout-bound dependency-aware health checks. |
@@ -82,6 +82,8 @@ Nestify API.
   shutdown rejects new operations before draining tracked work and closing every owned client.
 - Sandbox instances created by the service remain owned until release or successful cleanup. Shutdown is idempotent,
   drains complete managed scopes before final cleanup, is bounded by default, and exposes unrecovered failures.
+- CQRS event batches default to ordered, fail-fast admission and a finite batch limit. Parallel mode is explicit,
+  concurrency-bounded, waits for all admitted publications, and preserves multiple failures with event indexes.
 
 ## Sample API Wiring
 
@@ -146,7 +148,8 @@ The framework core is covered by package tests for:
 
 - DDD identity/time invariants, structural immutable value objects, read-only event ownership, finite guards, explicit
   `Result` states, and persistence contracts
-- CQRS domain event publisher adapter
+- CQRS module/provider wiring, event validation, ordered fail-fast publication, bounded parallel scheduling, native
+  batch delegation, async publisher completion, and multi-failure preservation
 - HTTP envelopes, bounded errors/details, safe request ids, and strict pagination
 - Configurable API-version/error/transform modules and Nest `Reflector` metadata
 - Query-free presentation logging, 5xx privacy, transform collision/cycle limits, and strict validation defaults
