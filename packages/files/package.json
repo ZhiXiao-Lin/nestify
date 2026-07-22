@@ -1,7 +1,7 @@
 {
     "name": "@a3s-lab/files",
     "version": "0.1.0",
-    "description": "Generic file upload validation, storage contracts, and NestJS interceptors for APIs",
+    "description": "Failure-safe file validation, storage contracts, and NestJS upload workflows",
     "author": "A3S Lab",
     "license": "MIT",
     "homepage": "https://github.com/A3S-Lab/nestify/tree/main/packages/files#readme",
@@ -19,6 +19,7 @@
         "upload",
         "storage",
         "validation",
+        "rollback",
         "typescript"
     ],
     "source": "./src/index.ts",
@@ -44,6 +45,7 @@
     "scripts": {
         "build": "rimraf dist && tsc",
         "test": "jest --passWithNoTests",
+        "test:cov": "jest --coverage",
         "clean": "rimraf dist && rimraf node_modules",
         "prepublishOnly": "pnpm run build"
     },

@@ -29,7 +29,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
-| `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
+| `@a3s-lab/files` | Safe object-key validation, bounded and compensating batch uploads, route policies, request parameter decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
 | `@a3s-lab/sandbox` | NestJS integration for A3S Box sandbox and code-interpreter workflows through the lazily loaded first-party `@a3s-lab/box` TypeScript SDK. |
 
