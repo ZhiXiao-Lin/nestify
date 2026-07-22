@@ -156,7 +156,14 @@ import {
     createRedissonModuleOptions,
 } from '@a3s-lab/redisson';
 import { BullMQModule } from '@a3s-lab/bullmq';
-import { NatsModule } from '@a3s-lab/nats';
+import {
+    type NatsConnectionOptions,
+    type NatsHealthResult,
+    NatsModule,
+    NatsServiceClosedError,
+    type RequestManyOptions,
+    createNatsConnectionOptions,
+} from '@a3s-lab/nats';
 import { RustFSModule } from '@a3s-lab/rustfs';
 import { EtcdModule } from '@a3s-lab/etcd';
 import { CLICKHOUSE_OPTIONS_TOKEN, ClickHouseModule } from '@a3s-lab/clickhouse';
@@ -186,6 +193,21 @@ const pool = createPostgresPoolConfig({ host: 'localhost', port: '5432' });
 const redis = createRedissonModuleOptions({ host: 'localhost', port: '6379' });
 const redisPatternOptions: DeleteByPatternOptions = { scanCount: 250, batchSize: 50 };
 const redisPatternError = new RedissonPatternDeleteError('cache:*', 0, []);
+const natsConnection: NatsConnectionOptions = createNatsConnectionOptions({
+    servers: 'nats://localhost:4222',
+    auth: { token: 'smoke-token' },
+});
+const natsHealth: NatsHealthResult = {
+    healthy: true,
+    server: 'nats://localhost:4222',
+    latencyMs: 1,
+};
+const natsRequestMany: RequestManyOptions = {
+    subject: 'resources.lookup',
+    strategy: 'count',
+    expectedResponseCount: 2,
+};
+const natsClosedError = new NatsServiceClosedError();
 const provider = createNestCqrsDomainEventPublisherProvider();
 const sandboxConnection = createA3SBoxConnectionConfig({
     apiUrl: 'https://api.box.test',
@@ -220,6 +242,10 @@ void pool;
 void redis;
 void redisPatternOptions;
 void redisPatternError;
+void natsConnection;
+void natsHealth;
+void natsRequestMany;
+void natsClosedError;
 void provider;
 void moduleRefs;
 void serviceRefs;
@@ -259,7 +285,12 @@ const expectedExports = {
     '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
     '@a3s-lab/redisson': ['RedissonModule', 'RedissonPatternDeleteError', 'createRedissonModuleOptions'],
     '@a3s-lab/bullmq': ['BullMQModule', 'BullMQService'],
-    '@a3s-lab/nats': ['NatsModule', 'NatsServiceImpl'],
+    '@a3s-lab/nats': [
+        'NatsModule',
+        'NatsServiceImpl',
+        'NatsServiceClosedError',
+        'createNatsConnectionOptions',
+    ],
     '@a3s-lab/rustfs': ['RustFSModule', 'RustFSServiceImpl'],
     '@a3s-lab/etcd': ['EtcdModule', 'EtcdService'],
     '@a3s-lab/clickhouse': ['CLICKHOUSE_OPTIONS_TOKEN', 'ClickHouseModule', 'ClickHouseService'],

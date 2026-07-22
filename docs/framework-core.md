@@ -16,7 +16,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis cache and lock helpers, incremental pattern cleanup, managed lock ownership, and validated single-node option builders. |
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
-| `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
+| `@a3s-lab/nats` | Validated NATS SDK configuration, race-safe connection ownership, request-many and response helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded drain/close. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
@@ -63,6 +63,8 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
   excess labels aggregate into a fixed overflow series, and HTTP paths come only from route templates or a fixed
   unmatched label.
 - Automatic migrations are fail-closed and require an explicit module or environment opt-in in production.
+- NATS connection attempts are coalesced, stale connection events cannot overwrite active state, subscription handles are
+  instance-owned, health checks perform bounded broker round trips, and shutdown has one total drain/close deadline.
 
 ## Sample API Wiring
 
@@ -134,7 +136,8 @@ The framework core is covered by package tests for:
 - Kysely PostgreSQL option builders and module registration
 - Redisson Redis option builders and module registration
 - BullMQ queue creation, worker lifecycle, metrics, and module registration
-- NATS module registration, publish/request encoding, subscriptions, JetStream publishing, and lifecycle cleanup
+- NATS option validation, connection races and recovery, publish/request-many encoding, response helpers, owned
+  subscriptions, JetStream acknowledgement behavior, active health probes, and bounded lifecycle cleanup
 - RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks
 - Etcd client registration, key-value operations, config cache, watches, leases, compare-and-set, health checks, and lifecycle cleanup
 - ClickHouse client routing and lifecycle
