@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/rustfs",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "NestJS module for RustFS S3-compatible storage - object storage with bucket and file operations",
     "author": "A3S Lab",
     "license": "MIT",

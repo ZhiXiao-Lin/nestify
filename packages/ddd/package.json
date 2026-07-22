@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/ddd",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Framework-independent DDD primitives for backend applications",
     "author": "A3S Lab",
     "license": "MIT",

@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/migrations",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Validated Kysely migration lifecycle helpers for NestJS APIs",
     "author": "A3S Lab",
     "license": "MIT",

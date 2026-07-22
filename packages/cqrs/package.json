@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/cqrs",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Deterministic, bounded NestJS CQRS domain-event publishing for DDD-style APIs",
     "author": "A3S Lab",
     "license": "MIT",

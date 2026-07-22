@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/ai",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "NestJS lifecycle wrapper for the A3S Code agent runtime",
     "author": "A3S Lab",
     "license": "MIT",

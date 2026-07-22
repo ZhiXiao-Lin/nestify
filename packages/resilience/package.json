@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/resilience",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Retry, circuit breaker, cache, rate limit, and distributed lock utilities for NestJS APIs",
     "author": "A3S Lab",
     "license": "MIT",
