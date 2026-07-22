@@ -153,7 +153,12 @@ import {
     createLoggerModuleOptions,
     type LogInterceptorOptions,
 } from '@a3s-lab/logger';
-import { ResilienceModule, RetryService } from '@a3s-lab/resilience';
+import {
+    DistributedLockCleanupError,
+    ResilienceModule,
+    RetryAbortedError,
+    RetryService,
+} from '@a3s-lab/resilience';
 import {
     createKyselyLogger,
     createPostgresPoolConfig,
@@ -299,6 +304,7 @@ const moduleRefs = [
 ];
 const serviceRefs = [AiService, BullMQService, SandboxService];
 const sandboxRuntimeRefs = [DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS, SandboxCleanupError];
+const resilienceErrorRefs = [DistributedLockCleanupError, RetryAbortedError];
 
 void event;
 void envelope;
@@ -333,6 +339,7 @@ void provider;
 void moduleRefs;
 void serviceRefs;
 void sandboxRuntimeRefs;
+void resilienceErrorRefs;
 void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
@@ -376,7 +383,13 @@ const expectedExports = {
         'DEFAULT_LOG_REDACTION_PATHS',
         'LoggerConfigurationError',
     ],
-    '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
+    '@a3s-lab/resilience': [
+        'CacheService',
+        'DistributedLockCleanupError',
+        'ResilienceModule',
+        'RetryAbortedError',
+        'RetryService',
+    ],
     '@a3s-lab/kysely': [
         'KyselyModule',
         'KyselyService',

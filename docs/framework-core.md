@@ -12,7 +12,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
-| `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
+| `@a3s-lab/resilience` | Validated retry, circuit breaker, cache, rate-limit, and distributed-lock state machines with NestJS decorators, guards, and interceptors. |
 | `@a3s-lab/kysely` | Validated Kysely NestJS lifecycle, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis cache and lock helpers, incremental pattern cleanup, managed lock ownership, and validated single-node option builders. |
 | `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup operations. |
@@ -58,9 +58,10 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
   frozen copies, and audit/event dates cannot be mutated through public accessors.
 - `SecurityModule.register()` globally installs a default-deny guard. `@Public()` is the explicit bypass, and all other
   routes require the configured authentication delegate unless global installation is deliberately disabled.
-- The resilience rate-limit guard is global but only acts on decorated routes. It uses authenticated subjects or
-  Express's trust-proxy-aware `request.ip`, hashes identities, isolates policies, and executes one atomic Redis script.
-  Redis outage behavior is explicit (`local`, `allow`, or `deny`), and the local fallback has a hard entry limit.
+- Resilience retry waits honor cancellation, half-open circuit probes have a concurrency ceiling, cache factories are
+  single-flight and mutation-aware, and distributed-lock release errors cannot masquerade as success. The rate-limit
+  guard acts only on decorated routes; its atomic Redis window inserts admitted requests only, bounding each set by the
+  policy limit, while outage behavior remains explicit (`local`, `allow`, or `deny`).
 - Metrics store cumulative histogram buckets rather than request samples. Each metric has a configurable series cap,
   excess labels aggregate into a fixed overflow series, and HTTP paths come only from route templates or a fixed
   unmatched label.
@@ -148,8 +149,10 @@ The framework core is covered by package tests for:
 - Observability request tracking with SQL and external-call request stores
 - Observability health check endpoint registration
 - Logger option validation, Pino field integrity, secret redaction, native child loggers, real Nest provider resolution, concurrent request-context isolation, and bounded HTTP metadata
-- Resilience retry, circuit breaker, TTL cache, atomic rate limiting, and bounded Redis outage policies
-- Resilience module registration and interceptor metadata execution
+- Resilience retry filtering/cancellation/backoff, consecutive-failure and half-open circuit transitions, single-flight
+  cache invalidation, bounded cache-key generation, ownership-safe lock cleanup, bounded atomic rate limiting, and
+  Redis outage policies
+- Resilience module dependency imports, Redis-free registration, provider toggles, and interceptor metadata execution
 - Kysely option validation, PostgreSQL builders, owned/external lifecycle behavior, bounded logger output, and sync/async module registration
 - Redisson Redis option builders and module registration
 - BullMQ option validation, queue defaults, multiple managed workers, cancellation-aware processors, metrics, health checks, destructive cleanup semantics, and bounded failure-safe shutdown

@@ -8,9 +8,13 @@ export interface RetryOptions {
     initialDelay?: number;
     maxDelay?: number;
     backoffMultiplier?: number;
-    retryableErrors?: Array<new (...args: unknown[]) => Error>;
+    /** Random delay added as a ratio of the capped backoff. Defaults to 0.25. */
+    jitterRatio?: number;
+    retryableErrors?: ReadonlyArray<new (...args: never[]) => Error>;
     isRetryable?: (error: Error) => boolean;
     onRetry?: (attempt: number, error: Error, delay: number) => void;
+    /** Stops scheduling attempts. The operation itself must observe the same signal for mid-attempt cancellation. */
+    signal?: AbortSignal;
 }
 
 export interface RetryResult<T> {
@@ -23,53 +27,79 @@ export interface RetryResult<T> {
 
 export const DEFAULT_RETRYABLE_HTTP_CODES = [408, 429, 500, 502, 503, 504];
 
-const DEFAULT_RETRY_OPTIONS = {
+const DEFAULT_RETRY_OPTIONS = Object.freeze({
     maxAttempts: 3,
     initialDelay: 100,
-    maxDelay: 30000,
+    maxDelay: 30_000,
     backoffMultiplier: 2,
-    retryableErrors: [] as Array<new (...args: unknown[]) => Error>,
-    isRetryable: () => true,
-};
+    jitterRatio: 0.25,
+});
+
+const MAX_TIMER_DELAY = 2_147_483_647;
+
+interface NormalizedRetryOptions {
+    maxAttempts: number;
+    initialDelay: number;
+    maxDelay: number;
+    backoffMultiplier: number;
+    jitterRatio: number;
+    retryableErrors: ReadonlyArray<new (...args: never[]) => Error>;
+    isRetryable?: (error: Error) => boolean;
+    onRetry?: RetryOptions['onRetry'];
+    signal?: AbortSignal;
+}
 
 @Injectable()
 export class RetryService {
     private readonly logger = new Logger(RetryService.name);
 
     async execute<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<RetryResult<T>> {
-        const opts = {
-            ...DEFAULT_RETRY_OPTIONS,
-            ...options,
-            retryableErrors: options.retryableErrors ?? DEFAULT_RETRY_OPTIONS.retryableErrors,
-            isRetryable: options.isRetryable ?? DEFAULT_RETRY_OPTIONS.isRetryable,
-        };
+        if (typeof fn !== 'function') throw new TypeError('retry operation must be a function');
+        const opts = normalizeRetryOptions(options);
         const startTime = Date.now();
         let lastError: Error | undefined;
         let attempt = 0;
+
+        if (opts.signal?.aborted) {
+            return failureResult(new RetryAbortedError(opts.signal.reason), attempt, startTime);
+        }
 
         while (attempt < opts.maxAttempts) {
             attempt += 1;
             try {
                 const result = await fn();
-                return { success: true, result, attempts: attempt, totalDuration: Date.now() - startTime };
+                if (opts.signal?.aborted) {
+                    return failureResult(new RetryAbortedError(opts.signal.reason), attempt, startTime);
+                }
+                return { success: true, result, attempts: attempt, totalDuration: elapsedSince(startTime) };
             } catch (error) {
                 lastError = error instanceof Error ? error : new Error(String(error));
+                if (opts.signal?.aborted) {
+                    lastError = new RetryAbortedError(opts.signal.reason);
+                    break;
+                }
                 if (attempt >= opts.maxAttempts || !this.isRetryable(lastError, opts)) {
                     break;
                 }
-                const delay = this.calculateDelay(attempt, opts) + this.calculateJitter(opts.initialDelay);
-                options.onRetry?.(attempt, lastError, delay);
+                const delay = this.calculateDelay(attempt, opts);
+                opts.onRetry?.(attempt, lastError, delay);
                 this.logger.warn(`Retry attempt ${attempt}/${opts.maxAttempts} after ${delay}ms: ${lastError.message}`);
-                await sleep(delay);
+                try {
+                    await sleep(delay, opts.signal);
+                } catch {
+                    lastError = new RetryAbortedError(opts.signal?.reason);
+                    break;
+                }
             }
         }
 
-        return { success: false, error: lastError, attempts: attempt, totalDuration: Date.now() - startTime };
+        return failureResult(lastError, attempt, startTime);
     }
 
     async executeOrThrow<T>(fn: () => Promise<T>, options?: RetryOptions): Promise<T> {
         const result = await this.execute(fn, options);
         if (!result.success) {
+            if (result.error instanceof RetryAbortedError) throw result.error;
             throw new RetryExhaustedError(result.attempts, result.totalDuration, result.error);
         }
         return result.result as T;
@@ -77,20 +107,33 @@ export class RetryService {
 
     private isRetryable(
         error: Error,
-        options: { retryableErrors: Array<new (...args: unknown[]) => Error>; isRetryable: (error: Error) => boolean },
+        options: Pick<NormalizedRetryOptions, 'retryableErrors' | 'isRetryable'>,
     ): boolean {
-        return options.retryableErrors.some(ErrorClass => error instanceof ErrorClass) || options.isRetryable(error);
+        const hasClassFilter = options.retryableErrors.length > 0;
+        const hasPredicate = options.isRetryable !== undefined;
+        if (!hasClassFilter && !hasPredicate) return true;
+        return (
+            options.retryableErrors.some(ErrorClass => error instanceof ErrorClass) ||
+            (options.isRetryable?.(error) ?? false)
+        );
     }
 
     private calculateDelay(
         attempt: number,
-        options: { initialDelay: number; backoffMultiplier: number; maxDelay: number },
+        options: Pick<NormalizedRetryOptions, 'initialDelay' | 'backoffMultiplier' | 'maxDelay' | 'jitterRatio'>,
     ): number {
-        return Math.min(options.initialDelay * options.backoffMultiplier ** (attempt - 1), options.maxDelay);
+        const exponential = options.initialDelay * options.backoffMultiplier ** (attempt - 1);
+        const baseDelay = Math.min(Number.isFinite(exponential) ? exponential : options.maxDelay, options.maxDelay);
+        const jitter = Math.round(Math.random() * baseDelay * options.jitterRatio);
+        return Math.min(baseDelay + jitter, options.maxDelay);
     }
+}
 
-    private calculateJitter(delay: number): number {
-        return Math.round(Math.random() * delay * 0.25);
+export class RetryAbortedError extends Error {
+    override readonly name = 'RetryAbortedError';
+
+    constructor(readonly reason?: unknown) {
+        super('Retry operation was aborted', { cause: reason });
     }
 }
 
@@ -102,9 +145,81 @@ export class RetryExhaustedError extends Error {
     ) {
         super(
             `Retry exhausted after ${attempts} attempts (${totalDuration}ms): ${lastError?.message ?? 'Unknown error'}`,
+            { cause: lastError },
         );
         this.name = 'RetryExhaustedError';
     }
+}
+
+function normalizeRetryOptions(options: RetryOptions): NormalizedRetryOptions {
+    if (!options || typeof options !== 'object') throw new TypeError('retry options must be an object');
+    const maxAttempts = positiveSafeInteger('maxAttempts', options.maxAttempts ?? DEFAULT_RETRY_OPTIONS.maxAttempts);
+    const initialDelay = timerDelay('initialDelay', options.initialDelay ?? DEFAULT_RETRY_OPTIONS.initialDelay);
+    const maxDelay = timerDelay('maxDelay', options.maxDelay ?? DEFAULT_RETRY_OPTIONS.maxDelay);
+    const backoffMultiplier = options.backoffMultiplier ?? DEFAULT_RETRY_OPTIONS.backoffMultiplier;
+    if (!Number.isFinite(backoffMultiplier) || backoffMultiplier < 1) {
+        throw new RangeError('backoffMultiplier must be a finite number greater than or equal to 1');
+    }
+    const jitterRatio = options.jitterRatio ?? DEFAULT_RETRY_OPTIONS.jitterRatio;
+    if (!Number.isFinite(jitterRatio) || jitterRatio < 0 || jitterRatio > 1) {
+        throw new RangeError('jitterRatio must be a finite number between 0 and 1');
+    }
+    const retryableErrors = options.retryableErrors ?? [];
+    if (!Array.isArray(retryableErrors) || retryableErrors.some(ErrorClass => typeof ErrorClass !== 'function')) {
+        throw new TypeError('retryableErrors must contain error constructors');
+    }
+    if (options.isRetryable !== undefined && typeof options.isRetryable !== 'function') {
+        throw new TypeError('isRetryable must be a function');
+    }
+    if (options.onRetry !== undefined && typeof options.onRetry !== 'function') {
+        throw new TypeError('onRetry must be a function');
+    }
+    if (options.signal !== undefined && !isAbortSignal(options.signal)) {
+        throw new TypeError('signal must be an AbortSignal');
+    }
+    return Object.freeze({
+        maxAttempts,
+        initialDelay,
+        maxDelay,
+        backoffMultiplier,
+        jitterRatio,
+        retryableErrors: Object.freeze([...retryableErrors]),
+        isRetryable: options.isRetryable,
+        onRetry: options.onRetry,
+        signal: options.signal,
+    });
+}
+
+function positiveSafeInteger(name: string, value: number): number {
+    if (!Number.isSafeInteger(value) || value < 1) {
+        throw new RangeError(`${name} must be a positive safe integer`);
+    }
+    return value;
+}
+
+function timerDelay(name: string, value: number): number {
+    if (!Number.isSafeInteger(value) || value < 0 || value > MAX_TIMER_DELAY) {
+        throw new RangeError(`${name} must be a safe integer between 0 and ${MAX_TIMER_DELAY}`);
+    }
+    return value;
+}
+
+function isAbortSignal(value: unknown): value is AbortSignal {
+    return (
+        typeof value === 'object' &&
+        value !== null &&
+        typeof (value as AbortSignal).aborted === 'boolean' &&
+        typeof (value as AbortSignal).addEventListener === 'function' &&
+        typeof (value as AbortSignal).removeEventListener === 'function'
+    );
+}
+
+function failureResult(error: Error | undefined, attempts: number, startTime: number): RetryResult<never> {
+    return { success: false, error, attempts, totalDuration: elapsedSince(startTime) };
+}
+
+function elapsedSince(startTime: number): number {
+    return Math.max(0, Date.now() - startTime);
 }
 
 export const RETRY_OPTIONS = 'resilience:retry_options';

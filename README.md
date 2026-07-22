@@ -22,7 +22,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
 | `@a3s-lab/kysely` | Validated NestJS lifecycle integration for Kysely, PostgreSQL pool builders, external-instance ownership, and bounded SQL diagnostics. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis caching and lock helpers with local single-flight loads, managed lock ownership, cluster-aware SCAN/UNLINK cleanup, validated options, and bounded shutdown. |
-| `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
+| `@a3s-lab/resilience` | Validated, cancellation-aware retry; concurrency-safe circuit breaking; single-flight cache; bounded sliding-window rate limiting; and ownership-safe distributed locks. |
 | `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup helpers. |
 | `@a3s-lab/nats` | Lifecycle-safe NATS messaging with validated SDK options, connection single-flight, request-many helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded shutdown. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage with method-correct signed URLs, policy-backed POST forms, multipart uploads, health checks, and graceful client shutdown. |
@@ -172,9 +172,9 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
   acyclic deep snapshots; aggregate event queues and audit/event timestamps cannot be mutated through public accessors.
 - `SecurityModule.register()` installs the default-deny guard globally. Only `@Public()` routes bypass authentication;
   protected routes require an explicit delegate unless the application deliberately disables global installation.
-- Resilience rate-limit decorators are enforced by a global guard. The limiter uses authenticated subjects or Express
-  `request.ip`, hashes identities in Redis keys, isolates named policies, executes an atomic sliding-window script, and
-  bounds its configurable local outage fallback.
+- Resilience policies validate timing, capacity, key, and identity inputs. Retry backoff is cancellable; half-open
+  circuit probes are concurrency-bounded; cache misses are coalesced without stale-write races; lock cleanup failures
+  remain observable; and the atomic rate limiter bounds both Redis and local-fallback cardinality.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Logger request context is scoped to each Observable subscription; inbound ids and optional headers are bounded, query
