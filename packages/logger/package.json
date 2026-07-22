@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/logger",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Security-conscious structured logging and request context for NestJS",
     "author": "A3S Lab",
     "license": "MIT",

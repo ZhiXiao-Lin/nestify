@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/sandbox",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "NestJS integration for A3S Box sandbox and code-interpreter SDKs",
     "author": "A3S Lab",
     "license": "MIT",

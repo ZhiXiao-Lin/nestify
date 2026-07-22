@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/http",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "HTTP API contracts, envelopes, validation, errors, and OpenAPI helpers for NestJS",
     "author": "A3S Lab",
     "license": "MIT",

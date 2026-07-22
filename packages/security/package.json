@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/security",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Reusable security decorators, guards, and validation helpers for NestJS APIs",
     "author": "A3S Lab",
     "license": "MIT",

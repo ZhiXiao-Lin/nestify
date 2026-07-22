@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/nats",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Lifecycle-safe NestJS NATS and JetStream integration with validated configuration",
     "author": "A3S Lab",
     "license": "MIT",

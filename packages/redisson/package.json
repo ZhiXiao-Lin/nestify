@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/redisson",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "NestJS module for Redis distributed locks and caching using Redisson",
     "author": "A3S Lab",
     "license": "MIT",

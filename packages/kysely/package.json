@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/kysely",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Validated NestJS lifecycle integration for Kysely with bounded SQL logging",
     "author": "A3S Lab",
     "license": "MIT",

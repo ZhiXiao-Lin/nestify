@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/bullmq",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Lifecycle-safe NestJS integration for BullMQ task queues",
     "author": "A3S Lab",
     "license": "MIT",

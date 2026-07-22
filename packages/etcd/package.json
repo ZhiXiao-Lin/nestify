@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/etcd",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Etcd distributed configuration center for NestJS",
     "author": "A3S Lab",
     "license": "MIT",

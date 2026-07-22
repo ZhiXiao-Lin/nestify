@@ -1,6 +1,6 @@
 {
     "name": "@a3s-lab/observability",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Request tracking, metrics, and diagnostic collectors for NestJS APIs",
     "author": "A3S Lab",
     "license": "MIT",
