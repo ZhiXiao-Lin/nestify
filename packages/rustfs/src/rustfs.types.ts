@@ -9,8 +9,12 @@ export interface RustFSPackageOptions {
     secretAccessKey: string;
     bucket?: string;
     forcePathStyle?: boolean;
+    /** @deprecated The endpoint URL protocol now controls TLS. */
     sslEnabled?: boolean;
+    /** @deprecated Use connectionTimeout and requestTimeout instead. */
     timeout?: number;
+    connectionTimeout?: number;
+    requestTimeout?: number;
     maxAttempts?: number;
 }
 
@@ -152,8 +156,13 @@ export interface ListObjectsResult {
 export interface PresignedUrlOptions {
     key: string;
     expiresIn?: number;
-    method?: 'GET' | 'PUT' | 'DELETE' | 'POST';
+    method?: 'GET' | 'PUT' | 'DELETE';
     contentType?: string;
+    /**
+     * Supported S3 query parameters are versionId and the response-* overrides
+     * accepted by GetObject. Unknown parameters are rejected instead of being
+     * silently omitted from the signature.
+     */
     queryParams?: Record<string, string>;
 }
 
