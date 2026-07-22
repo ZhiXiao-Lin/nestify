@@ -36,6 +36,8 @@ import { SandboxModule } from '@a3s-lab/sandbox';
             defaultTemplate: 'code-interpreter-v1',
             defaultTimeoutMs: 60_000,
             killOnShutdown: true,
+            shutdownTimeoutMs: 30_000,
+            cleanupFailurePolicy: 'throw',
         }),
     ],
 })
@@ -44,7 +46,8 @@ export class AppModule {}
 
 `registerAsync` accepts the usual Nest factory, class, and existing-provider forms. Modules are non-global by default;
 set `isGlobal: true` explicitly if one application-wide service is intended. Module-owned connection fields override
-per-call SDK options, and `validateApiKey` is always `false` for A3S credentials.
+per-call SDK options, `validateApiKey` is always `false` for A3S credentials, and caller option objects are copied and
+frozen before delegation. Operation and shutdown timeouts must be positive safe integers.
 
 The Nest wrapper and `createA3SBoxConnectionConfig()` do not read or rewrite `E2B_*` variables. A3S Box 3.0.11,
 however, re-exports compatibility classes backed by its pinned transport, which can still consult ambient `E2B_*`
@@ -52,7 +55,8 @@ values for unspecified transport fields. For strict A3S-only routing, start the 
 the wrapper cannot override every inherited transport field until the first-party SDK removes that fallback.
 
 `createA3SBoxConnectionConfig()` exposes the same endpoint validation and `api.<domain>` derivation rules without
-loading the ESM SDK:
+loading the ESM SDK. It trims endpoint fields, accepts only absolute HTTP(S) URLs without embedded credentials,
+rejects control-plane query strings/fragments, validates explicit host/port domains, and returns a frozen object:
 
 ```ts
 import { createA3SBoxConnectionConfig } from '@a3s-lab/sandbox';
@@ -92,18 +96,29 @@ when the call does not provide one.
 - `SandboxModule` and its sync/async registration option types
 - `SandboxService`
 - `createA3SBoxConnectionConfig()`
+- `DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS`
+- Typed configuration, SDK, closed-service, shutdown-timeout, and aggregate-cleanup errors
 - Native A3S Box sandbox, code-interpreter, connection, and operation types
 
 ## Notes
 
 `create()` and `createCodeInterpreter()` create owned instances. `withSandbox()` and `withCodeInterpreter()` always
-attempt to kill those instances after the callback. `connect()` and `connectCodeInterpreter()` return unowned instances
-and are never killed automatically. Use `release(instance)` to transfer ownership or `kill(instance)` for idempotent
-service-managed cleanup. On Nest shutdown, the service waits for in-flight creates and explicit kills, and all remaining
-owned instances are killed with settled-result semantics unless `killOnShutdown` is false. An instance whose creation
-finishes only after shutdown begins is killed before the rejected create operation settles, so it cannot leak. Both SDK
-entrypoints are loaded only when their first operation runs, so requiring this CommonJS package root does not
-synchronously load the SDK's ESM modules.
+attempt to kill those instances after the complete callback scope. `connect()` and `connectCodeInterpreter()` return
+unowned instances and are never killed automatically, but an already-started connection is still drained during
+shutdown. Use `release(instance)` to transfer ownership or `kill(instance)` for idempotent service-managed cleanup.
+
+`shutdown()` is public, idempotent, and also backs Nest's `onModuleDestroy()`. Once it starts, the service rejects new
+operations. Shutdown first drains managed callbacks, creates, connects, and explicit kills for up to
+`shutdownTimeoutMs` (30 seconds by default), then settles cleanup for every remaining owned instance. Late creates are
+killed before their rejected operation settles. A final kill failure preserves service ownership so callers can retry
+`kill(instance)` explicitly. If a late create cannot be cleaned up, its `SandboxServiceClosedError` also exposes the
+native object as `unreleasedInstance` so the caller retains a recovery path. By default, timeout and final cleanup
+failures are exposed together as `SandboxCleanupError`; set `cleanupFailurePolicy: 'ignore'` only when best-effort
+shutdown is intentional.
+
+Both SDK entrypoints are loaded only when their first operation runs, validated before use, cached after success, and
+retried after load failure. Requiring this CommonJS package root therefore does not synchronously load the SDK's ESM
+modules.
 
 A3S Box 3.0.11 production-tests a useful E2B-compatible subset: create/connect/get/list, timeout and kill,
 memory-preserving pause/connect-resume, current metrics and logs, foreground/background commands, stdin, PTY,

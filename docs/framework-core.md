@@ -23,7 +23,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/migrations` | Validated Kysely migration lifecycle, sync/async module integration, fail-closed startup policy, and named non-transactional operations. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
 | `@a3s-lab/ai` | NestJS module and service integration for the A3S coding-agent runtime provided by `@a3s-lab/code`. |
-| `@a3s-lab/sandbox` | NestJS module, service, and connection helpers that lazily load the first-party `@a3s-lab/box` TypeScript SDK. |
+| `@a3s-lab/sandbox` | NestJS module and lifecycle service for native first-party `@a3s-lab/box` sandboxes, with guarded connection configuration and bounded cleanup. |
 
 Each package has a package-level README with install notes, import examples, exported capabilities, and boundary notes:
 
@@ -71,6 +71,8 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
   instance-owned, health checks perform bounded broker round trips, and shutdown has one total drain/close deadline.
 - ClickHouse request cancellation combines caller signals with timeouts; database override clients are LRU-bounded, and
   shutdown rejects new operations before draining tracked work and closing every owned client.
+- Sandbox instances created by the service remain owned until release or successful cleanup. Shutdown is idempotent,
+  drains complete managed scopes before final cleanup, is bounded by default, and exposes unrecovered failures.
 
 ## Sample API Wiring
 
@@ -159,7 +161,8 @@ The framework core is covered by package tests for:
 - Migration option validation, deterministic provider wrapping, in-flight execution coalescing, failure handling, and sync/async module registration
 - File upload validation, storage key handling, module registration, and upload interceptors
 - AI module registration, injected runtime access, session delegation, and lifecycle cleanup
-- Sandbox connection configuration, module registration, lazy SDK access, operation delegation, and lifecycle cleanup
+- Sandbox connection hardening, module registration, validated lazy SDK access, native operation delegation, managed
+  callback/connect concurrency, bounded shutdown, cleanup aggregation, and retryable ownership
 
 Run:
 

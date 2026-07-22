@@ -201,6 +201,8 @@ import {
 } from '@a3s-lab/migrations';
 import { FileUploadModule, getExtension } from '@a3s-lab/files';
 import {
+    DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS,
+    SandboxCleanupError,
     SandboxModule,
     SandboxService,
     createA3SBoxConnectionConfig,
@@ -296,6 +298,7 @@ const moduleRefs = [
     SandboxModule,
 ];
 const serviceRefs = [AiService, BullMQService, SandboxService];
+const sandboxRuntimeRefs = [DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS, SandboxCleanupError];
 
 void event;
 void envelope;
@@ -329,6 +332,7 @@ void bullmqHealth;
 void provider;
 void moduleRefs;
 void serviceRefs;
+void sandboxRuntimeRefs;
 void Public;
 void StatusCode;
 void DEFAULT_HISTOGRAM_BUCKETS;
@@ -414,7 +418,14 @@ const expectedExports = {
         'MigrationExecutionError',
     ],
     '@a3s-lab/files': ['FileUploadModule', 'FileUploadService', 'getExtension'],
-    '@a3s-lab/sandbox': ['SandboxModule', 'SandboxService', 'createA3SBoxConnectionConfig'],
+    '@a3s-lab/sandbox': [
+        'DEFAULT_SANDBOX_SHUTDOWN_TIMEOUT_MS',
+        'SandboxCleanupError',
+        'SandboxModule',
+        'SandboxService',
+        'SandboxShutdownTimeoutError',
+        'createA3SBoxConnectionConfig',
+    ],
 };
 
 for (const [packageName, exportNames] of Object.entries(expectedExports)) {
