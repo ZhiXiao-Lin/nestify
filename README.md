@@ -23,7 +23,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis caching and lock helpers with local single-flight loads, managed lock ownership, cluster-aware SCAN/UNLINK cleanup, validated options, and bounded shutdown. |
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
-| `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, queue metrics, and cleanup helpers. |
+| `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup helpers. |
 | `@a3s-lab/nats` | Lifecycle-safe NATS messaging with validated SDK options, connection single-flight, request-many helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded shutdown. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage with method-correct signed URLs, policy-backed POST forms, multipart uploads, health checks, and graceful client shutdown. |
 | `@a3s-lab/etcd` | NestJS etcd module with key-value operations, coherent bounded config caching, shared watches, leases, compare-and-set, retries, health checks, and failure-isolated cleanup. |
@@ -178,6 +178,8 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
 - ClickHouse database overrides use a bounded LRU client pool. New work is rejected during shutdown, request signals are
   combined with timeouts, and failed eviction never silently grows the pool.
+- BullMQ preserves queue-level retry defaults, rejects new work during teardown, closes owned workers before queues under
+  one total timeout, and labels job-removal operations as destructive rather than implying that `drain` processes jobs.
 
 ## Design Boundaries
 

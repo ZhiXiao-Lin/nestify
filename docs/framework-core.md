@@ -15,7 +15,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/resilience` | Retry, circuit breaker, cache, rate limiting, distributed lock decorators, services, guards, and interceptors. |
 | `@a3s-lab/kysely` | NestJS Kysely module, query logging, and PostgreSQL option builders for API database wiring. |
 | `@a3s-lab/redisson` | Lifecycle-safe Redis cache and lock helpers, incremental pattern cleanup, managed lock ownership, and validated single-node option builders. |
-| `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, and queue metrics for background tasks. |
+| `@a3s-lab/bullmq` | Lifecycle-safe NestJS BullMQ module with SDK-typed options, multi-worker management, queue metrics, health checks, bounded shutdown, and explicit cleanup operations. |
 | `@a3s-lab/nats` | Validated NATS SDK configuration, race-safe connection ownership, request-many and response helpers, owned subscriptions, JetStream acknowledgement policy, active health probes, and bounded drain/close. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage module, bucket operations, object operations, presigned URLs, multipart uploads, and health checks. |
 | `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
@@ -137,7 +137,7 @@ The framework core is covered by package tests for:
 - Resilience module registration and interceptor metadata execution
 - Kysely PostgreSQL option builders and module registration
 - Redisson Redis option builders and module registration
-- BullMQ queue creation, worker lifecycle, metrics, and module registration
+- BullMQ option validation, queue defaults, multiple managed workers, cancellation-aware processors, metrics, health checks, destructive cleanup semantics, and bounded failure-safe shutdown
 - NATS option validation, connection races and recovery, publish/request-many encoding, response helpers, owned
   subscriptions, JetStream acknowledgement behavior, active health probes, and bounded lifecycle cleanup
 - RustFS client registration, bucket/object commands, presigned URLs, multipart uploads, error mapping, and health checks

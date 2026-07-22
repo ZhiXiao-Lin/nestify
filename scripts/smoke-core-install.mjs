@@ -155,7 +155,13 @@ import {
     RedissonPatternDeleteError,
     createRedissonModuleOptions,
 } from '@a3s-lab/redisson';
-import { BullMQModule } from '@a3s-lab/bullmq';
+import {
+    BullMQModule,
+    BullMQService,
+    createBullMQModuleOptions,
+    type BullMQHealthResult,
+    type BullMQWorkerOptions,
+} from '@a3s-lab/bullmq';
 import {
     type NatsConnectionOptions,
     type NatsHealthResult,
@@ -230,6 +236,12 @@ const clickhouseHealth: ClickHouseHealthResult = {
     database: 'analytics',
     latencyMs: 1,
 };
+const bullmq = createBullMQModuleOptions({
+    connection: { host: 'localhost', port: 6379 },
+    workerOptions: { concurrency: 2 },
+});
+const bullmqWorker: BullMQWorkerOptions = { id: 'smoke-worker', concurrency: 1 };
+const bullmqHealth: BullMQHealthResult = { healthy: true, queue: 'smoke', latencyMs: 0 };
 const provider = createNestCqrsDomainEventPublisherProvider();
 const sandboxConnection = createA3SBoxConnectionConfig({
     apiUrl: 'https://api.box.test',
@@ -250,7 +262,7 @@ const moduleRefs = [
     FileUploadModule,
     SandboxModule,
 ];
-const serviceRefs = [AiService, SandboxService];
+const serviceRefs = [AiService, BullMQService, SandboxService];
 
 void event;
 void envelope;
@@ -271,6 +283,9 @@ void natsClosedError;
 void clickhouseClient;
 void clickhouseRequest;
 void clickhouseHealth;
+void bullmq;
+void bullmqWorker;
+void bullmqHealth;
 void provider;
 void moduleRefs;
 void serviceRefs;
@@ -310,7 +325,13 @@ const expectedExports = {
     '@a3s-lab/resilience': ['RetryService', 'ResilienceModule', 'CacheService'],
     '@a3s-lab/kysely': ['KyselyModule', 'createPostgresPoolConfig'],
     '@a3s-lab/redisson': ['RedissonModule', 'RedissonPatternDeleteError', 'createRedissonModuleOptions'],
-    '@a3s-lab/bullmq': ['BullMQModule', 'BullMQService'],
+    '@a3s-lab/bullmq': [
+        'BullMQModule',
+        'BullMQService',
+        'createBullMQModuleOptions',
+        'BullMQServiceClosedError',
+        'BullMQShutdownError',
+    ],
     '@a3s-lab/nats': [
         'NatsModule',
         'NatsServiceImpl',
