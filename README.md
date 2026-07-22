@@ -30,7 +30,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
-| `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
+| `@a3s-lab/ai` | Strict NestJS lifecycle integration for `@a3s-lab/code`, including lazy validated loading, standard/named/worker sessions, disposable runs and streams, cancellation, and race-safe shutdown. |
 | `@a3s-lab/sandbox` | NestJS integration for A3S Box sandbox and code-interpreter workflows through the lazily loaded first-party `@a3s-lab/box` TypeScript SDK. |
 
 The shared package list is dependency-ordered in `scripts/core-packages.mjs`. Build, test, pack, smoke install, and publish rehearsal commands all use that same list.
@@ -176,6 +176,9 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
 - HTTP metrics use route templates rather than raw URLs. Histogram memory is constant per series, and counters, gauges,
   and histograms cap label cardinality with an explicit overflow series.
 - Startup database migrations remain disabled in every environment unless the application explicitly opts in.
+- AI module options and native SDK contracts fail fast at the Nest boundary. Disposable AI sessions preserve operation
+  and cleanup failures together, support request-scoped aborts, and session construction is drained before Agent
+  shutdown.
 
 ## Design Boundaries
 

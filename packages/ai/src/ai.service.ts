@@ -33,14 +33,7 @@ const REQUIRED_AGENT_METHODS = [
     'closeSession',
     'close',
 ] as const;
-const REQUIRED_SESSION_METHODS = [
-    'send',
-    'stream',
-    'closeAsync',
-    'cancelAsync',
-    'cancelRun',
-    'currentRun',
-] as const;
+const REQUIRED_SESSION_METHODS = ['send', 'stream', 'closeAsync', 'cancelAsync', 'cancelRun', 'currentRun'] as const;
 
 interface NormalizedInvocation {
     workspace: string;
@@ -163,9 +156,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
             throw new AiConfigurationError('worker must be an object');
         }
         const resolvedOptions = this.sessionOptions(options);
-        return this.acquireSession(agent =>
-            agent.sessionForWorkerAsync(resolvedWorkspace, worker, resolvedOptions),
-        );
+        return this.acquireSession(agent => agent.sessionForWorkerAsync(resolvedWorkspace, worker, resolvedOptions));
     }
 
     /** List stable IDs for live sessions owned by the shared Agent. */
@@ -263,20 +254,7 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
                 iterationError = error;
                 throw error;
             } finally {
-                if (typeof iterator.return === 'function') {
-                    try {
-                        await iterator.return();
-                    } catch (cleanupError) {
-                        if (iterationError !== NO_ERROR) {
-                            throw new AiResourceCleanupError(
-                                iterationError,
-                                cleanupError,
-                                'AI stream iteration and iterator cleanup both failed',
-                            );
-                        }
-                        throw cleanupError;
-                    }
-                }
+                await this.closeStreamIterator(iterator, iterationError);
             }
         } catch (error) {
             operationError = error;
@@ -378,7 +356,22 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
         const agent = await this.activeAgent();
         const acquisition = (async () => {
             const session = await factory(agent);
-            this.assertSession(session, 'created session');
+            try {
+                this.assertSession(session, 'created session');
+            } catch (contractError) {
+                if (this.isObject(session) && typeof session.closeAsync === 'function') {
+                    try {
+                        await session.closeAsync();
+                    } catch (cleanupError) {
+                        throw new AiResourceCleanupError(
+                            contractError,
+                            cleanupError,
+                            'A3S Code Session validation and cleanup both failed',
+                        );
+                    }
+                }
+                throw contractError;
+            }
             if (!this.shuttingDown) {
                 return session;
             }
@@ -407,15 +400,33 @@ export class AiService implements OnModuleInit, OnModuleDestroy {
         return operation;
     }
 
-    private async closeDisposableSession(
-        session: AiSession,
-        operationError: unknown | typeof NO_ERROR,
-    ): Promise<void> {
+    private async closeDisposableSession(session: AiSession, operationError: unknown | typeof NO_ERROR): Promise<void> {
         try {
             await session.closeAsync();
         } catch (cleanupError) {
             if (operationError !== NO_ERROR) {
                 throw new AiResourceCleanupError(operationError, cleanupError);
+            }
+            throw cleanupError;
+        }
+    }
+
+    private async closeStreamIterator(
+        iterator: AsyncIterator<AiAgentEvent>,
+        operationError: unknown | typeof NO_ERROR,
+    ): Promise<void> {
+        if (typeof iterator.return !== 'function') {
+            return;
+        }
+        try {
+            await iterator.return();
+        } catch (cleanupError) {
+            if (operationError !== NO_ERROR) {
+                throw new AiResourceCleanupError(
+                    operationError,
+                    cleanupError,
+                    'AI stream iteration and iterator cleanup both failed',
+                );
             }
             throw cleanupError;
         }

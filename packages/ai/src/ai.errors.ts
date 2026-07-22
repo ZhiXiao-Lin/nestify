@@ -35,7 +35,11 @@ export class AiResourceCleanupError extends AggregateError {
     readonly operationError: unknown;
     readonly cleanupError: unknown;
 
-    constructor(operationError: unknown, cleanupError: unknown, message = 'AI operation and session cleanup both failed') {
+    constructor(
+        operationError: unknown,
+        cleanupError: unknown,
+        message = 'AI operation and session cleanup both failed',
+    ) {
         super([operationError, cleanupError], message);
         this.operationError = operationError;
         this.cleanupError = cleanupError;

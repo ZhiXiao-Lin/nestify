@@ -1,8 +1,8 @@
 # @a3s-lab/ai
 
-A thin NestJS lifecycle wrapper around the native [`@a3s-lab/code`](https://www.npmjs.com/package/@a3s-lab/code)
-SDK. It embeds the runtime in the Nest process; it does not proxy the A3S CLI or invent an HTTP, WebSocket, or JSON-RPC
-protocol.
+A strict NestJS lifecycle boundary around the native [`@a3s-lab/code`](https://www.npmjs.com/package/@a3s-lab/code)
+SDK. It embeds the first-party runtime in the Nest process, validates the SDK contract, and owns Agent/session cleanup; it
+does not proxy the A3S CLI or invent an HTTP, WebSocket, or JSON-RPC protocol.
 
 ## Install
 
@@ -53,7 +53,16 @@ AiModule.registerAsync({
 ```
 
 `runtimeLoader` can be supplied in module options for tests or controlled runtime loading. Production applications
-normally leave it unset.
+normally leave it unset. Both registration forms validate and detach their resolved options. Invalid `configSource`,
+`eager`, `isGlobal`, or loader values therefore fail during module construction or async provider resolution instead of
+waiting for the first request. Resolved options are frozen so later caller mutation cannot change runtime behavior.
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `configSource` | Required | ACL path or inline ACL source passed unchanged to `Agent.create`. |
+| `eager` | `false` | Initialize the native Agent in `onModuleInit`; otherwise initialize on first use. |
+| `isGlobal` | `false` | Make the dynamic Nest module global. For `registerAsync`, set this on the registration object. |
+| `runtimeLoader` | Dynamic `import('@a3s-lab/code')` | Override lazy SDK loading for tests or controlled deployments. |
 
 ### Use sessions and one-shot runs
 
@@ -71,25 +80,58 @@ await session.closeAsync();
 ```
 
 `resumeSessionAsync` and `replaceSessionAsync` delegate to the corresponding native APIs. Resume requires a configured
-session store. For one request, `run` creates a disposable session and closes it in `finally` on success or failure:
+session store. Named definitions and in-memory worker definitions are available without dropping down to the Agent:
 
 ```ts
+const explorer = await ai.sessionForAgentAsync('/srv/workspaces/project', 'explore', ['/srv/agents']);
+const reviewer = await ai.sessionForWorkerAsync('/srv/workspaces/project', {
+    name: 'reviewer',
+    description: 'Review the current change without modifying files',
+    kind: 'reviewer',
+});
+
+const ids = await ai.listSessions();
+await ai.closeSession(ids[0]);
+```
+
+`withSession` is the safe escape hatch for multi-step work: it supplies the full native `Session` and closes it after the
+callback. If both work and cleanup fail, `AiResourceCleanupError` preserves both failures instead of silently discarding
+one.
+
+```ts
+const runs = await ai.withSession('/srv/workspaces/project', async session => {
+    await session.send('Inspect the failing tests');
+    return session.runs();
+});
+```
+
+For one request, `run` creates the same kind of disposable session and always closes it:
+
+```ts
+const requestAbortController = new AbortController();
 const result = await ai.run({
     workspace: '/srv/workspaces/project',
     request: { prompt: 'Run the relevant tests' },
     sessionOptions: { maxExecutionTimeMs: 300_000 },
+    signal: requestAbortController.signal,
 });
 ```
 
 The equivalent positional form is `ai.run(workspace, request, sessionOptions?)`. The wrapper does not queue overlapping
 operations. A native `SESSION_BUSY` error remains a `SESSION_BUSY` error; branch on its stable `code`, not its message.
+`AbortSignal` is supported by the object form for disposable `run` and `stream` calls. Aborting invokes the native async
+session cancellation path, rejects with `AiOperationAbortedError` (`code: 'AI_OPERATION_ABORTED'`), and still waits for
+session cleanup. Long-lived sessions should use `cancelRun` as described below.
 
 ## Exports
 
 - `AiModule`: synchronous and asynchronous NestJS module registration.
-- `AiService`: agent lifecycle, session, one-shot run, streaming, cancellation, and shutdown operations.
+- `AiService`: agent lifecycle, standard/named/worker sessions, control-plane helpers, disposable callbacks, one-shot
+  runs, streaming, cancellation, and shutdown operations.
 - `AI_MODULE_OPTIONS`: injection token for resolved module options.
-- Public option, runtime, agent, session, request, result, event, and error TypeScript types.
+- `AiConfigurationError`, `AiSdkContractError`, `AiServiceClosedError`, `AiOperationAbortedError`, and
+  `AiResourceCleanupError`: stable wrapper-boundary errors. Native SDK failures retain their native classes and codes.
+- Public option, runtime, agent, worker, session, callback, request, result, event, and error TypeScript types.
 
 ## Notes
 
@@ -120,5 +162,16 @@ and never falls back to cancelling a newer run. Without an ID, the service reads
 run-scoped cancellation; it returns `false` when no current run snapshot exists rather than racing a later run with
 broad session cancellation.
 
-Nest shutdown calls `Agent.close()` once, which closes all live sessions and agent-owned background resources. Calling
-`shutdown()` manually is also idempotent. After shutdown, initialization and new sessions are rejected.
+Nest shutdown stops admitting new operations, waits for any session construction already in flight, closes a session
+that finishes construction during that drain, and then calls `Agent.close()` once. The Agent closes all remaining live
+sessions and agent-owned background resources. Calling `shutdown()` manually is also idempotent. `isReady` and
+`isShuttingDown` expose lifecycle state; after shutdown begins, initialization and new sessions are rejected with
+`AiServiceClosedError`.
+
+### Validation and error boundaries
+
+The wrapper validates non-empty workspace/session/run identifiers, request prompts, session option shapes, custom SDK
+loader results, Agent methods, Session methods, stream iterables, and control-plane return values. This catches wiring or
+version errors at the Nest boundary while leaving evolving native option fields, event payloads, and native stable error
+codes untouched. A custom `runtimeLoader` must provide the supported `@a3s-lab/code` Agent contract, including the async
+session lifecycle and session control-plane methods.
