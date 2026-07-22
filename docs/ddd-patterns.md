@@ -11,7 +11,7 @@ This document explains the Domain-Driven Design patterns used in the sample API 
 **Characteristics**:
 - Has a unique identifier
 - Identity remains constant even if attributes change
-- Compared by identity, not attributes
+- Compared by identity only within the same concrete entity type
 - Has a lifecycle
 
 **Example**:
@@ -55,7 +55,7 @@ export class OrderItem extends Entity<string> {
 **Characteristics**:
 - No identity
 - Immutable
-- Compared by value
+- Compared structurally by value without depending on object key order
 - Self-validating
 - Side-effect free
 
@@ -102,6 +102,10 @@ export class Money extends ValueObject<MoneyProps> {
 - Immutability is desired
 - Equality is based on attributes
 
+`@a3s-lab/ddd` snapshots value-object props recursively. Use primitives, valid `Date` values, arrays, and plain objects;
+cycles, functions, symbol values, custom class instances, and unbounded graphs are rejected. `toObject()` returns a
+defensive snapshot rather than the internal props object.
+
 **Common Value Objects**:
 - Money, Currency
 - Address, Email, Phone
@@ -119,6 +123,7 @@ export class Money extends ValueObject<MoneyProps> {
 - Only root is accessible from outside
 - Transactions don't cross aggregate boundaries
 - Loaded and saved as a whole
+- Exposes pending domain events as a frozen snapshot owned by the root
 
 **Example**:
 ```typescript
@@ -486,8 +491,8 @@ class Order {
   // Protect invariants through encapsulation
   private _items: OrderItem[];
 
-  get items(): OrderItem[] {
-    return [...this._items];  // Return copy
+  get items(): readonly OrderItem[] {
+    return Object.freeze([...this._items]);  // Return immutable snapshot
   }
 
   addItem(item: OrderItem): void {

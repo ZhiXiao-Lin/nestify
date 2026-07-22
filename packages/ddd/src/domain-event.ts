@@ -1,13 +1,15 @@
+import { cloneValidDate, defineImmutableDateProperty } from './date-value';
+
 export interface IDomainEvent {
-    occurredOn: Date;
+    readonly occurredOn: Date;
     getAggregateId(): string;
 }
 
 export abstract class DomainEvent implements IDomainEvent {
-    public readonly occurredOn: Date;
+    public declare readonly occurredOn: Date;
 
-    constructor() {
-        this.occurredOn = new Date();
+    constructor(occurredOn = new Date()) {
+        defineImmutableDateProperty(this, 'occurredOn', cloneValidDate(occurredOn, 'occurredOn'));
     }
 
     abstract getAggregateId(): string;
