@@ -26,7 +26,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/bullmq` | NestJS BullMQ module, queue service helpers, worker lifecycle, queue metrics, and cleanup helpers. |
 | `@a3s-lab/nats` | NestJS NATS module, publish/subscribe, request/reply, JetStream helpers, connection state, and lifecycle cleanup. |
 | `@a3s-lab/rustfs` | NestJS S3-compatible object storage with method-correct signed URLs, policy-backed POST forms, multipart uploads, health checks, and graceful client shutdown. |
-| `@a3s-lab/etcd` | NestJS etcd module, key-value operations, JSON config helpers, local caching, watches, leases, compare-and-set, and health checks. |
+| `@a3s-lab/etcd` | NestJS etcd module with key-value operations, coherent bounded config caching, shared watches, leases, compare-and-set, retries, health checks, and failure-isolated cleanup. |
 | `@a3s-lab/clickhouse` | NestJS module and service wrapper around the official ClickHouse JavaScript client. |
 | `@a3s-lab/migrations` | Kysely migration helpers, auto-run NestJS module integration, and concurrent-safe non-transactional migration support. |
 | `@a3s-lab/files` | Safe object-key validation, bounded and compensating batch uploads, route policies, request parameter decorators, and NestJS upload interceptors. |
