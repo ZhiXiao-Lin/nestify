@@ -8,7 +8,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | --- | --- |
 | `@a3s-lab/ddd` | Framework-independent DDD primitives: entities, aggregate roots, value objects, domain events, repositories, unit of work contracts, guards, and `Result`. |
 | `@a3s-lab/cqrs` | NestJS CQRS adapter for publishing `@a3s-lab/ddd` domain events through the Nest event bus. |
-| `@a3s-lab/http` | API response envelopes, business errors, validation pipes, request/correlation ids, pagination helpers, DTO serialization helpers, key/response transforms, presentation filters/interceptors, and OpenAPI decorators. |
+| `@a3s-lab/http` | Bounded API envelopes and errors, strict validation pipes, safe request/correlation ids, pagination helpers, DTO serialization, collision-safe key transforms, configurable error handling/API versioning, and OpenAPI decorators. |
 | `@a3s-lab/security` | Default-deny guard primitives, public/role/permission route metadata, local/dev-only guards, path validation, sensitive operation metadata, JWT payload/token helpers, and role-permission checks. |
 | `@a3s-lab/observability` | Request tracking context, SQL and external-call collectors, metrics service, Prometheus output, HTTP metrics interceptor, and health check module. |
 | `@a3s-lab/logger` | Pino structured logging with default secret redaction, isolated async request context, bounded HTTP metadata, and a NestJS request interceptor. |
@@ -62,6 +62,8 @@ The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds,
 - Metrics store cumulative histogram buckets rather than request samples. Each metric has a configurable series cap,
   excess labels aggregate into a fixed overflow series, and HTTP paths come only from route templates or a fixed
   unmatched label.
+- HTTP identifiers are validated before reuse, logged request paths omit query strings, generic 5xx messages remain
+  private by default, and public error details/key transforms enforce finite depth and entry budgets.
 - Automatic migrations are fail-closed and require an explicit module or environment opt-in in production.
 - NATS connection attempts are coalesced, stale connection events cannot overwrite active state, subscription handles are
   instance-owned, health checks perform bounded broker round trips, and shutdown has one total drain/close deadline.
@@ -95,8 +97,8 @@ The former `apps/api/src/shared/*` implementations were reviewed after the frame
 | `infrastructure/messaging/messaging.interface` | Removed unused app integration interface | The NATS-style service facade had no active consumers after the DDD event publisher moved to `@a3s-lab/cqrs`; concrete broker APIs remain in `@a3s-lab/nats`. |
 | `infrastructure/storage/storage.interface` | Removed unused app integration interface | The RustFS/S3-level bucket/object service facade had no active consumers. Generic upload contracts live in `@a3s-lab/files`; concrete object storage APIs live in `@a3s-lab/rustfs`. |
 | `file-upload` | Package-backed | Generic upload validation, storage client contracts, decorators, and interceptors now live in `@a3s-lab/files`; AppModule imports the package directly, and the legacy app wrappers have been removed. |
-| `serialization`, `transform` | Package-backed | Generic DTO serialization helpers and key/response transforms now live in `@a3s-lab/http`; AppModule imports the package modules directly, and the legacy app wrappers have been removed. |
-| `presentation` | Package-backed | Generic domain/http exception filters and request logging interceptor now live in `@a3s-lab/http`; sample API entry points import the package directly, and the legacy app wrappers have been removed. |
+| `serialization`, `transform` | Package-backed | Generic DTO serialization and bounded key/response transforms live in `@a3s-lab/http`; the sample imports serialization directly and avoids installing a second response wrapper beside `ApiResponseModule`. |
+| `presentation` | Package-backed | `ErrorsModule` owns the sample's global error handling. Compatibility domain/http filters and the request logging interceptor remain deprecated exports rather than duplicate bootstrap registrations. |
 | `api-response`, `api-versioning`, `errors`, `metrics`, `tracking` | Package-backed | Generic global Nest module registrations now live in `@a3s-lab/http` and `@a3s-lab/observability`; AppModule imports the package modules directly, and the legacy app wrappers have been removed. |
 | `messaging/event-bus` | Package-backed | Generic DDD domain event publishing through Nest CQRS now lives in `@a3s-lab/cqrs`; sample order handlers import the package contracts directly, and the legacy app wrappers have been removed. |
 | `persistence/repository`, `persistence/unit-of-work` | Package-backed | Generic repository and unit of work contracts now live in `@a3s-lab/ddd`; the legacy app wrappers have been removed. |
@@ -131,9 +133,9 @@ The framework core is covered by package tests for:
 
 - DDD primitives, persistence contracts, and `Result`
 - CQRS domain event publisher adapter
-- HTTP envelopes, errors, request ids, and pagination
-- HTTP interceptors and filters with Nest `Reflector` metadata
-- HTTP presentation filters and logging interceptor
+- HTTP envelopes, bounded errors/details, safe request ids, and strict pagination
+- Configurable API-version/error/transform modules and Nest `Reflector` metadata
+- Query-free presentation logging, 5xx privacy, transform collision/cycle limits, and strict validation defaults
 - Security path validation, metadata decorators, global default-deny behavior, and delegate integration
 - Security JWT token helper behavior
 - Security role-permission checker behavior

@@ -1,15 +1,14 @@
-import { HttpStatus, applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
     ApiBearerAuth,
     ApiExtraModels,
-    ApiForbiddenResponse as SwaggerApiForbiddenResponse,
-    ApiInternalServerErrorResponse,
     ApiOperation,
     ApiProperty,
     ApiPropertyOptional,
     ApiResponse,
-    ApiUnauthorizedResponse as SwaggerApiUnauthorizedResponse,
     getSchemaPath,
+    ApiForbiddenResponse as SwaggerApiForbiddenResponse,
+    ApiUnauthorizedResponse as SwaggerApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { API_SUCCESS_MESSAGE, API_SUCCESS_STATUS } from './api-response';
 import { StatusCode } from './exceptions';
@@ -201,11 +200,7 @@ export function ApiAuth(summary?: string) {
         SwaggerApiUnauthorizedResponse({
             description: 'Unauthorized - Invalid or missing authentication token',
             schema: {
-                type: 'object',
-                properties: {
-                    code: { type: 'string', example: StatusCode.UNAUTHORIZED },
-                    message: { type: 'string', example: 'Authentication required' },
-                },
+                ...errorSchema(401, StatusCode.UNAUTHORIZED, 'Authentication required'),
             },
         }),
     );
@@ -217,11 +212,7 @@ export function ApiPermission(resource: string, action: string, summary?: string
         SwaggerApiForbiddenResponse({
             description: 'Forbidden - Insufficient permissions',
             schema: {
-                type: 'object',
-                properties: {
-                    code: { type: 'string', example: StatusCode.PERMISSION_DENIED },
-                    message: { type: 'string', example: `Permission denied: ${resource}:${action}` },
-                },
+                ...errorSchema(403, StatusCode.PERMISSION_DENIED, `Permission denied: ${resource}:${action}`),
             },
         }),
     );
@@ -348,13 +339,11 @@ export function ApiConflictResponse(options: ErrorResponseOptions = 'Conflict') 
 
 export function ApiServerErrorResponse() {
     return applyDecorators(
+        ApiExtraModels(ApiErrorEnvelopeDto),
         ApiResponse({
             status: 500,
             description: 'Internal Server Error',
             schema: errorSchema(500, StatusCode.INTERNAL_SERVER_ERROR, 'An unexpected error occurred'),
-        }),
-        ApiInternalServerErrorResponse({
-            description: 'Internal Server Error',
         }),
     );
 }
@@ -388,9 +377,6 @@ export function ApiCommonErrors() {
         ApiBadRequestResponse(),
         ApiUnauthorizedResponse(),
         ApiForbiddenResponse(),
-        ApiInternalServerErrorResponse({
-            description: 'Internal server error',
-            schema: errorSchema(500, StatusCode.INTERNAL_SERVER_ERROR, 'Internal server error'),
-        }),
+        ApiServerErrorResponse(),
     );
 }

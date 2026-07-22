@@ -14,8 +14,14 @@ import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import type { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { getStatusMessage, StatusCode, StatusCodeHttpStatus } from './exceptions';
-import { attachRequestIdHeader, getOrCreateRequestId } from './request-id';
+import { BusinessException, getStatusMessage, StatusCode, StatusCodeHttpStatus } from './exceptions';
+import {
+    HttpConfigurationError,
+    normalizeHttpStatus,
+    normalizeHttpText,
+    normalizePublicDetails,
+} from './http-boundary';
+import { attachRequestIdHeader, getOrCreateRequestId, normalizeRequestId } from './request-id';
 
 export const API_SUCCESS_STATUS = 'SUCCESS' as const;
 export const API_SUCCESS_MESSAGE = 'Success';
@@ -41,10 +47,12 @@ export class ApiResponseDto<T = unknown> {
     timestamp!: string;
 
     constructor(partial?: Partial<ApiResponseDto<T>>) {
-        Object.assign(this, partial);
-        this.timestamp = this.timestamp || new Date().toISOString();
-        this.status = this.status || API_SUCCESS_STATUS;
-        this.message = this.message || API_SUCCESS_MESSAGE;
+        this.code = partial?.code ?? 200;
+        this.status = API_SUCCESS_STATUS;
+        this.message = partial?.message ?? API_SUCCESS_MESSAGE;
+        this.data = partial?.data;
+        this.requestId = normalizeRequestId(partial?.requestId);
+        this.timestamp = partial?.timestamp ?? new Date().toISOString();
     }
 }
 
@@ -68,8 +76,15 @@ export class ApiErrorResponseDto {
     timestamp!: string;
 
     constructor(partial?: Partial<ApiErrorResponseDto>) {
-        Object.assign(this, partial);
-        this.timestamp = this.timestamp || new Date().toISOString();
+        this.code = partial?.code ?? 500;
+        this.status = partial?.status ?? StatusCode.INTERNAL_SERVER_ERROR;
+        this.message = normalizeHttpText(partial?.message, {
+            fallback: getStatusMessage(this.status),
+            maxLength: 1_024,
+        });
+        this.details = normalizePublicDetails(partial?.details);
+        this.requestId = normalizeRequestId(partial?.requestId);
+        this.timestamp = partial?.timestamp ?? new Date().toISOString();
     }
 }
 
@@ -120,8 +135,14 @@ export interface PaginationOptions {
 }
 
 export function parsePaginationOptions(query: PaginationQueryDto): PaginationOptions {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 10;
+    if (!query || typeof query !== 'object') {
+        throw paginationError('Pagination query must be an object.');
+    }
+    const page = validatePaginationInteger(query.page ?? 1, 'page', 1, Number.MAX_SAFE_INTEGER);
+    const limit = validatePaginationInteger(query.limit ?? 10, 'limit', 1, 100);
+    if (page > Math.floor(Number.MAX_SAFE_INTEGER / limit)) {
+        throw paginationError('Pagination offset exceeds the safe integer range.');
+    }
     return { page, limit, offset: (page - 1) * limit };
 }
 
@@ -153,15 +174,21 @@ export class PaginatedResponseDto<T> {
 }
 
 export function toPaginatedResponse<T>(result: PageResult<T>): PaginatedResponseDto<T> {
-    const totalPages = Math.max(1, Math.ceil(result.total / result.limit));
+    if (!result || typeof result !== 'object' || !Array.isArray(result.items)) {
+        throw paginationError('Paginated result must contain an items array.');
+    }
+    const total = validatePaginationInteger(result.total, 'total', 0, Number.MAX_SAFE_INTEGER);
+    const page = validatePaginationInteger(result.page, 'page', 1, Number.MAX_SAFE_INTEGER);
+    const limit = validatePaginationInteger(result.limit, 'limit', 1, 100);
+    const totalPages = Math.max(1, Math.ceil(total / limit));
     return new PaginatedResponseDto<T>({
         items: result.items,
-        total: result.total,
-        page: result.page,
-        limit: result.limit,
+        total,
+        page,
+        limit,
         totalPages,
-        hasNext: result.page < totalPages,
-        hasPrevious: result.page > 1,
+        hasNext: page < totalPages,
+        hasPrevious: page > 1,
     });
 }
 
@@ -184,6 +211,9 @@ export class ApiResponseService {
         details?: Record<string, unknown>,
         requestId?: string,
     ): ApiErrorResponseDto {
+        if (!Object.values(StatusCode).includes(status)) {
+            throw new HttpConfigurationError('status must be a valid StatusCode.');
+        }
         return new ApiErrorResponseDto({
             code: StatusCodeHttpStatus[status],
             status,
@@ -209,19 +239,19 @@ export class ApiResponseInterceptor implements NestInterceptor {
             context.getClass(),
         ]);
 
+        const requestId = getOrCreateRequestId(request);
+        attachRequestIdHeader(response, requestId);
+
         if (skipResponseWrap) {
             return next.handle();
         }
 
-        const requestId = getOrCreateRequestId(request);
-        attachRequestIdHeader(response, requestId);
-
         return next.handle().pipe(
             map((data: unknown) => {
-                if (response.headersSent || data instanceof ApiResponseDto) {
+                if (response.headersSent || isApiResponseEnvelope(data)) {
                     return data;
                 }
-                const code = response.statusCode || 200;
+                const code = normalizeHttpStatus(response.statusCode, 200);
                 if (code === 204) {
                     return undefined;
                 }
@@ -236,6 +266,37 @@ export class ApiResponseInterceptor implements NestInterceptor {
             }),
         );
     }
+}
+
+function validatePaginationInteger(value: unknown, field: string, minimum: number, maximum: number): number {
+    if (!Number.isSafeInteger(value) || (value as number) < minimum || (value as number) > maximum) {
+        throw paginationError(`${field} must be an integer between ${minimum} and ${maximum}.`, field);
+    }
+    return value as number;
+}
+
+function paginationError(message: string, field?: string): BusinessException {
+    return new BusinessException({
+        code: StatusCode.VALIDATION_ERROR,
+        message,
+        details: field ? { field } : undefined,
+    });
+}
+
+function isApiResponseEnvelope(value: unknown): boolean {
+    if (value instanceof ApiResponseDto || value instanceof ApiErrorResponseDto) {
+        return true;
+    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return false;
+    }
+    const record = value as Record<string, unknown>;
+    return (
+        typeof record.code === 'number' &&
+        typeof record.status === 'string' &&
+        typeof record.message === 'string' &&
+        typeof record.timestamp === 'string'
+    );
 }
 
 @Global()

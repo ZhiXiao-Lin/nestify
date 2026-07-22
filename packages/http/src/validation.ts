@@ -12,6 +12,7 @@ import {
     type ValidatorOptions,
 } from 'class-validator';
 import { getStatusMessage, StatusCode } from './exceptions';
+import { HttpConfigurationError, normalizeHttpText, normalizePositiveInteger } from './http-boundary';
 
 export const DEFAULT_VALIDATOR_OPTIONS: ValidatorOptions = {
     whitelist: true,
@@ -29,32 +30,63 @@ export interface FieldValidationError {
 }
 
 export function formatValidationErrors(errors: ValidationError[], parentProperty = ''): FieldValidationError[] {
+    return formatValidationErrorTree(errors, parentProperty, new WeakSet<object>(), { count: 0 }, 0);
+}
+
+function formatValidationErrorTree(
+    errors: ValidationError[],
+    parentProperty: string,
+    seen: WeakSet<object>,
+    state: { count: number },
+    depth: number,
+): FieldValidationError[] {
     const formatted: FieldValidationError[] = [];
+    if (!Array.isArray(errors) || depth > 16) {
+        return formatted;
+    }
     for (const error of errors) {
-        const field = parentProperty ? `${parentProperty}.${error.property}` : error.property;
+        if (!error || typeof error !== 'object' || seen.has(error) || state.count >= 256) {
+            continue;
+        }
+        seen.add(error);
+        const property = normalizeHttpText(error.property, { fallback: '_', maxLength: 128 });
+        const field = parentProperty ? `${parentProperty}.${property}` : property;
         if (error.constraints) {
-            formatted.push({ field, messages: Object.values(error.constraints) });
+            const messages = Object.values(error.constraints)
+                .filter((message): message is string => typeof message === 'string')
+                .slice(0, 32)
+                .map(message => normalizeHttpText(message, { fallback: 'Invalid value', maxLength: 1_024 }));
+            if (messages.length > 0) {
+                formatted.push({ field, messages });
+                state.count += 1;
+            }
         }
         if (error.children && error.children.length > 0) {
-            formatted.push(...formatValidationErrors(error.children, field));
+            formatted.push(...formatValidationErrorTree(error.children, field, seen, state, depth + 1));
         }
     }
     return formatted;
 }
 
 export function createValidationPipe(options: ValidationPipeOptions = {}): ValidationPipe {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+        throw new HttpConfigurationError('Validation pipe options must be an object.');
+    }
     return new ValidationPipe({
+        ...DEFAULT_VALIDATOR_OPTIONS,
         ...options,
-        transform: true,
-        transformOptions: DEFAULT_TRANSFORM_OPTIONS,
-        exceptionFactory: (errors: ValidationError[]) => {
-            const fieldErrors = formatValidationErrors(errors);
-            return new NestBadRequestException({
-                status: StatusCode.VALIDATION_ERROR,
-                message: getStatusMessage(StatusCode.VALIDATION_ERROR),
-                fieldErrors,
-            });
-        },
+        transform: options.transform ?? true,
+        transformOptions: { ...DEFAULT_TRANSFORM_OPTIONS, ...options.transformOptions },
+        exceptionFactory:
+            options.exceptionFactory ??
+            ((errors: ValidationError[]) => {
+                const fieldErrors = formatValidationErrors(errors);
+                return new NestBadRequestException({
+                    status: StatusCode.VALIDATION_ERROR,
+                    message: getStatusMessage(StatusCode.VALIDATION_ERROR),
+                    fieldErrors,
+                });
+            }),
     });
 }
 
@@ -90,7 +122,7 @@ export const ValidationMessage = {
 };
 
 export function IsPassword(options?: { minLength?: number; ValidationOptions?: ValidationOptions }) {
-    const minLen = options?.minLength ?? 8;
+    const minLen = normalizePositiveInteger(options?.minLength, 'IsPassword.minLength', 8, 1, 1_024);
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -113,7 +145,7 @@ export function IsPassword(options?: { minLength?: number; ValidationOptions?: V
 }
 
 export function IsStrongPassword(options?: { minLength?: number; ValidationOptions?: ValidationOptions }) {
-    const minLen = options?.minLength ?? 8;
+    const minLen = normalizePositiveInteger(options?.minLength, 'IsStrongPassword.minLength', 8, 1, 1_024);
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -141,8 +173,9 @@ export function IsUsername(options?: {
     maxLength?: number;
     ValidationOptions?: ValidationOptions;
 }) {
-    const minLen = options?.minLength ?? 3;
-    const maxLen = options?.maxLength ?? 30;
+    const minLen = normalizePositiveInteger(options?.minLength, 'IsUsername.minLength', 3, 1, 256);
+    const maxLen = normalizePositiveInteger(options?.maxLength, 'IsUsername.maxLength', 30, 1, 256);
+    assertRange(minLen, maxLen, 'IsUsername');
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -163,7 +196,7 @@ export function IsUsername(options?: {
 }
 
 export function IsSlug(options?: { maxLength?: number; ValidationOptions?: ValidationOptions }) {
-    const maxLen = options?.maxLength ?? 64;
+    const maxLen = normalizePositiveInteger(options?.maxLength, 'IsSlug.maxLength', 64, 1, 1_024);
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -226,6 +259,11 @@ export function IsObjectId(validationOptions?: ValidationOptions) {
 }
 
 export function IsPrefixedId(prefix: string, validationOptions?: ValidationOptions) {
+    const normalizedPrefix = normalizeHttpText(prefix, { maxLength: 64 });
+    if (!normalizedPrefix) {
+        throw new HttpConfigurationError('IsPrefixedId prefix must be a non-empty string.');
+    }
+    const pattern = new RegExp(`^${escapeRegExp(normalizedPrefix)}_[a-zA-Z0-9]+$`);
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -234,10 +272,10 @@ export function IsPrefixedId(prefix: string, validationOptions?: ValidationOptio
             validator: {
                 validate(value: unknown) {
                     if (!value || typeof value !== 'string') return false;
-                    return new RegExp(`^${prefix}_[a-zA-Z0-9]+$`).test(value);
+                    return pattern.test(value);
                 },
                 defaultMessage() {
-                    return `ID must start with '${prefix}_' followed by alphanumeric characters`;
+                    return `ID must start with '${normalizedPrefix}_' followed by alphanumeric characters`;
                 },
             },
         });
@@ -324,6 +362,7 @@ export function IsPastDate(validationOptions?: ValidationOptions) {
 }
 
 export function IsInRange(min: number, max: number, validationOptions?: ValidationOptions) {
+    assertFiniteRange(min, max, 'IsInRange');
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -342,6 +381,10 @@ export function IsInRange(min: number, max: number, validationOptions?: Validati
 }
 
 export function IsLengthInRange(min: number, max: number, validationOptions?: ValidationOptions) {
+    if (!Number.isSafeInteger(min) || !Number.isSafeInteger(max) || min < 0 || max < 0) {
+        throw new HttpConfigurationError('IsLengthInRange bounds must be non-negative safe integers.');
+    }
+    assertRange(min, max, 'IsLengthInRange');
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -360,6 +403,10 @@ export function IsLengthInRange(min: number, max: number, validationOptions?: Va
 }
 
 export function MatchesField(field: string, message?: string, validationOptions?: ValidationOptions) {
+    const normalizedField = normalizeHttpText(field, { maxLength: 128 });
+    if (!normalizedField) {
+        throw new HttpConfigurationError('MatchesField field must be a non-empty string.');
+    }
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -368,10 +415,13 @@ export function MatchesField(field: string, message?: string, validationOptions?
             validator: {
                 validate(value: unknown, args: ValidationArguments) {
                     const objectToCompare = args.object as Record<string, unknown>;
-                    return objectToCompare[field] === value;
+                    return objectToCompare[normalizedField] === value;
                 },
                 defaultMessage() {
-                    return message ?? `Must match '${field}'`;
+                    return normalizeHttpText(message, {
+                        fallback: `Must match '${normalizedField}'`,
+                        maxLength: 1_024,
+                    });
                 },
             },
         });
@@ -382,6 +432,9 @@ export function IsInstanceOf<T extends new (...args: unknown[]) => unknown>(
     classType: T,
     validationOptions?: ValidationOptions,
 ) {
+    if (typeof classType !== 'function') {
+        throw new HttpConfigurationError('IsInstanceOf classType must be a constructor.');
+    }
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -400,6 +453,9 @@ export function IsInstanceOf<T extends new (...args: unknown[]) => unknown>(
 }
 
 export function IsArrayOf(itemValidator: (value: unknown) => boolean, validationOptions?: ValidationOptions) {
+    if (typeof itemValidator !== 'function') {
+        throw new HttpConfigurationError('IsArrayOf itemValidator must be a function.');
+    }
     return (object: object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
@@ -416,4 +472,21 @@ export function IsArrayOf(itemValidator: (value: unknown) => boolean, validation
             },
         });
     };
+}
+
+function assertFiniteRange(min: number, max: number, name: string): void {
+    if (!Number.isFinite(min) || !Number.isFinite(max)) {
+        throw new HttpConfigurationError(`${name} bounds must be finite numbers.`);
+    }
+    assertRange(min, max, name);
+}
+
+function assertRange(min: number, max: number, name: string): void {
+    if (min > max) {
+        throw new HttpConfigurationError(`${name} minimum must be less than or equal to maximum.`);
+    }
+}
+
+function escapeRegExp(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

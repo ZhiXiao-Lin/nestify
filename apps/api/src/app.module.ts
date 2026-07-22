@@ -1,17 +1,11 @@
+import { FileUploadModule } from '@a3s-lab/files';
+import { ApiResponseModule, ApiVersioningModule, ErrorsModule, SerializationModule } from '@a3s-lab/http';
+import { createPostgresKyselyModuleOptions, KyselyModule, KyselyService } from '@a3s-lab/kysely';
+import { createHealthCheck, HealthModule, MetricsModule, recordSql, TrackingModule } from '@a3s-lab/observability';
+import { createRedissonModuleOptions, RedissonModule, RedissonService } from '@a3s-lab/redisson';
+import { ResilienceModule } from '@a3s-lab/resilience';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { FileUploadModule } from '@a3s-lab/files';
-import { KyselyModule, KyselyService, createPostgresKyselyModuleOptions } from '@a3s-lab/kysely';
-import {
-    ApiResponseModule,
-    ApiVersioningModule,
-    ErrorsModule,
-    SerializationModule,
-    TransformModule,
-} from '@a3s-lab/http';
-import { HealthModule, MetricsModule, TrackingModule, createHealthCheck, recordSql } from '@a3s-lab/observability';
-import { RedissonModule, RedissonService, createRedissonModuleOptions } from '@a3s-lab/redisson';
-import { ResilienceModule } from '@a3s-lab/resilience';
 import { sql } from 'kysely';
 import { OrderModule } from './modules/order/order.module';
 
@@ -90,9 +84,6 @@ import { OrderModule } from './modules/order/order.module';
 
         // File upload
         FileUploadModule,
-
-        // Transform interceptor
-        TransformModule,
 
         // Error handling
         ErrorsModule,
