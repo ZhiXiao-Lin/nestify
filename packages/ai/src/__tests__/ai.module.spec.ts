@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { Module } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { AiConfigurationError } from '../ai.errors';
 import { AiModule } from '../ai.module';
 import { AiService } from '../ai.service';
 import { AI_MODULE_OPTIONS, type AiModuleOptions } from '../ai.types';
@@ -18,14 +19,19 @@ describe('AiModule', () => {
             runtimeLoader: jest.fn(),
         };
         const definition = AiModule.register(options);
+        const provider = definition.providers?.find(
+            candidate => typeof candidate === 'object' && candidate !== null && 'provide' in candidate,
+        ) as { useValue: Readonly<AiModuleOptions> };
 
         expect(definition.global).toBe(false);
         expect(definition.providers).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ provide: AI_MODULE_OPTIONS, useValue: options }),
+                expect.objectContaining({ provide: AI_MODULE_OPTIONS, useValue: expect.objectContaining(options) }),
                 AiService,
             ]),
         );
+        expect(provider.useValue).not.toBe(options);
+        expect(Object.isFrozen(provider.useValue)).toBe(true);
         expect(definition.exports).toContain(AiService);
     });
 
@@ -47,6 +53,7 @@ describe('AiModule', () => {
         }).compile();
 
         expect(moduleRef.get(AI_MODULE_OPTIONS)).toEqual({ configSource });
+        expect(Object.isFrozen(moduleRef.get(AI_MODULE_OPTIONS))).toBe(true);
         expect(moduleRef.get(AiService)).toBeInstanceOf(AiService);
         await moduleRef.close();
     });
@@ -56,5 +63,26 @@ describe('AiModule', () => {
 
         expect(AiModule.registerAsync({ useFactory: factory }).global).toBe(false);
         expect(AiModule.registerAsync({ useFactory: factory, isGlobal: true }).global).toBe(true);
+    });
+
+    it('rejects invalid sync and async registration before native runtime loading', async () => {
+        expect(() => AiModule.register({ configSource: '' })).toThrow(AiConfigurationError);
+        expect(() => AiModule.register({ configSource: 'agent.acl', isGlobal: 'yes' as never })).toThrow(
+            'must be a boolean',
+        );
+        expect(() => AiModule.register({ configSource: 'agent.acl', runtimeLoader: 'loader' as never })).toThrow(
+            'runtimeLoader',
+        );
+        expect(() => AiModule.registerAsync(null as never)).toThrow('async options are required');
+        expect(() => AiModule.registerAsync({ useFactory: undefined as never })).toThrow('requires a useFactory');
+        expect(() =>
+            AiModule.registerAsync({ useFactory: () => ({ configSource: 'agent.acl' }), isGlobal: 'yes' as never }),
+        ).toThrow('isGlobal must be a boolean');
+
+        await expect(
+            Test.createTestingModule({
+                imports: [AiModule.registerAsync({ useFactory: async () => ({ configSource: ' ' }) })],
+            }).compile(),
+        ).rejects.toBeInstanceOf(AiConfigurationError);
     });
 });

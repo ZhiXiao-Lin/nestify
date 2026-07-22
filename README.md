@@ -30,7 +30,7 @@ Nestify currently contains 18 publishable framework packages:
 | `@a3s-lab/clickhouse` | Validated official ClickHouse client integration with cancellable requests, typed query/insert helpers, bounded database-client pooling, health reporting, and deterministic shutdown. |
 | `@a3s-lab/migrations` | Validated Kysely migration lifecycle, sync/async NestJS registration, fail-closed startup policy, and named non-transactional operations. |
 | `@a3s-lab/files` | Safe object-key validation, bounded and compensating batch uploads, route policies, request parameter decorators, and NestJS upload interceptors. |
-| `@a3s-lab/ai` | NestJS integration for the A3S coding-agent runtime through `@a3s-lab/code`, with injectable configuration and lifecycle-safe agent access. |
+| `@a3s-lab/ai` | Strict NestJS lifecycle integration for `@a3s-lab/code`, including lazy validated loading, standard/named/worker sessions, disposable runs and streams, cancellation, and race-safe shutdown. |
 | `@a3s-lab/sandbox` | NestJS integration for the first-party `@a3s-lab/box` SDK with native instances, guarded connection configuration, managed scopes, and bounded observable shutdown. |
 
 The shared package list is dependency-ordered in `scripts/core-packages.mjs`. Build, test, pack, smoke install, and publish rehearsal commands all use that same list.
@@ -196,6 +196,9 @@ an `NPM_TOKEN` secret with access to the `@a3s-lab` scope.
   one total timeout, and labels job-removal operations as destructive rather than implying that `drain` processes jobs.
 - Sandbox shutdown rejects new work, drains complete managed callback and connection scopes, applies a 30-second
   default bound, settles every owned instance, and reports final cleanup failures without discarding retry ownership.
+- AI module options and native SDK contracts fail fast at the Nest boundary. Disposable AI sessions preserve operation
+  and cleanup failures together, support request-scoped aborts, and session construction is drained before Agent
+  shutdown.
 
 ## Design Boundaries
 

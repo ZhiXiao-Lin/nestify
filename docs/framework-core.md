@@ -22,7 +22,7 @@ Nestify separates reusable backend API capabilities from the sample application.
 | `@a3s-lab/clickhouse` | Validated official ClickHouse client integration with cancellable requests, typed helpers, bounded database-client pooling, health reporting, and deterministic shutdown. |
 | `@a3s-lab/migrations` | Validated Kysely migration lifecycle, sync/async module integration, fail-closed startup policy, and named non-transactional operations. |
 | `@a3s-lab/files` | File upload validation, storage client contracts, upload decorators, and NestJS upload interceptors. |
-| `@a3s-lab/ai` | NestJS module and service integration for the A3S coding-agent runtime provided by `@a3s-lab/code`. |
+| `@a3s-lab/ai` | Strict NestJS lifecycle integration for `@a3s-lab/code`, with validated lazy loading, standard/named/worker sessions, disposable operations, cancellation, and shutdown draining. |
 | `@a3s-lab/sandbox` | NestJS module and lifecycle service for native first-party `@a3s-lab/box` sandboxes, with guarded connection configuration and bounded cleanup. |
 
 Each package has a package-level README with install notes, import examples, exported capabilities, and boundary notes:
@@ -50,7 +50,15 @@ Each package has a package-level README with install notes, import examples, exp
 
 The NestJS integration packages accept NestJS 10 and 11 peers. Workspace builds, tests, packed declarations, and the sample API run against NestJS 11; HTTP-facing package tests use Express 5 while their peer ranges continue to accept Express 4 and 5. Repository development requires Node.js 20.18.1 within the Node 20 line, or Node.js 22 and newer; Node 21 is excluded by the pinned A3S Box SDK dependency graph. The packed consumer smoke test pins TypeScript 5.7.2, matching the minimum compiler line required by the Redisson dependency graph.
 
-`@a3s-lab/ai` delegates coding-agent execution to `@a3s-lab/code` and keeps native runtime loading behind its configured service boundary. `@a3s-lab/sandbox` lazily loads both runtime values and types from the first-party `@a3s-lab/box@3.0.11` TypeScript SDK, so importing the Nestify package does not eagerly evaluate its ESM dependency. Until `@a3s-lab/box` is published to npm, the package consumes the verified GitHub Release tarball; that dependency should switch to a semver range after npm publication without changing the Nestify API.
+`@a3s-lab/ai` delegates coding-agent execution to `@a3s-lab/code` and keeps native runtime loading behind a validated,
+lazy service boundary. It exposes the SDK's asynchronous standard, named-agent, worker, resume, replace, list, close,
+run-scoped cancellation, and Agent shutdown paths without adding a transport or hidden operation queue. Disposable
+callbacks, runs, and streams close their sessions, preserve simultaneous operation/cleanup failures, and accept
+request-scoped aborts; shutdown drains session creation before closing the Agent. `@a3s-lab/sandbox` lazily loads both
+runtime values and types from the first-party `@a3s-lab/box@3.0.11` TypeScript SDK, so importing the Nestify package does
+not eagerly evaluate its ESM dependency. Until `@a3s-lab/box` is published to npm, the package consumes the verified
+GitHub Release tarball; that dependency should switch to a semver range after npm publication without changing the
+Nestify API.
 
 ## Runtime Safety Defaults
 
@@ -164,7 +172,9 @@ The framework core is covered by package tests for:
 - ClickHouse option normalization, SQL/format routing, request cancellation, bounded LRU client pooling, health probes, and failure-safe lifecycle cleanup
 - Migration option validation, deterministic provider wrapping, in-flight execution coalescing, failure handling, and sync/async module registration
 - File upload validation, storage key handling, module registration, and upload interceptors
-- AI module registration, injected runtime access, session delegation, and lifecycle cleanup
+- AI option and SDK-contract validation, lazy/single-flight initialization, standard/named/worker session delegation,
+  disposable callback/run/stream cleanup, AbortSignal cancellation, run-scoped cancellation, session control-plane
+  helpers, and shutdown/session-creation race handling
 - Sandbox connection hardening, module registration, validated lazy SDK access, native operation delegation, managed
   callback/connect concurrency, bounded shutdown, cleanup aggregation, and retryable ownership
 
